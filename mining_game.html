@@ -1,0 +1,3539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>挖矿游戏</title>
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --secondary-color: #4CAF50;
+            --accent-color: #FF9800;
+            --danger-color: #f44336;
+            --dark-color: #333;
+            --light-color: #f5f5f5;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+    </style>
+    
+    <script>
+        // 成就系统核心逻辑
+        (function() {
+            // 成就类型定义
+            const achievementTypes = {
+                // 资源类成就
+                gold: { name: '金币收集者', description: '收集{value}金币', category: 'resources' },
+                alchemyPoints: { name: '炼药师', description: '获得{value}炼药值', category: 'resources' },
+                alchemyCrystals: { name: '结晶大师', description: '获得{value}炼药结晶', category: 'resources' },
+                iridiumIngots: { name: '铱矿矿工', description: '获得{value}铱锭', category: 'resources' },
+                hassiumIngots: { name: '𬭶矿矿工', description: '获得{value}𬭶锭', category: 'resources' },
+                singularity: { name: '奇点收集者', description: '获得{value}奇点', category: 'resources' },
+                matter: { name: '物质操控者', description: '获得{value}物质', category: 'resources' },
+                energy: { name: '能量掌控者', description: '获得{value}能量', category: 'resources' },
+                productionCore: { name: '核心生产者', description: '获得{value}量产核心', category: 'resources' },
+                endCore: { name: '终焉使者', description: '获得{value}终焉核心', category: 'resources' },
+                
+                // 属性类成就
+                usageBonus: { name: '使用大师', description: '达到{value}使用增益', category: 'stats' },
+                alchemyBonus: { name: '炼药增强', description: '达到{value}炼药增益', category: 'stats' },
+                energyMultiplier: { name: '能量倍增', description: '达到{value}能量倍速', category: 'stats' },
+                
+                // 淬炼属性成就
+                damageBonus: { name: '伤害强化', description: '达到{value}%伤害增益', category: 'stats', path: 'forgingStats.damageBonus' },
+                usageBonusGain: { name: '使用增益获取', description: '达到{value}%使用增益获取', category: 'stats', path: 'forgingStats.usageBonusGain' },
+                goldGain: { name: '金币获取增强', description: '达到{value}%金币获取', category: 'stats', path: 'forgingStats.goldGain' },
+                crystalBonusGain: { name: '结晶增益获取', description: '达到{value}%结晶增益获取', category: 'stats', path: 'forgingStats.crystalBonusGain' },
+                
+                // 镶嵌成就
+                embedding1: { name: '攻击镶嵌大师', description: '攻击增益镶嵌达到{value}个', category: 'stats', path: 'embeddingBlocks[0].count' },
+                embedding2: { name: '炼药值镶嵌大师', description: '炼药值获取增益镶嵌达到{value}个', category: 'stats', path: 'embeddingBlocks[1].count' },
+                embedding3: { name: '使用增益镶嵌大师', description: '使用增益获取增益镶嵌达到{value}个', category: 'stats', path: 'embeddingBlocks[2].count' },
+                embedding4: { name: '金币镶嵌大师', description: '金币获取增益镶嵌达到{value}个', category: 'stats', path: 'embeddingBlocks[3].count' },
+                embedding5: { name: '全属性镶嵌大师', description: '全属性增益镶嵌达到{value}个', category: 'stats', path: 'embeddingBlocks[4].count' },
+                
+                // 挖矿类成就
+                miningCount: { name: '挖矿大师', description: '累计挖矿{value}次', category: 'mining' },
+                miningPerSecond: { name: '挖矿效率', description: '达到每秒挖矿{value}次', category: 'mining' },
+                ownedPickaxes: { name: '收藏家', description: '拥有{value}把镐子', category: 'mining', getValue: function() { return gameData.ownedPickaxes.length; } }
+            };
+            
+            // 生成成就目标值（从1e4开始，每次乘以1e4，共77个）
+            function generateAchievementValues() {
+                const values = [];
+                let currentValue = 10000; // 1e4
+                for (let i = 0; i < 77; i++) {
+                    values.push(currentValue);
+                    currentValue *= 10000; // 每次乘以1e4
+                }
+                return values;
+            }
+            
+            // 获取数据路径的值
+            function getValueByPath(obj, path) {
+                if (path.includes('.')) {
+                    const parts = path.split('.');
+                    let current = obj;
+                    for (let part of parts) {
+                        if (part.includes('[')) {
+                            const key = part.match(/(\w+)\[(\d+)\]/);
+                            if (key) {
+                                current = current[key[1]][parseInt(key[2])];
+                            }
+                        } else {
+                            current = current[part];
+                        }
+                    }
+                    return current;
+                } else if (path.includes('[')) {
+                    const key = path.match(/(\w+)\[(\d+)\]/);
+                    if (key) {
+                        return obj[key[1]][parseInt(key[2])];
+                    }
+                }
+                return obj[path];
+            }
+            
+            // 格式化大数字
+            function formatAchievementValue(value) {
+                const suffixes = ['', '万', '亿', '兆', '京', '垓', '秭', '穰', '沟', '涧', '正', '载', '极', '恒河沙', '阿僧祇', '那由他', '不可思议', '无量大数', '十无量数', '百无量数', '千无量数', '万无量数', '亿无量数', '兆无量数', '京无量数', '垓无量数', '秭无量数', '穰无量数', '沟无量数', '涧无量数', '正无量数', '载无量数', '极无量数', '恒河沙无量数', '阿僧祇无量数', '那由他无量数', '不可思议无量数', '无量大数无量数', '十无量大数无量数', '百无量大数无量数', '千无量大数无量数', '万无量大数无量数', '亿无量大数无量数', '兆无量大数无量数', '京无量大数无量数', '垓无量大数无量数', '秭无量大数无量数', '穰无量大数无量数', '沟无量大数无量数', '涧无量大数无量数', '正无量大数无量数', '载无量大数无量数', '极无量大数无量数', '恒河沙无量大数无量数', '阿僧祇无量大数无量数', '那由他无量大数无量数', '不可思议无量大数无量数', '无量大数无量大数无量数', '元', '元万', '元亿', '元兆', '元京', '元垓', '元秭', '元穰', '元沟', '元涧', '元正', '元载', '元极', '元恒河沙', '元阿僧祇', '元那由他', '元不可思议', '元卐（通关！）'];
+                
+                if (value === 0) return '0';
+                
+                let suffixIndex = 0;
+                let currentValue = value;
+                
+                while (currentValue >= 10000 && suffixIndex < suffixes.length - 1) {
+                    currentValue /= 10000;
+                    suffixIndex++;
+                }
+                
+                if (currentValue >= 1000) {
+                    return currentValue.toFixed(0) + suffixes[suffixIndex];
+                } else if (currentValue >= 100) {
+                    return currentValue.toFixed(1) + suffixes[suffixIndex];
+                } else if (currentValue >= 10) {
+                    return currentValue.toFixed(2) + suffixes[suffixIndex];
+                } else {
+                    return currentValue.toFixed(3) + suffixes[suffixIndex];
+                }
+            }
+            
+            // 生成所有成就
+            function generateAchievements() {
+                const achievements = [];
+                const targetValues = generateAchievementValues();
+                
+                Object.entries(achievementTypes).forEach(([key, config]) => {
+                    targetValues.forEach((target, index) => {
+                        // 对于百分比类型的成就，特殊处理
+                        const isPercentage = ['damageBonus', 'usageBonusGain', 'goldGain', 'crystalBonusGain'].includes(key);
+                        const formattedTarget = isPercentage ? Math.floor(target / 100) : formatAchievementValue(target);
+                        
+                        achievements.push({
+                            id: `${key}_${index}`,
+                            type: key,
+                            target: target,
+                            name: `${config.name} ${index + 1}`,
+                            description: config.description.replace('{value}', formattedTarget),
+                            category: config.category,
+                            path: config.path,
+                            getValue: config.getValue,
+                            completed: false,
+                            progress: 0
+                        });
+                    });
+                });
+                
+                return achievements;
+            }
+            
+            // 初始化成就系统
+            function initAchievements() {
+                // 如果成就未初始化，生成新的成就列表
+                if (!gameData.achievements || gameData.achievements.length === 0) {
+                    gameData.achievements = generateAchievements();
+                }
+                
+                // 初始化已完成成就记录
+                if (!gameData.completedAchievements) {
+                    gameData.completedAchievements = {};
+                }
+                
+                // 更新成就列表显示
+                updateAchievementsList();
+                
+                // 绑定成就系统事件
+                bindAchievementEvents();
+            }
+            
+            // 绑定成就系统事件
+            function bindAchievementEvents() {
+                // 标签页切换
+                document.getElementById('achievements-tab').addEventListener('click', () => {
+                    showAchievements();
+                });
+                
+                // 分类筛选按钮
+                document.getElementById('achievement-category-all').addEventListener('click', () => {
+                    filterAchievements('all');
+                });
+                
+                document.getElementById('achievement-category-resources').addEventListener('click', () => {
+                    filterAchievements('resources');
+                });
+                
+                document.getElementById('achievement-category-stats').addEventListener('click', () => {
+                    filterAchievements('stats');
+                });
+                
+                document.getElementById('achievement-category-mining').addEventListener('click', () => {
+                    filterAchievements('mining');
+                });
+                
+                document.getElementById('achievement-category-completed').addEventListener('click', () => {
+                    filterAchievements('completed');
+                });
+                
+                // 搜索功能
+                document.getElementById('achievement-search').addEventListener('input', () => {
+                    const searchTerm = document.getElementById('achievement-search').value.toLowerCase();
+                    searchAchievements(searchTerm);
+                });
+            }
+            
+            // 显示成就系统
+            function showAchievements() {
+                // 隐藏所有其他系统
+                document.querySelectorAll('.mining-area, .alchemy-system, .forging-system, .embedding-system').forEach(el => {
+                    el.style.display = 'none';
+                });
+                
+                // 显示成就系统
+                document.getElementById('achievements-system').style.display = 'block';
+                
+                // 更新标签页状态
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.getElementById('achievements-tab').classList.add('active');
+                
+                // 更新成就列表
+                updateAchievementsList();
+            }
+            
+            // 更新成就列表显示
+            function updateAchievementsList() {
+                const achievementsList = document.getElementById('achievements-list');
+                achievementsList.innerHTML = '';
+                
+                let completedCount = 0;
+                
+                gameData.achievements.forEach(achievement => {
+                    const achievementElement = document.createElement('div');
+                    achievementElement.className = `achievement-item ${achievement.completed ? 'completed' : ''}`;
+                    
+                    // 添加成就徽章
+                    const badge = document.createElement('div');
+                    badge.className = `achievement-badge ${achievement.completed ? 'completed' : 'pending'}`;
+                    badge.textContent = achievement.completed ? '✓' : ' ';
+                    achievementElement.appendChild(badge);
+                    
+                    // 添加成就标题
+                    const title = document.createElement('div');
+                    title.className = 'achievement-title';
+                    title.textContent = achievement.name;
+                    achievementElement.appendChild(title);
+                    
+                    // 添加成就描述
+                    const description = document.createElement('div');
+                    description.className = 'achievement-description';
+                    description.textContent = achievement.description;
+                    achievementElement.appendChild(description);
+                    
+                    // 添加成就进度
+                    const progress = document.createElement('div');
+                    progress.className = 'achievement-progress';
+                    progress.textContent = `进度: ${formatAchievementValue(achievement.progress)} / ${formatAchievementValue(achievement.target)}`;
+                    achievementElement.appendChild(progress);
+                    
+                    achievementsList.appendChild(achievementElement);
+                    
+                    if (achievement.completed) {
+                        completedCount++;
+                    }
+                });
+                
+                // 更新成就统计
+                document.getElementById('completed-achievements-count').textContent = completedCount;
+                document.getElementById('total-achievements-count').textContent = gameData.achievements.length;
+            }
+            
+            // 筛选成就
+            function filterAchievements(category) {
+                const achievementItems = document.querySelectorAll('.achievement-item');
+                
+                achievementItems.forEach((item, index) => {
+                    const achievement = gameData.achievements[index];
+                    let show = true;
+                    
+                    if (category === 'all') {
+                        show = true;
+                    } else if (category === 'completed') {
+                        show = achievement.completed;
+                    } else {
+                        show = achievement.category === category;
+                    }
+                    
+                    item.style.display = show ? 'block' : 'none';
+                });
+            }
+            
+            // 搜索成就
+            function searchAchievements(searchTerm) {
+                const achievementItems = document.querySelectorAll('.achievement-item');
+                
+                achievementItems.forEach((item, index) => {
+                    const achievement = gameData.achievements[index];
+                    const matches = achievement.name.toLowerCase().includes(searchTerm) || 
+                                  achievement.description.toLowerCase().includes(searchTerm);
+                    
+                    item.style.display = matches ? 'block' : 'none';
+                });
+            }
+            
+            // 检查成就进度
+            function checkAchievements() {
+                let hasNewAchievements = false;
+                
+                gameData.achievements.forEach(achievement => {
+                    if (!achievement.completed) {
+                        let currentValue = 0;
+                        
+                        // 获取当前值
+                        if (achievement.getValue) {
+                            currentValue = achievement.getValue();
+                        } else if (achievement.path) {
+                            currentValue = getValueByPath(gameData, achievement.path);
+                        } else {
+                            currentValue = gameData[achievement.type] || 0;
+                        }
+                        
+                        // 对于百分比类型的成就，特殊处理
+                        const isPercentage = ['damageBonus', 'usageBonusGain', 'goldGain', 'crystalBonusGain'].includes(achievement.type);
+                        if (isPercentage) {
+                            currentValue *= 100; // 转换为百分比
+                        }
+                        
+                        // 更新进度
+                        achievement.progress = currentValue;
+                        
+                        // 检查是否完成
+                        if (currentValue >= achievement.target) {
+                            achievement.completed = true;
+                            gameData.completedAchievements[achievement.id] = true;
+                            hasNewAchievements = true;
+                            
+                            // 触发成就解锁动画
+                            unlockAchievement(achievement);
+                        }
+                    }
+                });
+                
+                // 如果有新成就，更新UI
+                if (hasNewAchievements) {
+                    updateAchievementsList();
+                }
+            }
+            
+            // 解锁成就动画
+            function unlockAchievement(achievement) {
+                // 创建临时通知
+                const notification = document.createElement('div');
+                notification.className = 'achievement-unlock';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background-color: var(--secondary-color);
+                    color: white;
+                    padding: 20px;
+                    border-radius: var(--border-radius);
+                    font-size: 18px;
+                    font-weight: bold;
+                    z-index: 1001;
+                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                    text-align: center;
+                    min-width: 300px;
+                `;
+                
+                notification.innerHTML = `
+                    <div style="font-size: 14px; margin-bottom: 5px;">🏆 成就解锁！</div>
+                    <div style="font-size: 18px; font-weight: bold; margin-bottom: 5px;">${achievement.name}</div>
+                    <div style="font-size: 14px;">${achievement.description}</div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                // 2秒后移除通知
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    notification.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 500);
+                }, 2000);
+            }
+            
+            // 扩展现有函数以集成成就检查
+            const originalUpdateStats = window.updateStats || function() {};
+            window.updateStats = function() {
+                originalUpdateStats();
+                checkAchievements();
+            };
+            
+            // 导出成就系统函数到全局
+            window.initAchievements = initAchievements;
+            window.checkAchievements = checkAchievements;
+            window.showAchievements = showAchievements;
+        })();
+        
+        // 初始化成就系统将在gameData定义后调用
+    </script>
+    
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            color: var(--dark-color);
+            margin-bottom: 25px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 统计信息面板优化 */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stats-group {
+            background: var(--light-color);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .stats-group.resources {
+            border-left-color: var(--secondary-color);
+        }
+        
+        .stats-group.advanced {
+            border-left-color: var(--accent-color);
+        }
+        
+        .stats-group h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+            color: var(--dark-color);
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 8px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .stat-label {
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .stat-value {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        #auto-save-status {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        /* 系统标签页优化 */
+        .system-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tab-btn:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-2px);
+        }
+        
+        .tab-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+        }
+        
+        /* 挖矿区域优化 */
+        .mining-area {
+            background: linear-gradient(145deg, #f0f0f0, #e0e0e0);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .block-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            padding: 12px 20px;
+            font-size: 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .control-btn:hover {
+            background-color: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .control-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .mine-block {
+            width: 280px;
+            height: 280px;
+            margin: 20px auto;
+            border: 4px solid #666;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.1s;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .mine-block:hover {
+            transform: scale(1.03);
+        }
+        
+        .mine-block:active {
+            transform: scale(0.98);
+        }
+        
+        .block-level {
+            font-size: 11.25px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #ffffff;
+            text-shadow: 1px 1px 3px #000000;
+        }
+        
+        .health-bar {
+            width: 80%;
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(to right, #4CAF50, #8BC34A);
+            transition: width 0.3s ease;
+        }
+        
+        .block-health {
+            font-size: 10px;
+            color: #ffffff;
+            text-shadow: 1px 1px 2px #000000;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .block-reward {
+            font-size: 8.75px;
+            color: #ffffff;
+            text-shadow: 1px 1px 2px #000000;
+            font-weight: bold;
+            max-width: 90%;
+            line-height: 1.4;
+        }
+        
+        /* 镐子商店优化 */
+        .pickaxe-shop {
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #f9f9f9;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .shop-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: var(--dark-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+        
+        .pickaxe-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .pickaxe-item {
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            text-align: center;
+            transition: var(--transition);
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .pickaxe-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .pickaxe-item.owned {
+            border-color: var(--secondary-color);
+            background-color: #e8f5e9;
+        }
+        
+        .pickaxe-item.current {
+            border-color: var(--primary-color);
+            background-color: #e3f2fd;
+            font-weight: bold;
+        }
+        
+        .pickaxe-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+        
+        .pickaxe-stats {
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .buy-btn {
+            padding: 10px 20px;
+            font-size: 14px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            width: 100%;
+        }
+        
+        .buy-btn:hover:not(:disabled) {
+            background-color: #e68900;
+        }
+        
+        .buy-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        /* 炼药系统优化 */
+        .alchemy-system, .forging-system, .embedding-system {
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #f9f9f9;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .alchemy-input {
+            padding: 12px;
+            font-size: 16px;
+            width: 200px;
+            margin-right: 10px;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+        
+        .alchemy-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        .alchemy-btn {
+            padding: 12px 25px;
+            font-size: 16px;
+            background-color: #9C27B0;
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        
+        .alchemy-btn:hover {
+            background-color: #7B1FA2;
+        }
+        
+        .alchemy-result {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #e3f2fd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: bold;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        /* 能量系统优化 */
+        .energy-system {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(145deg, #e3f2fd, #bbdefb);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        /* 特殊样式 */
+        .special-block {
+            background: linear-gradient(45deg, #C0C0C0, #E8E8E8, #C0C0C0);
+        }
+        
+        /* 重置按钮样式 */
+        .reset-section {
+            text-align: center;
+            margin: 25px 0;
+            padding: 20px;
+            background-color: #ffebee;
+            border-radius: var(--border-radius);
+        }
+        
+        .reset-btn {
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        
+        .reset-btn:hover {
+            background-color: #d32f2f;
+        }
+        
+        .warning-text {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        /* 每秒挖矿显示 */
+        .mining-per-second-display {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            font-weight: bold;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .pickaxe-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .mine-block {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .system-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .tab-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .block-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .control-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+        
+        /* 成就系统样式 */
+        .achievements-system {
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #f9f9f9;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            display: none;
+        }
+        
+        .achievements-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .achievements-search {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .achievements-summary {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: var(--dark-color);
+        }
+        
+        .achievements-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .achievement-item {
+            background-color: white;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .achievement-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .achievement-item.completed {
+            border-color: var(--secondary-color);
+            background-color: #e8f5e9;
+        }
+        
+        .achievement-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--dark-color);
+        }
+        
+        .achievement-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .achievement-progress {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .achievement-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .achievement-badge.pending {
+            background-color: #ffc107;
+        }
+        
+        .achievement-badge.completed {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes achievementUnlock {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); box-shadow: 0 0 15px rgba(76, 175, 80, 0.5); }
+            100% { transform: scale(1); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .achievement-unlock {
+            animation: achievementUnlock 1s ease;
+        }
+        .block-color-1 { background-color: #8B4513; }
+        .block-color-2 { background-color: #A9A9A9; }
+        .block-color-3 { background-color: #CD853F; }
+        .block-color-4 { background-color: #B87333; }
+        .block-color-5 { background-color: #FFD700; }
+        .block-color-6 { background-color: #00CED1; }
+        .block-color-7 { background-color: #9400D3; }
+        .block-color-8 { background-color: #FF4500; }
+        .block-color-9 { background-color: #4B0082; }
+        .block-color-10 { background-color: #800080; }
+        .block-color-11 { background-color: #000000; color: white; }
+        .block-color-12 { background-color: #4B0082; color: white; }
+        .block-color-13 { background-color: #800080; color: white; }
+        .block-color-14 { background-color: #9400D3; color: white; }
+        .block-color-15 { background-color: #8A2BE2; color: white; }
+        .block-color-16 { background-color: #9370DB; color: white; }
+        .block-color-17 { background-color: #DDA0DD; color: black; }
+        .block-color-18 { background-color: #EE82EE; color: black; }
+        .block-color-19 { background-color: #DA70D6; color: black; }
+        .block-color-20 { background-color: #BA55D3; color: white; }
+        .block-color-21 { background-color: #9932CC; color: white; }
+        .block-color-22 { background-color: #8B008B; color: white; }
+        .block-color-23 { background-color: #6A5ACD; color: white; }
+        .block-color-24 { background-color: #483D8B; color: white; }
+        .block-color-25 { background-color: #3E2723; color: white; }
+        .block-color-26 { background-color: #263238; color: white; }
+        .block-color-27 { background-color: #1A237E; color: white; }
+        .block-color-28 { background-color: #311B92; color: white; }
+        .block-color-29 { background-color: #4A148C; color: white; }
+        .block-color-30 { background-color: #6A1B9A; color: white; }
+        .block-color-31 { background-color: #8E24AA; color: white; }
+        .block-color-32 { background-color: #4527A0; color: white; }
+        .block-color-33 { background-color: #3949AB; color: white; }
+        .block-color-34 { background-color: #303F9F; color: white; }
+        .block-color-35 { background-color: #1976D2; color: white; }
+        .block-color-36 { background-color: #0D47A1; color: white; }
+        .block-color-37 { background-color: #01579B; color: white; }
+        .block-color-38 { background-color: #006064; color: white; }
+        .block-color-39 { background-color: #004D40; color: white; }
+        .block-color-40 { background-color: #1B5E20; color: white; }
+        .block-color-41 { background-color: #2E7D32; color: white; }
+        .block-color-42 { background-color: #388E3C; color: white; }
+        .block-color-43 { background-color: #43A047; color: white; }
+        .block-color-44 { background-color: #4CAF50; color: white; }
+        .block-color-45 { background-color: #66BB6A; color: black; }
+        .block-color-46 { background-color: #81C784; color: black; }
+        .block-color-47 { background-color: #A5D6A7; color: black; }
+        .block-color-48 { background-color: #C8E6C9; color: black; }
+        .block-color-49 { background-color: #E8F5E9; color: black; }
+        .block-color-50 { background-color: #F1F8E9; color: black; }
+        .block-color-51 { background: linear-gradient(45deg, #FFEB3B, #FFF176); color: black; }
+        .block-color-52 { background: linear-gradient(45deg, #FFC107, #FFD54F); color: black; }
+        .block-color-53 { background: linear-gradient(45deg, #FF9800, #FFB74D); color: black; }
+        .block-color-54 { background: linear-gradient(45deg, #FF5722, #FF8A65); color: black; }
+        .alchemy-block-color-1 { background-color: #FF6B6B; }
+        .alchemy-block-color-2 { background-color: #4ECDC4; }
+        .alchemy-block-color-3 { background-color: #45B7D1; }
+        .alchemy-block-color-4 { background-color: #96CEB4; }
+        .alchemy-block-color-5 { background-color: #FFEAA7; }
+        .special-block-color-1 { background: linear-gradient(45deg, #C0C0C0, #E8E8E8, #C0C0C0); color: #000; }
+        .special-block-color-2 { background: linear-gradient(45deg, #FFD700, #FFA500, #FFD700); color: #000; }
+            .special-block-color-3 { background: linear-gradient(45deg, #9C27B0, #BA68C8, #9C27B0); color: white; }
+            .special-block-color-4 { background: linear-gradient(45deg, #1E88E5, #64B5F6, #1E88E5); color: white; }
+            .special-block-color-5 { background: linear-gradient(45deg, #0D47A1, #42A5F5, #0D47A1); color: white; }
+            /* 奇点方块样式 */
+            .special-block-color-7,
+            .special-block-color-8,
+            .special-block-color-9,
+            .special-block-color-10,
+            .special-block-color-11 { background: linear-gradient(45deg, #4B0082, #8A2BE2, #4B0082); color: white; border-color: #9370DB; }
+            .special-block-color-8 { background: linear-gradient(45deg, #800080, #9370DB, #800080); }
+            .special-block-color-9 { background: linear-gradient(45deg, #9400D3, #BA55D3, #9400D3); }
+            .special-block-color-10 { background: linear-gradient(45deg, #8B008B, #DA70D6, #8B008B); }
+            .special-block-color-11 { background: linear-gradient(45deg, #9932CC, #DDA0DD, #9932CC); color: white; }
+
+/* 终焉核心方块 - 黑色渐变 */
+.special-block-black-gradient {
+    background: linear-gradient(45deg, #000000, #1a1a1a, #000000, #1a1a1a, #000000);
+    color: white;
+    border-color: #333333;
+    animation: blackPulse 3s infinite;
+    background-size: 200% 200%;
+}
+
+/* 终焉集阵方块 - 彩色渐变 */
+.special-block-colorful-gradient {
+    background: linear-gradient(135deg, #FF0000, #FF5500, #FF7F00, #FFAA00, #FFFF00, #AAFF00, #00FF00, #00AAFF, #0000FF, #4B0082, #8B00FF, #CC00FF, #FF00AA, #FF0000);
+    color: white;
+    border-color: #FFFFFF;
+    animation: colorShift 2.78s ease infinite;
+    background-size: 600% 600%;
+}
+
+@keyframes blackPulse {
+    0%, 100% { background-position: 0% 50%; box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
+    50% { background-position: 100% 50%; box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
+}
+
+@keyframes colorShift {
+    0% { background-position: 0% 50%; box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); }
+    12.5% { background-position: 20% 50%; box-shadow: 0 0 15px rgba(255, 77, 0, 0.5); }
+    25% { background-position: 40% 50%; box-shadow: 0 0 15px rgba(255, 155, 0, 0.5); }
+    37.5% { background-position: 80% 50%; box-shadow: 0 0 15px rgba(255, 255, 0, 0.5); }
+    50% { background-position: 120% 50%; box-shadow: 0 0 15px rgba(127, 255, 0, 0.5); }
+    62.5% { background-position: 180% 50%; box-shadow: 0 0 15px rgba(0, 179, 255, 0.5); }
+    75% { background-position: 240% 50%; box-shadow: 0 0 15px rgba(0, 0, 255, 0.5); }
+    87.5% { background-position: 300% 50%; box-shadow: 0 0 15px rgba(139, 0, 255, 0.5); }
+    100% { background-position: 360% 50%; box-shadow: 0 0 15px rgba(255, 0, 127, 0.5); }
+}          /* 镶嵌系统样式 */
+            .embedding-block {
+                margin: 20px 0;
+                padding: 15px;
+                background-color: #e3f2fd;
+                border-radius: 5px;
+                border: 1px solid #bbdefb;
+            }
+            .embedding-blocks {
+                margin-top: 20px;
+            }
+            .embedding-block h4 {
+                margin-top: 0;
+                color: #1565C0;
+            }
+            .embedding-block p {
+                margin: 5px 0;
+                font-size: 16px;
+            }
+            .alchemy-block-color-6 { background-color: #FF6B6B; }
+            .alchemy-block-color-7 { background-color: #4ECDC4; }
+            .alchemy-block-color-8 { background-color: #45B7D1; }
+            .alchemy-block-color-9 { background-color: #96CEB4; }
+            .alchemy-block-color-10 { background-color: #FFEAA7; }
+            .alchemy-block-color-11 { background-color: #DDA0DD; }
+            .alchemy-block-color-12 { background-color: #9370DB; }
+            .alchemy-block-color-13 { background-color: #8A2BE2; }
+            .alchemy-block-color-14 { background-color: #9400D3; }
+            .alchemy-block-color-15 { background-color: #800080; }
+            .alchemy-block-color-16 { background-color: #4B0082; color: white; }
+    </style>
+    
+</head>
+<body>
+    <div class="game-container">
+        <h1>挖矿游戏</h1>
+        
+        <!-- FPS显示元素 -->
+        <div id="fps-counter" style="position: fixed; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 5px; font-family: monospace; font-size: 14px; z-index: 1000;">FPS: 0</div>
+        
+        <!-- 每秒挖矿显示将通过JavaScript动态创建 -->
+        
+        <div class="stats-container">
+            <!-- 基础信息 -->
+            <div class="stats-group fade-in">
+                <h3>基础信息</h3>
+                <div class="stat-item">
+                    <span class="stat-label">金币:</span>
+                    <span class="stat-value" id="gold">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">当前镐子:</span>
+                    <span class="stat-value" id="current-pickaxe">木镐</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">攻击伤害:</span>
+                    <span class="stat-value" id="attack-damage">1</span>
+                </div>
+                <div class="stat-item" id="auto-save-status">
+                    <span class="stat-value">自动保存: 进行中</span>
+                </div>
+            </div>
+            
+            <!-- 增益信息 -->
+            <div class="stats-group fade-in">
+                <h3>增益属性</h3>
+                <div class="stat-item">
+                    <span class="stat-label">镐子增益:</span>
+                    <span class="stat-value" id="pickaxe-bonus">1</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">使用增益:</span>
+                    <span class="stat-value" id="usage-bonus">1</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">金币增益:</span>
+                    <span class="stat-value" id="gold-bonus">1</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">炼药增益:</span>
+                    <span class="stat-value" id="alchemy-bonus">1</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">终焉增益:</span>
+                    <span class="stat-value" id="end-bonus">1倍</span>
+                </div>
+            </div>
+            
+            <!-- 资源信息 -->
+            <div class="stats-group resources fade-in">
+                <h3>稀有资源</h3>
+                <div class="stat-item">
+                    <span class="stat-label">炼药值:</span>
+                    <span class="stat-value" id="alchemy-points">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">炼药结晶:</span>
+                    <span class="stat-value" id="alchemy-crystals">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">铱锭:</span>
+                    <span class="stat-value" id="iridium-ingots">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">𬭶锭:</span>
+                    <span class="stat-value" id="hassium-ingots">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">奇点:</span>
+                    <span class="stat-value" id="singularity">0</span>
+                </div>
+            </div>
+            
+            <!-- 高级资源 -->
+            <div class="stats-group advanced fade-in">
+                <h3>高级资源</h3>
+                <div class="stat-item">
+                    <span class="stat-label">物质:</span>
+                    <span class="stat-value" id="matter">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">能量:</span>
+                    <span class="stat-value" id="energy">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">量产核心:</span>
+                    <span class="stat-value" id="production-core">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">终焉核心:</span>
+                    <span class="stat-value" id="end-core">0</span>
+                </div>
+            </div>
+            
+            <!-- 能量系统 -->
+            <div class="stats-group fade-in">
+                <h3>能量系统</h3>
+                <div class="stat-item">
+                    <span class="stat-label">能量倍速:</span>
+                    <span class="stat-value" id="energy-multiplier">1</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">能量增益:</span>
+                    <span class="stat-value" id="energy-bonus">1</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="system-tabs fade-in">
+            <button class="tab-btn active" id="mining-tab">挖矿系统</button>
+            <button class="tab-btn" id="alchemy-tab">炼药系统</button>
+            <button class="tab-btn" id="forging-tab">淬炼系统</button>
+            <button class="tab-btn" id="embedding-tab">镶嵌系统</button>
+            <button class="tab-btn" id="achievements-tab">成就系统</button>
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <button class="control-btn" id="reset-game-btn" style="background-color: #f44336;">重置游戏</button>
+            <p style="color: #666; font-size: 12px; margin-top: 5px;">重置将清除所有游戏数据，无法恢复！</p>
+        </div>
+        
+        <!-- 成就系统 -->
+        <div id="achievements-system" class="achievements-system fade-in">
+            <h2 class="shop-title">成就系统</h2>
+            <div class="achievements-controls">
+                <button class="control-btn" id="achievement-category-all">所有成就</button>
+                <button class="control-btn" id="achievement-category-resources">资源成就</button>
+                <button class="control-btn" id="achievement-category-stats">属性成就</button>
+                <button class="control-btn" id="achievement-category-mining">挖矿成就</button>
+                <button class="control-btn" id="achievement-category-completed">已完成</button>
+            </div>
+            <div class="achievements-search">
+                <input type="text" id="achievement-search" placeholder="搜索成就..." class="alchemy-input">
+            </div>
+            <div class="achievements-summary">
+                <p>已完成: <span id="completed-achievements-count">0</span>/<span id="total-achievements-count">0</span></p>
+            </div>
+            <div class="achievements-list" id="achievements-list">
+                <!-- 成就将通过JavaScript动态生成 -->
+            </div>
+        </div>
+        
+        <div class="alchemy-system fade-in">
+            <div class="shop-title">炼药系统</div>
+            <div style="margin-top: 15px;">
+                <h3>一键炼药</h3>
+                <input type="number" class="alchemy-input" id="batch-alchemy-value" placeholder="每次炼药值" min="1">
+                <input type="number" class="alchemy-input" id="batch-alchemy-times" placeholder="炼药次数" min="1" max="1000">
+                <button class="alchemy-btn" id="batch-alchemy-btn">一键炼药</button>
+            </div>
+            <div style="margin-top: 20px;">
+                <h3>炼药结晶</h3>
+                <p>炼药值10000以上可以结晶，获得 <span id="crystals-preview">0.0</span> 结晶</p>
+                <button class="alchemy-btn" id="crystallize-btn" disabled>结晶</button>
+            </div>
+            <div class="alchemy-result" id="alchemy-result"></div>
+        </div>
+        
+        <div class="forging-system fade-in">
+            <div class="shop-title">淬炼系统</div>
+            <div style="margin-top: 15px;">
+                <h3>消耗炼药结晶进行淬炼</h3>
+                <input type="number" class="alchemy-input" id="forging-crystal-value" placeholder="消耗结晶数量" min="1">
+                <button class="alchemy-btn" id="forging-btn">开始淬炼</button>
+            </div>
+            <div style="margin-top: 20px;">
+                <h3>当前淬炼属性</h3>
+                <div class="forging-stats">
+                    <div class="forging-stat-item">伤害增益: <span id="forging-damage-bonus">0%</span></div>
+                    <div class="forging-stat-item">每次攻击获得使用增益: <span id="forging-usage-bonus">0%</span></div>
+                    <div class="forging-stat-item">每次获得金币: <span id="forging-gold-gain">0%</span></div>
+                    <div class="forging-stat-item">结晶方块获得炼药增益: <span id="forging-crystal-bonus">0%</span></div>
+                </div>
+            </div>
+            <div class="alchemy-result" id="forging-result"></div>
+        </div>
+        
+        <!-- 镶嵌系统 -->
+        <div class="embedding-system fade-in">
+            <div class="shop-title">镶嵌系统</div>
+            <div style="margin-top: 15px;">
+                <h3>当前奇点数量: <span id="embedding-singularity-count">0</span></h3>
+                
+                <!-- 镶嵌区块 -->
+                <div class="embedding-blocks">
+                    <div class="embedding-block">
+                        <h4>镶嵌区块1 - 攻击增益</h4>
+                        <p>当前镶嵌: <span id="embedding-count-0">0</span> 奇点</p>
+                        <p>增益倍率: <span id="embedding-bonus-0">1.00</span>x (攻击×((镶嵌数量+1)^0.36))</p>
+                        <input type="number" class="alchemy-input" id="embedding-input-0" placeholder="镶嵌数量" min="1">
+                        <button class="alchemy-btn" onclick="embedSingularity(0)">镶嵌奇点</button>
+                    </div>
+                    
+                    <div class="embedding-block">
+                        <h4>镶嵌区块2 - 炼药值获取增益</h4>
+                        <p>当前镶嵌: <span id="embedding-count-1">0</span> 奇点</p>
+                        <p>增益倍率: <span id="embedding-bonus-1">1.00</span>x (炼药值获取×((镶嵌数量+1)^0.28))</p>
+                        <input type="number" class="alchemy-input" id="embedding-input-1" placeholder="镶嵌数量" min="1">
+                        <button class="alchemy-btn" onclick="embedSingularity(1)">镶嵌奇点</button>
+                    </div>
+                    
+                    <div class="embedding-block">
+                        <h4>镶嵌区块3 - 使用增益获取增益</h4>
+                        <p>当前镶嵌: <span id="embedding-count-2">0</span> 奇点</p>
+                        <p>增益倍率: <span id="embedding-bonus-2">1.00</span>x (使用增益获取×((镶嵌数量+1)^0.24))</p>
+                        <input type="number" class="alchemy-input" id="embedding-input-2" placeholder="镶嵌数量" min="1">
+                        <button class="alchemy-btn" onclick="embedSingularity(2)">镶嵌奇点</button>
+                    </div>
+                    
+                    <div class="embedding-block">
+                        <h4>镶嵌区块4 - 金币获取增益</h4>
+                        <p>当前镶嵌: <span id="embedding-count-3">0</span> 奇点</p>
+                        <p>增益倍率: <span id="embedding-bonus-3">1.00</span>x (金币获取×((镶嵌数量+1)^0.2))</p>
+                        <input type="number" class="alchemy-input" id="embedding-input-3" placeholder="镶嵌数量" min="1">
+                        <button class="alchemy-btn" onclick="embedSingularity(3)">镶嵌奇点</button>
+                    </div>
+                    
+                    <div class="embedding-block">
+                        <h4>镶嵌区块5 - 全属性增益</h4>
+                        <p>当前镶嵌: <span id="embedding-count-4">0</span> 奇点</p>
+                        <p>增益倍率: <span id="embedding-bonus-4">1.00</span>x (攻击、炼药值获取、金币获取、使用增益获取×((镶嵌数量+1)^0.16))</p>
+                        <input type="number" class="alchemy-input" id="embedding-input-4" placeholder="镶嵌数量" min="1">
+                        <button class="alchemy-btn" onclick="embedSingularity(4)">镶嵌奇点</button>
+                    </div>
+                </div>
+                
+                <!-- 重置按钮 -->
+                <div style="margin-top: 20px;">
+                    <button class="alchemy-btn" onclick="resetEmbedding()" style="background-color: #f44336;">重置镶嵌</button>
+                    <p style="color: #666; margin-top: 10px;">重置镶嵌将取回所有镶嵌的奇点</p>
+                </div>
+            </div>
+            <div class="alchemy-result" id="embedding-result"></div>
+        </div>
+        
+        <div class="mining-area fade-in">
+            <div class="block-controls">
+                <button class="control-btn" id="prev-block">上一级方块</button>
+                <button class="control-btn" id="next-block">下一级方块</button>
+                <button class="control-btn" id="toggle-block-type">切换方块类型: 普通</button>
+            </div>
+            
+            <div class="mine-block" id="mine-block">
+                <div class="block-level">1级方块</div>
+                <div class="health-bar">
+                    <div class="health-fill" id="health-fill"></div>
+                </div>
+                <div class="block-health">血量: <span id="block-health">1000</span>/<span id="block-max-health">1000</span></div>
+                <div class="block-reward"><span id="block-reward">奖励: 1 金币</span></div>
+            </div>
+
+        
+        <div class="pickaxe-shop fade-in">
+            <div class="shop-title">镐子商店</div>
+            <div class="pickaxe-list" id="pickaxe-list">
+                <!-- 镐子会通过JavaScript动态生成 -->
+            </div>
+        </div>
+        
+        <div class="energy-system fade-in">
+            <h3>能量转化系统</h3>
+            <p>消耗100万物质提升能量倍速</p>
+            <button class="alchemy-btn" id="convert-energy-btn">提升倍速</button>
+            <button class="alchemy-btn" id="convert-energy-max-btn">一键提升倍速</button>
+            <div class="energy-stats">
+                <p>能量倍速: <span id="energy-multiplier-display">1</span></p>
+                <p>每0.1秒增加量: <span id="energy-gain-rate">0</span></p>
+            </div>
+        </div>
+        
+        <div class="pickaxe-shop fade-in">
+            <div class="shop-title">镐子商店</div>
+            <div class="pickaxe-list" id="pickaxe-list">
+                <!-- 镐子会通过JavaScript动态生成 -->
+            </div>
+        </div>
+        
+        <!-- 特殊方块通过主挖矿区域显示 -->
+    </div>
+
+    <script>
+        // 游戏数据
+        const gameData = {
+            gold: 0,
+            currentPickaxeIndex: 0,
+            currentBlockIndex: 0,
+            currentAlchemyBlockIndex: 0,
+            currentSpecialBlockIndex: 0,
+            usageBonus: 1,
+            alchemyBonus: 1,
+            alchemyPoints: 0,
+            alchemyCrystals: 0, // 炼药结晶
+            iridiumIngots: 0,
+            hassiumIngots: 0, // 𬭶锭
+            singularity: 0, // 奇点数量
+            matter: 0, // 物质
+            energy: 0, // 能量
+            energyMultiplier: 0, // 能量倍速
+            productionCore: 0, // 量产核心
+            endCore: 0, // 终焉核心
+            ownedPickaxes: [0], // 0表示木镐已拥有
+            currentBlockType: 'normal', // 'normal', 'alchemy', 'special' 或 'singularity'
+            autoMiningEnabled: false, // 自动挖矿状态
+            miningCount: 0, // 挖矿次数计数
+            miningPerSecond: 0, // 每秒挖矿次数
+            // 淬炼属性
+            forgingStats: {
+                damageBonus: 0, // 伤害增益百分比
+                usageBonusGain: 0, // 每次攻击获得使用增益百分比
+                goldGain: 0, // 每次获得金币百分比
+                crystalBonusGain: 0 // 结晶方块获得炼药增益百分比
+            },
+            // 奇点方块索引
+            currentSingularityBlockIndex: 0,
+            // 镶嵌系统数据
+            embeddingBlocks: [
+                { count: 0, exponent: 0.36, name: '攻击增益' }, // 镶嵌区块1：攻击×((镶嵌数量+1)^0.36)
+                { count: 0, exponent: 0.28, name: '炼药值获取增益' }, // 镶嵌区块2：炼药值获取×((镶嵌数量+1)^0.28)
+                { count: 0, exponent: 0.24, name: '使用增益获取增益' }, // 镶嵌区块3：使用增益获取×((镶嵌数量+1)^0.24)
+                { count: 0, exponent: 0.2, name: '金币获取增益' }, // 镶嵌区块4：金币获取×((镶嵌数量+1)^0.2)
+                { count: 0, exponent: 0.16, name: '全属性增益' } // 镶嵌区块5：攻击、炼药值获取、金币获取、使用增益获取×((镶嵌数量+1)^0.16)
+            ],
+            // 成就系统数据
+            achievements: [],
+            completedAchievements: {}
+        };
+
+        // 镐子数据
+        const pickaxes = [
+            { name: '木镐', bonus: 1, usageBonus: 1, cost: 0, costType: 'gold' },
+            { name: '石镐', bonus: 2, usageBonus: 2, cost: 1000, costType: 'gold' },
+            { name: '铁镐', bonus: 5, usageBonus: 3, cost: 100000, costType: 'gold' },
+            { name: '金镐', bonus: 10, usageBonus: 5, cost: 1000000, costType: 'gold' },
+            { name: '钻石镐', bonus: 30, usageBonus: 10, cost: 20000000, costType: 'gold' },
+            { name: '下界合金镐', bonus: 50, usageBonus: 15, cost: 100000000, costType: 'gold' },
+            { name: '附魔下界合金镐', bonus: 100, usageBonus: 25, cost: 1000000000, costType: 'gold' },
+            { name: '铱镐', bonus: 1000, usageBonus: 100, cost: 20, costType: 'iridium' },
+            { name: '高纯度铱镐', bonus: 4000, usageBonus: 200, cost: 1000, costType: 'iridium' },
+            { name: '𬭶镐', bonus: 30000, usageBonus: 600, cost: 20, costType: 'hassium' }, // 20𬭶锭，增益30000，使用增益600
+            { name: '高纯度𬭶镐', bonus: 100000, usageBonus: 1000, cost: 1000, costType: 'hassium' }, // 1000𬭶锭，增益100000，使用增益1000
+            { name: '金币神镐', bonus: 240000, usageBonus: 1600, cost: 1000000000000000000000, costType: 'gold' }, // 10垓金币(10^22)，增益240000，使用增益1600
+            { name: '初阶奇点镐', bonus: 540000, usageBonus: 2600, cost: 100, costType: 'singularity' }, // 100奇点，增益54万，每次使用2600
+            { name: '中阶奇点镐', bonus: 1200000, usageBonus: 4400, cost: 1000, costType: 'singularity' }, // 1000奇点，增益120万，每次使用4400
+            { name: '高阶奇点镐', bonus: 4000000, usageBonus: 7600, cost: 10000, costType: 'singularity' }, // 1万奇点，增益400万，每次使用7600
+            { name: '顶阶奇点镐', bonus: 10000000, usageBonus: 16000, cost: 100000, costType: 'singularity' }, // 10万奇点，增益1000万，每次使用16000
+            { name: '能量镐', bonus: 20000000, usageBonus: 24000, cost: 100000, costType: 'energy' }, // 10万能量，增益2000万，使用24000
+            { name: '聚能镐', bonus: 100000000, usageBonus: 36000, cost: 10000000, costType: 'energy' }, // 1000万能量，增益1亿，使用36000
+            { name: '极能镐', bonus: 320000000, usageBonus: 54000, cost: 100000000, costType: 'energy' }, // 1亿能量，增益3.2亿，使用54000
+            { name: '量能镐', bonus: 1600000000, usageBonus: 188000, costs: [{type: 'productionCore', amount: 5000}, {type: 'energy', amount: 500000000}] }, // 5000量产核心+5亿能量，增益16亿，使用188000
+            { name: '使用镐', bonus: 1, usageBonus: 1000000000000000, specialType: 'usage', costType: 'usage_bonus', cost: 1000000000000000000000, description: '伤害强制为1，但获得极强的使用增益' }, // 1京使用增益，特殊镐子
+            { name: '黑洞镐', bonus: 1, usageBonus: 1, specialType: 'black_hole', cost: 100000, costType: 'singularity', description: '所有概率物品必出，特殊掉落优化' }, // 10万奇点，特殊镐子
+            { name: '终焉镐', bonus: 128000000000, usageBonus: 4000000, cost: 1000, costType: 'endCore', description: '极强的镐子，由终焉核心打造，拥有极高的基础伤害和使用增益' }, // 1000终焉核心，增益1280亿，使用4000000
+            { name: '永恒镐', bonus: 1024000000000000, usageBonus: 1024000000, costs: [{type: 'endCore', amount: 100000}, {type: 'iridiumIngots', amount: 100000}, {type: 'hassiumIngots', amount: 100000}, {type: 'singularity', amount: 10000000}, {type: 'gold', amount: 10000000000000000000000}, {type: 'alchemyCrystals', amount: 100000000}, {type: 'energy', amount: 100000000000}, {type: 'matter', amount: 1000000000}, {type: 'usage_bonus', amount: 10000000000}], description: '终极镐子，挖结晶方块时炼药增益×10000、物质×100000000、量产核心×1000000、金币×1000000，奇点获取×100000' } // 10W终焉核心+10W铱锭+10W𬭶锭+1兆奇点+1000载金币+10亿炼药结晶+1000亿能量+10亿物质+10杼使用增益
+        ];
+
+        // 普通方块数据
+        const blocks = [
+            { level: 1, health: 1000, reward: 1 },
+            { level: 2, health: 10000, reward: 5 },
+            { level: 3, health: 50000, reward: 10 },
+            { level: 4, health: 1000000, reward: 150 },
+            { level: 5, health: 6000000, reward: 500 },
+            { level: 6, health: 24000000, reward: 1800 },
+            { level: 7, health: 100000000, reward: 6000 },
+            { level: 8, health: 1000000000, reward: 40000 },
+            { level: 9, health: 30000000000, reward: 1000000 },
+            { level: 10, health: 1000000000000, reward: 20000000 },
+            { level: 11, health: 200000000000000, reward: 1000000000 }, // 200兆血量，10亿金币
+            { level: 12, health: 1000000000000000, reward: 3000000000 }, // 1000兆血量，30亿金币
+            { level: 13, health: 100000000000000000, reward: 10000000000 }, // 10京血量，100亿金币
+            { level: 14, health: 10000000000000000000, reward: 40000000000 }, // 1000京血量，400亿金币
+            { level: 15, health: 10000000000000000000000, reward: 1000000000000 }, // 100垓血量，1兆金币
+            { level: 16, health: 1200000000000000000000000, reward: 3600000000000 }, // 1.2杼血量，3.6兆金币
+            { level: 17, health: 240000000000000000000000000, reward: 60000000000000 }, // 240杼血量，60兆金币
+            { level: 18, health: 1000000000000000000000000000000, reward: 1000000000000000 }, // 10穰血量，1000兆金币
+            { level: 19, health: 1000000000000000000000000000000000, reward: 480000000000000 }, // 10沟血量，4.8京金币
+            { level: 20, health: 1000000000000000000000000000000000000, reward: 12000000000000000 }, // 1涧血量，120京金币
+            { level: 21, health: 10000000000000000000000000000000000000000, reward: 6000000000000000000 }, // 1正血量，6000京金币
+            { level: 22, health: 100000000000000000000000000000000000000000000, reward: 100000000000000000000 }, // 1载血量，10垓金币
+            { level: 23, health: 1000000000000000000000000000000000000000000000000, reward: 36000000000000000000000 }, // 1极血量，360垓金币
+            { level: 24, health: 10000000000000000000000000000000000000000000000000000, reward: 1000000000000000000000000 }, // 1恒河沙血量，1杼金币
+            { level: 25, health: 100000000000000000000000000000000000000000000000000000000, reward: 10000000000000000000000000 }, // 1阿曾祇血量，10杼金币
+            { level: 26, health: 1000000000000000000000000000000000000000000000000000000000000, reward: 100000000000000000000000000 }, // 1那由他血量，100杼金币
+            { level: 27, health: 10000000000000000000000000000000000000000000000000000000000000000, reward: 1000000000000000000000000000 }, // 1不可思议血量，1000杼金币
+            { level: 28, health: 100000000000000000000000000000000000000000000000000000000000000000000, reward: 10000000000000000000000000000 }, // 1无量血量，10000杼金币
+            { level: 29, health: 1000000000000000000000000000000000000000000000000000000000000000000000000, reward: 100000000000000000000000000000 }, // 1大数血量，100000杼金币
+            { level: 30, health: 1e76, reward: 1000000000000000000000000000000 }, // 1全仕祥血量，1000000杼金币
+            { level: 31, health: 1e80, reward: 10000000000000000000000000000000 }, // 1万全仕祥血量，10000000杼金币
+            { level: 32, health: 1e84, reward: 100000000000000000000000000000000 }, // 1古戈尔血量，100000000杼金币
+            { level: 33, health: 1e88, reward: 1000000000000000000000000000000000 }, // 1古戈尔普勒克斯血量，1000000000杼金币
+            { level: 34, health: 1e92, reward: 10000000000000000000000000000000000 }, // 1古戈尔米普勒克斯血量，10000000000杼金币
+            { level: 35, health: 1e96, reward: 100000000000000000000000000000000000 }, // 1葛立恒数血量，100000000000杼金币
+            { level: 36, health: 1e100, reward: 1000000000000000000000000000000000000 }, // 1塔珀数血量，1000000000000杼金币
+            { level: 37, health: 1e104, reward: 10000000000000000000000000000000000000 }, // 1不可名状数血量，10000000000000杼金币
+            { level: 38, health: 1e108, reward: 100000000000000000000000000000000000000 }, // 1万古戈尔血量，100000000000000杼金币
+            { level: 39, health: 1e112, reward: 1000000000000000000000000000000000000000 }, // 1亿古戈尔血量，1000000000000000杼金币
+            { level: 40, health: 1e116, reward: 10000000000000000000000000000000000000000 }, // 1兆古戈尔血量，10000000000000000杼金币
+            { level: 41, health: 1e120, reward: 100000000000000000000000000000000000000000 }, // 41级方块
+            { level: 42, health: 1e124, reward: 1000000000000000000000000000000000000000000 }, // 42级方块
+            { level: 43, health: 1e128, reward: 10000000000000000000000000000000000000000000 }, // 43级方块
+            { level: 44, health: 1e132, reward: 100000000000000000000000000000000000000000000 }, // 44级方块
+            { level: 45, health: 1e136, reward: 1000000000000000000000000000000000000000000000 }, // 45级方块
+            { level: 46, health: 1e140, reward: 10000000000000000000000000000000000000000000000 }, // 46级方块
+            { level: 47, health: 1e144, reward: 100000000000000000000000000000000000000000000000 }, // 47级方块
+            { level: 48, health: 1e148, reward: 1000000000000000000000000000000000000000000000000 }, // 48级方块
+            { level: 49, health: 1e152, reward: 10000000000000000000000000000000000000000000000000 }, // 49级方块
+            { level: 50, health: 1e156, reward: 100000000000000000000000000000000000000000000000000 } ,
+            { level: 51, health: 1e160, reward: 1000000000000000000000000000000000000000000000000000 },
+            { level: 52, health: 1e164, reward: 10000000000000000000000000000000000000000000000000000 },
+            { level: 53, health: 1e168, reward: 100000000000000000000000000000000000000000000000000000 },
+            { level: 54, health: 1e172, reward: 1000000000000000000000000000000000000000000000000000000 }// 50级方块
+
+        ];
+        
+        // 炼药方块数据
+        const alchemyBlocks = [
+            { level: 1, health: 1000000, rewardChance: 0.05, rewardType: 'alchemy', baseReward: 1 }, // 1级炼药方块，100万血量
+            { level: 2, health: 10000000, rewardChance: 0.15, rewardType: 'alchemy', baseReward: 1 }, // 2级炼药方块，1000万血量
+            { level: 3, health: 500000000, rewardChance: 0.40, rewardType: 'alchemy', baseReward: 1 }, // 3级炼药方块，5亿血量
+            { level: 4, health: 100000000000, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 1 }, // 4级炼药方块，1000亿血量
+            { level: 5, health: 500000000000, rewardType: 'alchemy', specialRewards: [0.1, 0.2, 0.3, 0.4] }, // 5级炼药方块，5000亿血量
+            { level: 6, health: 10000000000000, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 5 }, // 6级炼药方块，10兆血量
+            { level: 7, health: 1000000000000000, rewardType: 'alchemy', weightedRewards: [ // 7级炼药方块，1000兆血量
+                { value: 10, weight: 0.50 },  // 50%概率获得10炼药值
+                { value: 15, weight: 0.35 },  // 35%概率获得15炼药值
+                { value: 20, weight: 0.10 },  // 10%概率获得20炼药值
+                { value: 30, weight: 0.05 }   // 5%概率获得30炼药值
+            ]},
+            { level: 8, health: 10000000000000000000, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 50 }, // 8级炼药方块，1000京血量
+            { level: 9, health: 1000000000000000000000, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 100 }, // 9级炼药方块，10垓血量
+            { level: 10, health: 1000000000000000000000000, rewardType: 'alchemy', weightedRewards: [ // 10级炼药方块，10杼血量
+                { value: 200, weight: 0.50 },  // 50%概率获得200炼药值
+                { value: 300, weight: 0.50 }   // 50%概率获得300炼药值
+            ]},
+            { level: 11, health: 10000000000000000000000000000, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 512 }, // 11级炼药方块，1穰血量
+            { level: 12, health: 100000000000000000000000000000000, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 1080 }, // 12级炼药方块，1沟血量
+            { level: 13, health: 1000000000000000000000000000000000000, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 2200 }, // 13级炼药方块，1涧血量
+            { level: 14, health: 10000000000000000000000000000000000000000, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 4600 }, // 14级炼药方块，1正血量
+            { level: 15, health: 100000000000000000000000000000000000000000000, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 10000 }, // 15级炼药方块，1载血量
+            { level: 16, health: 1000000000000000000000000000000000000000000000000, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 24000 }, // 16级炼药方块，1极血量
+            { level: 17, health: 100000000000000000000000000000000000000000000000000000000, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 40000 }, // 17级炼药方块，1阿曾祇血量
+            { level: 18, health: 10000000000000000000000000000000000000000000000000000000000000000, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 64000 }, // 18级炼药方块，1不可思议血量
+            { level: 19, health: 1000000000000000000000000000000000000000000000000000000000000000000000000, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 100000 }, // 19级炼药方块，1大数血量
+            { level: 20, health: 1e80, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 140000 }, // 20级炼药方块，1全仕祥血量
+            { level: 21, health: 1e88, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 200000 }, // 21级炼药方块，1万全仕祥血量
+            { level: 22, health: 1e96, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 280000 }, // 22级炼药方块，1古戈尔血量
+            { level: 23, health: 1e104, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 380000 }, // 23级炼药方块，1古戈尔普勒克斯血量
+            { level: 24, health: 1e112, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 540000 }, // 24级炼药方块，1古戈尔米普勒克斯血量
+            { level: 25, health: 1e120, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 760000 }, // 25级炼药方块，1葛立恒数血量
+            { level: 26, health: 1e128, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 1200000 },
+            { level: 27, health: 1e136, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 1700000 },
+            { level: 28, health: 1e144, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 2600000 },
+            { level: 29, health: 1e152, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 4400000 },
+            { level: 30, health: 1e160, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 7200000 },
+            { level: 31, health: 1e168, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 11000000 },
+            { level: 32, health: 1e172, rewardChance: 1.0, rewardType: 'alchemy', baseReward: 17000000 },
+        ];
+        
+        // 特殊方块数据
+        const specialBlocks = [
+            { id: 1, name: '铱块', health: 10000000000000, dropChance: 0.001, dropItem: 'iridium', dropAmount: 1 }, // 10兆血量
+            { id: 2, name: '高纯度铱块', health: 10000000000000000, dropChance: 0.1, dropItem: 'iridium', dropAmount: 1 }, // 1京血量
+            { id: 3, name: '结晶方块', health: 1, type: 'crystal' }, // 结晶方块，血量为1
+            { id: 4, name: '𬭶块', health: 100000000000000000000000, dropChance: 0.001, dropItem: 'hassium', dropAmount: 1 }, // 1000垓血量
+            { id: 5, name: '高纯度𬭶块', health: 100000000000000000000000000, dropChance: 0.1, dropItem: 'hassium', dropAmount: 1 }, // 100杼血量
+            { id: 6, name: '使用方块', health: 1, type: 'usage_bonus' }, // 使用方块，使用增益到达10亿以上点击才有效
+            { id: 7, name: '物质方块', health: 10000000000000000000000000000000000000000000000000000000000000000, dropChance: 1.0, type: 'matter' }, // 1不可思议血量
+            { id: 8, name: '量产核心', health: 1e68, type: 'production_core' }, // 量产核心方块
+            { id: 9, name: '终焉核心', health: 1e124, dropChance: 0.01, dropItem: 'endCore', dropAmount: 1, color: 'black-gradient' }, // 1终焉核心方块，1%概率获得1终焉核心，黑色渐变
+            { id: 10, name: '终焉集阵', health: 1e160, specialDropRanges: true, color: 'colorful-gradient', dropRanges: [
+                { chance: 0.005, min: 1, max: 100000000 },        // 0.005%概率1至1亿（除以10）
+                { chance: 0.003, min: 100000000, max: 1e16 }, // 0.003%概率1亿至1京（除以10）
+                { chance: 0.0015, min: 1e16, max: 1e24 }, // 0.0015%概率1京至1杼（除以10）
+                { chance: 0.0005, min:1e24, max: 1e32 } // 0.0005%概率1杼至1沟（除以10）
+            ], blackHoleRanges: [
+                { chance: 0.5, min: 1, max: 100000000 },        // 50%概率1至1亿
+                { chance: 0.3, min: 100000000, max:1e16 },
+                { chance: 0.15, min: 1e16, max: 1e24 }, // 30%概率1亿至1京
+                { chance: 0.045, min: 1e24, max: 1e32 }, // 4.5%概率1京至1杼
+                { chance: 0.0045, min: 1e32, max: 1e40 }, // 0.45%概率10杼至1沟
+                { chance: 0.0004, min: 1e40, max: 1e48 }, 
+                { chance: 0.0001, min: 1e48, max: 1e56 }// 0.05%概率1沟至1正
+            ], dropItem: 'endCore' } // 终焉集阵方块
+        ];
+        
+        // 奇点方块数据
+        const singularityBlocks = [
+            { id: 7, name: '1级奇点方块', health: 100000000000000000000000000000000, dropChance: 0.001, dropItem: 'singularity', dropAmount: 1 }, // 1沟血量
+            { id: 8, name: '2级奇点方块', health: 1000000000000000000000000000000000000, dropChance: 0.01, dropItem: 'singularity', dropAmount: 1 }, // 1涧血量
+            { id: 9, name: '3级奇点方块', health: 10000000000000000000000000000000000000000, dropChance: 0.1, dropItem: 'singularity', dropAmount: 1 }, // 1正血量
+            { id: 10, name: '4级奇点方块', health: 100000000000000000000000000000000000000000000, dropChance: 1.0, dropItem: 'singularity', dropAmount: 1 }, // 1载血量
+            { id: 11, name: '5级奇点方块', health: 1000000000000000000000000000000000000000000000000, dropChance: 1.0, dropItem: 'singularity', dropAmount: 10 }, // 1极血量（1e48），100%概率获得10奇点
+            { id: 12, name: '6级奇点方块', health: 1e80, dropChance: 1.0, dropItem: 'singularity', dropAmount: 10000 },
+            { id: 13, name: '7级奇点方块', health: 1e100, dropChance: 1.0, dropItem: 'singularity', dropAmount: 1000000}, 
+            { id: 14, name: '8级奇点方块', health: 1e120, dropChance: 1.0, dropItem: 'singularity', dropAmount: 100000000 }, 
+            { id: 15, name: '9级奇点方块', health: 1e140, dropChance: 1.0, dropItem: 'singularity', dropAmount: 10000000000 },
+            { id: 15, name: '终级奇点方块', health: 1e160, dropChance: 1.0, dropItem: 'singularity', dropAmount: 1000000000000 },
+             // 1古戈尔血量，100%概率获得10W奇点
+        ];
+
+        // 添加每秒挖矿次数显示元素到右上角
+        const miningPerSecondElement = document.createElement('div');
+        miningPerSecondElement.id = 'mining-per-second';
+        miningPerSecondElement.className = 'mining-per-second-display';
+        miningPerSecondElement.textContent = '每秒挖矿: 0次';
+        miningPerSecondElement.style.position = 'absolute';
+        miningPerSecondElement.style.top = '10px';
+        miningPerSecondElement.style.right = '10px';
+        miningPerSecondElement.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        miningPerSecondElement.style.color = 'white';
+        miningPerSecondElement.style.padding = '10px';
+        miningPerSecondElement.style.borderRadius = '5px';
+        miningPerSecondElement.style.fontWeight = 'bold';
+        document.querySelector('.game-container').appendChild(miningPerSecondElement);
+        
+        // 添加能量转化按钮的事件监听器
+        if (convertEnergyButton) {
+            convertEnergyButton.addEventListener('click', convertEnergy);
+        }
+        
+        if (convertEnergyMaxButton) {
+            convertEnergyMaxButton.addEventListener('click', convertEnergyMax);
+        }
+        
+        // DOM元素
+        const goldElement = document.getElementById('gold');
+        const currentPickaxeElement = document.getElementById('current-pickaxe');
+        const pickaxeBonusElement = document.getElementById('pickaxe-bonus');
+        const usageBonusElement = document.getElementById('usage-bonus');
+        const goldBonusElement = document.getElementById('gold-bonus');
+        const alchemyBonusElement = document.getElementById('alchemy-bonus');
+        const attackDamageElement = document.getElementById('attack-damage');
+        const alchemyPointsElement = document.getElementById('alchemy-points');
+        const alchemyCrystalsElement = document.getElementById('alchemy-crystals');
+        const iridiumIngotsElement = document.getElementById('iridium-ingots');
+        const hassiumIngotsElement = document.getElementById('hassium-ingots');
+        const matterElement = document.getElementById('matter');
+        const energyElement = document.getElementById('energy');
+        const energyMultiplierElement = document.getElementById('energy-multiplier');
+        const energyMultiplierDisplayElement = document.getElementById('energy-multiplier-display');
+        const energyGainRateElement = document.getElementById('energy-gain-rate');
+        const productionCoreElement = document.getElementById('production-core');
+        const energyBonusElement = document.getElementById('energy-bonus');
+        const convertEnergyButton = document.getElementById('convert-energy-btn');
+        const convertEnergyMaxButton = document.getElementById('convert-energy-max-btn');
+        const mineBlockElement = document.getElementById('mine-block');
+        const blockLevelElement = document.querySelector('.block-level');
+        const blockHealthElement = document.getElementById('block-health');
+        const blockMaxHealthElement = document.getElementById('block-max-health');
+        const healthFillElement = document.getElementById('health-fill');
+        const blockRewardElement = document.getElementById('block-reward');
+        const prevBlockButton = document.getElementById('prev-block');
+        const nextBlockButton = document.getElementById('next-block');
+        const toggleBlockTypeButton = document.getElementById('toggle-block-type');
+        const pickaxeListElement = document.getElementById('pickaxe-list');
+        const autoSaveStatusElement = document.getElementById('auto-save-status');
+        const miningTabButton = document.getElementById('mining-tab');
+        const alchemyTabButton = document.getElementById('alchemy-tab');
+        const embeddingTabButton = document.getElementById('embedding-tab');
+        const embeddingSystemElement = document.querySelector('.embedding-system');
+        const alchemySystemElement = document.querySelector('.alchemy-system');
+        const alchemyResultElement = document.getElementById('alchemy-result');
+        const batchAlchemyValueElement = document.getElementById('batch-alchemy-value');
+        const batchAlchemyTimesElement = document.getElementById('batch-alchemy-times');
+        const batchAlchemyButtonElement = document.getElementById('batch-alchemy-btn');
+        // 淬炼系统相关DOM元素
+        const forgingTabButton = document.getElementById('forging-tab');
+        const forgingSystemElement = document.querySelector('.forging-system');
+        const forgingCrystalValueElement = document.getElementById('forging-crystal-value');
+        const forgingButtonElement = document.getElementById('forging-btn');
+        const forgingResultElement = document.getElementById('forging-result');
+        const forgingDamageBonusElement = document.getElementById('forging-damage-bonus');
+        const forgingUsageBonusElement = document.getElementById('forging-usage-bonus');
+        const forgingGoldGainElement = document.getElementById('forging-gold-gain');
+        const forgingCrystalBonusElement = document.getElementById('forging-crystal-bonus');
+
+        // 当前方块数据
+        let currentBlock = { ...blocks[gameData.currentBlockIndex] };
+
+        // 更新游戏统计信息
+        function updateStats() {
+            goldElement.textContent = formatNumber(gameData.gold);
+            alchemyPointsElement.textContent = formatNumber(gameData.alchemyPoints);
+            alchemyCrystalsElement.textContent = formatNumber(gameData.alchemyCrystals);
+            iridiumIngotsElement.textContent = formatNumber(gameData.iridiumIngots);
+            hassiumIngotsElement.textContent = formatNumber(gameData.hassiumIngots);
+            matterElement.textContent = formatNumber(gameData.matter);
+            energyElement.textContent = formatNumber(gameData.energy);
+            energyMultiplierElement.textContent = formatNumber(gameData.energyMultiplier);
+            energyMultiplierDisplayElement.textContent = formatNumber(gameData.energyMultiplier);
+            const energyGainRate = (1 + gameData.productionCore) * gameData.energyMultiplier;
+            energyGainRateElement.textContent = formatNumber(energyGainRate);
+            productionCoreElement.textContent = formatNumber(gameData.productionCore);
+            
+            // 显示终焉核心数量和终焉增益
+            const endCoreElement = document.getElementById('end-core');
+            const endBonusElement = document.getElementById('end-bonus');
+            if (endCoreElement) endCoreElement.textContent = formatNumber(gameData.endCore);
+            if (endBonusElement) {
+                const endBonus = 1 + Math.pow(gameData.endCore, Math.exp(1/Math.E));
+                endBonusElement.textContent = formatNumber(endBonus) + '倍';
+            }
+            
+            // 更新淬炼增益显示
+            if (gameData.forgingStats) {
+                if (forgingDamageBonusElement) {
+                    const damageBonus = gameData.forgingStats.damageBonus || 0;
+                    forgingDamageBonusElement.textContent = damageBonus >= 100 ? formatNumber(damageBonus) + '%' : damageBonus.toFixed(2) + '%';
+                }
+                if (forgingUsageBonusElement) {
+                    const usageBonus = gameData.forgingStats.usageBonusGain || 0;
+                    forgingUsageBonusElement.textContent = usageBonus >= 100 ? formatNumber(usageBonus) + '%' : usageBonus.toFixed(2) + '%';
+                }
+                if (forgingGoldGainElement) {
+                    const goldGain = gameData.forgingStats.goldGain || 0;
+                    forgingGoldGainElement.textContent = goldGain >= 100 ? formatNumber(goldGain) + '%' : goldGain.toFixed(2) + '%';
+                }
+                if (forgingCrystalBonusElement) {
+                    const crystalBonus = gameData.forgingStats.crystalBonus || 0;
+                    forgingCrystalBonusElement.textContent = crystalBonus >= 100 ? formatNumber(crystalBonus) + '%' : crystalBonus.toFixed(2) + '%';
+                }
+            }
+            
+            // 计算能量增益: 1 + (能量^(2^(1/3)))
+        const energyBonus = 1 + Math.pow(gameData.energy, Math.pow(2, 1/3));
+            energyBonusElement.textContent = formatNumber(energyBonus);
+            
+            // 更新炼药结晶预览和按钮状态
+              const crystalsPreviewElement = document.getElementById('crystals-preview');
+              const crystallizeBtnElement = document.getElementById('crystallize-btn');
+              
+              if (gameData.alchemyPoints >= 10000) {
+                  const crystalsPreview = gameData.alchemyPoints / 10000;
+                  crystalsPreviewElement.textContent = crystalsPreview.toFixed(1);
+                  crystallizeBtnElement.disabled = false;
+              } else {
+                  crystalsPreviewElement.textContent = '0.0';
+                  crystallizeBtnElement.disabled = true;
+              }
+            
+            const currentPickaxe = pickaxes[gameData.currentPickaxeIndex];
+            currentPickaxeElement.textContent = currentPickaxe.name;
+            pickaxeBonusElement.textContent = formatNumber(currentPickaxe.bonus) + '倍';
+            usageBonusElement.textContent = formatNumber(gameData.usageBonus) + '倍';
+            alchemyBonusElement.textContent = formatNumber(gameData.alchemyBonus) + '倍';
+            
+            // 更新奇点数量显示
+            const singularityElement = document.getElementById('embedding-singularity-count');
+            if (singularityElement) {
+                singularityElement.textContent = formatNumber(gameData.singularity);
+            }
+            // 更新主界面奇点数量显示
+            const mainSingularityElement = document.getElementById('singularity');
+            if (mainSingularityElement) {
+                mainSingularityElement.textContent = formatNumber(gameData.singularity);
+            }
+            
+            // 计算金币增益: 1 + (金币^0.4) 用于倍增攻击力
+            const attackBonus = 1 + Math.pow(gameData.gold, 0.4);
+            // 计算淬炼增益: 用于倍增金币获取
+            const forgingBonus = 1 + gameData.forgingStats.goldGain / 100;
+            goldBonusElement.textContent = formatNumber(attackBonus) + '倍';
+            
+            // 计算攻击伤害: 使用增益 * 攻击力增益 * 炼药增益 * 镐子增益 * 淬炼伤害增益 * 镶嵌攻击增益 * 镶嵌全属性增益 * 能量增益
+            // 修复实际伤害与显示伤害不一致的问题
+            const damageBonus = 1 + gameData.forgingStats.damageBonus / 100;
+            const embeddingAttackBonus = calculateEmbeddingBonus(1); // 获取镶嵌攻击增益
+            const embeddingAllBonus = calculateEmbeddingBonus(5); // 获取镶嵌全属性增益
+            // 计算能量增益：1 + 能量^(2^(1/3))
+        const damageEnergyBonus = 1 + Math.pow(gameData.energy, Math.pow(2, 1/3));
+            // 计算终焉增益：1 + 终焉核心数量^(根号2*(e^(1/e)))
+            const endBonus = 1 + Math.pow(gameData.endCore, Math.sqrt(2) * Math.exp(1/Math.E));
+            const attackDamage = Math.floor(gameData.usageBonus * attackBonus * gameData.alchemyBonus * currentPickaxe.bonus * damageBonus * embeddingAttackBonus * embeddingAllBonus * damageEnergyBonus * endBonus);
+            attackDamageElement.textContent = formatNumber(attackDamage);
+            
+            // 更新淬炼属性显示
+            if (forgingDamageBonusElement) forgingDamageBonusElement.textContent = gameData.forgingStats.damageBonus.toFixed(1) + '%';
+            if (forgingUsageBonusElement) forgingUsageBonusElement.textContent = gameData.forgingStats.usageBonusGain.toFixed(1) + '%';
+            if (forgingGoldGainElement) forgingGoldGainElement.textContent = gameData.forgingStats.goldGain.toFixed(1) + '%';
+            if (forgingCrystalBonusElement) forgingCrystalBonusElement.textContent = gameData.forgingStats.crystalBonusGain.toFixed(1) + '%';
+            
+            // 获取当前方块数据（根据方块类型）
+            const isAlchemy = gameData.currentBlockType === 'alchemy';
+            const isSpecial = gameData.currentBlockType === 'special';
+            const isSingularity = gameData.currentBlockType === 'singularity';
+            
+            // 更新方块信息
+            if (isAlchemy) {
+                blockLevelElement.textContent = `${currentBlock.level}级炼药方块`;
+                blockHealthElement.textContent = formatNumber(currentBlock.health);
+                blockMaxHealthElement.textContent = formatNumber(currentBlock.maxHealth || currentBlock.health);
+                
+                if (currentBlock.weightedRewards) {
+                    // 7级加权概率炼药方块
+                    let rewardText = '掉落：';
+                    currentBlock.weightedRewards.forEach((reward, index) => {
+                        rewardText += `${reward.value}炼药值(${Math.round(reward.weight * 100)}%)`;
+                        if (index < currentBlock.weightedRewards.length - 1) {
+                              rewardText += ' ';
+                          }
+                      });
+                    blockRewardElement.textContent = rewardText;
+                } else if (currentBlock.specialRewards) {
+                    // 5级特殊炼药方块，详细显示掉落概率
+                    let rewardText = '掉落：';
+                    currentBlock.specialRewards.forEach((weight, index) => {
+                        rewardText += `${index + 1}炼药值(${Math.round(weight * 100)}%)`;
+                        if (index < currentBlock.specialRewards.length - 1) {
+                            rewardText += ' ';
+                        }
+                    });
+                    blockRewardElement.textContent = rewardText;
+                } else if (currentBlock.rewardChance && currentBlock.baseReward) {
+                    // 普通炼药方块
+                    blockRewardElement.textContent = `(概率 ${Math.round(currentBlock.rewardChance * 100)}%) 获得 ${currentBlock.baseReward} 炼药值`;
+                }
+            } else if (isSingularity) {
+                blockLevelElement.textContent = currentBlock.name;
+                blockHealthElement.textContent = formatNumber(currentBlock.health);
+                blockMaxHealthElement.textContent = formatNumber(currentBlock.maxHealth || currentBlock.health);
+                blockRewardElement.textContent = `掉落: 奇点 ${currentBlock.dropAmount}个 (概率: ${(currentBlock.dropChance * 100).toFixed(2)}%)`;
+            } else if (isSpecial) {
+                blockLevelElement.textContent = `${currentBlock.name} (${currentBlock.id})`;
+                blockHealthElement.textContent = formatNumber(currentBlock.health);
+                blockMaxHealthElement.textContent = formatNumber(currentBlock.maxHealth || currentBlock.health);
+                if (currentBlock.type === 'crystal') {
+                    blockRewardElement.textContent = '炼药增益';
+                } else if (currentBlock.type === 'usage_bonus') {
+                    // 使用方块特殊显示 - 计算实际增益数值（包含淬炼增益和镶嵌增益）
+                    const currentPickaxe = pickaxes[gameData.currentPickaxeIndex];
+                    const baseUsageGain = currentPickaxe.usageBonus || 0;
+                    // 计算基础100倍增益
+                    const baseBonusGain = 100 * baseUsageGain;
+                    // 添加淬炼使用增益
+                    const usageBonusMultiplier = 1 + gameData.forgingStats.usageBonusGain / 100;
+                    // 添加镶嵌增益（使用增益获取增益）
+                    const embeddingUsageBonus = calculateEmbeddingBonus(3);
+                    const bonusGain = baseBonusGain * usageBonusMultiplier * embeddingUsageBonus;
+                    const formattedBonus = formatNumber(bonusGain);
+                    blockRewardElement.innerHTML = `<span style="font-size: 6px; color: #666;">使用增益10亿以上解锁</span>`;
+                } else {
+                    // 根据方块的dropItem属性显示正确的掉落物品名称
+            if (currentBlock.type === 'matter') {
+                // 显示物质方块的详细掉落概率，包括黑洞镐效果
+                blockRewardElement.innerHTML = `掉落: 物质<br>
+                    普通镐掉落:<br>
+                    1物质: 90%<br>
+                    10物质: 9%<br>
+                    100物质: 0.9%<br>
+                    1000物质: 0.09%<br>
+                    10000物质: 0.01%<br>
+                    <br>
+                    黑洞镐掉落:<br>
+                    1物质: 10%<br>
+                    10物质: 15%<br>
+                    100物质: 20%<br>
+                    1000物质: 25%<br>
+                    10000物质: 30%`;
+            } else if (currentBlock.type === 'production_core') {
+                // 显示量产核心方块的详细掉落概率，包括黑洞镐效果
+                blockRewardElement.innerHTML = `掉落: 量产核心<br>
+                    普通镐掉落:<br>
+                    1量产核心: 0.9%<br>
+                    10量产核心: 0.09%<br>
+                    100量产核心: 0.01%<br>
+                    无掉落: 99%<br>
+                    <br>
+                    黑洞镐掉落:<br>
+                    1量产核心: 90%<br>
+                    10量产核心: 9%<br>
+                    100量产核心: 1%`;
+            } else {
+                let dropItemName;
+                if (currentBlock.dropItem === 'iridium') {
+                    dropItemName = '铱锭';
+                } else if (currentBlock.dropItem === 'hassium') {
+                    dropItemName = '𬭶锭';
+                } else if (currentBlock.dropItem === 'singularity') {
+                    dropItemName = '奇点';
+                } else if (currentBlock.dropItem === 'endCore') {
+                    dropItemName = '终焉核心';
+                    
+                    // 终焉集阵特殊掉落概率显示
+                    if (currentBlock.specialDropRanges) {
+                        let probabilityText = `掉落: 终焉核心<br>`;
+                        probabilityText += `普通镐掉落:<br>`;
+                        
+                        // 显示普通掉落概率区间
+                        currentBlock.dropRanges.forEach((range, index) => {
+                            probabilityText += `${index + 1}. ${formatNumber(range.min)}至${formatNumber(range.max)}: ${(range.chance * 100).toFixed(2)}%<br>`;
+                        });
+                        
+                        probabilityText += `黑洞镐掉落:<br>`;
+                        // 显示黑洞镐掉落概率区间
+                        currentBlock.blackHoleRanges.forEach((range, index) => {
+                            probabilityText += `${index + 1}. ${formatNumber(range.min)}至${formatNumber(range.max)}: ${(range.chance * 100).toFixed(2)}%<br>`;
+                        });
+                        
+                        blockRewardElement.innerHTML = probabilityText;
+                    } else {
+                        // 普通终焉核心方块
+                        blockRewardElement.textContent = `掉落: ${dropItemName} (概率: ${(currentBlock.dropChance * 100).toFixed(2)}%)`;
+                    }
+                } else {
+                    blockRewardElement.textContent = `掉落: ${dropItemName} (概率: ${(currentBlock.dropChance * 100).toFixed(2)}%)`;
+                }
+            }
+                }
+            } else {
+                blockLevelElement.textContent = `${currentBlock.level}级方块`;
+                blockHealthElement.textContent = formatNumber(currentBlock.health);
+                blockMaxHealthElement.textContent = formatNumber(currentBlock.maxHealth || currentBlock.health);
+                blockRewardElement.textContent = `奖励: ${formatNumber(currentBlock.reward)}`;
+            }
+            
+            // 更新血量条
+            const healthPercentage = (currentBlock.health / currentBlock.maxHealth) * 100;
+            healthFillElement.style.width = `${healthPercentage}%`;
+            
+            // 更新血量条颜色
+            if (healthPercentage > 60) {
+                healthFillElement.style.backgroundColor = '#4CAF50';
+            } else if (healthPercentage > 30) {
+                healthFillElement.style.backgroundColor = '#FFC107';
+            } else {
+                healthFillElement.style.backgroundColor = '#F44336';
+            }
+            
+            // 更新方块颜色
+            if (isAlchemy) {
+                mineBlockElement.className = 'mine-block alchemy-block-color-' + currentBlock.level;
+            } else if (currentBlock.color === 'black-gradient') {
+                // 终焉核心方块 - 黑色渐变
+                mineBlockElement.className = 'mine-block special-block-black-gradient';
+            } else if (currentBlock.color === 'colorful-gradient') {
+                // 终焉集阵方块 - 彩色渐变
+                mineBlockElement.className = 'mine-block special-block-colorful-gradient';
+            } else if (isSpecial || isSingularity) {
+                mineBlockElement.className = 'mine-block special-block-color-' + currentBlock.id;
+            } else {
+                mineBlockElement.className = 'mine-block block-color-' + currentBlock.level;
+            }
+            
+            // 更新控制按钮状态
+            if (isAlchemy) {
+                prevBlockButton.disabled = gameData.currentAlchemyBlockIndex === 0;
+                nextBlockButton.disabled = gameData.currentAlchemyBlockIndex === alchemyBlocks.length - 1;
+            } else if (isSingularity) {
+                prevBlockButton.disabled = gameData.currentSingularityBlockIndex === 0;
+                nextBlockButton.disabled = gameData.currentSingularityBlockIndex === singularityBlocks.length - 1;
+            } else if (isSpecial) {
+                prevBlockButton.disabled = gameData.currentSpecialBlockIndex === 0;
+                nextBlockButton.disabled = gameData.currentSpecialBlockIndex === specialBlocks.length - 1;
+            } else {
+                prevBlockButton.disabled = gameData.currentBlockIndex === 0;
+                nextBlockButton.disabled = gameData.currentBlockIndex === blocks.length - 1;
+            }
+            
+            // 更新方块类型切换按钮
+            let blockTypeText = '普通';
+            if (isAlchemy) blockTypeText = '炼药';
+            if (isSpecial) blockTypeText = '特殊';
+            if (isSingularity) blockTypeText = '奇点';
+            toggleBlockTypeButton.textContent = `切换方块类型: ${blockTypeText}`;
+            
+            // 更新商店
+            updateShop();
+        }
+        
+        // 每秒更新挖矿次数统计
+        setInterval(() => {
+            // 更新每秒挖矿次数
+            gameData.miningPerSecond = gameData.miningCount;
+            // 更新显示
+            document.getElementById('mining-per-second').textContent = `每秒挖矿: ${formatNumber(gameData.miningPerSecond)}次`;
+            // 重置计数，准备下一秒统计
+            gameData.miningCount = 0;
+        }, 1000);
+        
+        // 自动保存游戏
+        function autoSaveGame() {
+            const saveData = {
+                gameData: { ...gameData },
+                currentBlock: { ...currentBlock }
+            };
+            
+            localStorage.setItem('miningGameSave', JSON.stringify(saveData));
+            
+            // 更新自动保存状态
+            autoSaveStatusElement.textContent = '自动保存: 已保存';
+            autoSaveStatusElement.style.color = '#4CAF50';
+            
+            setTimeout(() => {
+                autoSaveStatusElement.textContent = '自动保存: 进行中';
+            }, 1000);
+        }
+        
+        // 加载游戏
+        function loadGame() {
+            const savedData = localStorage.getItem('miningGameSave');
+            
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+                Object.assign(gameData, parsedData.gameData);
+                
+                // 根据当前方块类型加载正确的方块
+                if (gameData.currentBlockType === 'alchemy') {
+                    currentBlock = { ...alchemyBlocks[gameData.currentAlchemyBlockIndex] };
+                } else if (gameData.currentBlockType === 'special') {
+                    currentBlock = { ...specialBlocks[gameData.currentSpecialBlockIndex] };
+                } else if (gameData.currentBlockType === 'singularity') {
+                    currentBlock = { ...singularityBlocks[gameData.currentSingularityBlockIndex] };
+                } else {
+                    currentBlock = { ...blocks[gameData.currentBlockIndex] };
+                }
+                
+                currentBlock.maxHealth = currentBlock.health;
+                updateStats();
+                alert('游戏已加载！');
+            } else {
+                alert('没有找到存档！');
+            }
+        }
+        
+        // 切换系统标签
+        function switchTab(tab) {
+            // 移除所有标签页的活动状态
+            miningTabButton.classList.remove('active');
+            alchemyTabButton.classList.remove('active');
+            if (forgingTabButton) forgingTabButton.classList.remove('active');
+            if (embeddingTabButton) embeddingTabButton.classList.remove('active');
+            // 移除成就系统标签的活动状态
+            const achievementsTabButton = document.getElementById('achievements-tab');
+            if (achievementsTabButton) achievementsTabButton.classList.remove('active');
+            
+            // 隐藏所有系统
+            alchemySystemElement.style.display = 'none';
+            if (forgingSystemElement) forgingSystemElement.style.display = 'none';
+            if (embeddingSystemElement) embeddingSystemElement.style.display = 'none';
+            // 隐藏成就系统
+            const achievementsSystemElement = document.getElementById('achievements-system');
+            if (achievementsSystemElement) achievementsSystemElement.style.display = 'none';
+            
+            // 根据标签页名称显示相应系统
+            if (tab === 'mining') {
+                miningTabButton.classList.add('active');
+                // 显示挖矿区域、镐子商店和能量系统
+                const miningAreaElement = document.querySelector('.mining-area');
+                const pickaxeShopElement = document.querySelector('.pickaxe-shop');
+                const statsElement = document.querySelector('.stats');
+                
+                if (miningAreaElement) miningAreaElement.style.display = 'block';
+                if (pickaxeShopElement) pickaxeShopElement.style.display = 'block';
+                if (statsElement) statsElement.style.display = 'block';
+            } else if (tab === 'alchemy') {
+                alchemyTabButton.classList.add('active');
+                alchemySystemElement.style.display = 'block';
+            } else if (tab === 'forging' && forgingTabButton && forgingSystemElement) {
+                forgingTabButton.classList.add('active');
+                forgingSystemElement.style.display = 'block';
+            } else if (tab === 'embedding' && embeddingTabButton && embeddingSystemElement) {
+                embeddingTabButton.classList.add('active');
+                embeddingSystemElement.style.display = 'block';
+                updateEmbeddingDisplay();
+            }
+        }
+        
+        // 切换方块类型
+        function toggleBlockType() {
+            // 循环切换：普通 -> 炼药 -> 特殊 -> 奇点 -> 普通
+            if (gameData.currentBlockType === 'normal') {
+                gameData.currentBlockType = 'alchemy';
+            } else if (gameData.currentBlockType === 'alchemy') {
+                gameData.currentBlockType = 'special';
+            } else if (gameData.currentBlockType === 'special') {
+                gameData.currentBlockType = 'singularity';
+            } else {
+                gameData.currentBlockType = 'normal';
+            }
+            
+            // 重置当前方块
+            if (gameData.currentBlockType === 'alchemy') {
+                currentBlock = { ...alchemyBlocks[gameData.currentAlchemyBlockIndex] };
+                document.getElementById('toggle-block-type').textContent = '切换方块类型: 炼药';
+            } else if (gameData.currentBlockType === 'special') {
+                currentBlock = { ...specialBlocks[gameData.currentSpecialBlockIndex] };
+                document.getElementById('toggle-block-type').textContent = '切换方块类型: 特殊';
+            } else if (gameData.currentBlockType === 'singularity') {
+                currentBlock = { ...singularityBlocks[gameData.currentSingularityBlockIndex] };
+                document.getElementById('toggle-block-type').textContent = '切换方块类型: 奇点';
+            } else {
+                currentBlock = { ...blocks[gameData.currentBlockIndex] };
+                document.getElementById('toggle-block-type').textContent = '切换方块类型: 普通';
+            }
+            currentBlock.maxHealth = currentBlock.health;
+            
+            updateStats();
+        }
+        
+        // 执行单次炼药
+        function doSingleAlchemy(amount) {
+            // 消耗炼药值
+            gameData.alchemyPoints -= amount;
+            
+            // 生成随机数
+            const random = Math.random();
+            let resultMessage = '';
+            let bonusGain = 0;
+            
+            if (random < 0.5) {
+                // 50% 概率炸锅
+                resultMessage = '炸锅了！';
+                bonusGain = 0;
+            } else if (random < 0.9) {
+                // 40% 概率获得基础增益
+                const baseGain = Math.pow(amount, 1/3);
+                bonusGain = baseGain;
+                resultMessage = `获得 ${bonusGain.toFixed(2)} 炼药增益！`;
+            } else if (random < 0.975) {
+                // 7.5% 概率获得10倍增益
+                const baseGain = Math.pow(amount, 1/3);
+                bonusGain = 10 * baseGain;
+                resultMessage = `10倍出货！获得 ${bonusGain.toFixed(2)} 炼药增益！`;
+            } else {
+                // 2.5% 概率获得100倍增益
+                const baseGain = Math.pow(amount, 1/3);
+                bonusGain = 100 * baseGain;
+                resultMessage = `100倍出货！！！获得 ${bonusGain.toFixed(2)} 炼药增益！`;
+            }
+            
+            // 更新炼药增益
+            gameData.alchemyBonus += bonusGain;
+            
+            return { resultMessage, bonusGain };
+        }
+        
+        // 炼药功能已移除，仅保留一键炼药
+        
+        // 一键炼药功能（优化版）
+        function performBatchAlchemy() {
+            let batchValue = parseInt(batchAlchemyValueElement.value);
+            let batchTimes = parseInt(batchAlchemyTimesElement.value);
+            
+            // 验证输入
+            if (isNaN(batchValue) || batchValue <= 0) {
+                batchValue = 1;
+                batchAlchemyValueElement.value = '1';
+            }
+            
+            if (isNaN(batchTimes) || batchTimes <= 0) {
+                batchTimes = 1;
+                batchAlchemyTimesElement.value = '1';
+            } else if (batchTimes > 1000) {
+                batchTimes = 1000;
+                batchAlchemyTimesElement.value = '1000';
+            }
+            
+            // 检查炼药值是否足够，如果不足则自动调整
+            const totalRequired = batchValue * batchTimes;
+            if (totalRequired > gameData.alchemyPoints) {
+                if (batchTimes === 1) {
+                    // 如果次数为1，调整炼药值
+                    batchValue = Math.floor(gameData.alchemyPoints);
+                    batchAlchemyValueElement.value = batchValue.toString();
+                } else {
+                    // 如果次数大于1，调整次数
+                    batchTimes = Math.floor(gameData.alchemyPoints / batchValue);
+                    if (batchTimes < 1) {
+                        batchTimes = 1;
+                        batchValue = Math.floor(gameData.alchemyPoints);
+                        batchAlchemyValueElement.value = batchValue.toString();
+                    }
+                    batchAlchemyTimesElement.value = batchTimes.toString();
+                }
+            }
+            
+            // 确保至少有一次炼药
+            if (batchValue <= 0 || gameData.alchemyPoints <= 0) {
+                alert('炼药值不足！');
+                return;
+            }
+            
+            // FPS计数器实现
+        let fps = 0;
+        let lastTime = performance.now();
+        let frameCount = 0;
+        
+        function updateFPS() {
+            const now = performance.now();
+            const deltaTime = now - lastTime;
+            frameCount++;
+            
+            // 每秒钟更新一次FPS显示
+            if (deltaTime >= 1000) {
+                fps = Math.round((frameCount * 1000) / deltaTime);
+                document.getElementById('fps-counter').textContent = `FPS: ${fps}`;
+                
+                // 重置计数器
+                frameCount = 0;
+                lastTime = now;
+            }
+            
+            // 继续下一帧
+            requestAnimationFrame(updateFPS);
+        }
+        
+        // 在游戏初始化时启动FPS计数器
+        window.addEventListener('load', function() {
+            updateFPS();
+        });
+        
+        // 执行批量炼药
+            let totalBonus = 0;
+            let successCount = 0;
+            let tenXCount = 0;
+            let hundredXCount = 0;
+            
+            for (let i = 0; i < batchTimes; i++) {
+                const result = doSingleAlchemy(batchValue);
+                totalBonus += result.bonusGain;
+                
+                if (result.resultMessage.includes('炸锅') === false) {
+                    successCount++;
+                    if (result.resultMessage.includes('10倍')) {
+                        tenXCount++;
+                    } else if (result.resultMessage.includes('100倍')) {
+                        hundredXCount++;
+                    }
+                }
+            }
+            
+            // 显示综合结果
+            let batchResultMessage = `一键炼药完成！共进行${batchTimes}次炼药。`;
+            batchResultMessage += `\n成功次数: ${successCount}`;
+            batchResultMessage += `\n获得总增益: ${totalBonus.toFixed(2)}`;
+            batchResultMessage += `\n10倍出货次数: ${tenXCount}`;
+            batchResultMessage += `\n100倍出货次数: ${hundredXCount}`;
+            
+            alchemyResultElement.textContent = batchResultMessage;
+            
+            // 清空输入框
+            batchAlchemyValueElement.value = '';
+            batchAlchemyTimesElement.value = '';
+            
+            // 更新统计信息
+            updateStats();
+        }
+        
+        // 不需要单独的挖掘特殊方块函数，使用统一的mineBlock函数
+
+        // 更新商店显示
+        function updateShop() {
+            pickaxeListElement.innerHTML = '';
+            
+            pickaxes.forEach((pickaxe, index) => {
+                const isOwned = gameData.ownedPickaxes.includes(index);
+                const isCurrent = index === gameData.currentPickaxeIndex;
+                
+                const pickaxeItem = document.createElement('div');
+                pickaxeItem.className = `pickaxe-item ${isOwned ? 'owned' : ''} ${isCurrent ? 'current' : ''}`;
+                
+                const nameElement = document.createElement('div');
+                nameElement.textContent = pickaxe.name;
+                
+                const bonusElement = document.createElement('div');
+                bonusElement.textContent = `增益: ${pickaxe.bonus}`;
+                
+                const usageElement = document.createElement('div');
+                usageElement.textContent = `使用增益: ${pickaxe.usageBonus}`;
+                
+                const costElement = document.createElement('div');
+                if (pickaxe.costs) {
+                    // 多资源消耗的情况
+                    let costText = '价格: ';
+                    const costParts = [];
+                    pickaxe.costs.forEach(cost => {
+                        let resourceName = '';
+                        switch(cost.type) {
+                            case 'productionCore':
+                                resourceName = '量产核心';
+                                break;
+                            case 'energy':
+                                resourceName = '能量';
+                                break;
+                            case 'endCore':
+                                resourceName = '终焉核心';
+                                break;
+                            case 'iridiumIngots':
+                                resourceName = '铱锭';
+                                break;
+                            case 'hassiumIngots':
+                                resourceName = '𬭶锭';
+                                break;
+                            case 'singularity':
+                                resourceName = '奇点';
+                                break;
+                            case 'gold':
+                                resourceName = '金币';
+                                break;
+                            case 'alchemyCrystals':
+                                resourceName = '炼药结晶';
+                                break;
+                            case 'matter':
+                                resourceName = '物质';
+                                break;
+                            case 'usage_bonus':
+                                resourceName = '使用增益';
+                                break;
+                            default:
+                                resourceName = cost.type;
+                        }
+                        costParts.push(`${formatNumber(cost.amount)} ${resourceName}`);
+                    });
+                    costElement.textContent = costText + costParts.join(' + ');
+                } else if (pickaxe.costType === 'iridium') {
+                    costElement.textContent = `价格: ${pickaxe.cost} 铱锭`;
+                } else if (pickaxe.costType === 'hassium') {
+                    costElement.textContent = `价格: ${pickaxe.cost} 𬭶锭`;
+                } else if (pickaxe.costType === 'singularity') {
+                    costElement.textContent = `价格: ${pickaxe.cost} 奇点`;
+                } else if (pickaxe.costType === 'energy') {
+                    costElement.textContent = `价格: ${formatNumber(pickaxe.cost)} 能量`;
+                } else if (pickaxe.costType === 'usage_bonus') {
+                    costElement.textContent = `价格: ${formatNumber(pickaxe.cost)} 使用增益`;
+                } else if (pickaxe.costType === 'endCore') {
+                    costElement.textContent = `价格: ${pickaxe.cost} 终焉核心`;
+                } else {
+                    costElement.textContent = `价格: ${formatNumber(pickaxe.cost)} 金币`;
+                }
+                
+                // 添加特殊镐子描述
+                if (pickaxe.description) {
+                    const descriptionElement = document.createElement('div');
+                    descriptionElement.textContent = pickaxe.description;
+                    descriptionElement.style.color = '#FFD700';
+                    descriptionElement.style.fontSize = '12px';
+                    descriptionElement.style.marginTop = '5px';
+                    pickaxeItem.appendChild(descriptionElement);
+                }
+                
+                const actionButton = document.createElement('button');
+                actionButton.className = 'buy-btn';
+                
+                if (isOwned) {
+                    if (isCurrent) {
+                        actionButton.textContent = '当前使用';
+                        actionButton.disabled = true;
+                    } else {
+                        actionButton.textContent = '切换使用';
+                        actionButton.addEventListener('click', () => {
+                            gameData.currentPickaxeIndex = index;
+                            updateStats();
+                        });
+                    }
+                } else {
+                    actionButton.textContent = '购买';
+                    
+                    // 检查是否可以购买
+                    let canAfford = false;
+                    if (pickaxe.costs) {
+                        // 多资源消耗的检查
+                        canAfford = true;
+                        pickaxe.costs.forEach(cost => {
+                            switch(cost.type) {
+                                case 'productionCore':
+                                    if (!(gameData.productionCore >= cost.amount)) {
+                                        canAfford = false;
+                                    }
+                                    break;
+                                case 'energy':
+                                    if (!(gameData.energy >= cost.amount)) {
+                                        canAfford = false;
+                                    }
+                                    break;
+                                case 'endCore':
+                                    if (!(gameData.endCore >= cost.amount)) {
+                                        canAfford = false;
+                                    }
+                                    break;
+                                case 'iridiumIngots':
+                                    if (!(gameData.iridiumIngots >= cost.amount)) {
+                                        canAfford = false;
+                                    }
+                                    break;
+                                case 'hassiumIngots':
+                                    if (!(gameData.hassiumIngots >= cost.amount)) {
+                                        canAfford = false;
+                                    }
+                                    break;
+                                case 'singularity':
+                                    if (!(gameData.singularity >= cost.amount)) {
+                                        canAfford = false;
+                                    }
+                                    break;
+                                case 'gold':
+                                    if (!(gameData.gold >= cost.amount)) {
+                                        canAfford = false;
+                                    }
+                                    break;
+                                case 'alchemyCrystals':
+                                    if (!(gameData.alchemyCrystals && gameData.alchemyCrystals >= cost.amount)) {
+                                        canAfford = false;
+                                    }
+                                    break;
+                                case 'matter':
+                                    if (!(gameData.matter && gameData.matter >= cost.amount)) {
+                                        canAfford = false;
+                                    }
+                                    break;
+                                case 'usage_bonus':
+                                    if (!(gameData.usageBonus >= cost.amount)) {
+                                        canAfford = false;
+                                    }
+                                    break;
+                                default:
+                                    // 未知资源类型，默认为不可购买
+                                    canAfford = false;
+                            }
+                        });
+                    } else if (pickaxe.costType === 'iridium') {
+                        canAfford = gameData.iridiumIngots >= pickaxe.cost;
+                    } else if (pickaxe.costType === 'hassium') {
+                        canAfford = gameData.hassiumIngots >= pickaxe.cost;
+                    } else if (pickaxe.costType === 'singularity') {
+                        canAfford = gameData.singularity >= pickaxe.cost;
+                    } else if (pickaxe.costType === 'energy') {
+                        canAfford = gameData.energy >= pickaxe.cost;
+                    } else if (pickaxe.costType === 'usage_bonus') {
+                        canAfford = gameData.usageBonus >= pickaxe.cost;
+                    } else if (pickaxe.costType === 'endCore') {
+                        canAfford = gameData.endCore >= pickaxe.cost;
+                    } else {
+                        canAfford = gameData.gold >= pickaxe.cost;
+                    }
+                    actionButton.disabled = !canAfford;
+                    
+                    actionButton.addEventListener('click', () => {
+                        if (canAfford) {
+                            // 扣除对应货币
+                            if (pickaxe.costs) {
+                                // 多资源消耗的扣除
+                                pickaxe.costs.forEach(cost => {
+                                    switch(cost.type) {
+                                        case 'productionCore':
+                                            gameData.productionCore -= cost.amount;
+                                            break;
+                                        case 'energy':
+                                            gameData.energy -= cost.amount;
+                                            break;
+                                        case 'endCore':
+                                            gameData.endCore -= cost.amount;
+                                            break;
+                                        case 'iridiumIngots':
+                                            gameData.iridiumIngots -= cost.amount;
+                                            break;
+                                        case 'hassiumIngots':
+                                            gameData.hassiumIngots -= cost.amount;
+                                            break;
+                                        case 'singularity':
+                                            gameData.singularity -= cost.amount;
+                                            break;
+                                        case 'gold':
+                                            gameData.gold -= cost.amount;
+                                            break;
+                                        case 'alchemyCrystals':
+                                            // 假设alchemyCrystals在gameData中直接可用
+                                            if (gameData.alchemyCrystals) {
+                                                gameData.alchemyCrystals -= cost.amount;
+                                            }
+                                            break;
+                                        case 'matter':
+                                            // 假设matter在gameData中直接可用
+                                            if (gameData.matter) {
+                                                gameData.matter -= cost.amount;
+                                            }
+                                            break;
+                                        case 'usage_bonus':
+                                            gameData.usageBonus -= cost.amount;
+                                            break;
+                                    }
+                                });
+                            } else if (pickaxe.costType === 'iridium') {
+                        gameData.iridiumIngots -= pickaxe.cost;
+                    } else if (pickaxe.costType === 'hassium') {
+                        gameData.hassiumIngots -= pickaxe.cost;
+                    } else if (pickaxe.costType === 'singularity') {
+                        gameData.singularity -= pickaxe.cost;
+                    } else if (pickaxe.costType === 'energy') {
+                        gameData.energy -= pickaxe.cost;
+                    } else if (pickaxe.costType === 'usage_bonus') {
+                        gameData.usageBonus -= pickaxe.cost;
+                    } else if (pickaxe.costType === 'endCore') {
+                        gameData.endCore -= pickaxe.cost;
+                    } else {
+                        gameData.gold -= pickaxe.cost;
+                    }
+                            
+                            gameData.ownedPickaxes.push(index);
+                            gameData.currentPickaxeIndex = index;
+                            updateStats();
+                        }
+                    });
+                }
+                
+                pickaxeItem.appendChild(nameElement);
+                pickaxeItem.appendChild(bonusElement);
+                pickaxeItem.appendChild(usageElement);
+                pickaxeItem.appendChild(costElement);
+                pickaxeItem.appendChild(actionButton);
+                
+                pickaxeListElement.appendChild(pickaxeItem);
+            });
+        }
+
+        // 挖矿函数
+        function mineBlock() {
+            // 增加挖矿次数计数
+            gameData.miningCount++;
+            // 清除可能存在的增益显示（每次点击任何方块都会清除）
+            const bonusDisplayElement = document.getElementById('crystal-bonus-display');
+            if (bonusDisplayElement) {
+                bonusDisplayElement.textContent = '';
+            }
+            // 清除可能存在的使用增益显示
+            const usageBonusDisplayElement = document.getElementById('usage-bonus-display');
+            if (usageBonusDisplayElement) {
+                usageBonusDisplayElement.textContent = '';
+            }
+            
+            const currentPickaxe = pickaxes[gameData.currentPickaxeIndex];
+            
+            // 计算金币增益: 1 + (金币^0.4) 用于倍增攻击力
+            const attackBonus = 1 + Math.pow(gameData.gold, 0.4);
+            // 计算淬炼增益: 用于倍增金币获取
+            const forgingBonus = 1 + gameData.forgingStats.goldGain / 100;
+            
+            // 计算攻击伤害: 使用增益 * 攻击力增益 * 炼药增益 * 镐子增益 * 淬炼伤害增益 * 镶嵌攻击增益 * 镶嵌全属性增益 * 能量增益
+            // 修复实际伤害与显示伤害不一致的问题，确保显示和实际计算一致
+            const damageBonus = 1 + gameData.forgingStats.damageBonus / 100;
+            const embeddingAttackBonus = calculateEmbeddingBonus(1); // 获取镶嵌攻击增益
+            const embeddingAllBonus = calculateEmbeddingBonus(5); // 获取镶嵌全属性增益
+            // 计算能量增益：1 + (能量^(2^(1/3)))
+        const damageEnergyBonus = 1 + Math.pow(gameData.energy, Math.pow(2, 1/3));
+        // 计算终焉增益：1 + 终焉核心数量^(根号2*(e^(1/e)))
+        const endBonus = 1 + Math.pow(gameData.endCore, Math.sqrt(2) * Math.exp(1/Math.E));
+        
+            // 特殊镐子处理
+            let attackDamage = 1; // 默认伤害为1，特殊镐子可能会覆盖这个值
+            
+            if (currentPickaxe.specialType === 'usage') {
+                // 使用镐：伤害强制为1
+                attackDamage = 1;
+            } else {
+                // 普通计算伤害
+                attackDamage = Math.floor(gameData.usageBonus * attackBonus * gameData.alchemyBonus * currentPickaxe.bonus * damageBonus * embeddingAttackBonus * embeddingAllBonus * damageEnergyBonus * endBonus);
+            }
+            
+            // 减少方块血量
+            currentBlock.health -= attackDamage;
+            
+            // 增加使用增益，包含淬炼增益和镶嵌增益
+            let usageBonusGain = currentPickaxe.usageBonus * (1 + gameData.forgingStats.usageBonusGain / 100);
+            const embeddingUsageBonus = calculateEmbeddingBonus(3); // 获取镶嵌使用增益获取增益
+            
+            // 使用镐特殊处理：使用增益为目前最强镐子使用增益的100倍
+            if (currentPickaxe.specialType === 'usage') {
+                // 找到最强的使用增益（不包括特殊镐子）
+                // 使用增益固定为10亿，仍考虑锻造系统的使用增益加成
+                usageBonusGain = 1000000000 * (1 + gameData.forgingStats.usageBonusGain / 100);
+            }
+            
+            gameData.usageBonus += usageBonusGain * embeddingUsageBonus * embeddingAllBonus;
+            
+            // 检查方块是否被挖空
+            if (currentBlock.health <= 0) {
+                // 根据方块类型处理奖励
+                if (gameData.currentBlockType === 'alchemy') {
+                    // 炼药方块
+                    const isBlackHolePickaxe = currentPickaxe.specialType === 'black_hole';
+                    
+                    if (currentBlock.weightedRewards) {
+                        let rewardAmount = 0;
+                        
+                        if (isBlackHolePickaxe) {
+                            // 黑洞镐特殊处理：7级炼药方块必定掉落30炼药值
+                            if (currentBlock.level === 7) {
+                                rewardAmount = 30;
+                            } else if (currentBlock.level === 10) {
+                                // 10级炼药方块必定掉落300炼药值
+                                rewardAmount = 300;
+                            } else {
+                                // 其他加权方块选择最大值
+                                let maxReward = 0;
+                                currentBlock.weightedRewards.forEach(item => {
+                                    if (item.value > maxReward) {
+                                        maxReward = item.value;
+                                    }
+                                });
+                                rewardAmount = maxReward;
+                            }
+                        } else {
+                            // 正常随机
+                            const random = Math.random();
+                            let cumulativeProbability = 0;
+                            
+                            for (let i = 0; i < currentBlock.weightedRewards.length; i++) {
+                                cumulativeProbability += currentBlock.weightedRewards[i].weight;
+                                if (random < cumulativeProbability) {
+                                    rewardAmount = currentBlock.weightedRewards[i].value;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        const embeddingAlchemyBonus = calculateEmbeddingBonus(2); // 获取镶嵌炼药值获取增益
+                        const embeddingAllBonus = calculateEmbeddingBonus(5); // 获取镶嵌全属性增益
+                        gameData.alchemyPoints += Math.floor(rewardAmount * embeddingAlchemyBonus * embeddingAllBonus);
+                    } else if (currentBlock.specialRewards) {
+                        // 5级特殊炼药方块
+                        let rewardAmount = 0;
+                        
+                        if (isBlackHolePickaxe) {
+                            // 黑洞镐：5级炼药方块必定掉落4炼药值
+                            rewardAmount = 4;
+                        } else {
+                            // 正常随机
+                            const random = Math.random();
+                            let cumulativeProbability = 0;
+                            
+                            for (let i = 0; i < currentBlock.specialRewards.length; i++) {
+                                cumulativeProbability += currentBlock.specialRewards[i];
+                                if (random < cumulativeProbability) {
+                                    rewardAmount = i + 1;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        const embeddingAlchemyBonus = calculateEmbeddingBonus(2); // 获取镶嵌炼药值获取增益
+                        const embeddingAllBonus = calculateEmbeddingBonus(5); // 获取镶嵌全属性增益
+                        gameData.alchemyPoints += Math.floor(rewardAmount * embeddingAlchemyBonus * embeddingAllBonus);
+                    } else {
+                        // 普通炼药方块
+                        const embeddingAlchemyBonus = calculateEmbeddingBonus(2); // 获取镶嵌炼药值获取增益
+                        const embeddingAllBonus = calculateEmbeddingBonus(5); // 获取镶嵌全属性增益
+                        
+                        if (isBlackHolePickaxe || Math.random() < currentBlock.rewardChance) {
+                            gameData.alchemyPoints += Math.floor(currentBlock.baseReward * embeddingAlchemyBonus * embeddingAllBonus);
+                        }
+                    }
+                } else if (gameData.currentBlockType === 'special') {
+                    // 特殊方块（如铱块）
+                    if (currentBlock.type === 'crystal') {
+                        // 结晶方块：炼药增益 = 炼药结晶 * 淬炼增益
+                        const alchemyCrystals = gameData.alchemyCrystals;
+                        const crystalBonusGain = gameData.forgingStats.crystalBonusGain;
+                        let bonusGain = alchemyCrystals * crystalBonusGain;
+                        
+                        // 永恒镐特殊效果：炼药增益×10000
+                        const isEternalPickaxe = gameData.currentPickaxeIndex === 23; // 永恒镐的索引
+                        if (isEternalPickaxe) {
+                            bonusGain *= 10000;
+                        }
+                        
+                        gameData.alchemyBonus += bonusGain;
+                        
+                        // 获取当前显示的区块健康信息元素
+                        const healthDisplay = document.querySelector('.block-health');
+                        
+                        if (healthDisplay) {
+                            // 创建或更新增益显示元素
+                            let bonusDisplayElement = document.getElementById('crystal-bonus-display');
+                            if (!bonusDisplayElement) {
+                                bonusDisplayElement = document.createElement('div');
+                                bonusDisplayElement.id = 'crystal-bonus-display';
+                                bonusDisplayElement.style.color = '#4CAF50';
+                                bonusDisplayElement.style.fontWeight = 'bold';
+                                healthDisplay.after(bonusDisplayElement);
+                            }
+                            
+                            // 设置增益显示文本，使用格式化数值
+                            bonusDisplayElement.textContent = `炼药增益 +${formatNumber(bonusGain)}`;
+                            
+                            // 添加闪烁动画效果
+                            bonusDisplayElement.style.animation = 'none';
+                            void bonusDisplayElement.offsetWidth; // 触发重绘
+                            bonusDisplayElement.style.animation = 'highlight 1s ease-in-out';
+                            
+                            // 添加CSS动画（如果不存在）
+                            if (!document.getElementById('crystal-bonus-animation')) {
+                                const style = document.createElement('style');
+                                style.id = 'crystal-bonus-animation';
+                                style.textContent = `
+                                    @keyframes highlight {
+                                        0% { opacity: 0.5; transform: scale(1); }
+                                        50% { opacity: 1; transform: scale(1.05); }
+                                        100% { opacity: 1; transform: scale(1); }
+                                    }
+                                `;
+                                document.head.appendChild(style);
+                            }
+                        }
+                    } else if (currentBlock.type === 'matter') {
+                        // 物质方块：根据概率掉落不同数量的物质
+                        let matterAmount = 0;
+                        
+                        if (currentPickaxe.specialType === 'black_hole') {
+                            // 黑洞镐特殊掉落：10%概率掉落1物质，15%概率掉落10物质，20％概率掉落100物质，25％概率掉落1000物质，30％概率掉落1W物质
+                            const random = Math.random();
+                            if (random < 0.1) {
+                                matterAmount = 1;
+                            } else if (random < 0.25) {
+                                matterAmount = 10;
+                            } else if (random < 0.45) {
+                                matterAmount = 100;
+                            } else if (random < 0.7) {
+                                matterAmount = 1000;
+                            } else {
+                                matterAmount = 10000;
+                            }
+                        } else {
+                            // 普通掉落
+                            const random = Math.random();
+                            if (random < 0.9) {
+                                matterAmount = 1;
+                            } else if (random < 0.99) {
+                                matterAmount = 10;
+                            } else if (random < 0.999) {
+                                matterAmount = 100;
+                            } else if (random < 0.9999) {
+                                matterAmount = 1000;
+                            } else {
+                                matterAmount = 10000;
+                            }
+                        }
+                        // 永恒镐特殊效果：物质×100000000
+                        const isEternalPickaxe = gameData.currentPickaxeIndex === 23;
+                        if (isEternalPickaxe) {
+                            matterAmount *= 100000000;
+                        }
+                        gameData.matter += matterAmount;
+                    } else if (currentBlock.type === 'production_core') {
+                        // 量产核心方块：根据概率掉落不同数量的量产核心
+                        let coreAmount = 0;
+                        
+                        if (currentPickaxe.specialType === 'black_hole') {
+                            // 黑洞镐特殊掉落：90概率掉落1核心，9概率10核心，1概率100核心
+                            const random = Math.random();
+                            if (random < 0.9) {
+                                coreAmount = 1;
+                            } else if (random < 0.99) {
+                                coreAmount = 10;
+                            } else {
+                                coreAmount = 100;
+                            }
+                        } else {
+                            // 普通掉落
+                            const random = Math.random();
+                            if (random < 0.009) {
+                                coreAmount = 1;
+                            } else if (random < 0.0099) {
+                                coreAmount = 10;
+                            } else if (random < 0.01) {
+                                coreAmount = 100;
+                            }
+                        }
+                        // 永恒镐特殊效果：量产核心×1000000
+                        const isEternalPickaxe = gameData.currentPickaxeIndex === 23;
+                        if (isEternalPickaxe) {
+                            coreAmount *= 1000000;
+                        }
+                        gameData.productionCore += coreAmount;
+                    } else if (currentBlock.type === 'usage_bonus') {
+                        // 使用方块：当使用增益到达10亿以上点击才有效，点击获得100倍每次挖矿获得的使用增益
+                        if (gameData.usageBonus >= 1000000000) {
+                            // 计算每次挖矿获得的基础使用增益（根据镐子）
+                            const currentPickaxe = pickaxes[gameData.currentPickaxeIndex];
+                            const baseUsageGain = currentPickaxe.usageBonus;
+                            // 计算100倍增益
+                            const baseBonusGain = 100 * baseUsageGain;
+                            // 添加淬炼使用增益
+                            const usageBonusMultiplier = 1 + gameData.forgingStats.usageBonusGain / 100;
+                            // 添加镶嵌增益（使用增益获取增益）
+                            const embeddingUsageBonus = calculateEmbeddingBonus(3);
+                            const embeddingAllBonus = calculateEmbeddingBonus(5); // 获取镶嵌全属性增益
+                            const bonusGain = baseBonusGain * usageBonusMultiplier * embeddingUsageBonus * embeddingAllBonus;
+                            // 增加使用增益
+                            gameData.usageBonus += bonusGain;
+                            
+                            // 获取当前显示的区块健康信息元素
+                            const healthDisplay = document.querySelector('.block-health');
+                            
+                            if (healthDisplay) {
+                                // 创建或更新使用增益显示元素
+                                let usageBonusDisplayElement = document.getElementById('usage-bonus-display');
+                                if (!usageBonusDisplayElement) {
+                                    usageBonusDisplayElement = document.createElement('div');
+                                    usageBonusDisplayElement.id = 'usage-bonus-display';
+                                    usageBonusDisplayElement.style.color = '#FF9800';
+                                    usageBonusDisplayElement.style.fontWeight = 'bold';
+                                    healthDisplay.after(usageBonusDisplayElement);
+                                }
+                                
+                                // 设置使用增益显示文本，使用格式化数值
+                                usageBonusDisplayElement.textContent = `使用增益 +${formatNumber(bonusGain)}`;
+                                
+                                // 添加闪烁动画效果
+                                usageBonusDisplayElement.style.animation = 'none';
+                                void usageBonusDisplayElement.offsetWidth; // 触发重绘
+                                usageBonusDisplayElement.style.animation = 'highlight 1s ease-in-out';
+                            }
+                        }
+                    } else {
+                        // 普通特殊方块（如铱块、𬭶块）
+                        
+                        // 黑洞镐使所有概率掉落物品变为必出
+                        if (currentPickaxe.specialType === 'black_hole' || Math.random() < currentBlock.dropChance) {
+                            // 根据方块类型掉落不同物品
+                            if (currentBlock.dropItem === 'iridium') {
+                                gameData.iridiumIngots += currentBlock.dropAmount;
+                            } else if (currentBlock.dropItem === 'hassium') {
+                                gameData.hassiumIngots += currentBlock.dropAmount;
+                            } else if (currentBlock.dropItem === 'singularity') {
+                                gameData.singularity += currentBlock.dropAmount;
+                            } else if (currentBlock.dropItem === 'endCore') {
+                                // 终焉集阵特殊掉落处理
+                                if (currentBlock.specialDropRanges) {
+                                    const random = Math.random();
+                                    const ranges = currentPickaxe.specialType === 'black_hole' ? currentBlock.blackHoleRanges : currentBlock.dropRanges;
+                                    
+                                    let cumulativeChance = 0;
+                                    for (const range of ranges) {
+                                        cumulativeChance += range.chance;
+                                        if (random < cumulativeChance) {
+                                            // 在当前区间内生成随机数量
+                                            const dropAmount = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+                                            // 永恒镐不加成终焉集阵
+                                            gameData.endCore += dropAmount;
+                                            break;
+                                        }
+                                    }
+                                } else if (currentBlock.minDropAmount !== undefined && currentBlock.maxDropAmount !== undefined) {
+                                    // 普通随机掉落数量
+                                    const dropAmount = Math.floor(Math.random() * (currentBlock.maxDropAmount - currentBlock.minDropAmount + 1)) + currentBlock.minDropAmount;
+                                    gameData.endCore += dropAmount;
+                                } else {
+                                    gameData.endCore += currentBlock.dropAmount;
+                                }
+                            }
+                        }
+                    }
+                    // 更新UI显示，确保用户能看到每次获得的炼药增益
+                    updateStats();
+                } else if (gameData.currentBlockType === 'singularity') {
+                    // 奇点方块特殊处理，确保不进入普通方块的金币奖励逻辑
+                    // 奇点方块可能有自己的掉落机制或特殊奖励
+                    if (currentBlock.dropChance) {
+                        // 黑洞镐使所有概率掉落物品变为必出
+                        if (currentPickaxe.specialType === 'black_hole' || Math.random() < currentBlock.dropChance) {
+                            if (currentBlock.dropAmount) {
+                                    let singularityAmount = currentBlock.dropAmount;
+                                    // 永恒镐特殊效果：奇点获取×100000
+                                    const isEternalPickaxe = gameData.currentPickaxeIndex === 23;
+                                    if (isEternalPickaxe) {
+                                        singularityAmount *= 100000;
+                                    }
+                                    gameData.singularity += singularityAmount;
+                                    // 移除获得奇点的提示文本，只在方块UI上显示
+                                }
+                        }
+                    }
+                } else {
+                    // 普通方块，获得金币奖励，包含淬炼增益和镶嵌增益
+                    const embeddingGoldBonus = calculateEmbeddingBonus(4); // 获取镶嵌金币获取增益
+                    const embeddingAllBonus = calculateEmbeddingBonus(5); // 获取镶嵌全属性增益
+                    let goldReward = Math.floor(currentBlock.reward * forgingBonus * embeddingGoldBonus * embeddingAllBonus);
+                    
+                    // 永恒镐特殊效果：金币×1000000
+                    const isEternalPickaxe = gameData.currentPickaxeIndex === 23;
+                    if (isEternalPickaxe) {
+                        goldReward *= 1000000;
+                    }
+                    
+                    gameData.gold += goldReward;
+                }
+                
+                // 重置方块
+                if (gameData.currentBlockType === 'alchemy') {
+                    currentBlock = { ...alchemyBlocks[gameData.currentAlchemyBlockIndex] };
+                } else if (gameData.currentBlockType === 'special') {
+                    currentBlock = { ...specialBlocks[gameData.currentSpecialBlockIndex] };
+                } else if (gameData.currentBlockType === 'singularity') {
+                    currentBlock = { ...singularityBlocks[gameData.currentSingularityBlockIndex] };
+                } else {
+                    currentBlock = { ...blocks[gameData.currentBlockIndex] };
+                }
+                currentBlock.maxHealth = currentBlock.health;
+            }
+            
+            // 更新游戏状态和统计信息
+            updateStats();
+        }
+
+        // 切换到上一级方块
+        function prevBlock() {
+            if (gameData.currentBlockType === 'alchemy') {
+                if (gameData.currentAlchemyBlockIndex > 0) {
+                    gameData.currentAlchemyBlockIndex--;
+                    currentBlock = { ...alchemyBlocks[gameData.currentAlchemyBlockIndex] };
+                    currentBlock.maxHealth = currentBlock.health;
+                    updateStats();
+                }
+            } else if (gameData.currentBlockType === 'singularity') {
+                if (gameData.currentSingularityBlockIndex > 0) {
+                    gameData.currentSingularityBlockIndex--;
+                    currentBlock = { ...singularityBlocks[gameData.currentSingularityBlockIndex] };
+                    currentBlock.maxHealth = currentBlock.health;
+                    updateStats();
+                }
+            } else if (gameData.currentBlockType === 'special') {
+                if (gameData.currentSpecialBlockIndex > 0) {
+                    gameData.currentSpecialBlockIndex--;
+                    currentBlock = { ...specialBlocks[gameData.currentSpecialBlockIndex] };
+                    currentBlock.maxHealth = currentBlock.health;
+                    updateStats();
+                }
+            } else {
+                if (gameData.currentBlockIndex > 0) {
+                    gameData.currentBlockIndex--;
+                    currentBlock = { ...blocks[gameData.currentBlockIndex] };
+                    currentBlock.maxHealth = currentBlock.health;
+                    updateStats();
+                }
+            }
+        }
+
+        // 炼药结晶功能
+        function createAlchemyCrystals() {
+            if (gameData.alchemyPoints >= 10000) {
+                // 计算获得的炼药结晶：(炼药值/10000)，保留一位小数
+                const crystalsGained = gameData.alchemyPoints / 10000;
+                const roundedCrystals = Math.round(crystalsGained * 10) / 10; // 保留一位小数
+                
+                // 增加炼药结晶并将炼药值归零
+                gameData.alchemyCrystals += roundedCrystals;
+                gameData.alchemyPoints = 0;
+                
+                // 更新UI显示结果
+                updateStats();
+            }
+        }
+        
+        // 能量转化相关功能
+        // 创建能量倍速提升通知
+        function createEnergyMultiplierNotification(amount) {
+            const energyElement = document.getElementById('energy');
+            if (energyElement) {
+                const notification = document.createElement('div');
+                notification.textContent = `+${amount} 能量倍速`;
+                notification.style.position = 'absolute';
+                notification.style.color = '#4CAF50';
+                notification.style.fontWeight = 'bold';
+                notification.style.fontSize = '14px';
+                notification.style.zIndex = '1000';
+                notification.style.pointerEvents = 'none';
+                
+                const rect = energyElement.getBoundingClientRect();
+                notification.style.left = `${rect.left + rect.width / 2}px`;
+                notification.style.top = `${rect.top}px`;
+                document.body.appendChild(notification);
+                
+                // 动画效果
+                let pos = 0;
+                const interval = setInterval(() => {
+                    pos += 1;
+                    notification.style.transform = `translate(-50%, -${pos}px)`;
+                    if (pos > 50) {
+                        clearInterval(interval);
+                        document.body.removeChild(notification);
+                    }
+                }, 10);
+            }
+        }
+        
+        // 转化能量功能
+        function convertEnergy() {
+            const matterCost = 1000000; // 100万物质
+            if (gameData.matter >= matterCost) {
+                gameData.matter -= matterCost;
+                gameData.energyMultiplier += 1; // 每100万物质提升1能量倍速
+                updateStats();
+                createEnergyMultiplierNotification(1);
+            }
+        }
+        
+        // 一键提升能量倍速功能
+        function convertEnergyMax() {
+            const matterCost = 1000000; // 100万物质
+            const maxUpgrades = Math.floor(gameData.matter / matterCost);
+            if (maxUpgrades > 0) {
+                gameData.matter -= maxUpgrades * matterCost;
+                gameData.energyMultiplier += maxUpgrades;
+                updateStats();
+                createEnergyMultiplierNotification(maxUpgrades);
+            }
+        }
+
+        // 切换到下一级方块
+        function nextBlock() {
+            if (gameData.currentBlockType === 'alchemy') {
+                if (gameData.currentAlchemyBlockIndex < alchemyBlocks.length - 1) {
+                    gameData.currentAlchemyBlockIndex++;
+                    currentBlock = { ...alchemyBlocks[gameData.currentAlchemyBlockIndex] };
+                    currentBlock.maxHealth = currentBlock.health;
+                    updateStats();
+                }
+            } else if (gameData.currentBlockType === 'singularity') {
+                if (gameData.currentSingularityBlockIndex < singularityBlocks.length - 1) {
+                    gameData.currentSingularityBlockIndex++;
+                    currentBlock = { ...singularityBlocks[gameData.currentSingularityBlockIndex] };
+                    currentBlock.maxHealth = currentBlock.health;
+                    updateStats();
+                }
+            } else if (gameData.currentBlockType === 'special') {
+                if (gameData.currentSpecialBlockIndex < specialBlocks.length - 1) {
+                    gameData.currentSpecialBlockIndex++;
+                    currentBlock = { ...specialBlocks[gameData.currentSpecialBlockIndex] };
+                    currentBlock.maxHealth = currentBlock.health;
+                    updateStats();
+                }
+            } else {
+                if (gameData.currentBlockIndex < blocks.length - 1) {
+                    gameData.currentBlockIndex++;
+                    currentBlock = { ...blocks[gameData.currentBlockIndex] };
+                    currentBlock.maxHealth = currentBlock.health;
+                    updateStats();
+                }
+            }
+        }
+
+        // 显示掉落通知
+        function showDropNotification(itemName, amount) {
+            const notification = document.createElement('div');
+            notification.className = 'drop-notification';
+            notification.textContent = `获得了 ${amount} 个${itemName}！`;
+            notification.style.position = 'fixed';
+            notification.style.top = '50%';
+            notification.style.left = '50%';
+            notification.style.transform = 'translate(-50%, -50%)';
+            notification.style.backgroundColor = 'rgba(0, 128, 0, 0.8)';
+            notification.style.color = 'white';
+            notification.style.padding = '10px 20px';
+            notification.style.borderRadius = '5px';
+            notification.style.zIndex = '1000';
+            notification.style.fontSize = '18px';
+            notification.style.fontWeight = 'bold';
+            notification.style.opacity = '0';
+            notification.style.transition = 'opacity 0.3s, transform 0.3s';
+            
+            document.body.appendChild(notification);
+            
+            // 显示动画
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translate(-50%, -60%)';
+            }, 10);
+            
+            // 3秒后隐藏并移除
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translate(-50%, -70%)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 2700);
+        }
+        
+        // 格式化大数字显示
+        function formatNumber(num) {
+            // 确保num是数字
+            if (typeof num !== 'number' || isNaN(num)) {
+                return '0.0';
+            }
+            
+            if (num < 10000) {
+                // 小于10000的数字也保留一位小数
+                return num.toFixed(1);
+            }
+            
+            const units = ['万', '亿', '兆', '京', '垓', '杼', '穰', '沟', '涧', '正', '载', '极', 
+                         '恒河沙', '阿曾祇', '那由他', '不可思议', '无量', '大数', '全仕佯', '频波罗', 
+                         '京杰罗', '矜羯罗', '万矜羯罗', '亿矜羯罗', '古戈尔','万古戈尔','亿古戈尔','兆古戈尔','京古戈尔','垓古戈尔','杼古戈尔','穰古戈尔','沟古戈尔','涧古戈尔','正古戈尔','载古戈尔','极古戈尔','不可说不可说转','元〇','元一','元二','元三','元亖','元㐅','元λ','元七','元丷','元厹','元十','元廿','元卅','元卌','元百','元千','元万','元亿','元兆','元京','元垓','元杼','元穰','元沟','元涧','元正','元载','元极','元恒河沙','元阿曾祇','元那由他','元不可思议','元无量','元大数','元频波罗','元京杰罗','元矜羯罗','元古戈尔','元卐（通关！！！）'];
+            let unitIndex = 0;
+            let currentNum = num;
+            
+            // 单位切换阈值为10000，10000进制
+            while (unitIndex < units.length && currentNum >= 10000) {
+                currentNum /= 10000;
+                unitIndex++;
+            }
+            
+            // 确保返回正确的单位表示，所有数字都保留一位小数
+            if (unitIndex > 0) {
+                return currentNum.toFixed(1) + units[unitIndex - 1];
+            }
+            
+            // 没有使用单位时直接返回数字
+            return currentNum.toFixed(1);
+        }
+
+        // 自动挖矿功能
+        let autoMiningFrameId; // 使用requestAnimationFrame ID
+        
+        function toggleAutoMining() {
+            gameData.autoMiningEnabled = !gameData.autoMiningEnabled;
+            const autoMiningButton = document.getElementById('auto-mining-btn');
+            
+            if (gameData.autoMiningEnabled) {
+                autoMiningButton.textContent = '关闭自动挖矿';
+                autoMiningButton.style.backgroundColor = '#f44336';
+                
+                // 使用requestAnimationFrame实现最高性能的自动挖矿
+                function mineAsFastAsPossible() {
+                    if (gameData.autoMiningEnabled) {
+                        mineBlock();
+                        autoMiningFrameId = requestAnimationFrame(mineAsFastAsPossible);
+                    }
+                }
+                mineAsFastAsPossible();
+            } else {
+                autoMiningButton.textContent = '开启自动挖矿';
+                autoMiningButton.style.backgroundColor = '#4CAF50';
+                
+                if (autoMiningFrameId) {
+                    cancelAnimationFrame(autoMiningFrameId);
+                }
+            }
+        }
+        
+        // 在DOM加载完成后添加自动挖矿按钮
+        document.addEventListener('DOMContentLoaded', () => {
+            const blockControls = document.querySelector('.block-controls');
+            const autoMiningButton = document.createElement('button');
+            autoMiningButton.id = 'auto-mining-btn';
+            autoMiningButton.className = 'control-btn';
+            autoMiningButton.textContent = '开启自动挖矿';
+            autoMiningButton.addEventListener('click', toggleAutoMining);
+            blockControls.appendChild(autoMiningButton);
+            
+            // 启动自动能量获取
+            setInterval(() => {
+                // 当能量倍速大于0时表示已解锁自动能量获取
+                if (gameData.energyMultiplier > 0) {
+                    const energyGain = (1 + gameData.productionCore) * gameData.energyMultiplier;
+                    gameData.energy += energyGain;
+                    updateStats();
+                }
+            }, 100); // 每0.1秒执行一次
+        });
+        
+        // 淬炼功能
+        // 镶嵌系统
+function updateEmbeddingDisplay() {
+    for (let i = 0; i < gameData.embeddingBlocks.length; i++) {
+        const block = gameData.embeddingBlocks[i];
+        const countElement = document.getElementById(`embedding-count-${i}`);
+        const bonusElement = document.getElementById(`embedding-bonus-${i}`);
+        
+        if (countElement) countElement.textContent = formatNumber(block.count);
+        if (bonusElement) {
+            const bonus = calculateEmbeddingBonus(i+1);
+            // 对于大数值，使用倍数显示而不是百分比
+            if (bonus >= 100) {
+                bonusElement.textContent = formatNumber(bonus) + '倍';
+            } else {
+                bonusElement.textContent = (bonus * 100).toFixed(2) + '%';
+            }
+        }
+    }
+}
+
+// 计算镶嵌增益
+function calculateEmbeddingBonus(blockIndex) {
+    const block = gameData.embeddingBlocks[blockIndex - 1];
+    if (!block) return 1;
+    
+    // 只计算基础的指数增益，不再叠加其他区块的增益
+    const baseBonus = Math.pow(block.count + 1, block.exponent);
+    
+    return baseBonus;
+}
+
+// 定义updateStatsDisplay函数，更新游戏统计显示
+function updateStatsDisplay() {
+    // 更新奇点显示
+    const singularityElement = document.getElementById('embedding-singularity-count');
+    if (singularityElement) {
+        singularityElement.textContent = formatNumber(gameData.singularity);
+    }
+    
+    // 调用updateStats更新其他统计信息
+    updateStats();
+}
+
+// 执行镶嵌
+function performEmbedding(blockIndex, amount = 1) {
+    if (gameData.singularity < amount) {
+        alert('奇点数量不足！');
+        return false;
+    }
+    
+    gameData.singularity -= amount;
+    gameData.embeddingBlocks[blockIndex - 1].count += amount;
+    updateEmbeddingDisplay();
+    updateStatsDisplay();
+    return true;
+}
+
+// 重置镶嵌
+function resetEmbedding() {
+    if (gameData.singularity === 0 && gameData.embeddingBlocks.every(block => block.count === 0)) {
+        alert('没有镶嵌的奇点可重置！');
+        return;
+    }
+    
+    if (!confirm('确定要重置所有镶嵌吗？这将返还80%的奇点。')) {
+        return;
+    }
+    
+    let totalSingularity = 0;
+    for (let block of gameData.embeddingBlocks) {
+        totalSingularity += block.count;
+        block.count = 0;
+    }
+    
+    gameData.singularity += Math.floor(totalSingularity * 0.8);
+    updateEmbeddingDisplay();
+    updateStatsDisplay();
+}
+
+function performForging() {
+            // 获取输入的结晶数量
+            const crystalValue = parseInt(forgingCrystalValueElement.value);
+            
+            // 验证输入
+            if (isNaN(crystalValue) || crystalValue < 1) {
+                forgingResultElement.textContent = "请输入有效的结晶数量！";
+                return;
+            }
+            
+            // 检查结晶数量是否足够
+            if (gameData.alchemyCrystals < crystalValue) {
+                forgingResultElement.textContent = "结晶数量不足！";
+                return;
+            }
+            
+            // 消耗结晶
+            gameData.alchemyCrystals -= crystalValue;
+            
+            // 计算四个随机词条（闭区间内随机）
+            const damageBonus = calculateForgingBonus(crystalValue * 50, 20 * crystalValue);
+            const usageBonusGain = calculateForgingBonus(crystalValue * 10, 4 * crystalValue);
+            const goldGain = calculateForgingBonus(crystalValue * 5, 2 * crystalValue);
+            const crystalBonusGain = calculateForgingBonus(crystalValue * 2.5, crystalValue);
+            
+            // 更新淬炼属性
+            gameData.forgingStats.damageBonus += damageBonus;
+            gameData.forgingStats.usageBonusGain += usageBonusGain;
+            gameData.forgingStats.goldGain += goldGain;
+            gameData.forgingStats.crystalBonusGain += crystalBonusGain;
+            
+            // 显示淬炼结果
+            forgingResultElement.innerHTML = `
+                淬炼成功！消耗了 ${crystalValue} 个炼药结晶<br>
+                获得属性：<br>
+                1. 伤害增益 +${damageBonus.toFixed(2)}%<br>
+                2. 每次攻击获得使用增益 +${usageBonusGain.toFixed(2)}%<br>
+                3. 每次获得金币 +${goldGain.toFixed(2)}%<br>
+                4. 结晶方块获得炼药增益 +${crystalBonusGain.toFixed(2)}%
+            `;
+            
+            // 更新游戏统计
+            updateStats();
+            
+            // 保存游戏
+            autoSaveGame();
+        }
+        
+        // 计算淬炼随机增益（闭区间）
+        function calculateForgingBonus(base, variance) {
+            const min = base - variance;
+            const max = base + variance;
+            return Math.max(0, Math.random() * (max - min) + min);
+        }
+        
+        // 创建能量倍速提升通知
+        function createEnergyMultiplierNotification(amount) {
+            const energyElementRef = document.getElementById('energy');
+            if (energyElementRef) {
+                const notification = document.createElement('div');
+                notification.textContent = `+${amount} 能量倍速`;
+                notification.style.position = 'absolute';
+                notification.style.color = '#4CAF50';
+                notification.style.fontWeight = 'bold';
+                notification.style.fontSize = '14px';
+                notification.style.zIndex = '1000';
+                notification.style.pointerEvents = 'none';
+                
+                const rect = energyElementRef.getBoundingClientRect();
+                notification.style.left = `${rect.left + rect.width / 2}px`;
+                notification.style.top = `${rect.top}px`;
+                document.body.appendChild(notification);
+                
+                // 动画效果
+                let pos = 0;
+                const interval = setInterval(() => {
+                    pos += 1;
+                    notification.style.transform = `translate(-50%, -${pos}px)`;
+                    if (pos > 50) {
+                        clearInterval(interval);
+                        document.body.removeChild(notification);
+                    }
+                }, 10);
+            }
+        }
+        
+        // 转化能量功能
+        function convertEnergy() {
+            const matterCost = 1000000; // 100万物质
+            if (gameData.matter >= matterCost) {
+                gameData.matter -= matterCost;
+                gameData.energyMultiplier += 1; // 每100万物质提升1能量倍速
+                updateStats();
+                createEnergyMultiplierNotification(1);
+            }
+        }
+        
+        // 一键提升能量倍速功能
+        function convertEnergyMax() {
+            const matterCost = 1000000; // 100万物质
+            const maxUpgrades = Math.floor(gameData.matter / matterCost);
+            if (maxUpgrades > 0) {
+                gameData.matter -= maxUpgrades * matterCost;
+                gameData.energyMultiplier += maxUpgrades;
+                updateStats();
+                createEnergyMultiplierNotification(maxUpgrades);
+            }
+        }
+        
+        // 初始化事件监听器
+        mineBlockElement.addEventListener('click', mineBlock);
+        prevBlockButton.addEventListener('click', prevBlock);
+        nextBlockButton.addEventListener('click', nextBlock);
+        toggleBlockTypeButton.addEventListener('click', toggleBlockType);
+        miningTabButton.addEventListener('click', () => switchTab('mining'));
+        alchemyTabButton.addEventListener('click', () => switchTab('alchemy'));
+        if (forgingTabButton) forgingTabButton.addEventListener('click', () => switchTab('forging'));
+        if (embeddingTabButton) embeddingTabButton.addEventListener('click', () => switchTab('embedding'));
+        if (forgingButtonElement) forgingButtonElement.addEventListener('click', performForging);
+        batchAlchemyButtonElement.addEventListener('click', performBatchAlchemy);
+        convertEnergyButton.addEventListener('click', convertEnergy);
+convertEnergyMaxButton.addEventListener('click', convertEnergyMax);
+        
+        // 定义embedSingularity函数，用于HTML中的onclick调用
+        window.embedSingularity = function(blockIndex) {
+            const input = document.getElementById(`embedding-input-${blockIndex}`);
+            const amount = parseInt(input.value) || 1;
+            performEmbedding(blockIndex + 1, amount); // 转换为从1开始的索引
+        }
+        
+        // 添加重置镶嵌按钮（如果存在）
+        const embeddingSystem = document.querySelector('.embedding-system');
+        if (embeddingSystem && !document.getElementById('embedding-reset-button')) {
+            const resetButton = document.createElement('button');
+            resetButton.id = 'embedding-reset-button';
+            resetButton.className = 'alchemy-btn';
+            resetButton.textContent = '重置镶嵌（返还80%奇点）';
+            resetButton.addEventListener('click', resetEmbedding);
+            embeddingSystem.appendChild(resetButton);
+        }
+        
+        // 重置镶嵌按钮事件监听
+        const resetButton = document.getElementById('embedding-reset-button');
+        if (resetButton) {
+            resetButton.addEventListener('click', resetEmbedding);
+        }
+        document.getElementById('crystallize-btn').addEventListener('click', createAlchemyCrystals);
+
+        // 设置每5秒自动保存
+        setInterval(autoSaveGame, 5000);
+
+        // 页面关闭前保存
+        window.addEventListener('beforeunload', autoSaveGame);
+
+        // 尝试加载存档
+        loadGame();
+
+        // 重置游戏函数
+        function resetGame() {
+            if (confirm('确定要重置游戏吗？这将清除所有游戏数据，无法恢复！')) {
+                // 重置所有游戏数据
+                gameData.gold = 0;
+                gameData.currentPickaxeIndex = 0;
+                gameData.currentBlockIndex = 0;
+                gameData.currentAlchemyBlockIndex = 0;
+                gameData.currentSpecialBlockIndex = 0;
+                gameData.usageBonus = 1;
+                gameData.alchemyBonus = 1;
+                gameData.alchemyPoints = 0;
+                gameData.alchemyCrystals = 0;
+                gameData.iridiumIngots = 0;
+                gameData.hassiumIngots = 0;
+                gameData.singularity = 0;
+                gameData.matter = 0;
+                gameData.energy = 0;
+                gameData.energyMultiplier = 0;
+                gameData.productionCore = 0;
+                gameData.endCore = 0;
+                gameData.ownedPickaxes = [0];
+                gameData.currentBlockType = 'normal';
+                gameData.autoMiningEnabled = false;
+                gameData.miningCount = 0;
+                gameData.miningPerSecond = 0;
+                
+                // 重置淬炼属性
+                gameData.forgingStats = {
+                    damageBonus: 0,
+                    usageBonusGain: 0,
+                    goldGain: 0,
+                    crystalBonusGain: 0
+                };
+                
+                // 重置镶嵌系统数据
+                gameData.embeddingBlocks = [
+                    { count: 0, exponent: 0.36, name: '攻击增益' },
+                    { count: 0, exponent: 0.28, name: '炼药值获取增益' },
+                    { count: 0, exponent: 0.24, name: '使用增益获取增益' },
+                    { count: 0, exponent: 0.2, name: '金币获取增益' },
+                    { count: 0, exponent: 0.16, name: '全属性增益' }
+                ];
+                
+                // 重置当前方块
+                currentBlock = JSON.parse(JSON.stringify(blocks[0]));
+                currentBlock.maxHealth = currentBlock.health;
+                
+                // 更新UI
+                updateStats();
+                updateStatsDisplay();
+                updatePickaxeList();
+                updateBlockDisplay();
+                
+                // 清除存档
+                localStorage.removeItem('miningGameSave');
+                localStorage.removeItem('miningGameData');
+                
+                // 重置成就数据
+                gameData.achievements = [];
+                gameData.completedAchievements = {};
+                
+                alert('游戏已重置！');
+            }
+        }
+        
+        // 重置按钮事件监听
+        document.getElementById('reset-game-btn').addEventListener('click', resetGame);
+        
+        // 保存游戏数据
+        function saveGame() {
+            localStorage.setItem('miningGameData', JSON.stringify(gameData));
+        }
+        
+        // 加载游戏数据
+        function loadGame() {
+            const savedData = localStorage.getItem('miningGameData') || localStorage.getItem('miningGameSave');
+            if (savedData) {
+                try {
+                    const parsedData = JSON.parse(savedData);
+                    Object.assign(gameData, parsedData);
+                    
+                    // 确保成就相关数据存在
+                    if (!gameData.achievements) {
+                        gameData.achievements = [];
+                    }
+                    if (!gameData.completedAchievements) {
+                        gameData.completedAchievements = {};
+                    }
+                } catch (e) {
+                    console.error('加载游戏数据失败:', e);
+                }
+            }
+        }
+        
+        // 自动保存
+        function autoSaveGame() {
+            saveGame();
+        }
+        
+        // 初始化游戏
+        currentBlock.maxHealth = currentBlock.health;
+        
+        // 初始化成就系统
+        if (window.initAchievements) {
+            initAchievements();
+        }
+        
+        updateStats();
+        updateStatsDisplay(); // 确保奇点数量正确显示
+    </script>
+</body>
+</html>
