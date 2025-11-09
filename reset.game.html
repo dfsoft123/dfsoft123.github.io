@@ -927,7 +927,6 @@
                 <button class="tab-btn" data-tab="resources"><i class="fas fa-gem"></i> 资源</button>
                 <button class="tab-btn" data-tab="shop"><i class="fas fa-shopping-cart"></i> 商店</button>
                 <button class="tab-btn" data-tab="alchemy"><i class="fas fa-flask"></i> 炼药</button>
-                <button class="tab-btn" data-tab="achievements"><i class="fas fa-trophy"></i> 成就</button>
                 <button class="tab-btn" data-tab="water-tree"><i class="fas fa-tint"></i> 浇树</button>
             </div>
 
@@ -987,15 +986,7 @@
                 </div>
             </div>
             
-            <div class="tab-content" id="achievements-tab">
-                <div class="section-title">
-                    <i class="fas fa-trophy"></i>
-                    <h2>成就系统</h2>
-                </div>
-                <div id="achievements-list">
-                    <!-- 成就列表将通过JavaScript动态生成 -->
-                </div>
-            </div>
+
             <div class="tab-content" id="water-tree-tab">
                 <div class="section-title">
                     <i class="fas fa-tree"></i>
@@ -1054,8 +1045,8 @@
                     <div>奖杯增益: <span id="trophy-boost">1</span></div>
                     <div>等级增益: <span id="level-boost">1</span></div>
                     <div>炼药增益: <span id="alchemy-boost">1</span></div>
-                    <div>游戏阶段: <span id="game-stage">1</span></div>
-                    <div id="tree-boost">浇树增益: 1.00</div>
+                    <!-- 浇树增益将根据游戏阶段动态显示 -->
+                    <div id="tree-boost" style="display: none; visibility: hidden; opacity: 0;">浇树增益: 1.00</div>
                 </div>
             </div>
             
@@ -1641,20 +1632,22 @@
                 if (treeExpElement) treeExpElement.textContent = window.gameState.treeExp || 0;
                 if (treeExpNeededElement) treeExpNeededElement.textContent = 10 * (window.gameState.treeLevel || 1);
                 
-                // 检查是否拥有五行镐（第二阶段的标志）
-                const hasFiveElementPickaxe = window.gameState.pickaxes && window.gameState.pickaxes["五行镐"] > 0;
-                
-                // 拥有五行镐才显示树系统和树增益
+                // 第二阶段才显示树系统和树增益
                 if (treeSystemElement) {
-                    treeSystemElement.style.display = hasFiveElementPickaxe ? "block" : "none";
+                    treeSystemElement.style.display = (window.gameState.gameStage >= 2) ? "block" : "none";
                 }
                 
                 if (treeBoostElement) {
-                    if (hasFiveElementPickaxe) {
-                        treeBoostElement.textContent = calculateTreeBoost().toFixed(2);
+                    // 第一阶段完全不显示浇树增益
+                    if (window.gameState.gameStage >= 2) {
+                        treeBoostElement.textContent = "浇树增益: " + calculateTreeBoost().toFixed(2);
                         treeBoostElement.style.display = "block";
                     } else {
+                        // 确保完全隐藏，避免任何显示
                         treeBoostElement.style.display = "none";
+                        // 额外添加visibility和opacity来确保不显示
+                        treeBoostElement.style.visibility = "hidden";
+                        treeBoostElement.style.opacity = "0";
                     }
                 }
                 
@@ -1684,20 +1677,8 @@
                         window.gameState.achievements = {};
                     }
                     
-                    // 确保初入游戏成就始终是解锁状态
-                    window.gameState.achievements["初入游戏"] = true;
-                    
-                    allAchievements.forEach(achievement => {
-                        const isUnlocked = window.gameState.achievements[achievement.id] || false;
-                        const achievementItem = document.createElement("div");
-                        achievementItem.className = `achievement-item ${isUnlocked ? 'unlocked' : 'locked'}`;
-                        achievementItem.innerHTML = `
-                            <div class="achievement-name">${achievement.name}</div>
-                            <div class="achievement-description">${achievement.description}</div>
-                            <div class="achievement-status">${isUnlocked ? '⭐ 已解锁' : '🔒 未解锁'}</div>
-                        `;
-                        achievementsList.appendChild(achievementItem);
-                    });
+        
+
                 }
             }
             catch (updateUIError) {
@@ -1822,8 +1803,13 @@
                 { name: "使用增益", value: window.gameState.usageBoost },
                 { name: "奖杯增益", value: calculateTrophyBoost(window.gameState.trophies).toFixed(2) },
                 { name: "等级增益", value: calculateLevelBoost(window.gameState.level).toFixed(2) },
-                { name: "炼药增益", value: window.gameState.alchemyBoost }
+                { name: "炼药增益", value: window.gameState.alchemyBoost } // 所有阶段都显示炼药增益
             ];
+            
+            // 第二阶段及以上才添加浇树增益
+            if (window.gameState && window.gameState.gameStage >= 2) {
+                boosts.push({ name: "浇树增益", value: calculateTreeBoost().toFixed(2) });
+            }
             
             boosts.forEach(boost => {
                 const boostItem = document.createElement("div");
@@ -1988,11 +1974,23 @@
                         for (const [frag, amount] of Object.entries(item.cost.fragments)) {
                             if (frag.includes("镐")) {
                                 // 如果是镐子，减少数量
-                                window.gameState.pickaxes[frag] -= amount;
+                                window.gameState.pickaxes[frag] = Math.max(0, (window.gameState.pickaxes[frag] || 0) - amount);
                             } else {
                                 // 如果是资源，减少数量
-                                window.gameState.resources[frag] -= amount;
+                                window.gameState.resources[frag] = Math.max(0, (window.gameState.resources[frag] || 0) - amount);
                             }
+                        }
+                    }
+                    
+                    // 扣除basePickaxe（单个基础镐子）
+                    if (item.cost.basePickaxe) {
+                        window.gameState.pickaxes[item.cost.basePickaxe] = Math.max(0, (window.gameState.pickaxes[item.cost.basePickaxe] || 0) - 1);
+                    }
+                    
+                    // 扣除basePickaxes（多个基础镐子）
+                    if (item.cost.basePickaxes) {
+                        for (const pick of item.cost.basePickaxes) {
+                            window.gameState.pickaxes[pick] = Math.max(0, (window.gameState.pickaxes[pick] || 0) - 1);
                         }
                     }
                     
@@ -2015,7 +2013,7 @@
                     // 检查成就
                     try {
                         if (typeof checkAchievements === 'function') {
-                            checkAchievements();
+                    
                             console.log('购买后成就检查已执行');
                         }
                     } catch (achievementError) {
@@ -2081,11 +2079,9 @@
                     }
                 }
                 
-                // 更新成就
-                if (!window.gameState.achievements["浇树"]) {
-                    window.gameState.achievements["浇树"] = true;
-                    showAchievementNotification("浇树");
-                }
+                // 浇树后触发成就检查，但让checkAchievements函数统一处理
+                // 这样可以确保浇树成就遵循统一的永久解锁逻辑
+    
                 
                 // 更新UI
                 updateUI();
@@ -2094,39 +2090,8 @@
             }
         }
         
-        // 显示成就通知
-        function showAchievementNotification(achievementName) {
-            try {
-                if (document.body) {
-                    const notification = document.createElement('div');
-                    notification.textContent = `🎉 成就解锁: ${achievementName}`;
-                    notification.style.position = 'fixed';
-                    notification.style.top = '10%';
-                    notification.style.right = '10%';
-                    notification.style.backgroundColor = 'rgba(76, 175, 80, 0.9)';
-                    notification.style.color = 'white';
-                    notification.style.padding = '15px 20px';
-                    notification.style.borderRadius = '8px';
-                    notification.style.zIndex = '1000';
-                    notification.style.fontSize = '16px';
-                    notification.style.fontWeight = 'bold';
-                    notification.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
-                    notification.style.animation = 'slideIn 0.5s ease-out';
-                    
-                    document.body.appendChild(notification);
-                    
-                    setTimeout(() => {
-                        try {
-                            if (notification.parentNode === document.body) {
-                                document.body.removeChild(notification);
-                            }
-                        } catch (e) {}
-                    }, 3000);
-                }
-            } catch (e) {
-                console.error('显示成就通知失败:', e);
-            }
-        }
+
+
         
         // 自动挖矿定时器
         let autoMiningInterval = null;
@@ -2167,36 +2132,29 @@
             }
         }
         
-        // 检查并更新成就
-        function checkAchievements() {
+        // 检查是否获得五行镐，如果是则进入第二阶段
+        function checkGameStage() {
             try {
-                const achievements = [
-                    { id: "初入游戏", condition: true },
-                    { id: "获得奖杯", condition: window.gameState.trophies > 0 },
-                { id: "伤害一万", condition: window.gameState.totalDamage >= 1e4 && window.gameState.totalDamage < 1e8 },
-                { id: "伤害一亿", condition: window.gameState.totalDamage >= 1e8 && window.gameState.totalDamage < 1e12 },
-                { id: "伤害一万亿", condition: window.gameState.totalDamage >= 1e12 && window.gameState.totalDamage < 1e16 },
-                { id: "伤害一兆", condition: window.gameState.totalDamage >= 1e16 && window.gameState.totalDamage < 1e20 },
-                { id: "伤害一万兆", condition: window.gameState.totalDamage >= 1e20 },
-                { id: "红蓝镐", condition: window.gameState.pickaxes && window.gameState.pickaxes["红蓝镐"] > 0 },
-                { id: "只因你太美", condition: window.gameState.resources && window.gameState.resources["坤坤"] > 0 },
-                { id: "五行镐", condition: window.gameState.pickaxes && window.gameState.pickaxes["五行镐"] > 0 },
-                { id: "炼药", condition: window.gameState.alchemyBoost > 1 }
-                ];
+                // 确保游戏阶段正确初始化
+                if (!window.gameState.gameStage) {
+                    window.gameState.gameStage = 1;
+                }
                 
-                achievements.forEach(ach => {
-                    if (ach.condition && !window.gameState.achievements[ach.id]) {
-                        window.gameState.achievements[ach.id] = true;
-                        showAchievementNotification(ach.id);
-                    }
-                });
-                
-                // 检查是否获得五行镐，如果是则进入第二阶段
+                // 检查是否满足第二阶段的条件
                 if (window.gameState.pickaxes && window.gameState.pickaxes["五行镐"] > 0 && window.gameState.gameStage < 2) {
                     window.gameState.gameStage = 2;
+                    updateTabsVisibility(); // 更新标签显示
+                    updateBoostsList(); // 更新增益列表显示
                 }
+                
+                // 预留第三阶段的检查逻辑（可以根据需要添加条件）
+                // if (满足第三阶段条件 && window.gameState.gameStage < 3) {
+                //     window.gameState.gameStage = 3;
+                //     updateTabsVisibility();
+                //     updateBoostsList();
+                // }
             } catch (e) {
-                console.error('检查成就失败:', e);
+                console.error('检查游戏阶段失败:', e);
             }
         }
         
@@ -2378,7 +2336,7 @@
                         // 检查成就
                         try {
                             if (typeof checkAchievements === 'function') {
-                                checkAchievements();
+                
                                 console.log('成就检查已执行');
                             }
                         } catch (achievementError) {
@@ -2488,7 +2446,7 @@
                     // 检查成就
                     try {
                         if (typeof checkAchievements === 'function') {
-                            checkAchievements();
+        
                             console.log('升级后成就检查已执行');
                         }
                     } catch (achievementError) {
@@ -2531,13 +2489,20 @@
             }
         }
 
-        // 更新游戏阶段显示 - 根据要求不显示游戏阶段
+        // 更新游戏阶段显示 - 在游戏标题下方显示游戏阶段
         function updateGameStageDisplay() {
             try {
                 const stageElement = document.getElementById('game-stage');
-                if (stageElement) {
-                    // 不显示游戏阶段信息
-                    stageElement.textContent = '';
+                if (stageElement && window.gameState) {
+                    const currentStage = window.gameState.gameStage || 1;
+                    // 根据要求显示阶段
+                    if (currentStage === 1) {
+                        stageElement.textContent = '当前阶段：第一阶段';
+                    } else if (currentStage === 2) {
+                        stageElement.textContent = '当前阶段：第二阶段';
+                    } else if (currentStage === 3) {
+                        stageElement.textContent = '当前阶段：第三阶段';
+                    }
                 }
             } catch (e) {
                 console.error('更新游戏阶段显示失败:', e);
@@ -2599,7 +2564,7 @@
                 // 检查成就
                 try {
                     if (typeof checkAchievements === 'function') {
-                        checkAchievements();
+
                         console.log('浇树后成就检查已执行');
                     }
                 } catch (achievementError) {
@@ -2698,28 +2663,25 @@
             };
         }
         
-        // 页面加载完成后初始化更新自定义UI
+
+        
+        // 页面加载完成后初始化更新自定义UI和成就列表
         document.addEventListener('DOMContentLoaded', function() {
             // 延迟一点时间确保DOM完全加载
-            setTimeout(updateCustomUI, 100);
+            setTimeout(() => {
+                updateCustomUI();
+                initAchievementsList();
+            }, 100);
         });
         
         // 兑换金币为奖杯 - 修复兑换逻辑
         function convertGoldToTrophies() {
             console.log('兑换函数开始执行');
             
-            // 检查calculateTrophies函数是否存在
-            if (typeof calculateTrophies !== 'function') {
-                console.error('calculateTrophies函数未定义');
-                alert('兑换功能异常，请刷新页面');
-                return;
-            }
-            
-            // 检查updateUI函数是否存在
-            if (typeof updateUI !== 'function') {
-                console.error('updateUI函数未定义');
-                alert('兑换功能异常，请刷新页面');
-                return;
+            // 直接使用内联计算，不依赖外部函数
+            function calcTrophies(gold) {
+                if (gold < 100) return 0;
+                return Math.floor(Math.pow(gold / 100, 0.8));
             }
             
             try {
@@ -2764,7 +2726,7 @@
                 }
                 
                 // 计算可兑换的奖杯数量
-                const trophiesFromGold = calculateTrophies(currentGold);
+                const trophiesFromGold = calcTrophies(currentGold);
                 console.log(`兑换计算：${currentGold}金币可兑换${trophiesFromGold}奖杯`);
                 
                 if (trophiesFromGold > 0) {
@@ -2781,33 +2743,52 @@
                     // 检查成就
                     if (typeof checkAchievements === 'function') {
                         console.log('调用checkAchievements检查成就');
-                        checkAchievements();
+
                     } else {
                         console.warn('checkAchievements函数未定义');
                     }
                     
-                    // 强制更新UI
-                    console.log('执行updateUI更新所有显示');
-                    updateUI();
+                    // 强制更新UI组件
+                    console.log('更新所有UI显示');
                     
-                    // 更新自定义UI
-                    if (typeof updateCustomUI === 'function') {
-                        console.log('调用updateCustomUI');
-                        updateCustomUI();
-                    } else {
-                        console.warn('updateCustomUI函数未定义');
+                    // 直接更新关键UI元素
+                    const goldElement = document.getElementById('gold');
+                    if (goldElement) {
+                        goldElement.textContent = formatNumber(window.gameState.gold);
                     }
                     
-                    // 保存游戏状态
-                    if (typeof saveGame === 'function') {
-                        try {
-                            console.log('调用saveGame保存状态');
-                            saveGame();
-                        } catch (saveError) {
-                            console.warn('保存游戏失败:', saveError);
-                        }
-                    } else {
-                        console.warn('saveGame函数未定义');
+                    const trophiesElement = document.getElementById('trophies');
+                    if (trophiesElement) {
+                        trophiesElement.textContent = formatNumber(window.gameState.trophies);
+                    }
+                    
+                    // 更新兑换信息显示
+                    const convertInfoElement = document.querySelector('#convert-section p');
+                    if (convertInfoElement) {
+                        const trophiesAvailable = calcTrophies(window.gameState.gold);
+                        convertInfoElement.textContent = `当前可兑换: ${formatNumber(trophiesAvailable)} 奖杯`;
+                    }
+                    
+                    // 更新奖杯增益显示
+                    const trophyBoostElement = document.getElementById("trophy-boost");
+                    if (trophyBoostElement) {
+                        trophyBoostElement.textContent = calculateTrophyBoost(window.gameState.trophies).toFixed(2);
+                    }
+                    
+                    // 更新增益列表
+                    if (typeof updateBoostsList === 'function') {
+                        updateBoostsList();
+                    }
+                    
+                    // 保存游戏状态 - 直接实现保存逻辑，不依赖外部函数
+                    try {
+                        console.log('执行游戏保存');
+                        const gameStateToSave = JSON.stringify(window.gameState);
+                        localStorage.setItem('miningGameState', gameStateToSave);
+                        console.log('游戏状态保存成功');
+                    } catch (saveError) {
+                        console.error('保存游戏失败:', saveError);
+                        // 即使保存失败，也不影响兑换的成功提示
                     }
                     
                     console.log('兑换完成');
@@ -3147,26 +3128,23 @@
             if (!window.gameState.totalDamage) window.gameState.totalDamage = 0;
             if (!window.gameState.gameStage) window.gameState.gameStage = 1;
             
-            // 确保成就系统存在且结构正确
-            if (!window.gameState.achievements) {
-                window.gameState.achievements = {
-                    "初入游戏": true,
-                    "获得奖杯": false,
-                    "伤害一万": false,
-                    "伤害一亿": false,
-                    "伤害一万亿": false,
-                    "伤害一兆": false,
-                    "伤害一万兆": false,
-                    "红蓝镐": false,
-                    "只因你太美": false,
-                    "五行镐": false,
-                    "炼药": false,
-                    "浇树": false
-                };
-            }
+
+   
             
             // 确保初入游戏成就始终是解锁状态
             window.gameState.achievements["初入游戏"] = true;
+            
+            // 移除统计数据中的游戏阶段显示
+            try {
+                const statsElement = document.querySelector('#stats-container .stats');
+                if (statsElement) {
+                    // 找到并移除游戏阶段相关的统计数据
+                    const stageStatsElements = statsElement.querySelectorAll('.stat-item:has(#game-stage)');
+                    stageStatsElements.forEach(el => el.remove());
+                }
+            } catch (e) {
+                console.error('移除统计数据中的游戏阶段失败:', e);
+            }
             
             // 设置初始经验需求
             document.getElementById("exp-needed").textContent = getExpNeeded(0);
@@ -3329,24 +3307,27 @@
                     const resourcesBtn = tabsContainer.querySelector('[data-tab="resources"]');
                     const shopBtn = tabsContainer.querySelector('[data-tab="shop"]');
                     const alchemyBtn = tabsContainer.querySelector('[data-tab="alchemy"]');
-                    const achievementsBtn = tabsContainer.querySelector('[data-tab="achievements"]');
                     const waterTreeBtn = tabsContainer.querySelector('[data-tab="water-tree"]');
+                    const researchBtn = tabsContainer.querySelector('[data-tab="research"]'); // 研究所按钮
                     
                     // 确保所有必要的按钮都存在
-                    if (boostBtn && resourcesBtn && shopBtn && alchemyBtn && achievementsBtn && waterTreeBtn) {
-                        // 清空容器
-                        tabsContainer.innerHTML = '';
+                    if (boostBtn && resourcesBtn && shopBtn && alchemyBtn) {
+                        const gameStage = window.gameState?.gameStage || 1;
                         
-                        // 添加基础标签（阶段1和阶段2都显示）
-                        tabsContainer.appendChild(boostBtn);
-                        tabsContainer.appendChild(resourcesBtn);
-                        tabsContainer.appendChild(shopBtn);
-                        tabsContainer.appendChild(alchemyBtn);
-                        tabsContainer.appendChild(achievementsBtn);
+                        // 所有阶段都显示的标签
+                        boostBtn.style.display = 'inline-block';
+                        resourcesBtn.style.display = 'inline-block';
+                        shopBtn.style.display = 'inline-block';
+                        alchemyBtn.style.display = 'inline-block';
                         
-                        // 只有在阶段2时才添加浇树标签
-                        if (window.gameState && window.gameState.gameStage >= 2) {
-                            tabsContainer.appendChild(waterTreeBtn);
+                        // 浇树标签只在阶段≥2显示
+                        if (waterTreeBtn) {
+                            waterTreeBtn.style.display = (gameStage >= 2) ? 'inline-block' : 'none';
+                        }
+                        
+                        // 研究所标签暂不开放（即使在阶段3也隐藏）
+                        if (researchBtn) {
+                            researchBtn.style.display = 'none';
                         }
                     }
                 }
