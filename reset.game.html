@@ -2980,21 +2980,49 @@
                     </style>
                 `;
                 
-                // 检查炼药价值数据
-                if (!window.gameData || !window.gameData.alchemyValues || typeof window.gameData.alchemyValues !== 'object') {
-                    console.error('炼药价值数据缺失');
+                // 检查炼药价值数据，如果不存在则使用默认值
+                if (!window.gameData) {
+                    window.gameData = {};
+                }
+                
+                if (!window.gameData.alchemyValues || typeof window.gameData.alchemyValues !== 'object') {
+                    // 使用默认的炼药价值数据
+                    window.gameData.alchemyValues = {
+                        "1级方块": 1,
+                        "2级方块": 2,
+                        "3级方块": 4,
+                        "4级方块": 8,
+                        "5级方块": 16,
+                        "6级方块": 32,
+                        "7级方块": 64,
+                        "8级方块": 128,
+                        "9级方块": 256,
+                        "10级方块": 512,
+                        "11级方块": 1024,
+                        "12级方块": 2048,
+                        "13级方块": 4096,
+                        "14级方块": 8192,
+                        "15级方块": 16384,
+                        "金币": 0.1,
+                        "铁镐": 100,
+                        "钢镐": 200,
+                        "金镐": 500,
+                        "钻石镐": 1000,
+                        "红石镐": 2000,
+                        "紫水晶镐": 5000,
+                        "虚空镐": 10000
+                    };
+                    console.log('使用默认炼药价值数据');
+                    
+                    // 显示使用默认数据的提示
                     resultsElement.innerHTML = `
-                        <div style="color: red; font-weight: bold;">系统错误</div>
-                        <div>炼药系统数据未加载，请刷新页面</div>
+                        <div style="color: #FF9800; font-weight: bold; text-align: center; padding: 10px; background-color: rgba(255, 152, 0, 0.1); border-radius: 6px;">
+                            <i class="fas fa-info-circle" style="margin-right: 5px;"></i>使用默认炼药数据
+                        </div>
                     `;
-                    // 恢复按钮状态
-                    if (button) {
-                        setTimeout(() => {
-                            button.style.backgroundColor = '';
-                            button.style.borderColor = '#4CAF50';
-                        }, 300);
-                    }
-                    return;
+                    
+                    // 短暂延迟后继续处理
+                    setTimeout(() => {}, 300);
                 }
                 
                 // 使用高效的物品转换算法
