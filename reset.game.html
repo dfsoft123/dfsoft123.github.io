@@ -1033,12 +1033,13 @@
                     <h2>商店</h2>
                 </div>
                 <div class="shop-categories">
-                <button class="category-btn active" data-shop="main1">主线1商店</button>
-                <button class="category-btn" data-shop="side1">支线1商店</button>
-                <button class="category-btn" data-shop="main2" style="display: none;">主线2商店</button>
-                <button class="category-btn" data-shop="side2" style="display: none;">支线2商店</button>
-                <button class="category-btn" data-shop="main3" style="display: none;">主线3商店</button>
-                <button class="category-btn" data-shop="items">物品商店</button>
+                    <button class="category-btn active" data-shop="main1">主线1商店</button>
+                    <button class="category-btn" data-shop="side1">支线1商店</button>
+                    <button class="category-btn" data-shop="main2" style="display: none;">主线2商店</button>
+                    <button class="category-btn" data-shop="side2" style="display: none;">支线2商店</button>
+                    <button class="category-btn" data-shop="main3" style="display: none;">主线3商店</button>
+                    <button class="category-btn" data-shop="side3" style="display: none;">支线3商店</button>
+                    <button class="category-btn" data-shop="items">物品商店</button>
             </div>
                 <div id="shop-items">
                     <!-- 商店物品将通过JavaScript动态生成 -->
@@ -1158,7 +1159,11 @@
                             </div>
                         </div>
                     </div>
-                    <button class="water-tree-btn" id="water-tree-btn">到达阶段2解锁浇树系统</button>
+                    <div class="water-tree-buttons">
+                <button class="water-tree-btn" id="water-tree-cube-btn">到达阶段2解锁浇树系统</button>
+                <button class="water-tree-btn" id="water-tree-crystal-btn">到达阶段2解锁浇树系统</button>
+                <button class="water-tree-btn" id="water-tree-triple-btn">到达阶段2解锁浇树系统</button>
+            </div>
                     <div class="water-tree-results" id="water-tree-results">
                         浇树结果将显示在这里
                     </div>
@@ -1381,33 +1386,35 @@
                     { name: "坤坤方块", hp: 9.1e12, baseGold: 200, special: { type: "fragment", item: "坤坤", chance: 0.25 } }
                 ],
                 main2: [
-                    { name: "木结晶块", hp: 7.8e17, baseGold: 2000, special: { type: "fragment", item: "木结晶", chance: 0.05 } },
-                    { name: "土结晶块", hp: 7.8e17, baseGold: 2000, special: { type: "fragment", item: "土结晶", chance: 0.05 } },
-                    { name: "水结晶块", hp: 7.8e17, baseGold: 2000, special: { type: "fragment", item: "水结晶", chance: 0.05 } },
-                    { name: "火结晶块", hp: 7.8e17, baseGold: 2000, special: { type: "fragment", item: "火结晶", chance: 0.05 } },
-                    { name: "金结晶", hp: 7.8e17, baseGold: 2000, special: { type: "fragment", item: "金结晶", chance: 0.05 } },
-                    { name: "风结晶块", hp: 9.1e19, baseGold: 3000, special: { type: "fragment", item: "风结晶", chance: 0.05 } },
-                    { name: "雷结晶块", hp: 9.1e19, baseGold: 3000, special: { type: "fragment", item: "雷结晶", chance: 0.05 } },
-                    { name: "光结晶块", hp: 5e21, baseGold: 5000, special: { type: "fragment", item: "光结晶", chance: 0.05 } },
-                    { name: "暗结晶块", hp: 5e21, baseGold: 5000, special: { type: "fragment", item: "暗结晶", chance: 0.05 } },
-                    { name: "源结晶块", hp: 1e24, baseGold: 10000, special: { type: "fragment", item: "源结晶", chance: 0.01 } }
+                    { name: "木结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "木结晶", chance: 0.05 } },
+                    { name: "土结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "土结晶", chance: 0.05 } },
+                    { name: "水结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "水结晶", chance: 0.05 } },
+                    { name: "火结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "火结晶", chance: 0.05 } },
+                    { name: "金结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "金结晶", chance: 0.05 } },
+                    { name: "风结晶块", hp: 9.1e21, baseGold: 3000, special: { type: "fragment", item: "风结晶", chance: 0.05 } },
+                    { name: "雷结晶块", hp: 9.1e21, baseGold: 3000, special: { type: "fragment", item: "雷结晶", chance: 0.05 } },
+                    { name: "光结晶块", hp: 5e24, baseGold: 5000, special: { type: "fragment", item: "光结晶", chance: 0.05 } },
+                    { name: "暗结晶块", hp: 5e24, baseGold: 5000, special: { type: "fragment", item: "暗结晶", chance: 0.05 } },
+                    { name: "源结晶块", hp: 1e28, baseGold: 10000, special: { type: "fragment", item: "源结晶", chance: 0.01 } }
                 ],
                 side2: [
-                    { name: "红曜石块", hp: 5e14, baseGold: 500, special: { type: "fragment", item: "红曜石", chance: 0.05 } },
-                    { name: "蓝曜石块", hp: 6e14, baseGold: 600, special: { type: "fragment", item: "蓝曜石", chance: 0.05 } },
-                    { name: "金奖核心", hp: 1e18, baseGold: 2000, special: { type: "fragment", item: "金奖核心", chance: 0.1 } },
-                    { name: "淼立方块", hp: 1e19, baseGold: 2500, special: { type: "fragment", item: "淼立方", chance: 0.05 } },
-                    { name: "水晶晶簇", hp: 1e19, baseGold: 2500, special: { type: "pickaxe", item: "紫水晶镐Ⅲ", count: 1, chance: 0.1 } },
-                    { name: "坤群", hp: 1e20, baseGold: 3000, special: { type: "fragment", item: "坤坤", count: 1000, chance: 0.01 } },
-                    { name: "红曜方", hp: 5e20, baseGold: 4000, special: { type: "fragment", item: "红曜方", chance: 0.005 } },
-                    { name: "蓝曜方", hp: 6e20, baseGold: 4000, special: { type: "fragment", item: "蓝曜方", chance: 0.005 } }
+                    { name: "红曜石块", hp: 5e16, baseGold: 500, special: { type: "fragment", item: "红曜石", chance: 0.05 } },
+                    { name: "蓝曜石块", hp: 6e16, baseGold: 600, special: { type: "fragment", item: "蓝曜石", chance: 0.05 } },
+                    { name: "金奖核心", hp: 1e21, baseGold: 2000, special: { type: "fragment", item: "金奖核心", chance: 0.1 } },
+                    { name: "淼立方块", hp: 1e22, baseGold: 2500, special: { type: "fragment", item: "淼立方", chance: 0.05 } },
+                    { name: "水晶晶簇", hp: 1e23, baseGold: 2500, special: { type: "pickaxe", item: "紫水晶镐Ⅲ", count: 1, chance: 0.1 } },
+                    { name: "坤群", hp: 1e24, baseGold: 3000, special: { type: "fragment", item: "坤坤", count: 1000, chance: 0.01 } },
+                    { name: "红曜方", hp: 5e25, baseGold: 4000, special: { type: "fragment", item: "红曜方", chance: 0.005 } },
+                    { name: "蓝曜方", hp: 6e25, baseGold: 4000, special: { type: "fragment", item: "蓝曜方", chance: 0.005 } }
                 ],
                 main3: [
-                    { name: "α方块", hp: 1e24, baseGold: 10000, special: { type: "fragment", item: "α", count: 1, chance: 1 } },
-                    { name: "β方块", hp: 1e24, baseGold: 10000, special: { type: "fragment", item: "β", count: 1, chance: 1 } },
-                    { name: "γ方块", hp: 1e24, baseGold: 10000, special: { type: "fragment", item: "γ", count: 1, chance: 1 } },
-                    { name: "元素晶片", hp: 1e25, baseGold: 15000, special: { type: "fragment", item: "元素晶片", count: 1, chance: 0.1 } },
-                    { name: "量产核心", hp: 1e27, baseGold: 20000, special: { type: "fragment", item: "量产核心", count: 1, chance: 0.01 } }
+                    { name: "α方块", hp: 1e28, baseGold: 10000, special: { type: "fragment", item: "α", count: 1, chance: 1 } },
+                    { name: "β方块", hp: 1e28, baseGold: 10000, special: { type: "fragment", item: "β", count: 1, chance: 1 } },
+                    { name: "γ方块", hp: 1e28, baseGold: 10000, special: { type: "fragment", item: "γ", count: 1, chance: 1 } },
+                    { name: "元素晶片", hp: 1e30, baseGold: 15000, special: { type: "fragment", item: "元素晶片", count: 1, chance: 0.1 } },
+                    { name: "量产核心", hp: 1e33, baseGold: 20000, special: { type: "fragment", item: "量产核心", count: 1, chance: 0.01 } },
+                    { name: "五行镐", hp: 1e31, baseGold: 18000, special: { type: "fragment", item: "五行镐", count: 1, chance: 0.01 } },
+                    { name: "五行精华", hp: 1e31, baseGold: 18000, special: { type: "fragment", item: "五行精华", count: 1, chance: 0.001 } }
                 ]
             },
             
@@ -1464,6 +1471,9 @@
                     { name: "红蓝镐Ⅲ", cost: { fragments: { "红曜方": 100, "蓝曜方": 100, "源结晶": 10, "红蓝镐Ⅱ": 10 } }, boost: 900000, goldMultiplier: 40, usageGain: 120 },
                     { name: "坤镐", cost: { fragments: { "坤坤": 250000 } }, boost: 2500000, goldMultiplier: 25, usageGain: 250 }
                 ],
+                side3: [
+                    { name: "五行镐Ⅳ", cost: { fragments: { "五行镐Ⅲ": 10, "五行驱动器": 1 } }, boost: 24000000, goldMultiplier: 1200, usageGain: 7200 }
+                ],
                 items: [
                     { name: "红曜石", cost: { fragments: { "红曜石碎片": 365 } } },
                     { name: "蓝曜石", cost: { fragments: { "蓝曜石碎片": 366 } } },
@@ -1473,7 +1483,8 @@
                     { name: "风雷结晶", cost: { fragments: { "风结晶": 1, "雷结晶": 1 } } },
                     { name: "光暗结晶", cost: { fragments: { "光结晶": 1, "暗结晶": 1 } } },
                     { name: "红曜方", cost: { fragments: { "红曜石": 100 } } },
-                    { name: "蓝曜方", cost: { fragments: { "蓝曜石": 100 } } }
+                    { name: "蓝曜方", cost: { fragments: { "蓝曜石": 100 } } },
+                    { name: "五行驱动器", cost: { fragments: { "五行精华": 10 } } }
                 ]
             },
             
@@ -1544,7 +1555,10 @@
                     "β": 0,
                     "γ": 0,
                     "元素晶片": 0,
-                    "量产核心": 0
+                    "量产核心": 0,
+                    "五行镐": 0,
+                    "五行精华": 0,
+                    "五行驱动器": 0
                 },
                 // 研究所相关状态
                 energies: {
@@ -2047,7 +2061,9 @@
                             statsPanelElement.appendChild(treeBoostStatElement);
                         }
                     }
-                    treeBoostStatElement.textContent = "浇树增益: " + calculateTreeBoost().toFixed(2);
+                    // 确保统计面板和增益面板使用相同的计算方法
+                    const treeBoost = Math.pow(window.gameState.treeLevel || 1, 0.4);
+                    treeBoostStatElement.textContent = "浇树增益: " + treeBoost.toFixed(2);
                     treeBoostStatElement.style.display = "block";
                 } else if (statsPanelElement) {
                     const treeBoostStatElement = statsPanelElement.querySelector('#tree-boost-stat');
@@ -2461,8 +2477,8 @@
             }
         }
 
-        // 浇树功能
-        function waterTree() {
+        // 浇树功能 - 使用水立方
+        function waterTreeWithCube() {
             try {
                 // 检查是否在第二阶段
                 if (window.gameState.gameStage < 2) {
@@ -2480,7 +2496,8 @@
                 window.gameState.resources["水立方"] -= 1;
                 
                 // 增加树经验
-                window.gameState.treeExp = (window.gameState.treeExp || 0) + 1;
+                const expGain = 5;
+                window.gameState.treeExp = (window.gameState.treeExp || 0) + expGain;
                 
                 // 检查是否可以升级
                 const expNeededForNextLevel = 10 * window.gameState.treeLevel;
@@ -2488,28 +2505,7 @@
                     window.gameState.treeLevel += 1;
                     window.gameState.treeExp -= expNeededForNextLevel;
                     
-                    // 显示升级提示
-                    if (document.body) {
-                        const notification = document.createElement('div');
-                        notification.textContent = `树升级! 等级 ${window.gameState.treeLevel}`;
-                        notification.style.position = 'fixed';
-                        notification.style.top = '50%';
-                        notification.style.left = '50%';
-                        notification.style.transform = 'translate(-50%, -50%)';
-                        notification.style.backgroundColor = 'rgba(33, 150, 243, 0.8)';
-                        notification.style.color = 'white';
-                        notification.style.padding = '10px 20px';
-                        notification.style.borderRadius = '5px';
-                        notification.style.zIndex = '1000';
-                        document.body.appendChild(notification);
-                        
-                        setTimeout(() => {
-                            try {
-                                if (notification.parentNode === document.body) {
-                                    document.body.removeChild(notification);
-                                }
-                            } catch (e) {}
-                        }, 1500);
+                    // 移除升级提示，直接更新UI即可
                     }
                 }
                 
@@ -3058,40 +3054,94 @@
                     return;
                 }
                 
-                // 初始化resources对象
-                if (!window.gameState.resources) {
-                    window.gameState.resources = {};
+                // 浇树功能 - 使用水结晶
+                function waterTreeWithCrystal() {
+                    try {
+                        // 检查是否在第二阶段
+                        if (window.gameState.gameStage < 2) {
+                            alert("需要获得五行镐进入第二阶段才能浇树！");
+                            return;
+                        }
+                        
+                        // 检查是否有水结晶
+                        if ((window.gameState.resources && window.gameState.resources["水结晶"] || 0) < 1) {
+                            alert("水结晶不足！");
+                            return;
+                        }
+                        
+                        // 扣除水结晶
+                        window.gameState.resources["水结晶"] -= 1;
+                        
+                        // 增加树经验
+                        const expGain = 100;
+                        window.gameState.treeExp = (window.gameState.treeExp || 0) + expGain;
+                        
+                        // 检查是否可以升级
+                        const expNeededForNextLevel = 10 * window.gameState.treeLevel;
+                        if (window.gameState.treeExp >= expNeededForNextLevel) {
+                            window.gameState.treeLevel += 1;
+                            window.gameState.treeExp -= expNeededForNextLevel;
+                            
+                            // 移除升级提示，直接更新UI即可
+                        }
+                        
+                        // 更新UI
+                        updateUI();
+                        
+                        // 显示结果
+                        const resultsElement = document.getElementById('water-tree-results');
+                        if (resultsElement) {
+                            const currentExpNeeded = 10 * window.gameState.treeLevel;
+                            resultsElement.textContent = `成功浇树！消耗1个水结晶，树经验增加到${window.gameState.treeExp}/${currentExpNeeded}，树等级：${window.gameState.treeLevel}`;
+                        }
+                    } catch (e) {
+                        console.error('浇树过程出错:', e);
+                    }
                 }
                 
-                let expGain = 0;
-                let message = '';
-                let hasResource = false;
-                
-                // 优先使用淼立方
-                if ((window.gameState.resources["淼立方"] || 0) > 0) {
-                    window.gameState.resources["淼立方"] -= 1;
-                    expGain = 500;
-                    message = '使用淼立方浇树成功！';
-                    hasResource = true;
-                }
-                // 其次使用水结晶
-                else if ((window.gameState.resources["水结晶"] || 0) > 0) {
-                    window.gameState.resources["水结晶"] -= 1;
-                    expGain = 100;
-                    message = '使用水结晶浇树成功！';
-                    hasResource = true;
-                }
-                // 最后使用水立方
-                else if ((window.gameState.resources["水立方"] || 0) > 0) {
-                    window.gameState.resources["水立方"] -= 1;
-                    expGain = 5;
-                    message = '使用水立方浇树成功！';
-                    hasResource = true;
-                }
-                
-                if (!hasResource) {
-                    alert('浇树所需资源不足！请准备淼立方、水结晶或水立方。');
-                    return;
+                // 浇树功能 - 使用淼立方
+                function waterTreeWithTripleCube() {
+                    try {
+                        // 检查是否在第二阶段
+                        if (window.gameState.gameStage < 2) {
+                            alert("需要获得五行镐进入第二阶段才能浇树！");
+                            return;
+                        }
+                        
+                        // 检查是否有淼立方
+                        if ((window.gameState.resources && window.gameState.resources["淼立方"] || 0) < 1) {
+                            alert("淼立方不足！");
+                            return;
+                        }
+                        
+                        // 扣除淼立方
+                        window.gameState.resources["淼立方"] -= 1;
+                        
+                        // 增加树经验
+                        const expGain = 500;
+                        window.gameState.treeExp = (window.gameState.treeExp || 0) + expGain;
+                        
+                        // 检查是否可以升级
+                        const expNeededForNextLevel = 10 * window.gameState.treeLevel;
+                        if (window.gameState.treeExp >= expNeededForNextLevel) {
+                            window.gameState.treeLevel += 1;
+                            window.gameState.treeExp -= expNeededForNextLevel;
+                            
+                            // 移除升级提示，直接更新UI即可
+                        }
+                        
+                        // 更新UI
+                        updateUI();
+                        
+                        // 显示结果
+                        const resultsElement = document.getElementById('water-tree-results');
+                        if (resultsElement) {
+                            const currentExpNeeded = 10 * window.gameState.treeLevel;
+                            resultsElement.textContent = `成功浇树！消耗1个淼立方，树经验增加到${window.gameState.treeExp}/${currentExpNeeded}，树等级：${window.gameState.treeLevel}`;
+                        }
+                    } catch (e) {
+                        console.error('浇树过程出错:', e);
+                    }
                 }
                 
                 // 初始化树系统数据
@@ -3114,12 +3164,7 @@
                     leveledUp = true;
                 }
                 
-                // 显示消息
-                if (leveledUp) {
-                    alert(`${message}\n获得 ${expGain} 树经验！\n树升级到了 ${window.gameState.treeLevel} 级！`);
-                } else {
-                    alert(`${message}\n获得 ${expGain} 树经验！`);
-                }
+                // 完全移除所有提示，直接更新UI
                 
                 // 保存游戏
                 saveGame();
@@ -3176,15 +3221,23 @@
                 }
                 
                 // 更新浇树按钮状态
-                const waterTreeBtn = document.getElementById('water-tree-btn');
-                if (waterTreeBtn) {
-                    if (!window.gameState || window.gameState.gameStage < 2) {
-                        waterTreeBtn.disabled = true;
-                        waterTreeBtn.textContent = '到达阶段2解锁浇树系统';
-                    } else {
-                        waterTreeBtn.disabled = false;
-                        waterTreeBtn.textContent = '浇树 (消耗1个水立方)';
-                    }
+                const waterTreeCubeBtn = document.getElementById('water-tree-cube-btn');
+                const waterTreeCrystalBtn = document.getElementById('water-tree-crystal-btn');
+                const waterTreeTripleBtn = document.getElementById('water-tree-triple-btn');
+                
+                const isStage2 = window.gameState && window.gameState.gameStage >= 2;
+                
+                if (waterTreeCubeBtn) {
+                    waterTreeCubeBtn.disabled = !isStage2;
+                    waterTreeCubeBtn.textContent = isStage2 ? '浇树 (消耗1个水立方)' : '到达阶段2解锁浇树系统';
+                }
+                if (waterTreeCrystalBtn) {
+                    waterTreeCrystalBtn.disabled = !isStage2;
+                    waterTreeCrystalBtn.textContent = isStage2 ? '浇树 (消耗1个水结晶)' : '到达阶段2解锁浇树系统';
+                }
+                if (waterTreeTripleBtn) {
+                    waterTreeTripleBtn.disabled = !isStage2;
+                    waterTreeTripleBtn.textContent = isStage2 ? '浇树 (消耗1个淼立方)' : '到达阶段2解锁浇树系统';
                 }
             } catch (e) {
                 console.error('更新树木UI失败:', e);
@@ -4166,7 +4219,7 @@
                         let canAccess = true;
                         if (shopCategory === 'main2' || shopCategory === 'side2') {
                             canAccess = gameStage >= 2;
-                        } else if (shopCategory === 'main3') {
+                        } else if (shopCategory === 'main3' || shopCategory === 'side3') {
                             canAccess = gameStage >= 3;
                         }
                         
@@ -4189,9 +4242,13 @@
                 }
                 
                 // 添加浇树按钮事件
-                const waterTreeBtn = document.getElementById("water-tree-btn");
-                if (waterTreeBtn) {
-                    waterTreeBtn.addEventListener("click", waterTree);
+                const waterTreeCubeBtn = document.getElementById("water-tree-cube-btn");
+                const waterTreeCrystalBtn = document.getElementById("water-tree-crystal-btn");
+                const waterTreeTripleBtn = document.getElementById("water-tree-triple-btn");
+                if (waterTreeCubeBtn && waterTreeCrystalBtn && waterTreeTripleBtn) {
+                    waterTreeCubeBtn.addEventListener("click", waterTreeWithCube);
+        waterTreeCrystalBtn.addEventListener("click", waterTreeWithCrystal);
+        waterTreeTripleBtn.addEventListener("click", waterTreeWithTripleCube);
                 }
             } catch (e) {
                 console.error('添加按钮事件监听失败:', e);
@@ -4337,16 +4394,20 @@
                             const main3CategoryBtn = document.querySelector('.block-category .category-btn[data-category="main3"]');
                             if (main3CategoryBtn) main3CategoryBtn.style.display = 'inline-block';
                             
-                            // 显示主线3商店
+                            // 显示主线3商店和支线3商店
                             const main3ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="main3"]');
+                            const side3ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="side3"]');
                             if (main3ShopBtn) main3ShopBtn.style.display = 'inline-block';
+                            if (side3ShopBtn) side3ShopBtn.style.display = 'inline-block';
                         } else {
                             const main3CategoryBtn = document.querySelector('.block-category .category-btn[data-category="main3"]');
                             if (main3CategoryBtn) main3CategoryBtn.style.display = 'none';
                             
-                            // 隐藏主线3商店
+                            // 隐藏主线3商店和支线3商店
                             const main3ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="main3"]');
+                            const side3ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="side3"]');
                             if (main3ShopBtn) main3ShopBtn.style.display = 'none';
+                            if (side3ShopBtn) side3ShopBtn.style.display = 'none';
                         }
                         
                         // 控制主线2和支线2商店的显示
@@ -4392,7 +4453,7 @@
             console.log('兑换信息自动更新已启动');
         }
         
-        // 金奖转化器功能 - 每秒将1%金币转化为奖杯
+        // 金奖转化器功能 - 按照新公式转化金币为奖杯
         function startTrophyConverter() {
             setInterval(() => {
                 try {
@@ -4403,10 +4464,10 @@
                         const gold = window.gameState.gold || 0;
                         // 只有当金币大于等于10000时才进行转化
                         if (gold >= 10000) {
-                            // 转化1%的金币为奖杯
-                            const convertAmount = gold * 0.01;
-                            window.gameState.gold -= convertAmount;
+                            // 新公式：奖杯+(金币数量/10000)^0.8；金币*0.99
+                            const convertAmount = Math.pow(gold / 10000, 0.8);
                             window.gameState.trophies = (window.gameState.trophies || 0) + convertAmount;
+                            window.gameState.gold = gold * 0.99;
                             
                             // 更新UI显示
                             updateGoldDisplay();
