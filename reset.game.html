@@ -2227,7 +2227,8 @@
                 totalDamage *= calculateTreeBoost();
             }
             
-            return totalDamage;
+            // 保留两位小数
+            return parseFloat(totalDamage.toFixed(2));
         }
         
         // 挖掘方块
@@ -2303,6 +2304,22 @@
                 
                 // 累计总伤害
                 window.gameState.totalDamage = (window.gameState.totalDamage || 0) + totalDamage;
+                
+                // 增加使用增益 - 根据当前使用的镐子的usageGain属性
+                try {
+                    // 确保usageBoost存在
+                    if (window.gameState.usageBoost === undefined) {
+                        window.gameState.usageBoost = 1;
+                    }
+                    
+                    // 获取当前镐子的usageGain值
+                    const usageGain = currentPickaxeData?.usageGain || 0.01; // 默认0.01
+                    
+                    // 增加使用增益
+                    window.gameState.usageBoost += usageGain;
+                } catch (usageBoostError) {
+                    console.error('增加使用增益失败:', usageBoostError);
+                }
                 
                 // 显示伤害数字（仅手动挖矿时显示）
                 if (!isAutoMining) {
@@ -2514,20 +2531,13 @@
             }
         }
 
-        // 更新游戏阶段显示 - 只显示数字
+        // 更新游戏阶段显示 - 根据要求不显示游戏阶段
         function updateGameStageDisplay() {
             try {
                 const stageElement = document.getElementById('game-stage');
-                if (stageElement && window.gameState) {
-                    const currentStage = window.gameState.gameStage || 1;
-                    // 根据要求显示阶段
-                    if (currentStage === 1) {
-                        stageElement.textContent = '当前阶段：第一阶段';
-                    } else if (currentStage === 2) {
-                        stageElement.textContent = '当前阶段：第二阶段';
-                    } else {
-                        stageElement.textContent = `当前阶段：第${currentStage}阶段`;
-                    }
+                if (stageElement) {
+                    // 不显示游戏阶段信息
+                    stageElement.textContent = '';
                 }
             } catch (e) {
                 console.error('更新游戏阶段显示失败:', e);
