@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>张小平全家死光</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .text-container {
+            text-align: center;
+        }
+        .large-text {
+            font-size: 80px;
+            font-weight: bold;
+            color: #333;
+            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
+            margin: 0;
+            transition: all 0.3s ease;
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            max-width: 600px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        #customTextInput {
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 200px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        #customTextInput:focus {
+            border-color: #4CAF50;
+        }
+        #updateTextButton {
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        #updateTextButton:hover {
+            background-color: #45a049;
+        }
+        @media (max-width: 768px) {
+            .large-text {
+                font-size: 50px;
+            }
+            .input-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+        @media (max-width: 480px) {
+            .large-text {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="text-container">
+        <p class="large-text" id="displayText">“张小平没M”“张小平全家死光”，“张小平78断了“”张小平钥匙掉了“”张小平没78“”张小平78比日本人的还小“”张小平的78用显微镜才能看见“”张小平是畜生““张小平一秒鲁一万发鲁断了“</p>
+    </div>
+    <div class="input-container">
+        <input type="text" id="customTextInput" placeholder="输入自定义文本..." maxlength="50">
+        <button id="updateTextButton">更新文本</button>
+    </div>
+    <script>
+        // 获取DOM元素
+        const displayTextElement = document.getElementById('displayText');
+        const customTextInput = document.getElementById('customTextInput');
+        const updateTextButton = document.getElementById('updateTextButton');
+        
+        // 更新文本函数
+        function updateDisplayText() {
+            const newText = customTextInput.value.trim();
+            if (newText) {
+                displayTextElement.textContent = newText;
+                // 可选的视觉反馈
+                displayTextElement.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    displayTextElement.style.transform = 'scale(1)';
+                }, 200);
+            }
+        }
+        
+        // 绑定按钮点击事件
+        updateTextButton.addEventListener('click', updateDisplayText);
+        
+        // 绑定回车键事件
+        customTextInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                updateDisplayText();
+            }
+        });
+    </script>
+</body>
+</html>
