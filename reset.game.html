@@ -974,11 +974,46 @@
                     <div class="alchemy-value-display">
                         当前炼药价值: <span class="alchemy-value-amount" id="alchemy-value-amount">0</span>
                     </div>
-                    <button class="convert-alchemy-btn" id="convert-alchemy-btn">一键换取炼药价值</button>
+                    <button 
+                        class="convert-alchemy-btn" 
+                        id="convert-alchemy-btn"
+                        style="
+                            padding: 10px 20px;
+                            font-size: 16px;
+                            font-weight: bold;
+                            background-color: #9C27B0;
+                            color: white;
+                            border: none;
+                            border-radius: 6px;
+                            cursor: pointer;
+                            transition: background-color 0.3s;
+                            margin-bottom: 15px;
+                        "
+                        onclick="handleConvertToAlchemy()"
+                    >
+                        一键换取炼药价值
+                    </button>
                     <div class="alchemy-input">
                         <input type="number" id="alchemy-value-input" placeholder="单次炼药价值" min="1" value="1">
                         <input type="number" id="alchemy-times" placeholder="炼药次数" min="1" max="10000" value="1">
-                        <button class="alchemy-btn" id="alchemy-btn">开始炼药</button>
+                        <button 
+                            class="alchemy-btn" 
+                            id="alchemy-btn"
+                            style="
+                                padding: 10px 20px;
+                                font-size: 16px;
+                                font-weight: bold;
+                                background-color: #FF5722;
+                                color: white;
+                                border: none;
+                                border-radius: 6px;
+                                cursor: pointer;
+                                transition: background-color 0.3s;
+                            "
+                            onclick="handleAlchemy()"
+                        >
+                            开始炼药
+                        </button>
                     </div>
                     <div class="alchemy-results" id="alchemy-results">
                         炼药结果将显示在这里
@@ -1062,9 +1097,36 @@
                 <i class="fas fa-exchange-alt"></i>
                 <h2>金币兑换</h2>
             </div>
-            <button class="convert-btn" id="convert-btn">全部兑换为奖杯</button>
-            <div class="convert-info" id="convert-info">
-                当前可兑换: 0 奖杯
+            <!-- 全新的兑换按钮实现 -->
+            <div id="convert-section" style="text-align: center; margin: 20px 0;">
+                <button 
+                    id="new-convert-btn" 
+                    class="convert-btn"
+                    style="
+                        padding: 12px 24px;
+                        font-size: 16px;
+                        font-weight: bold;
+                        background-color: #4CAF50;
+                        color: white;
+                        border: none;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        transition: background-color 0.3s;
+                    "
+                    onclick="handleConvertClick()"
+                >
+                    全部兑换为奖杯
+                </button>
+                <div 
+                    id="new-convert-info" 
+                    style="
+                        margin-top: 10px;
+                        font-size: 14px;
+                        color: #666;
+                    "
+                >
+                    当前可兑换: 0 奖杯
+                </div>
             </div>
             <div class="auto-save-info">
                 <i class="fas fa-save"></i> 每5秒自动保存
@@ -1328,6 +1390,10 @@
         // 计算所需经验
         function getExpNeeded(level) {
             // 修复经验计算公式，确保升级难度合理
+            // 当等级大于1000时，经验恒定为27891
+            if (level > 1000) {
+                return 27891;
+            }
             return Math.round(Math.pow(1.01, level) * 10) / 10;
         }
 
@@ -1642,12 +1708,41 @@
                     if (window.gameState.gameStage >= 2) {
                         treeBoostElement.textContent = "浇树增益: " + calculateTreeBoost().toFixed(2);
                         treeBoostElement.style.display = "block";
+                        // 确保可见性
+                        treeBoostElement.style.visibility = "visible";
+                        treeBoostElement.style.opacity = "1";
                     } else {
                         // 确保完全隐藏，避免任何显示
                         treeBoostElement.style.display = "none";
                         // 额外添加visibility和opacity来确保不显示
                         treeBoostElement.style.visibility = "hidden";
                         treeBoostElement.style.opacity = "0";
+                    }
+                }
+                
+                // 修复：在统计数据面板中显示浇树增益
+                const statsPanelElement = document.querySelector('.stats-panel');
+                if (statsPanelElement && window.gameState.gameStage >= 2) {
+                    let treeBoostStatElement = statsPanelElement.querySelector('#tree-boost-stat');
+                    if (!treeBoostStatElement) {
+                        // 如果统计面板中还没有浇树增益显示，创建一个
+                        treeBoostStatElement = document.createElement('div');
+                        treeBoostStatElement.id = 'tree-boost-stat';
+                        treeBoostStatElement.className = 'stat-item';
+                        // 找到合适的位置插入，比如在奖杯增益后面
+                        const trophyBoostStatElement = statsPanelElement.querySelector('#trophy-boost') || statsPanelElement.querySelector('.stat-item:last-child');
+                        if (trophyBoostStatElement && trophyBoostStatElement.parentNode) {
+                            trophyBoostStatElement.parentNode.insertBefore(treeBoostStatElement, trophyBoostStatElement.nextSibling);
+                        } else {
+                            statsPanelElement.appendChild(treeBoostStatElement);
+                        }
+                    }
+                    treeBoostStatElement.textContent = "浇树增益: " + calculateTreeBoost().toFixed(2);
+                    treeBoostStatElement.style.display = "block";
+                } else if (statsPanelElement) {
+                    const treeBoostStatElement = statsPanelElement.querySelector('#tree-boost-stat');
+                    if (treeBoostStatElement) {
+                        treeBoostStatElement.style.display = "none";
                     }
                 }
                 
@@ -1991,6 +2086,17 @@
                     if (item.cost.basePickaxes) {
                         for (const pick of item.cost.basePickaxes) {
                             window.gameState.pickaxes[pick] = Math.max(0, (window.gameState.pickaxes[pick] || 0) - 1);
+                        }
+                    }
+                    
+                    // 修复：确保从fragments中扣除镐子
+                    if (item.cost.fragments) {
+                        for (const [frag, amount] of Object.entries(item.cost.fragments)) {
+                            if (frag.includes("镐")) {
+                                // 确保扣除镐子
+                                window.gameState.pickaxes[frag] = Math.max(0, (window.gameState.pickaxes[frag] || 0) - amount);
+                                console.log(`已扣除${amount}个${frag}`);
+                            }
                         }
                     }
                     
@@ -2674,137 +2780,317 @@
             }, 100);
         });
         
-        // 兑换金币为奖杯 - 修复兑换逻辑
+        // 实时更新兑换信息显示
+        function updateConvertInfo() {
+            try {
+                if (!window.gameState) return;
+                
+                const currentGold = parseFloat(window.gameState.gold || 0);
+                let trophiesAvailable = 0;
+                
+                if (currentGold >= 100) {
+                    trophiesAvailable = Math.floor(Math.pow(currentGold / 100, 0.8));
+                }
+                
+                const convertInfoElement = document.getElementById('convert-info');
+                if (convertInfoElement) {
+                    convertInfoElement.textContent = `当前可兑换: ${formatNumber(trophiesAvailable)} 奖杯`;
+                }
+            } catch (error) {
+                console.error('更新兑换信息失败:', error);
+            }
+        }
+        
+        // 全新的兑换金币为奖杯函数
         function convertGoldToTrophies() {
             console.log('兑换函数开始执行');
             
-            // 直接使用内联计算，不依赖外部函数
-            function calcTrophies(gold) {
-                if (gold < 100) return 0;
-                return Math.floor(Math.pow(gold / 100, 0.8));
-            }
-            
             try {
-                // 确保gameState存在
+                // 确保gameState存在且有必要的属性
                 if (!window.gameState) {
-                    console.error('游戏状态异常，gameState不存在');
-                    alert('游戏状态异常，请刷新页面');
-                    return;
+                    window.gameState = { gold: 0, trophies: 0 };
+                    console.warn('创建了新的gameState');
                 }
                 
-                // 初始化必要的游戏状态属性
-                if (typeof window.gameState.gold === 'undefined') {
-                    window.gameState.gold = 0;
-                    console.warn('金币属性不存在，已初始化');
-                }
-                
-                if (typeof window.gameState.trophies === 'undefined') {
-                    window.gameState.trophies = 0;
-                    console.warn('奖杯属性不存在，已初始化');
-                }
-                
-                // 确保金币为数字类型
-                if (typeof window.gameState.gold !== 'number') {
-                    window.gameState.gold = parseFloat(window.gameState.gold) || 0;
-                    console.warn('金币类型异常，已转换为数字');
-                }
-                
-                // 确保奖杯为数字类型
-                if (typeof window.gameState.trophies !== 'number') {
-                    window.gameState.trophies = parseFloat(window.gameState.trophies) || 0;
-                    console.warn('奖杯类型异常，已转换为数字');
-                }
+                // 初始化属性
+                window.gameState.gold = parseFloat(window.gameState.gold || 0);
+                window.gameState.trophies = parseFloat(window.gameState.trophies || 0);
                 
                 const currentGold = window.gameState.gold;
-                console.log(`当前金币: ${currentGold} (类型: ${typeof currentGold})`);
+                console.log(`当前金币: ${currentGold}`);
                 
                 // 检查金币是否足够
                 if (currentGold < 100) {
-                    console.log('金币不足100，无法兑换奖杯');
                     alert('金币不足100，无法兑换奖杯');
                     return;
                 }
                 
                 // 计算可兑换的奖杯数量
-                const trophiesFromGold = calcTrophies(currentGold);
+                const trophiesFromGold = Math.floor(Math.pow(currentGold / 100, 0.8));
                 console.log(`兑换计算：${currentGold}金币可兑换${trophiesFromGold}奖杯`);
                 
-                if (trophiesFromGold > 0) {
-                    // 记录兑换前状态
-                    console.log(`兑换前 - 奖杯: ${window.gameState.trophies}, 金币: ${window.gameState.gold}`);
-                    
-                    // 执行兑换
-                    window.gameState.trophies += trophiesFromGold;
-                    window.gameState.gold = 0;
-                    
-                    // 记录兑换后状态
-                    console.log(`兑换后 - 奖杯: ${window.gameState.trophies}, 金币: ${window.gameState.gold}`);
-                    
-                    // 检查成就
-                    if (typeof checkAchievements === 'function') {
-                        console.log('调用checkAchievements检查成就');
-
-                    } else {
-                        console.warn('checkAchievements函数未定义');
-                    }
-                    
-                    // 强制更新UI组件
-                    console.log('更新所有UI显示');
-                    
-                    // 直接更新关键UI元素
-                    const goldElement = document.getElementById('gold');
-                    if (goldElement) {
-                        goldElement.textContent = formatNumber(window.gameState.gold);
-                    }
-                    
-                    const trophiesElement = document.getElementById('trophies');
-                    if (trophiesElement) {
-                        trophiesElement.textContent = formatNumber(window.gameState.trophies);
-                    }
-                    
-                    // 更新兑换信息显示
-                    const convertInfoElement = document.querySelector('#convert-section p');
-                    if (convertInfoElement) {
-                        const trophiesAvailable = calcTrophies(window.gameState.gold);
-                        convertInfoElement.textContent = `当前可兑换: ${formatNumber(trophiesAvailable)} 奖杯`;
-                    }
-                    
-                    // 更新奖杯增益显示
-                    const trophyBoostElement = document.getElementById("trophy-boost");
-                    if (trophyBoostElement) {
-                        trophyBoostElement.textContent = calculateTrophyBoost(window.gameState.trophies).toFixed(2);
-                    }
-                    
-                    // 更新增益列表
-                    if (typeof updateBoostsList === 'function') {
-                        updateBoostsList();
-                    }
-                    
-                    // 保存游戏状态 - 直接实现保存逻辑，不依赖外部函数
-                    try {
-                        console.log('执行游戏保存');
-                        const gameStateToSave = JSON.stringify(window.gameState);
-                        localStorage.setItem('miningGameState', gameStateToSave);
-                        console.log('游戏状态保存成功');
-                    } catch (saveError) {
-                        console.error('保存游戏失败:', saveError);
-                        // 即使保存失败，也不影响兑换的成功提示
-                    }
-                    
-                    console.log('兑换完成');
-                    alert(`兑换成功！获得 ${trophiesFromGold} 奖杯`);
-                } else {
-                    console.log('计算结果为0奖杯，不执行兑换');
-                    alert('无法兑换到奖杯，请确保金币足够');
+                if (trophiesFromGold <= 0) {
+                    alert('计算错误，无法兑换奖杯');
+                    return;
                 }
-            } catch (e) {
-                console.error('兑换过程中发生错误:', e);
-                console.error('兑换金币为奖杯失败:', e.stack || e);
-                alert(`兑换失败: ${e.message || '未知错误'}`);
-            } finally {
-                console.log('兑换函数执行完毕');
+                
+                // 执行兑换
+                window.gameState.trophies += trophiesFromGold;
+                window.gameState.gold = 0;
+                
+                // 直接更新UI
+                const goldElement = document.getElementById('gold');
+                if (goldElement) goldElement.textContent = formatNumber(window.gameState.gold);
+                
+                const trophiesElement = document.getElementById('trophies');
+                if (trophiesElement) trophiesElement.textContent = formatNumber(window.gameState.trophies);
+                
+                const convertInfoElement = document.getElementById('convert-info');
+                if (convertInfoElement) convertInfoElement.textContent = '当前可兑换: 0 奖杯';
+                
+                // 更新奖杯增益
+                const trophyBoostElement = document.getElementById('trophy-boost');
+                if (trophyBoostElement) {
+                    const boost = 1 + Math.pow(window.gameState.trophies, 0.4);
+                    trophyBoostElement.textContent = boost.toFixed(2);
+                }
+                
+                // 保存游戏状态
+                try {
+                    localStorage.setItem('miningGameState', JSON.stringify(window.gameState));
+                    console.log('游戏状态已保存');
+                } catch (e) {
+                    console.error('保存失败:', e);
+                }
+                
+                alert(`兑换成功！获得 ${trophiesFromGold} 奖杯`);
+                console.log('兑换成功完成');
+            } catch (error) {
+                console.error('兑换过程出错:', error);
+                alert('兑换失败，请刷新页面后重试');
             }
         }
+        
+        // 重写的一键换取炼药价值函数
+        window.handleConvertToAlchemy = function() {
+            try {
+                console.log('开始换取炼药价值...');
+                
+                // 确保gameState存在
+                if (!window.gameState) {
+                    window.gameState = {};
+                }
+                
+                // 确保resources对象存在
+                if (!window.gameState.resources) {
+                    window.gameState.resources = {};
+                }
+                
+                let totalValue = 0;
+                let convertedItems = [];
+                
+                // 检查炼药价值数据
+                if (!window.gameData || !window.gameData.alchemyValues) {
+                    alert('炼药价值数据未加载，请刷新页面');
+                    return;
+                }
+                
+                // 转换所有可转换的物品
+                for (const [item, value] of Object.entries(window.gameData.alchemyValues)) {
+                    const itemCount = window.gameState.resources[item] || 0;
+                    if (itemCount > 0) {
+                        const numericValue = Number(value);
+                        if (numericValue > 0) {
+                            const itemValue = itemCount * numericValue;
+                            totalValue += itemValue;
+                            convertedItems.push(`${item}: ${itemCount}个`);
+                            window.gameState.resources[item] = 0;
+                        }
+                    }
+                }
+                
+                if (totalValue > 0) {
+                    // 更新炼药价值
+                    window.gameState.alchemyValue = (window.gameState.alchemyValue || 0) + totalValue;
+                    
+                    // 直接更新UI
+                    const alchemyValueElement = document.getElementById("alchemy-value-amount");
+                    if (alchemyValueElement && typeof formatNumber === 'function') {
+                        alchemyValueElement.textContent = formatNumber(window.gameState.alchemyValue);
+                    }
+                    
+                    // 保存游戏状态
+                    try {
+                        localStorage.setItem('miningGameState', JSON.stringify(window.gameState));
+                        console.log('游戏状态保存成功');
+                    } catch (e) {
+                        console.error('保存失败:', e);
+                    }
+                    
+                    // 更新资源列表
+                    if (typeof updateResourcesList === 'function') {
+                        updateResourcesList();
+                    }
+                }
+                
+                // 显示结果
+                const resultsElement = document.getElementById("alchemy-results");
+                if (resultsElement) {
+                    if (totalValue > 0) {
+                        resultsElement.innerHTML = `
+                            <div>成功转换以下物品:</div>
+                            <div>${convertedItems.join(', ')}</div>
+                            <div>共获得 ${formatNumber(totalValue)} 炼药价值</div>
+                        `;
+                    } else {
+                        resultsElement.innerHTML = "没有可转换的物品";
+                    }
+                }
+                
+                console.log('换取炼药价值完成');
+            } catch (e) {
+                console.error('换取炼药价值失败:', e);
+                const resultsElement = document.getElementById("alchemy-results");
+                if (resultsElement) {
+                    resultsElement.innerHTML = "转换过程中发生错误，请重试";
+                }
+            }
+        };
+        
+        // 重写的炼药函数
+        window.handleAlchemy = function() {
+            try {
+                console.log('开始炼药...');
+                
+                // 确保gameState存在
+                if (!window.gameState) {
+                    window.gameState = {};
+                }
+                
+                // 获取输入值
+                const valueInputElement = document.getElementById("alchemy-value-input");
+                const timesInputElement = document.getElementById("alchemy-times");
+                
+                if (!valueInputElement || !timesInputElement) {
+                    alert('缺少必要的输入元素');
+                    return;
+                }
+                
+                // 验证并获取参数
+                let valuePerTime = Math.max(1, Math.floor(Number(valueInputElement.value) || 1));
+                let times = Math.max(1, Math.min(10000, Math.floor(Number(timesInputElement.value) || 1)));
+                
+                const currentAlchemyValue = window.gameState.alchemyValue || 0;
+                const totalValueNeeded = valuePerTime * times;
+                
+                // 检查炼药价值是否足够
+                if (currentAlchemyValue < valuePerTime) {
+                    alert(`炼药价值不足！当前: ${formatNumber(currentAlchemyValue)}, 需要: ${formatNumber(valuePerTime)}`);
+                    return;
+                }
+                
+                // 调整次数
+                if (currentAlchemyValue < totalValueNeeded) {
+                    times = Math.floor(currentAlchemyValue / valuePerTime);
+                    timesInputElement.value = times;
+                }
+                
+                const adjustedTotalValue = valuePerTime * times;
+                
+                // 扣除炼药价值
+                window.gameState.alchemyValue = currentAlchemyValue - adjustedTotalValue;
+                
+                // 初始化统计
+                let exploded = 0;
+                let gained1 = 0;
+                let gained10 = 0;
+                let gained100 = 0;
+                let totalGained = 0;
+                
+                const currentAlchemyBoost = Math.max(1, window.gameState.alchemyBoost || 1);
+                
+                // 执行炼药
+                for (let i = 0; i < times; i++) {
+                    let explodeChance = 0.5 / Math.pow(valuePerTime, 0.4);
+                    explodeChance = Math.max(0.01, Math.min(0.99, explodeChance));
+                    
+                    let gain1Chance = 0;
+                    let gain10Chance = 0;
+                    let gain100Chance = 0;
+                    
+                    if (valuePerTime < 100) {
+                        gain1Chance = 0.4 * Math.pow(currentAlchemyBoost, 0.1);
+                        gain10Chance = 1 - explodeChance - gain1Chance;
+                    } else {
+                        gain1Chance = 0.4 / Math.pow(currentAlchemyBoost, 0.6);
+                        gain10Chance = 0.4 * Math.pow(valuePerTime / 100, 0.4);
+                        gain10Chance = Math.min(0.5, gain10Chance);
+                        gain100Chance = 1 - explodeChance - gain1Chance - gain10Chance;
+                    }
+                    
+                    // 确保概率有效
+                    gain1Chance = Math.max(0, Math.min(1 - explodeChance, gain1Chance));
+                    gain10Chance = Math.max(0, Math.min(1 - explodeChance - gain1Chance, gain10Chance));
+                    gain100Chance = Math.max(0, Math.min(1 - explodeChance - gain1Chance - gain10Chance, gain100Chance));
+                    
+                    const rand = Math.random();
+                    
+                    if (rand < explodeChance) {
+                        exploded++;
+                    } else if (rand < explodeChance + gain1Chance) {
+                        gained1++;
+                        totalGained += 1;
+                    } else if (rand < explodeChance + gain1Chance + gain10Chance) {
+                        gained10++;
+                        totalGained += 10;
+                    } else {
+                        gained100++;
+                        totalGained += 100;
+                    }
+                }
+                
+                // 更新炼药增益
+                window.gameState.alchemyBoost = currentAlchemyBoost + totalGained;
+                
+                // 更新UI
+                const alchemyValueElement = document.getElementById("alchemy-value-amount");
+                if (alchemyValueElement && typeof formatNumber === 'function') {
+                    alchemyValueElement.textContent = formatNumber(window.gameState.alchemyValue);
+                }
+                
+                // 保存游戏状态
+                try {
+                    localStorage.setItem('miningGameState', JSON.stringify(window.gameState));
+                    console.log('游戏状态保存成功');
+                } catch (e) {
+                    console.error('保存失败:', e);
+                }
+                
+                // 显示结果
+                const resultsElement = document.getElementById("alchemy-results");
+                if (resultsElement) {
+                    const avgPerTime = times > 0 ? totalGained / times : 0;
+                    const avgPerValue = adjustedTotalValue > 0 ? totalGained / adjustedTotalValue : 0;
+                    
+                    resultsElement.innerHTML = `
+                        <div>本次共消耗 ${formatNumber(adjustedTotalValue)} 炼药价值，炼药 ${times} 次</div>
+                        <div>炸锅 ${exploded} 次，获得1炼药增益 ${gained1} 次</div>
+                        <div>获得10炼药增益 ${gained10} 次，获得100炼药增益 ${gained100} 次</div>
+                        <div>共获得 ${formatNumber(totalGained)} 炼药增益</div>
+                        <div>平均每次炼药获得 ${avgPerTime.toFixed(2)} 炼药增益</div>
+                        <div>平均每炼药值获得 ${avgPerValue.toFixed(4)} 炼药增益</div>
+                    `;
+                }
+                
+                console.log('炼药完成');
+            } catch (e) {
+                console.error('炼药失败:', e);
+                const resultsElement = document.getElementById("alchemy-results");
+                if (resultsElement) {
+                    resultsElement.innerHTML = "炼药过程中发生错误，请重试";
+                }
+            }
+        };
 
         // 一键换取炼药价值
         function convertToAlchemyValue() {
@@ -3261,18 +3547,37 @@
                 console.error('添加炼药按钮事件监听失败:', e);
             }
             
-            // 兑换按钮
+            // 兑换按钮 - 增强版本
             try {
                 const convertBtn = document.getElementById("convert-btn");
                 if (convertBtn) {
-                    // 移除可能存在的旧事件监听器
-                    convertBtn.removeEventListener("click", convertGoldToTrophies);
-                    // 添加新的事件监听器
-                    convertBtn.addEventListener("click", function() {
-                        console.log('兑换按钮被点击');
-                        convertGoldToTrophies();
-                    });
-                    console.log('兑换按钮事件监听添加成功');
+                    // 移除所有可能存在的旧事件监听器
+                    convertBtn.onclick = null;
+                    
+                    // 方法1：使用onclick属性（最可靠的方式）
+                    convertBtn.onclick = function(event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        console.log('兑换按钮onclick触发');
+                        try {
+                            console.log('调用convertGoldToTrophies函数');
+                            convertGoldToTrophies();
+                        } catch (innerError) {
+                            console.error('兑换函数执行失败:', innerError.stack || innerError);
+                            alert('兑换失败：' + (innerError.message || '未知错误'));
+                        }
+                    };
+                    
+                    // 方法2：添加事件监听器作为备份
+                    try {
+                        convertBtn.addEventListener('click', function(event) {
+                            console.log('兑换按钮addEventListener触发');
+                        }, { once: true }); // 只触发一次，避免重复执行
+                    } catch (addEventError) {
+                        console.warn('添加事件监听器失败，但onclick已设置:', addEventError);
+                    }
+                    
+                    console.log('兑换按钮事件绑定完成');
                 } else {
                     console.error('未找到兑换按钮元素');
                 }
@@ -3344,6 +3649,128 @@
             }
         }
 
+        // 添加定期更新兑换信息的定时器
+        function startConvertInfoUpdater() {
+            // 每100毫秒更新一次兑换信息
+            setInterval(updateConvertInfo, 100);
+            console.log('兑换信息自动更新已启动');
+        }
+        
+        // 修改initGame函数，在游戏初始化时启动兑换信息更新
+        const originalInitGame = initGame;
+        initGame = function() {
+            originalInitGame();
+            startConvertInfoUpdater();
+            // 立即更新一次兑换信息
+            updateConvertInfo();
+        };
+        
+        // 全新的兑换函数 - 直接在全局作用域定义
+        function handleConvertClick() {
+            console.log('兑换按钮点击事件触发');
+            
+            try {
+                // 确保gameState存在
+                if (!window.gameState) {
+                    window.gameState = { gold: 0, trophies: 0 };
+                    console.log('创建了新的gameState对象');
+                }
+                
+                // 获取并验证金币数量
+                let gold = parseFloat(window.gameState.gold) || 0;
+                let trophies = parseFloat(window.gameState.trophies) || 0;
+                
+                console.log(`当前金币: ${gold}, 当前奖杯: ${trophies}`);
+                
+                // 检查金币是否足够
+                if (gold < 100) {
+                    alert('金币不足100，无法兑换奖杯');
+                    return;
+                }
+                
+                // 计算可兑换的奖杯数量
+                const trophiesToAdd = Math.floor(Math.pow(gold / 100, 0.8));
+                console.log(`计算结果: ${gold}金币可兑换${trophiesToAdd}奖杯`);
+                
+                if (trophiesToAdd <= 0) {
+                    alert('计算错误，无法兑换奖杯');
+                    return;
+                }
+                
+                // 执行兑换
+                trophies += trophiesToAdd;
+                gold = 0;
+                
+                // 更新游戏状态
+                window.gameState.gold = gold;
+                window.gameState.trophies = trophies;
+                
+                // 立即更新UI
+                updateConvertUI();
+                
+                // 保存游戏状态
+                try {
+                    localStorage.setItem('miningGameState', JSON.stringify(window.gameState));
+                    console.log('游戏状态已保存到localStorage');
+                } catch (saveError) {
+                    console.error('保存失败:', saveError);
+                }
+                
+                // 显示成功提示
+                alert(`兑换成功！获得 ${trophiesToAdd} 奖杯`);
+                console.log('兑换过程完成');
+            } catch (error) {
+                console.error('兑换出错:', error);
+                alert('兑换失败，请刷新页面后重试');
+            }
+        }
+        
+        // 更新兑换相关UI
+        function updateConvertUI() {
+            try {
+                const gameState = window.gameState || { gold: 0, trophies: 0 };
+                const gold = parseFloat(gameState.gold) || 0;
+                const trophies = parseFloat(gameState.trophies) || 0;
+                
+                // 更新新旧两种UI元素（兼容性）
+                const goldElement = document.getElementById('gold');
+                if (goldElement) {
+                    goldElement.textContent = formatNumber(gold);
+                }
+                
+                const trophiesElement = document.getElementById('trophies');
+                if (trophiesElement) {
+                    trophiesElement.textContent = formatNumber(trophies);
+                }
+                
+                const newConvertInfo = document.getElementById('new-convert-info');
+                if (newConvertInfo) {
+                    const trophiesAvailable = gold >= 100 ? Math.floor(Math.pow(gold / 100, 0.8)) : 0;
+                    newConvertInfo.textContent = `当前可兑换: ${formatNumber(trophiesAvailable)} 奖杯`;
+                }
+                
+                // 同时更新旧的兑换信息显示
+                const oldConvertInfo = document.getElementById('convert-info');
+                if (oldConvertInfo) {
+                    const trophiesAvailable = gold >= 100 ? Math.floor(Math.pow(gold / 100, 0.8)) : 0;
+                    oldConvertInfo.textContent = `当前可兑换: ${formatNumber(trophiesAvailable)} 奖杯`;
+                }
+            } catch (e) {
+                console.error('更新UI失败:', e);
+            }
+        }
+        
+        // 添加页面加载完成后的兑换信息更新
+        window.addEventListener('load', function() {
+            console.log('页面加载完成，初始化兑换功能');
+            // 立即更新一次兑换信息
+            updateConvertUI();
+            
+            // 设置定时更新
+            setInterval(updateConvertUI, 200); // 每200毫秒更新一次
+            console.log('兑换信息自动更新已启动');
+        });
+        
         // 启动游戏
         window.onload = initGame;
     </script>
