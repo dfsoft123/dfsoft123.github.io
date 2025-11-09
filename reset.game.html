@@ -978,21 +978,62 @@
                         class="convert-alchemy-btn" 
                         id="convert-alchemy-btn"
                         style="
-                            padding: 10px 20px;
-                            font-size: 16px;
+                            padding: 16px 32px;
+                            font-size: 20px;
                             font-weight: bold;
-                            background-color: #9C27B0;
+                            background: linear-gradient(145deg, #4CAF50, #45a049);
                             color: white;
-                            border: none;
-                            border-radius: 6px;
+                            border: 2px solid #4CAF50;
+                            border-radius: 12px;
                             cursor: pointer;
-                            transition: background-color 0.3s;
-                            margin-bottom: 15px;
+                            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                            box-shadow: 0 8px 16px rgba(76, 175, 80, 0.3);
+                            margin-bottom: 20px;
+                            width: 100%;
+                            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                            position: relative;
+                            overflow: hidden;
                         "
-                        onclick="handleConvertToAlchemy()"
+                        onclick="newConvertToAlchemy()"
                     >
-                        一键换取炼药价值
+                        <i class="fas fa-flask mr-2" style="margin-right: 8px;"></i>
+                        一键获取炼药价值
+                        <div class="button-overlay" style="
+                            position: absolute;
+                            top: 0;
+                            left: -100%;
+                            width: 100%;
+                            height: 100%;
+                            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                            transition: left 0.6s;
+                        "></div>
                     </button>
+                    <script>
+                        // 添加按钮动画效果
+                        document.getElementById('convert-alchemy-btn').addEventListener('mouseover', function() {
+                            this.style.boxShadow = '0 12px 24px rgba(76, 175, 80, 0.4)';
+                            this.style.transform = 'translateY(-3px) scale(1.02)';
+                            this.style.borderColor = '#3d8b40';
+                            this.querySelector('.button-overlay').style.left = '100%';
+                        });
+                        
+                        document.getElementById('convert-alchemy-btn').addEventListener('mouseout', function() {
+                            this.style.boxShadow = '0 8px 16px rgba(76, 175, 80, 0.3)';
+                            this.style.transform = 'translateY(0) scale(1)';
+                            this.style.borderColor = '#4CAF50';
+                            this.querySelector('.button-overlay').style.left = '-100%';
+                        });
+                        
+                        document.getElementById('convert-alchemy-btn').addEventListener('mousedown', function() {
+                            this.style.transform = 'translateY(0) scale(0.98)';
+                            this.style.boxShadow = '0 4px 8px rgba(76, 175, 80, 0.3)';
+                        });
+                        
+                        document.getElementById('convert-alchemy-btn').addEventListener('mouseup', function() {
+                            this.style.transform = 'translateY(-3px) scale(1.02)';
+                            this.style.boxShadow = '0 12px 24px rgba(76, 175, 80, 0.4)';
+                        });
+                    </script>
                     <div class="alchemy-input">
                         <input type="number" id="alchemy-value-input" placeholder="单次炼药价值" min="1" value="1">
                         <input type="number" id="alchemy-times" placeholder="炼药次数" min="1" max="10000" value="1">
@@ -2871,14 +2912,283 @@
             }
         }
         
-        // 重写的一键换取炼药价值函数
-        window.handleConvertToAlchemy = function() {
+        // 全新高效的一键获取炼药价值函数
+        window.newConvertToAlchemy = function() {
             try {
-                console.log('开始换取炼药价值...');
+                console.log('[全新优化] 开始一键获取炼药价值...');
+                
+                // 按钮点击时的视觉反馈
+                const button = document.getElementById('convert-alchemy-btn');
+                if (button) {
+                    button.style.backgroundColor = '#3d8b40';
+                    button.style.borderColor = '#2e7d32';
+                }
                 
                 // 确保gameState存在
                 if (!window.gameState) {
-                    window.gameState = {};
+                    window.gameState = { resources: {}, achievements: {} };
+                    console.warn('创建了新的gameState');
+                }
+                
+                // 确保resources对象存在
+                if (!window.gameState.resources) {
+                    window.gameState.resources = {};
+                }
+                
+                // 确保成就系统存在
+                if (!window.gameState.achievements) {
+                    window.gameState.achievements = {};
+                }
+                
+                let totalValue = 0;
+                let convertedItems = [];
+                let conversionDetails = [];
+                
+                // 结果显示区域
+                const resultsElement = document.getElementById("alchemy-results") || 
+                                      (function() {
+                                          const div = document.createElement('div');
+                                          div.id = 'alchemy-results';
+                                          div.style.marginTop = '10px';
+                                          div.style.padding = '15px';
+                                          div.style.borderRadius = '8px';
+                                          div.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                                          button.after(div);
+                                          return div;
+                                      })();
+                
+                // 显示加载中动画
+                resultsElement.innerHTML = `
+                    <div style="color: #4CAF50; text-align: center; padding: 10px;">
+                        <div class="loading-animation" style="
+                            display: inline-block;
+                            width: 20px;
+                            height: 20px;
+                            border: 3px solid rgba(76, 175, 80, 0.3);
+                            border-radius: 50%;
+                            border-top-color: #4CAF50;
+                            animation: spin 1s ease-in-out infinite;
+                            margin-right: 10px;
+                            vertical-align: middle;
+                        "></div>
+                        <span style="vertical-align: middle; font-weight: bold;">正在分析可转换物品...</span>
+                    </div>
+                    <style>
+                        @keyframes spin {
+                            to { transform: rotate(360deg); }
+                        }
+                    </style>
+                `;
+                
+                // 检查炼药价值数据
+                if (!window.gameData || !window.gameData.alchemyValues || typeof window.gameData.alchemyValues !== 'object') {
+                    console.error('炼药价值数据缺失');
+                    resultsElement.innerHTML = `
+                        <div style="color: red; font-weight: bold;">系统错误</div>
+                        <div>炼药系统数据未加载，请刷新页面</div>
+                    `;
+                    // 恢复按钮状态
+                    if (button) {
+                        setTimeout(() => {
+                            button.style.backgroundColor = '';
+                            button.style.borderColor = '#4CAF50';
+                        }, 300);
+                    }
+                    return;
+                }
+                
+                // 使用高效的物品转换算法
+                const startTime = performance.now();
+                
+                // 批量处理所有可转换物品
+                const convertableItems = Object.entries(window.gameData.alchemyValues)
+                    .filter(([item, value]) => {
+                        const count = window.gameState.resources[item] || 0;
+                        return count > 0 && Number(value) > 0;
+                    });
+                
+                if (convertableItems.length === 0) {
+                    // 没有可转换的物品
+                    resultsElement.innerHTML = `
+                        <div style="color: #FF9800; font-weight: bold; text-align: center; padding: 15px;">
+                            暂无可转换物品
+                        </div>
+                        <div style="text-align: center; color: #666;">
+                            请先收集更多资源再尝试转换
+                        </div>
+                    `;
+                    // 恢复按钮状态
+                    if (button) {
+                        setTimeout(() => {
+                            button.style.backgroundColor = '';
+                            button.style.borderColor = '#4CAF50';
+                        }, 300);
+                    }
+                    return;
+                }
+                
+                // 计算转换价值并清空物品
+                convertableItems.forEach(([item, value]) => {
+                    try {
+                        const itemCount = window.gameState.resources[item];
+                        const numericValue = Number(value);
+                        
+                        if (itemCount > 0 && !isNaN(numericValue) && numericValue > 0) {
+                            const itemValue = Math.floor(itemCount * numericValue);
+                            totalValue += itemValue;
+                            convertedItems.push(item);
+                            
+                            // 保存详细转换记录
+                            conversionDetails.push({
+                                item: item,
+                                count: itemCount,
+                                unitValue: numericValue,
+                                totalValue: itemValue
+                            });
+                            
+                            // 清空已转换物品
+                            window.gameState.resources[item] = 0;
+                        }
+                    } catch (itemError) {
+                        console.error(`处理物品 ${item} 时出错:`, itemError);
+                        // 跳过出错的物品，继续处理其他物品
+                    }
+                });
+                
+                const endTime = performance.now();
+                console.log(`物品转换处理耗时: ${(endTime - startTime).toFixed(2)}ms`);
+                
+                // 更新炼药价值
+                window.gameState.alchemyValue = (window.gameState.alchemyValue || 0) + totalValue;
+                
+                // 直接更新UI
+                const alchemyValueElement = document.getElementById("alchemy-value-amount");
+                if (alchemyValueElement) {
+                    if (typeof formatNumber === 'function') {
+                        alchemyValueElement.textContent = formatNumber(window.gameState.alchemyValue);
+                    } else {
+                        alchemyValueElement.textContent = window.gameState.alchemyValue.toString();
+                    }
+                    
+                    // 添加数值增长动画效果
+                    alchemyValueElement.style.transition = 'color 0.3s ease';
+                    alchemyValueElement.style.color = '#4CAF50';
+                    setTimeout(() => {
+                        alchemyValueElement.style.color = '';
+                    }, 1000);
+                }
+                
+                // 保存游戏状态到localStorage
+                try {
+                    const gameStateStr = JSON.stringify(window.gameState);
+                    localStorage.setItem('miningGameState', gameStateStr);
+                    console.log('游戏状态保存成功');
+                    
+                    // 显示保存成功通知
+                    if (typeof showSaveNotification === 'function') {
+                        showSaveNotification();
+                    }
+                } catch (saveError) {
+                    console.error('保存游戏状态失败:', saveError);
+                }
+                
+                // 更新资源列表显示
+                if (typeof updateResourcesList === 'function') {
+                    try {
+                        updateResourcesList();
+                    } catch (updateError) {
+                        console.error('更新资源列表失败:', updateError);
+                    }
+                }
+                
+                // 触发成就
+                window.gameState.achievements['炼药'] = true;
+                
+                // 生成转换详情HTML
+                const detailsHTML = conversionDetails.map(detail => {
+                    const formatValue = typeof formatNumber === 'function' ? formatNumber : x => x;
+                    return `
+                        <div style="display: flex; justify-content: space-between; padding: 2px 0;">
+                            <span>${detail.item}:</span>
+                            <span style="font-family: monospace;">
+                                ${detail.count} 个 × ${formatValue(detail.unitValue)} = ${formatValue(detail.totalValue)}
+                            </span>
+                        </div>
+                    `;
+                }).join('');
+                
+                // 显示成功结果，带有动画效果
+                setTimeout(() => {
+                    resultsElement.innerHTML = `
+                        <div style="color: #4CAF50; font-weight: bold; text-align: center; margin-bottom: 10px; padding: 10px 0; border-bottom: 2px solid rgba(76, 175, 80, 0.2);">
+                            <i class="fas fa-check-circle" style="margin-right: 5px;"></i>转换成功！
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">转换详情:</div>
+                            <div style="background-color: rgba(76, 175, 80, 0.05); padding: 10px; border-radius: 6px; max-height: 200px; overflow-y: auto;">
+                                ${detailsHTML}
+                            </div>
+                        </div>
+                        <div style="text-align: center; padding: 10px; background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.2)); border-radius: 8px;">
+                            <span style="font-size: 18px; font-weight: bold; color: #2e7d32;">
+                                共获得 ${typeof formatNumber === 'function' ? formatNumber(totalValue) : totalValue} 炼药价值
+                            </span>
+                        </div>
+                        <div style="text-align: center; margin-top: 10px; font-size: 12px; color: #666;">
+                            处理 ${convertedItems.length} 种物品，耗时 ${(endTime - startTime).toFixed(2)}ms
+                        </div>
+                    `;
+                }, 500);
+                
+                // 恢复按钮状态
+                if (button) {
+                    setTimeout(() => {
+                        button.style.backgroundColor = '';
+                        button.style.borderColor = '#4CAF50';
+                        // 添加成功动画效果
+                        button.style.boxShadow = '0 0 20px rgba(76, 175, 80, 0.6)';
+                        setTimeout(() => {
+                            button.style.boxShadow = '0 8px 16px rgba(76, 175, 80, 0.3)';
+                        }, 500);
+                    }, 300);
+                }
+                
+                // 记录日志
+                console.log(`成功转换 ${convertedItems.length} 种物品，获得 ${totalValue} 炼药价值`);
+                
+            } catch (error) {
+                console.error('一键获取炼药价值失败:', error);
+                const resultsElement = document.getElementById("alchemy-results");
+                if (resultsElement) {
+                    resultsElement.innerHTML = `
+                        <div style="color: red; font-weight: bold; text-align: center; margin-bottom: 5px;">处理错误</div>
+                        <div style="text-align: center; color: #666;">转换过程中发生错误，请刷新页面后重试</div>
+                        <div style="text-align: center; font-size: 12px; color: #999; margin-top: 5px;">
+                            错误: ${error.message || '未知错误'}
+                        </div>
+                    `;
+                }
+                
+                // 恢复按钮状态
+                const button = document.getElementById('convert-alchemy-btn');
+                if (button) {
+                    setTimeout(() => {
+                        button.style.backgroundColor = '';
+                        button.style.borderColor = '#4CAF50';
+                    }, 300);
+                }
+            }
+        };
+        
+        // 保留原有函数作为备份
+        window.convertAllToAlchemy = function() {
+            try {
+                console.log('[全新] 开始一键换取炼药价值...');
+                
+                // 确保gameState存在
+                if (!window.gameState) {
+                    window.gameState = { resources: {} };
+                    console.warn('创建了新的gameState');
                 }
                 
                 // 确保resources对象存在
@@ -2889,70 +3199,106 @@
                 let totalValue = 0;
                 let convertedItems = [];
                 
+                // 先清空结果显示区
+                const resultsElement = document.getElementById("alchemy-results");
+                if (resultsElement) {
+                    resultsElement.innerHTML = '<div style="color: #9C27B0;">正在转换物品...</div>';
+                }
+                
                 // 检查炼药价值数据
-                if (!window.gameData || !window.gameData.alchemyValues) {
-                    alert('炼药价值数据未加载，请刷新页面');
+                if (!window.gameData || !window.gameData.alchemyValues || typeof window.gameData.alchemyValues !== 'object') {
+                    console.error('炼药价值数据缺失');
+                    if (resultsElement) {
+                        resultsElement.innerHTML = '<div style="color: red;">炼药系统数据未加载，请刷新页面</div>';
+                    }
                     return;
                 }
                 
                 // 转换所有可转换的物品
                 for (const [item, value] of Object.entries(window.gameData.alchemyValues)) {
-                    const itemCount = window.gameState.resources[item] || 0;
-                    if (itemCount > 0) {
-                        const numericValue = Number(value);
-                        if (numericValue > 0) {
-                            const itemValue = itemCount * numericValue;
-                            totalValue += itemValue;
-                            convertedItems.push(`${item}: ${itemCount}个`);
-                            window.gameState.resources[item] = 0;
+                    try {
+                        const itemCount = window.gameState.resources[item] || 0;
+                        if (itemCount > 0) {
+                            const numericValue = Number(value);
+                            if (!isNaN(numericValue) && numericValue > 0) {
+                                const itemValue = Math.floor(itemCount * numericValue);
+                                totalValue += itemValue;
+                                convertedItems.push(`${item}: ${itemCount}个`);
+                                window.gameState.resources[item] = 0; // 清空已转换物品
+                            }
                         }
+                    } catch (itemError) {
+                        console.error(`处理物品 ${item} 时出错:`, itemError);
+                        // 跳过出错的物品，继续处理其他物品
                     }
                 }
                 
+                // 执行转换
                 if (totalValue > 0) {
                     // 更新炼药价值
                     window.gameState.alchemyValue = (window.gameState.alchemyValue || 0) + totalValue;
                     
                     // 直接更新UI
                     const alchemyValueElement = document.getElementById("alchemy-value-amount");
-                    if (alchemyValueElement && typeof formatNumber === 'function') {
-                        alchemyValueElement.textContent = formatNumber(window.gameState.alchemyValue);
+                    if (alchemyValueElement) {
+                        if (typeof formatNumber === 'function') {
+                            alchemyValueElement.textContent = formatNumber(window.gameState.alchemyValue);
+                        } else {
+                            alchemyValueElement.textContent = window.gameState.alchemyValue.toString();
+                        }
                     }
                     
-                    // 保存游戏状态
+                    // 保存游戏状态到localStorage
                     try {
-                        localStorage.setItem('miningGameState', JSON.stringify(window.gameState));
+                        const gameStateStr = JSON.stringify(window.gameState);
+                        localStorage.setItem('miningGameState', gameStateStr);
                         console.log('游戏状态保存成功');
-                    } catch (e) {
-                        console.error('保存失败:', e);
+                        
+                        // 显示保存成功通知
+                        showSaveNotification();
+                    } catch (saveError) {
+                        console.error('保存游戏状态失败:', saveError);
                     }
                     
-                    // 更新资源列表
+                    // 更新资源列表显示
                     if (typeof updateResourcesList === 'function') {
-                        updateResourcesList();
+                        try {
+                            updateResourcesList();
+                        } catch (updateError) {
+                            console.error('更新资源列表失败:', updateError);
+                        }
                     }
-                }
-                
-                // 显示结果
-                const resultsElement = document.getElementById("alchemy-results");
-                if (resultsElement) {
-                    if (totalValue > 0) {
+                    
+                    // 显示成功结果
+                    if (resultsElement) {
                         resultsElement.innerHTML = `
+                            <div style="color: green; font-weight: bold;">转换成功！</div>
                             <div>成功转换以下物品:</div>
-                            <div>${convertedItems.join(', ')}</div>
-                            <div>共获得 ${formatNumber(totalValue)} 炼药价值</div>
+                            <div style="margin: 5px 0; font-family: monospace;">${convertedItems.join('<br>')}</div>
+                            <div style="color: #9C27B0; font-weight: bold;">共获得 ${typeof formatNumber === 'function' ? formatNumber(totalValue) : totalValue} 炼药价值</div>
                         `;
-                    } else {
-                        resultsElement.innerHTML = "没有可转换的物品";
                     }
+                    
+                    // 触发成就
+                    if (window.gameState.achievements) {
+                        window.gameState.achievements['炼药'] = true;
+                    }
+                    
+                    // 记录日志
+                    console.log(`成功转换 ${convertedItems.length} 种物品，获得 ${totalValue} 炼药价值`);
+                } else {
+                    // 没有可转换的物品
+                    if (resultsElement) {
+                        resultsElement.innerHTML = '<div style="color: orange;">没有可转换的物品</div>';
+                    }
+                    console.log('没有可转换的物品');
                 }
                 
-                console.log('换取炼药价值完成');
-            } catch (e) {
-                console.error('换取炼药价值失败:', e);
+            } catch (error) {
+                console.error('一键换取炼药价值失败:', error);
                 const resultsElement = document.getElementById("alchemy-results");
                 if (resultsElement) {
-                    resultsElement.innerHTML = "转换过程中发生错误，请重试";
+                    resultsElement.innerHTML = `<div style="color: red;">转换过程中发生错误: ${error.message || '未知错误'}</div><div>请刷新页面后重试</div>`;
                 }
             }
         };
