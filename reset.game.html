@@ -398,6 +398,79 @@
             padding-right: 10px;
         }
         
+        .research-area {
+            margin-top: 20px;
+        }
+        
+        .section-subtitle {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0 10px 0;
+            color: #333;
+        }
+        
+        .research-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .research-info {
+            flex: 1;
+        }
+        
+        .research-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .research-cost {
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+        
+        .research-description {
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+        
+        .research-status {
+            color: #90ee90;
+        }
+        
+        .research-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .research-btn:hover:not(:disabled) {
+            background: linear-gradient(45deg, #45a049, #3d8b40);
+            transform: translateY(-2px);
+        }
+        
+        .research-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .research-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
         .tab-content.active {
             display: block;
         }
@@ -911,6 +984,9 @@
                     <div class="block-category">
                         <button class="category-btn active" data-category="main1">主线1</button>
                         <button class="category-btn" data-category="side1">支线1</button>
+                        <button class="category-btn" data-category="main2" style="display: none;">主线2</button>
+                        <button class="category-btn" data-category="side2" style="display: none;">支线2</button>
+                        <button class="category-btn" data-category="main3" style="display: none;">主线3</button>
                     </div>
                     <button class="block-nav-btn" id="next-block"><i class="fas fa-chevron-right"></i></button>
                 </div>
@@ -928,6 +1004,7 @@
                 <button class="tab-btn" data-tab="shop"><i class="fas fa-shopping-cart"></i> 商店</button>
                 <button class="tab-btn" data-tab="alchemy"><i class="fas fa-flask"></i> 炼药</button>
                 <button class="tab-btn" data-tab="water-tree"><i class="fas fa-tint"></i> 浇树</button>
+                <button class="tab-btn" data-tab="research" id="research-tab-btn" style="display: none;"><i class="fas fa-flask"></i> 研究所</button>
             </div>
 
             <div class="tab-content active" id="boosts-tab">
@@ -956,10 +1033,13 @@
                     <h2>商店</h2>
                 </div>
                 <div class="shop-categories">
-                    <button class="category-btn active" data-shop="main1">主线1商店</button>
-                    <button class="category-btn" data-shop="side1">支线1商店</button>
-                    <button class="category-btn" data-shop="items">物品商店</button>
-                </div>
+                <button class="category-btn active" data-shop="main1">主线1商店</button>
+                <button class="category-btn" data-shop="side1">支线1商店</button>
+                <button class="category-btn" data-shop="main2" style="display: none;">主线2商店</button>
+                <button class="category-btn" data-shop="side2" style="display: none;">支线2商店</button>
+                <button class="category-btn" data-shop="main3" style="display: none;">主线3商店</button>
+                <button class="category-btn" data-shop="items">物品商店</button>
+            </div>
                 <div id="shop-items">
                     <!-- 商店物品将通过JavaScript动态生成 -->
                 </div>
@@ -1081,6 +1161,78 @@
                     <button class="water-tree-btn" id="water-tree-btn">到达阶段2解锁浇树系统</button>
                     <div class="water-tree-results" id="water-tree-results">
                         浇树结果将显示在这里
+                    </div>
+                </div>
+            </div>
+            <div class="tab-content" id="research-tab" style="display: none;">
+                <div class="section-title">
+                    <i class="fas fa-flask"></i>
+                    <h2>研究所系统</h2>
+                </div>
+                
+                <div class="research-area">
+                    <div class="section-subtitle">能量转化器</div>
+                    <div class="research-item">
+                        <div class="research-info">
+                            <div class="research-name">α能量转化器</div>
+                            <div class="research-cost">解锁价格: <span id="alpha-converter-cost">10000 α</span></div>
+                            <div class="research-description">每秒将1%的α转化为α能量</div>
+                            <div class="research-status" id="alpha-energy-status">α能量: 0, 增益: 1.00</div>
+                        </div>
+                        <button class="research-btn" id="unlock-alpha-converter" onclick="unlockEnergyConverter('alpha')">解锁</button>
+                    </div>
+                    <div class="research-item">
+                        <div class="research-info">
+                            <div class="research-name">β能量转化器</div>
+                            <div class="research-cost">解锁价格: <span id="beta-converter-cost">10000 β</span></div>
+                            <div class="research-description">每秒将1%的β转化为β能量</div>
+                            <div class="research-status" id="beta-energy-status">β能量: 0, 倍增: 1.00</div>
+                        </div>
+                        <button class="research-btn" id="unlock-beta-converter" onclick="unlockEnergyConverter('beta')">解锁</button>
+                    </div>
+                    <div class="research-item">
+                        <div class="research-info">
+                            <div class="research-name">γ能量转化器</div>
+                            <div class="research-cost">解锁价格: <span id="gamma-converter-cost">10000 γ</span></div>
+                            <div class="research-description">每秒将1%的γ转化为γ能量</div>
+                            <div class="research-status" id="gamma-energy-status">γ能量: 0, 每秒经验: 0.00</div>
+                        </div>
+                        <button class="research-btn" id="unlock-gamma-converter" onclick="unlockEnergyConverter('gamma')">解锁</button>
+                    </div>
+                    
+                    <div class="section-subtitle">量产器</div>
+                    <div class="research-item">
+                        <div class="research-info">
+                            <div class="research-name">α量产器 (等级<span id="alpha-producer-level">0</span>)</div>
+                            <div class="research-cost">解锁价格: <span id="alpha-producer-cost">10 量产核心</span></div>
+                            <div class="research-description">每秒生产: <span id="alpha-producer-rate">0 α</span></div>
+                        </div>
+                        <div class="research-buttons">
+                            <button class="research-btn" id="unlock-alpha-producer" onclick="unlockProducer('alpha')">解锁</button>
+                            <button class="research-btn" id="upgrade-alpha-producer" onclick="upgradeProducer('alpha')" disabled style="display: none;">升级 (消耗: <span id="alpha-upgrade-cost">1200 量产核心</span>)</button>
+                        </div>
+                    </div>
+                    <div class="research-item">
+                        <div class="research-info">
+                            <div class="research-name">β量产器 (等级<span id="beta-producer-level">0</span>)</div>
+                            <div class="research-cost">解锁价格: <span id="beta-producer-cost">10 量产核心</span></div>
+                            <div class="research-description">每秒生产: <span id="beta-producer-rate">0 β</span></div>
+                        </div>
+                        <div class="research-buttons">
+                            <button class="research-btn" id="unlock-beta-producer" onclick="unlockProducer('beta')">解锁</button>
+                            <button class="research-btn" id="upgrade-beta-producer" onclick="upgradeProducer('beta')" disabled style="display: none;">升级 (消耗: <span id="beta-upgrade-cost">1200 量产核心</span>)</button>
+                        </div>
+                    </div>
+                    <div class="research-item">
+                        <div class="research-info">
+                            <div class="research-name">γ量产器 (等级<span id="gamma-producer-level">0</span>)</div>
+                            <div class="research-cost">解锁价格: <span id="gamma-producer-cost">10 量产核心</span></div>
+                            <div class="research-description">每秒生产: <span id="gamma-producer-rate">0 γ</span></div>
+                        </div>
+                        <div class="research-buttons">
+                            <button class="research-btn" id="unlock-gamma-producer" onclick="unlockProducer('gamma')">解锁</button>
+                            <button class="research-btn" id="upgrade-gamma-producer" onclick="upgradeProducer('gamma')" disabled style="display: none;">升级 (消耗: <span id="gamma-upgrade-cost">1200 量产核心</span>)</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1227,6 +1379,35 @@
                     { name: "紫水晶方块", hp: 9.1e10, baseGold: 90, special: { type: "fixed", item: "紫水晶", chance: 1 } },
                     { name: "下界之星方块", hp: 7.8e11, baseGold: 140, special: { type: "fragment", item: "下界之星", chance: 0.1 } },
                     { name: "坤坤方块", hp: 9.1e12, baseGold: 200, special: { type: "fragment", item: "坤坤", chance: 0.25 } }
+                ],
+                main2: [
+                    { name: "木结晶块", hp: 7.8e17, baseGold: 2000, special: { type: "fragment", item: "木结晶", chance: 0.05 } },
+                    { name: "土结晶块", hp: 7.8e17, baseGold: 2000, special: { type: "fragment", item: "土结晶", chance: 0.05 } },
+                    { name: "水结晶块", hp: 7.8e17, baseGold: 2000, special: { type: "fragment", item: "水结晶", chance: 0.05 } },
+                    { name: "火结晶块", hp: 7.8e17, baseGold: 2000, special: { type: "fragment", item: "火结晶", chance: 0.05 } },
+                    { name: "金结晶", hp: 7.8e17, baseGold: 2000, special: { type: "fragment", item: "金结晶", chance: 0.05 } },
+                    { name: "风结晶块", hp: 9.1e19, baseGold: 3000, special: { type: "fragment", item: "风结晶", chance: 0.05 } },
+                    { name: "雷结晶块", hp: 9.1e19, baseGold: 3000, special: { type: "fragment", item: "雷结晶", chance: 0.05 } },
+                    { name: "光结晶块", hp: 5e21, baseGold: 5000, special: { type: "fragment", item: "光结晶", chance: 0.05 } },
+                    { name: "暗结晶块", hp: 5e21, baseGold: 5000, special: { type: "fragment", item: "暗结晶", chance: 0.05 } },
+                    { name: "源结晶块", hp: 1e24, baseGold: 10000, special: { type: "fragment", item: "源结晶", chance: 0.01 } }
+                ],
+                side2: [
+                    { name: "红曜石块", hp: 5e14, baseGold: 500, special: { type: "fragment", item: "红曜石", chance: 0.05 } },
+                    { name: "蓝曜石块", hp: 6e14, baseGold: 600, special: { type: "fragment", item: "蓝曜石", chance: 0.05 } },
+                    { name: "金奖核心", hp: 1e18, baseGold: 2000, special: { type: "fragment", item: "金奖核心", chance: 0.1 } },
+                    { name: "淼立方块", hp: 1e19, baseGold: 2500, special: { type: "fragment", item: "淼立方", chance: 0.05 } },
+                    { name: "水晶晶簇", hp: 1e19, baseGold: 2500, special: { type: "pickaxe", item: "紫水晶镐Ⅲ", count: 1, chance: 0.1 } },
+                    { name: "坤群", hp: 1e20, baseGold: 3000, special: { type: "fragment", item: "坤坤", count: 1000, chance: 0.01 } },
+                    { name: "红曜方", hp: 5e20, baseGold: 4000, special: { type: "fragment", item: "红曜方", chance: 0.005 } },
+                    { name: "蓝曜方", hp: 6e20, baseGold: 4000, special: { type: "fragment", item: "蓝曜方", chance: 0.005 } }
+                ],
+                main3: [
+                    { name: "α方块", hp: 1e24, baseGold: 10000, special: { type: "fragment", item: "α", count: 1, chance: 1 } },
+                    { name: "β方块", hp: 1e24, baseGold: 10000, special: { type: "fragment", item: "β", count: 1, chance: 1 } },
+                    { name: "γ方块", hp: 1e24, baseGold: 10000, special: { type: "fragment", item: "γ", count: 1, chance: 1 } },
+                    { name: "元素晶片", hp: 1e25, baseGold: 15000, special: { type: "fragment", item: "元素晶片", count: 1, chance: 0.1 } },
+                    { name: "量产核心", hp: 1e27, baseGold: 20000, special: { type: "fragment", item: "量产核心", count: 1, chance: 0.01 } }
                 ]
             },
             
@@ -1258,10 +1439,41 @@
                     { name: "紫水晶镐Ⅳ", cost: { fragments: { "紫水晶镐Ⅲ": 4 } }, boost: 800, goldMultiplier: 1.5, usageGain: 8 },
                     { name: "紫水晶镐Ⅴ", cost: { fragments: { "紫水晶镐Ⅳ": 2 } }, boost: 1500, goldMultiplier: 2, usageGain: 10 }
                 ],
+                main2: [
+                    { name: "五行镐·木", cost: { fragments: { "木结晶": 20 }, basePickaxe: "五行镐" }, boost: 24000, goldMultiplier: 4, usageGain: 24 },
+                    { name: "五行镐·土", cost: { fragments: { "土结晶": 20 }, basePickaxe: "五行镐" }, boost: 15000, goldMultiplier: 2.5, usageGain: 60 },
+                    { name: "五行镐·水", cost: { fragments: { "水结晶": 20 }, basePickaxe: "五行镐" }, boost: 15000, goldMultiplier: 5, usageGain: 30 },
+                    { name: "五行镐·火", cost: { fragments: { "火结晶": 20 }, basePickaxe: "五行镐" }, boost: 60000, goldMultiplier: 2.5, usageGain: 15 },
+                    { name: "五行镐·金", cost: { fragments: { "金结晶": 20 }, basePickaxe: "五行镐" }, boost: 15000, goldMultiplier: 10, usageGain: 15 },
+                    { name: "五行镐·五行", cost: { fragments: { "五行结晶": 20 }, basePickaxes: ["五行镐·金", "五行镐·木", "五行镐·水", "五行镐·火", "五行镐·土"] }, boost: 60000, goldMultiplier: 10, usageGain: 60 },
+                    { name: "五行镐·风", cost: { fragments: { "风结晶": 20 }, basePickaxe: "五行镐·五行" }, boost: 240000, goldMultiplier: 10, usageGain: 60 },
+                    { name: "五行镐·雷", cost: { fragments: { "雷结晶": 20 }, basePickaxe: "五行镐·五行" }, boost: 60000, goldMultiplier: 20, usageGain: 120 },
+                    { name: "七行镐", cost: { fragments: { "风雷结晶": 20 }, basePickaxes: ["五行镐·风", "五行镐·雷"] }, boost: 240000, goldMultiplier: 20, usageGain: 120 },
+                    { name: "七行镐·光", cost: { fragments: { "光结晶": 20 }, basePickaxe: "七行镐" }, boost: 1000000, goldMultiplier: 20, usageGain: 120 },
+                    { name: "七行镐·暗", cost: { fragments: { "暗结晶": 20 }, basePickaxe: "七行镐" }, boost: 240000, goldMultiplier: 40, usageGain: 240 },
+                    { name: "九行镐", cost: { fragments: { "光暗结晶": 20 }, basePickaxes: ["七行镐·光", "七行镐·暗"] }, boost: 1000000, goldMultiplier: 40, usageGain: 240 },
+                    { name: "源镐", cost: { fragments: { "源结晶": 1000 }, basePickaxes: ["九行镐", "红蓝镐Ⅲ"] }, boost: 3000000, goldMultiplier: 120, usageGain: 750 }
+                ],
+                main3: [
+                    { name: "元素镐", cost: { fragments: { "元素晶片": 100 } }, boost: 5000000, goldMultiplier: 200, usageGain: 1200 }
+                ],
+                side2: [
+                    { name: "五行镐Ⅱ", cost: { fragments: { "五行镐": 10 } }, boost: 75000, goldMultiplier: 12.5, usageGain: 75 },
+                    { name: "五行镐Ⅲ", cost: { fragments: { "五行镐Ⅱ": 10 } }, boost: 375000, goldMultiplier: 62.5, usageGain: 375 },
+                    { name: "红蓝镐Ⅱ", cost: { fragments: { "红曜石": 100, "蓝曜石": 100, "红蓝镐": 10 } }, boost: 30000, goldMultiplier: 10, usageGain: 30 },
+                    { name: "红蓝镐Ⅲ", cost: { fragments: { "红曜方": 100, "蓝曜方": 100, "源结晶": 10, "红蓝镐Ⅱ": 10 } }, boost: 900000, goldMultiplier: 40, usageGain: 120 },
+                    { name: "坤镐", cost: { fragments: { "坤坤": 250000 } }, boost: 2500000, goldMultiplier: 25, usageGain: 250 }
+                ],
                 items: [
                     { name: "红曜石", cost: { fragments: { "红曜石碎片": 365 } } },
                     { name: "蓝曜石", cost: { fragments: { "蓝曜石碎片": 366 } } },
-                    { name: "五行转换器", cost: { fragments: { "蓝曜石": 5, "红曜石": 5, "紫水晶镐Ⅴ": 1 } } }
+                    { name: "五行转换器", cost: { fragments: { "蓝曜石": 5, "红曜石": 5, "紫水晶镐Ⅴ": 1 } } },
+                    { name: "金奖转化器", cost: { fragments: { "金奖核心": 10 } } },
+                    { name: "五行结晶", cost: { fragments: { "金结晶": 1, "木结晶": 1, "水结晶": 1, "火结晶": 1, "土结晶": 1 } } },
+                    { name: "风雷结晶", cost: { fragments: { "风结晶": 1, "雷结晶": 1 } } },
+                    { name: "光暗结晶", cost: { fragments: { "光结晶": 1, "暗结晶": 1 } } },
+                    { name: "红曜方", cost: { fragments: { "红曜石": 100 } } },
+                    { name: "蓝曜方", cost: { fragments: { "蓝曜石": 100 } } }
                 ]
             },
             
@@ -1309,7 +1521,46 @@
                     "坤坤": 0,
                     "红曜石": 0,
                     "蓝曜石": 0,
-                    "五行转换器": 0
+                    "五行转换器": 0,
+                    "木结晶": 0,
+                    "土结晶": 0,
+                    "水结晶": 0,
+                    "火结晶": 0,
+                    "金结晶": 0,
+                    "风结晶": 0,
+                    "雷结晶": 0,
+                    "光结晶": 0,
+                    "暗结晶": 0,
+                    "源结晶": 0,
+                    "金奖核心": 0,
+                    "淼立方": 0,
+                    "红曜方": 0,
+                    "蓝曜方": 0,
+                    "五行结晶": 0,
+                    "风雷结晶": 0,
+                    "光暗结晶": 0,
+                    "金奖转化器": 0,
+                    "α": 0,
+                    "β": 0,
+                    "γ": 0,
+                    "元素晶片": 0,
+                    "量产核心": 0
+                },
+                // 研究所相关状态
+                energies: {
+                    alpha: 0,
+                    beta: 0,
+                    gamma: 0
+                },
+                converters: {
+                    alpha: false,
+                    beta: false,
+                    gamma: false
+                },
+                producers: {
+                    alpha: 0,
+                    beta: 0,
+                    gamma: 0
                 },
                 pickaxes: {
                     "木镐": 1,
@@ -1333,7 +1584,25 @@
                     "紫水晶镐Ⅱ": 0,
                     "紫水晶镐Ⅲ": 0,
                     "紫水晶镐Ⅳ": 0,
-                    "紫水晶镐Ⅴ": 0
+                    "紫水晶镐Ⅴ": 0,
+                    "五行镐·木": 0,
+                    "五行镐·土": 0,
+                    "五行镐·水": 0,
+                    "五行镐·火": 0,
+                    "五行镐·金": 0,
+                    "五行镐·五行": 0,
+                    "五行镐·风": 0,
+                    "五行镐·雷": 0,
+                    "七行镐": 0,
+                    "七行镐·光": 0,
+                    "七行镐·暗": 0,
+                    "九行镐": 0,
+                    "源镐": 0,
+                    "五行镐Ⅱ": 0,
+                    "五行镐Ⅲ": 0,
+                    "红蓝镐Ⅱ": 0,
+                    "红蓝镐Ⅲ": 0,
+                    "坤镐": 0
                 },
                 blockHp: {}
             };
@@ -1947,6 +2216,17 @@
                 boosts.push({ name: "浇树增益", value: calculateTreeBoost().toFixed(2) });
             }
             
+            // 第三阶段及以上添加研究所相关增益
+            if (window.gameState && window.gameState.gameStage >= 3) {
+                // 计算元素转化器增益
+                const converterBoost = calculateConverterBoost();
+                boosts.push({ name: "转化器增益", value: converterBoost.toFixed(2) });
+                
+                // 计算量产器增益
+                const producerBoost = calculateProducerBoost();
+                boosts.push({ name: "量产器增益", value: producerBoost.toFixed(2) });
+            }
+            
             boosts.forEach(boost => {
                 const boostItem = document.createElement("div");
                 boostItem.className = "boost-item";
@@ -2130,6 +2410,13 @@
                         }
                     }
                     
+                    // 扣除使用增益
+                    if (item.cost.usageBoost) {
+                        window.gameState.usageBoost -= item.cost.usageBoost;
+                        // 确保使用增益不会低于1
+                        window.gameState.usageBoost = Math.max(1, window.gameState.usageBoost);
+                    }
+                    
                     // 修复：确保从fragments中扣除镐子
                     if (item.cost.fragments) {
                         for (const [frag, amount] of Object.entries(item.cost.fragments)) {
@@ -2294,12 +2581,12 @@
                     updateBoostsList(); // 更新增益列表显示
                 }
                 
-                // 预留第三阶段的检查逻辑（可以根据需要添加条件）
-                // if (满足第三阶段条件 && window.gameState.gameStage < 3) {
-                //     window.gameState.gameStage = 3;
-                //     updateTabsVisibility();
-                //     updateBoostsList();
-                // }
+                // 检查是否满足第三阶段的条件：拥有源镐
+                if (window.gameState.pickaxes && window.gameState.pickaxes["源镐"] >= 1 && window.gameState.gameStage < 3) {
+                    window.gameState.gameStage = 3;
+                    updateTabsVisibility(); // 更新标签显示
+                    updateBoostsList(); // 更新增益列表显示
+                }
             } catch (e) {
                 console.error('检查游戏阶段失败:', e);
             }
@@ -2308,6 +2595,48 @@
         // 计算浇树增益
         function calculateTreeBoost() {
             return Math.pow(window.gameState.treeLevel || 1, 0.4);
+        }
+        
+        // 计算转化器增益
+        function calculateConverterBoost() {
+            if (!window.gameState.energies || !window.gameState.converters) return 1;
+            
+            let boost = 1;
+            const { energies, converters } = window.gameState;
+            
+            // 每个活跃的转化器根据其对应的能量提供增益
+            if (converters.alpha && energies.alpha > 0) {
+                boost *= 1 + (energies.alpha * 0.01); // 每点α能量提供1%增益
+            }
+            if (converters.beta && energies.beta > 0) {
+                boost *= 1 + (energies.beta * 0.02); // 每点β能量提供2%增益
+            }
+            if (converters.gamma && energies.gamma > 0) {
+                boost *= 1 + (energies.gamma * 0.03); // 每点γ能量提供3%增益
+            }
+            
+            return boost;
+        }
+        
+        // 计算量产器增益
+        function calculateProducerBoost() {
+            if (!window.gameState.producers) return 1;
+            
+            let boost = 1;
+            const { producers } = window.gameState;
+            
+            // 每个量产器提供基础增益，并根据数量累加
+            if (producers.alpha > 0) {
+                boost *= 1 + (producers.alpha * 0.2); // 每个α量产器提供20%增益
+            }
+            if (producers.beta > 0) {
+                boost *= 1 + (producers.beta * 0.3); // 每个β量产器提供30%增益
+            }
+            if (producers.gamma > 0) {
+                boost *= 1 + (producers.gamma * 0.5); // 每个γ量产器提供50%增益
+            }
+            
+            return boost;
         }
         
         // 计算总伤害（包含树增益）
@@ -2332,10 +2661,54 @@
                 totalDamage *= calculateTreeBoost();
             }
             
+            // 第三阶段添加研究所增益
+            if (window.gameState.gameStage >= 3) {
+                totalDamage *= calculateConverterBoost();
+                totalDamage *= calculateProducerBoost();
+            }
+            
             // 保留两位小数
             return parseFloat(totalDamage.toFixed(2));
         }
         
+        // 显示通知
+        function showNotification(message) {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.top = '50%';
+            notification.style.left = '50%';
+            notification.style.transform = 'translate(-50%, -50%)';
+            notification.style.padding = '10px 20px';
+            notification.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+            notification.style.color = 'white';
+            notification.style.borderRadius = '5px';
+            notification.style.zIndex = '10000';
+            notification.style.fontSize = '16px';
+            notification.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.3)';
+            notification.style.opacity = '0';
+            
+            // 添加到文档
+            document.body.appendChild(notification);
+            
+            // 淡入效果
+            setTimeout(() => {
+                notification.style.transition = 'opacity 0.3s ease';
+                notification.style.opacity = '1';
+            }, 10);
+            
+            // 2秒后淡出并移除
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 2000);
+        }
+
         // 挖掘方块
         function mineBlock(isAutoMining = false) {
             try {
@@ -2460,13 +2833,28 @@
                         
                         // 检查特殊掉落
                         if (currentBlock.special && Math.random() < currentBlock.special.chance) {
-                            // 初始化resources对象
-                            if (!window.gameState.resources) {
-                                window.gameState.resources = {};
-                            }
                             const itemName = currentBlock.special.item;
                             if (itemName) {
-                                window.gameState.resources[itemName] = (window.gameState.resources[itemName] || 0) + 1;
+                                // 根据掉落类型进行不同处理
+                                if (currentBlock.special.type === 'pickaxe') {
+                                    // 处理镐子掉落
+                                    if (!window.gameState.pickaxes) {
+                                        window.gameState.pickaxes = {};
+                                    }
+                                    const count = currentBlock.special.count || 1;
+                                    window.gameState.pickaxes[itemName] = (window.gameState.pickaxes[itemName] || 0) + count;
+                                    // 显示获得镐子的通知
+                                    showNotification(`获得了 ${count} 把${itemName}！`);
+                                } else {
+                                    // 处理普通资源掉落
+                                    if (!window.gameState.resources) {
+                                        window.gameState.resources = {};
+                                    }
+                                    const count = currentBlock.special.count || 1;
+                                    window.gameState.resources[itemName] = (window.gameState.resources[itemName] || 0) + count;
+                                    // 显示获得资源的通知
+                                    showNotification(`获得了 ${count} 个${itemName}！`);
+                                }
                             }
                         }
                         
@@ -2647,8 +3035,8 @@
                         stageElement.textContent = '当前阶段：第一阶段';
                     } else if (currentStage === 2) {
                         stageElement.textContent = '当前阶段：第二阶段';
-                    } else if (currentStage === 3) {
-                        stageElement.textContent = '当前阶段：第三阶段';
+                    } else if (currentStage >= 3) {
+                        stageElement.textContent = '当前阶段：第三阶段第一部分';
                     }
                 }
             } catch (e) {
@@ -2675,14 +3063,36 @@
                     window.gameState.resources = {};
                 }
                 
-                // 检查水立方数量
-                if ((window.gameState.resources["水立方"] || 0) < 1) {
-                    alert('水立方不足！');
-                    return;
+                let expGain = 0;
+                let message = '';
+                let hasResource = false;
+                
+                // 优先使用淼立方
+                if ((window.gameState.resources["淼立方"] || 0) > 0) {
+                    window.gameState.resources["淼立方"] -= 1;
+                    expGain = 500;
+                    message = '使用淼立方浇树成功！';
+                    hasResource = true;
+                }
+                // 其次使用水结晶
+                else if ((window.gameState.resources["水结晶"] || 0) > 0) {
+                    window.gameState.resources["水结晶"] -= 1;
+                    expGain = 100;
+                    message = '使用水结晶浇树成功！';
+                    hasResource = true;
+                }
+                // 最后使用水立方
+                else if ((window.gameState.resources["水立方"] || 0) > 0) {
+                    window.gameState.resources["水立方"] -= 1;
+                    expGain = 5;
+                    message = '使用水立方浇树成功！';
+                    hasResource = true;
                 }
                 
-                // 消耗水立方
-                window.gameState.resources["水立方"] -= 1;
+                if (!hasResource) {
+                    alert('浇树所需资源不足！请准备淼立方、水结晶或水立方。');
+                    return;
+                }
                 
                 // 初始化树系统数据
                 if (typeof window.gameState.treeLevel !== 'number') {
@@ -2693,13 +3103,22 @@
                 }
                 
                 // 增加树经验
-                window.gameState.treeExp += 5;
+                window.gameState.treeExp += expGain;
                 
                 // 检查升级
                 const treeExpNeeded = window.gameState.treeLevel * 10;
+                let leveledUp = false;
                 while (window.gameState.treeExp >= treeExpNeeded) {
                     window.gameState.treeExp -= treeExpNeeded;
                     window.gameState.treeLevel += 1;
+                    leveledUp = true;
+                }
+                
+                // 显示消息
+                if (leveledUp) {
+                    alert(`${message}\n获得 ${expGain} 树经验！\n树升级到了 ${window.gameState.treeLevel} 级！`);
+                } else {
+                    alert(`${message}\n获得 ${expGain} 树经验！`);
                 }
                 
                 // 保存游戏
@@ -3690,11 +4109,24 @@
             try {
                 document.querySelectorAll(".block-category .category-btn").forEach(button => {
                     button.addEventListener("click", function() {
-                        document.querySelectorAll(".block-category .category-btn").forEach(btn => btn.classList.remove("active"));
-                        this.classList.add("active");
-                        gameState.currentBlockCategory = this.dataset.category;
-                        gameState.currentBlockIndex = 0;
-                        updateUI();
+                        const category = this.dataset.category;
+                        const gameStage = gameState?.gameStage || 1;
+                        
+                        // 根据游戏阶段检查是否允许访问该类别
+                        let canAccess = true;
+                        if (category === 'main2' || category === 'side2') {
+                            canAccess = gameStage >= 2;
+                        } else if (category === 'main3') {
+                            canAccess = gameStage >= 3;
+                        }
+                        
+                        if (canAccess) {
+                            document.querySelectorAll(".block-category .category-btn").forEach(btn => btn.classList.remove("active"));
+                            this.classList.add("active");
+                            gameState.currentBlockCategory = category;
+                            gameState.currentBlockIndex = 0;
+                            updateUI();
+                        }
                     });
                 });
             } catch (e) {
@@ -3727,9 +4159,22 @@
             try {
                 document.querySelectorAll(".shop-categories .category-btn").forEach(button => {
                     button.addEventListener("click", function() {
-                        document.querySelectorAll(".shop-categories .category-btn").forEach(btn => btn.classList.remove("active"));
-                        this.classList.add("active");
-                        updateShop();
+                        const shopCategory = this.dataset.shop;
+                        const gameStage = window.gameState?.gameStage || 1;
+                        
+                        // 根据游戏阶段检查是否允许访问该商店类别
+                        let canAccess = true;
+                        if (shopCategory === 'main2' || shopCategory === 'side2') {
+                            canAccess = gameStage >= 2;
+                        } else if (shopCategory === 'main3') {
+                            canAccess = gameStage >= 3;
+                        }
+                        
+                        if (canAccess) {
+                            document.querySelectorAll(".shop-categories .category-btn").forEach(btn => btn.classList.remove("active"));
+                            this.classList.add("active");
+                            updateShop();
+                        }
                     });
                 });
             } catch (e) {
@@ -3834,6 +4279,8 @@
                     const alchemyBtn = tabsContainer.querySelector('[data-tab="alchemy"]');
                     const waterTreeBtn = tabsContainer.querySelector('[data-tab="water-tree"]');
                     const researchBtn = tabsContainer.querySelector('[data-tab="research"]'); // 研究所按钮
+                    const main2Btn = tabsContainer.querySelector('[data-tab="main2"]');
+                    const side2Btn = tabsContainer.querySelector('[data-tab="side2"]');
                     
                     // 确保所有必要的按钮都存在
                     if (boostBtn && resourcesBtn && shopBtn && alchemyBtn) {
@@ -3845,14 +4292,83 @@
                         shopBtn.style.display = 'inline-block';
                         alchemyBtn.style.display = 'inline-block';
                         
-                        // 浇树标签只在阶段≥2显示
-                        if (waterTreeBtn) {
-                            waterTreeBtn.style.display = (gameStage >= 2) ? 'inline-block' : 'none';
+                        // 阶段≥2时显示的标签
+                        if (gameStage >= 2) {
+                            // 浇树标签
+                            if (waterTreeBtn) {
+                                waterTreeBtn.style.display = 'inline-block';
+                            }
+                            // 主线2和支线2标签
+                            if (main2Btn) {
+                                main2Btn.style.display = 'inline-block';
+                            }
+                            if (side2Btn) {
+                                side2Btn.style.display = 'inline-block';
+                            }
+                            
+                            // 显示主线2和支线2方块类别
+                            const main2CategoryBtn = document.querySelector('.block-category .category-btn[data-category="main2"]');
+                            const side2CategoryBtn = document.querySelector('.block-category .category-btn[data-category="side2"]');
+                            if (main2CategoryBtn) main2CategoryBtn.style.display = 'inline-block';
+                            if (side2CategoryBtn) side2CategoryBtn.style.display = 'inline-block';
+                        } else {
+                            // 阶段=1时隐藏高级标签
+                            if (waterTreeBtn) {
+                                waterTreeBtn.style.display = 'none';
+                            }
+                            if (main2Btn) {
+                                main2Btn.style.display = 'none';
+                            }
+                            if (side2Btn) {
+                                side2Btn.style.display = 'none';
+                            }
+                            
+                            // 隐藏高级方块类别
+                            const main2CategoryBtn = document.querySelector('.block-category .category-btn[data-category="main2"]');
+                            const side2CategoryBtn = document.querySelector('.block-category .category-btn[data-category="side2"]');
+                            const main3CategoryBtn = document.querySelector('.block-category .category-btn[data-category="main3"]');
+                            if (main2CategoryBtn) main2CategoryBtn.style.display = 'none';
+                            if (side2CategoryBtn) side2CategoryBtn.style.display = 'none';
+                            if (main3CategoryBtn) main3CategoryBtn.style.display = 'none';
                         }
                         
-                        // 研究所标签暂不开放（即使在阶段3也隐藏）
+                        // 阶段≥3时显示主线3方块类别
+                        if (gameStage >= 3) {
+                            const main3CategoryBtn = document.querySelector('.block-category .category-btn[data-category="main3"]');
+                            if (main3CategoryBtn) main3CategoryBtn.style.display = 'inline-block';
+                            
+                            // 显示主线3商店
+                            const main3ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="main3"]');
+                            if (main3ShopBtn) main3ShopBtn.style.display = 'inline-block';
+                        } else {
+                            const main3CategoryBtn = document.querySelector('.block-category .category-btn[data-category="main3"]');
+                            if (main3CategoryBtn) main3CategoryBtn.style.display = 'none';
+                            
+                            // 隐藏主线3商店
+                            const main3ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="main3"]');
+                            if (main3ShopBtn) main3ShopBtn.style.display = 'none';
+                        }
+                        
+                        // 控制主线2和支线2商店的显示
+                        if (gameStage >= 2) {
+                            const main2ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="main2"]');
+                            const side2ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="side2"]');
+                            if (main2ShopBtn) main2ShopBtn.style.display = 'inline-block';
+                            if (side2ShopBtn) side2ShopBtn.style.display = 'inline-block';
+                        } else {
+                            const main2ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="main2"]');
+                            const side2ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="side2"]');
+                            if (main2ShopBtn) main2ShopBtn.style.display = 'none';
+                            if (side2ShopBtn) side2ShopBtn.style.display = 'none';
+                        }
+                        
+                        // 阶段≥3时显示研究所标签
                         if (researchBtn) {
-                            researchBtn.style.display = 'none';
+                            if (gameStage >= 3) {
+                                researchBtn.style.display = 'inline-block';
+                            } else {
+                                researchBtn.style.display = 'none';
+                            }
                         }
                     }
                 }
@@ -3876,11 +4392,40 @@
             console.log('兑换信息自动更新已启动');
         }
         
-        // 修改initGame函数，在游戏初始化时启动兑换信息更新
+        // 金奖转化器功能 - 每秒将1%金币转化为奖杯
+        function startTrophyConverter() {
+            setInterval(() => {
+                try {
+                    // 检查是否拥有金奖转化器
+                    if (window.gameState && window.gameState.resources && 
+                        (window.gameState.resources["金奖转化器"] || 0) >= 1) {
+                        
+                        const gold = window.gameState.gold || 0;
+                        // 只有当金币大于等于10000时才进行转化
+                        if (gold >= 10000) {
+                            // 转化1%的金币为奖杯
+                            const convertAmount = gold * 0.01;
+                            window.gameState.gold -= convertAmount;
+                            window.gameState.trophies = (window.gameState.trophies || 0) + convertAmount;
+                            
+                            // 更新UI显示
+                            updateGoldDisplay();
+                            updateTrophiesDisplay();
+                        }
+                    }
+                } catch (e) {
+                    console.error('金奖转化器执行失败:', e);
+                }
+            }, 1000); // 每秒执行一次
+            console.log('金奖转化器已启动');
+        }
+        
+        // 修改initGame函数，在游戏初始化时启动兑换信息更新和金奖转化器
         const originalInitGame = initGame;
         initGame = function() {
             originalInitGame();
             startConvertInfoUpdater();
+            startTrophyConverter(); // 启动金奖转化器
             // 立即更新一次兑换信息
             updateConvertInfo();
         };
