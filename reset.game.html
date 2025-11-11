@@ -1981,7 +1981,22 @@
             try {
                 // 确保window.gameState存在
                 if (!window.gameState) {
-                    window.gameState = { level: 1, exp: 0, gold: 0, trophies: 0, gameStage: 1, treeLevel: 1, treeExp: 0, autoMiningEnabled: false };
+                    window.gameState = { 
+                        level: 1, 
+                        exp: 0, 
+                        gold: 0, 
+                        trophies: 0, 
+                        gameStage: 1, 
+                        treeLevel: 1, 
+                        treeExp: 0, 
+                        autoMiningEnabled: false,
+                        resources: {} // 初始化资源对象
+                    };
+                }
+                
+                // 确保resources对象存在
+                if (!window.gameState.resources) {
+                    window.gameState.resources = {};
                 }
                 
                 // 更新基本状态
@@ -2499,21 +2514,27 @@
                 const expGain = 5;
                 window.gameState.treeExp = (window.gameState.treeExp || 0) + expGain;
                 
-                // 检查是否可以升级
-                const expNeededForNextLevel = 10 * window.gameState.treeLevel;
-                if (window.gameState.treeExp >= expNeededForNextLevel) {
-                    window.gameState.treeLevel += 1;
-                    window.gameState.treeExp -= expNeededForNextLevel;
-                    
-                    // 移除升级提示，直接更新UI即可
+                // 检查是否可以升级，使用while循环确保经验足够时自动连续升级
+                let expNeededForNextLevel;
+                while (true) {
+                    expNeededForNextLevel = 10 * window.gameState.treeLevel;
+                    if (window.gameState.treeExp >= expNeededForNextLevel) {
+                        window.gameState.treeLevel += 1;
+                        window.gameState.treeExp -= expNeededForNextLevel;
+                    } else {
+                        break;
+                    }
                 }
-                
-                // 浇树后触发成就检查，但让checkAchievements函数统一处理
-                // 这样可以确保浇树成就遵循统一的永久解锁逻辑
-    
                 
                 // 更新UI
                 updateUI();
+                
+                // 显示结果
+                const resultsElement = document.getElementById('water-tree-results');
+                if (resultsElement) {
+                    const currentExpNeeded = 10 * window.gameState.treeLevel;
+                    resultsElement.textContent = `成功浇树！消耗1个水立方，树经验增加到${window.gameState.treeExp}/${currentExpNeeded}，树等级：${window.gameState.treeLevel}`;
+                }
             } catch (e) {
                 console.error('浇树失败:', e);
             }
@@ -3052,144 +3073,104 @@
                     alert('需要到达第二阶段才能解锁浇树系统！');
                     return;
                 }
-                
-                // 浇树功能 - 使用水结晶
-                function waterTreeWithCrystal() {
-                    try {
-                        // 检查是否在第二阶段
-                        if (window.gameState.gameStage < 2) {
-                            alert("需要获得五行镐进入第二阶段才能浇树！");
-                            return;
-                        }
-                        
-                        // 检查是否有水结晶
-                        if ((window.gameState.resources && window.gameState.resources["水结晶"] || 0) < 1) {
-                            alert("水结晶不足！");
-                            return;
-                        }
-                        
-                        // 扣除水结晶
-                        window.gameState.resources["水结晶"] -= 1;
-                        
-                        // 增加树经验
-                        const expGain = 100;
-                        window.gameState.treeExp = (window.gameState.treeExp || 0) + expGain;
-                        
-                        // 检查是否可以升级
-                        const expNeededForNextLevel = 10 * window.gameState.treeLevel;
-                        if (window.gameState.treeExp >= expNeededForNextLevel) {
-                            window.gameState.treeLevel += 1;
-                            window.gameState.treeExp -= expNeededForNextLevel;
-                            
-                            // 移除升级提示，直接更新UI即可
-                        }
-                        
-                        // 更新UI
-                        updateUI();
-                        
-                        // 显示结果
-                        const resultsElement = document.getElementById('water-tree-results');
-                        if (resultsElement) {
-                            const currentExpNeeded = 10 * window.gameState.treeLevel;
-                            resultsElement.textContent = `成功浇树！消耗1个水结晶，树经验增加到${window.gameState.treeExp}/${currentExpNeeded}，树等级：${window.gameState.treeLevel}`;
-                        }
-                    } catch (e) {
-                        console.error('浇树过程出错:', e);
-                    }
+            } catch (e) {
+                console.error('浇树功能错误:', e);
+            }
+        }
+
+        // 浇树功能 - 使用水结晶
+        function waterTreeWithCrystal() {
+            try {
+                // 检查是否在第二阶段
+                if (window.gameState.gameStage < 2) {
+                    alert("需要获得五行镐进入第二阶段才能浇树！");
+                    return;
                 }
                 
-                // 浇树功能 - 使用淼立方
-                function waterTreeWithTripleCube() {
-                    try {
-                        // 检查是否在第二阶段
-                        if (window.gameState.gameStage < 2) {
-                            alert("需要获得五行镐进入第二阶段才能浇树！");
-                            return;
-                        }
-                        
-                        // 检查是否有淼立方
-                        if ((window.gameState.resources && window.gameState.resources["淼立方"] || 0) < 1) {
-                            alert("淼立方不足！");
-                            return;
-                        }
-                        
-                        // 扣除淼立方
-                        window.gameState.resources["淼立方"] -= 1;
-                        
-                        // 增加树经验
-                        const expGain = 500;
-                        window.gameState.treeExp = (window.gameState.treeExp || 0) + expGain;
-                        
-                        // 检查是否可以升级
-                        const expNeededForNextLevel = 10 * window.gameState.treeLevel;
-                        if (window.gameState.treeExp >= expNeededForNextLevel) {
-                            window.gameState.treeLevel += 1;
-                            window.gameState.treeExp -= expNeededForNextLevel;
-                            
-                            // 移除升级提示，直接更新UI即可
-                        }
-                        
-                        // 更新UI
-                        updateUI();
-                        
-                        // 显示结果
-                        const resultsElement = document.getElementById('water-tree-results');
-                        if (resultsElement) {
-                            const currentExpNeeded = 10 * window.gameState.treeLevel;
-                            resultsElement.textContent = `成功浇树！消耗1个淼立方，树经验增加到${window.gameState.treeExp}/${currentExpNeeded}，树等级：${window.gameState.treeLevel}`;
-                        }
-                    } catch (e) {
-                        console.error('浇树过程出错:', e);
-                    }
+                // 检查是否有水结晶
+                if ((window.gameState.resources && window.gameState.resources["水结晶"] || 0) < 1) {
+                    alert("水结晶不足！");
+                    return;
                 }
                 
-                // 初始化树系统数据
-                if (typeof window.gameState.treeLevel !== 'number') {
-                    window.gameState.treeLevel = 1;
-                }
-                if (typeof window.gameState.treeExp !== 'number') {
-                    window.gameState.treeExp = 0;
-                }
+                // 扣除水结晶
+                window.gameState.resources["水结晶"] -= 1;
                 
                 // 增加树经验
-                window.gameState.treeExp += expGain;
+                const expGain = 100;
+                window.gameState.treeExp = (window.gameState.treeExp || 0) + expGain;
                 
-                // 检查升级
-                const treeExpNeeded = window.gameState.treeLevel * 10;
-                let leveledUp = false;
-                while (window.gameState.treeExp >= treeExpNeeded) {
-                    window.gameState.treeExp -= treeExpNeeded;
-                    window.gameState.treeLevel += 1;
-                    leveledUp = true;
+                // 检查是否可以升级，使用while循环确保经验足够时自动连续升级
+                let expNeededForNextLevel;
+                while (true) {
+                    expNeededForNextLevel = 10 * window.gameState.treeLevel;
+                    if (window.gameState.treeExp >= expNeededForNextLevel) {
+                        window.gameState.treeLevel += 1;
+                        window.gameState.treeExp -= expNeededForNextLevel;
+                    } else {
+                        break;
+                    }
                 }
-                
-                // 完全移除所有提示，直接更新UI
-                
-                // 保存游戏
-                saveGame();
                 
                 // 更新UI
-                updateCustomUI();
+                updateUI();
                 
-                // 检查成就
-                try {
-                    if (typeof checkAchievements === 'function') {
-
-                        console.log('浇树后成就检查已执行');
-                    }
-                } catch (achievementError) {
-                    console.error('检查成就失败:', achievementError);
-                }
-                
-                // 显示浇树结果
+                // 显示结果
                 const resultsElement = document.getElementById('water-tree-results');
                 if (resultsElement) {
-                    const currentExpNeeded = window.gameState.treeLevel * 10;
-                    resultsElement.textContent = `成功浇树！消耗1个水立方，树经验增加到${window.gameState.treeExp}/${currentExpNeeded}，树等级：${window.gameState.treeLevel}`;
+                    const currentExpNeeded = 10 * window.gameState.treeLevel;
+                    resultsElement.textContent = `成功浇树！消耗1个水结晶，树经验增加到${window.gameState.treeExp}/${currentExpNeeded}，树等级：${window.gameState.treeLevel}`;
                 }
             } catch (e) {
-                console.error('浇树失败:', e);
-                alert('浇树失败，请重试');
+                console.error('浇树过程出错:', e);
+            }
+        }
+        
+        // 浇树功能 - 使用淼立方
+        function waterTreeWithTripleCube() {
+            try {
+                // 检查是否在第二阶段
+                if (window.gameState.gameStage < 2) {
+                    alert("需要获得五行镐进入第二阶段才能浇树！");
+                    return;
+                }
+                
+                // 检查是否有淼立方
+                if ((window.gameState.resources && window.gameState.resources["淼立方"] || 0) < 1) {
+                    alert("淼立方不足！");
+                    return;
+                }
+                
+                // 扣除淼立方
+                window.gameState.resources["淼立方"] -= 1;
+                
+                // 增加树经验
+                const expGain = 500;
+                window.gameState.treeExp = (window.gameState.treeExp || 0) + expGain;
+                
+                // 检查是否可以升级，使用while循环确保经验足够时自动连续升级
+                let expNeededForNextLevel;
+                while (true) {
+                    expNeededForNextLevel = 10 * window.gameState.treeLevel;
+                    if (window.gameState.treeExp >= expNeededForNextLevel) {
+                        window.gameState.treeLevel += 1;
+                        window.gameState.treeExp -= expNeededForNextLevel;
+                    } else {
+                        break;
+                    }
+                }
+                
+                // 更新UI
+                updateUI();
+                
+                // 显示结果
+                const resultsElement = document.getElementById('water-tree-results');
+                if (resultsElement) {
+                    const currentExpNeeded = 10 * window.gameState.treeLevel;
+                    resultsElement.textContent = `成功浇树！消耗1个淼立方，树经验增加到${window.gameState.treeExp}/${currentExpNeeded}，树等级：${window.gameState.treeLevel}`;
+                }
+            } catch (e) {
+                console.error('浇树过程出错:', e);
             }
         }
         
@@ -4581,7 +4562,7 @@
                     oldConvertInfo.textContent = `当前可兑换: ${formatNumber(trophiesAvailable)} 奖杯`;
                 }
             } catch (e) {
-                console.error('更新UI失败:', e);
+                console.error('更新兑换UI失败:', e);
             }
         }
         
