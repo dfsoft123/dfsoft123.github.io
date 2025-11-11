@@ -1714,8 +1714,12 @@
         // 计算所需经验
         function getExpNeeded(level) {
             // 修复经验计算公式，确保升级难度合理
+            // 当等级大于100万时，经验恒定为91780
+            if (level > 1000000) {
+                return 91780;
+            }
             // 当等级大于1000时，经验恒定为27891
-            if (level > 1000) {
+            else if (level > 1000) {
                 return 27891;
             }
             return Math.round(Math.pow(1.01, level) * 10) / 10;
@@ -2337,12 +2341,19 @@
                     const pickaxeCount = item.boost ? `<span class="pickaxe-count">${window.gameState.pickaxes[item.name] || 0}</span>` : "";
                     const useButton = item.boost ? `<button class="pickaxe-use-btn ${window.gameState.currentPickaxe === item.name ? 'active' : ''}" data-pickaxe="${item.name}">${window.gameState.currentPickaxe === item.name ? '使用中' : '使用'}</button>` : "";
                     
+                    // 金奖转化器开关按钮 - 只有当玩家已拥有时才显示
+                    const trophyConverterToggle = item.name === "金奖转化器" && window.gameState.resources && (window.gameState.resources["金奖转化器"] || 0) >= 1 ? 
+                        `<button class="trophy-converter-toggle ${window.gameState.trophyConverterEnabled ? 'active' : ''}" onclick="toggleTrophyConverter()">
+                            ${window.gameState.trophyConverterEnabled ? '已开启' : '已关闭'}
+                        </button>` : "";
+                    
                     shopItem.innerHTML = `
                         <div class="shop-item-header">
-                            <div>${item.name} ${pickaxeCount} ${useButton}</div>
+                            <div>${item.name} ${pickaxeCount} ${useButton} ${trophyConverterToggle}</div>
                             <div>${costText}</div>
                         </div>
                         ${item.boost ? `<div>增益: ${item.boost}, 金币倍率: ${item.goldMultiplier}, 使用增益增加: ${item.usageGain}</div>` : ""}
+                        ${item.name === "金奖转化器" ? '<div style="font-size: 12px; color: #666; margin: 5px 0;">每秒自动将金币转化为奖杯</div>' : ""}
                         <button class="buy-btn" data-item="${item.name}" ${!canBuy ? 'disabled' : ''}>购买</button>
                     `;
                     
@@ -2369,6 +2380,37 @@
                 });
             });
         }
+        
+        // 添加金奖转化器开关按钮的样式
+        (function() {
+            const style = document.createElement('style');
+            style.textContent = `
+                .trophy-converter-toggle {
+                    padding: 4px 8px;
+                    margin-left: 8px;
+                    font-size: 12px;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+                
+                .trophy-converter-toggle.active {
+                    background-color: #4CAF50;
+                    color: white;
+                }
+                
+                .trophy-converter-toggle:not(.active) {
+                    background-color: #f44336;
+                    color: white;
+                }
+                
+                .trophy-converter-toggle:hover {
+                    opacity: 0.8;
+                }
+            `;
+            document.head.appendChild(style);
+        })();
 
         // 购买物品
         function buyItem(itemName) {
@@ -4433,13 +4475,24 @@
             console.log('兑换信息自动更新已启动');
         }
         
+        // 金奖转化器状态和定时器
+        window.gameState = window.gameState || {};
+        window.gameState.trophyConverterEnabled = window.gameState.trophyConverterEnabled !== undefined ? window.gameState.trophyConverterEnabled : true; // 默认开启
+        let trophyConverterInterval = null;
+        
         // 金奖转化器功能 - 按照新公式转化金币为奖杯
         function startTrophyConverter() {
-            setInterval(() => {
+            // 如果已经有定时器在运行，先清除
+            if (trophyConverterInterval) {
+                clearInterval(trophyConverterInterval);
+            }
+            
+            trophyConverterInterval = setInterval(() => {
                 try {
-                    // 检查是否拥有金奖转化器
+                    // 检查是否拥有金奖转化器且功能已启用
                     if (window.gameState && window.gameState.resources && 
-                        (window.gameState.resources["金奖转化器"] || 0) >= 1) {
+                        (window.gameState.resources["金奖转化器"] || 0) >= 1 && 
+                        window.gameState.trophyConverterEnabled) {
                         
                         const gold = window.gameState.gold || 0;
                         // 只有当金币大于等于10000时才进行转化
@@ -4459,6 +4512,16 @@
                 }
             }, 1000); // 每秒执行一次
             console.log('金奖转化器已启动');
+        }
+        
+        // 切换金奖转化器开关状态
+        function toggleTrophyConverter() {
+            if (window.gameState) {
+                window.gameState.trophyConverterEnabled = !window.gameState.trophyConverterEnabled;
+                console.log('金奖转化器已' + (window.gameState.trophyConverterEnabled ? '开启' : '关闭'));
+                // 更新商店UI以反映开关状态
+                updateShop();
+            }
         }
         
         // 修改initGame函数，在游戏初始化时启动兑换信息更新和金奖转化器
