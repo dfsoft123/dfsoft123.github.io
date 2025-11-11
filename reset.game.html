@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>重置版</title>
+    <title>伤害：1</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -1393,9 +1393,9 @@
                     { name: "金结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "金结晶", chance: 0.05 } },
                     { name: "风结晶块", hp: 9.1e21, baseGold: 3000, special: { type: "fragment", item: "风结晶", chance: 0.05 } },
                     { name: "雷结晶块", hp: 9.1e21, baseGold: 3000, special: { type: "fragment", item: "雷结晶", chance: 0.05 } },
-                    { name: "光结晶块", hp: 5e24, baseGold: 5000, special: { type: "fragment", item: "光结晶", chance: 0.05 } },
-                    { name: "暗结晶块", hp: 5e24, baseGold: 5000, special: { type: "fragment", item: "暗结晶", chance: 0.05 } },
-                    { name: "源结晶块", hp: 1e28, baseGold: 10000, special: { type: "fragment", item: "源结晶", chance: 0.01 } }
+                    { name: "光结晶块", hp: 5e25, baseGold: 5000, special: { type: "fragment", item: "光结晶", chance: 0.05 } },
+                    { name: "暗结晶块", hp: 5e25, baseGold: 5000, special: { type: "fragment", item: "暗结晶", chance: 0.05 } },
+                    { name: "源结晶块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "源结晶", chance: 0.01 } }
                 ],
                 side2: [
                     { name: "红曜石块", hp: 5e16, baseGold: 500, special: { type: "fragment", item: "红曜石", chance: 0.05 } },
@@ -1408,13 +1408,13 @@
                     { name: "蓝曜方", hp: 6e25, baseGold: 4000, special: { type: "fragment", item: "蓝曜方", chance: 0.005 } }
                 ],
                 main3: [
-                    { name: "α方块", hp: 1e28, baseGold: 10000, special: { type: "fragment", item: "α", count: 1, chance: 1 } },
-                    { name: "β方块", hp: 1e28, baseGold: 10000, special: { type: "fragment", item: "β", count: 1, chance: 1 } },
-                    { name: "γ方块", hp: 1e28, baseGold: 10000, special: { type: "fragment", item: "γ", count: 1, chance: 1 } },
-                    { name: "元素晶片", hp: 1e30, baseGold: 15000, special: { type: "fragment", item: "元素晶片", count: 1, chance: 0.1 } },
-                    { name: "量产核心", hp: 1e33, baseGold: 20000, special: { type: "fragment", item: "量产核心", count: 1, chance: 0.01 } },
-                    { name: "五行镐", hp: 1e31, baseGold: 18000, special: { type: "fragment", item: "五行镐", count: 1, chance: 0.01 } },
-                    { name: "五行精华", hp: 1e31, baseGold: 18000, special: { type: "fragment", item: "五行精华", count: 1, chance: 0.001 } }
+                    { name: "α方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "α", count: 1, chance: 1 } },
+                    { name: "β方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "β", count: 1, chance: 1 } },
+                    { name: "γ方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "γ", count: 1, chance: 1 } },
+                    { name: "元素晶片", hp: 1.91e31, baseGold: 15000, special: { type: "fragment", item: "元素晶片", count: 1, chance: 0.1 } },
+                    { name: "量产核心", hp: 1.91e34, baseGold: 20000, special: { type: "fragment", item: "量产核心", count: 1, chance: 0.01 } },
+                    { name: "五行镐", hp: 7.8e31, baseGold: 18000, special: { type: "fragment", item: "五行镐", count: 1, chance: 0.01 } },
+                    { name: "五行精华", hp: 9.1e31, baseGold: 18000, special: { type: "fragment", item: "五行精华", count: 1, chance: 0.001 } }
                 ]
             },
             
@@ -1462,7 +1462,9 @@
                     { name: "源镐", cost: { fragments: { "源结晶": 1000 }, basePickaxes: ["九行镐", "红蓝镐Ⅲ"] }, boost: 3000000, goldMultiplier: 120, usageGain: 750 }
                 ],
                 main3: [
-                    { name: "元素镐", cost: { fragments: { "元素晶片": 100 } }, boost: 5000000, goldMultiplier: 200, usageGain: 1200 }
+                    { name: "元素镐", cost: { fragments: { "元素晶片": 100 } }, boost: 5000000, goldMultiplier: 200, usageGain: 1200 },
+                    { name: "元素镐2阶", cost: { fragments: { "元素镐": 1, "元素晶片": 9178 } }, boost: 1.2e7, goldMultiplier: 500, usageGain: 3000 },
+                    { name: "元素镐3阶", cost: { fragments: { "元素镐2阶": 1, "五行镐Ⅳ": 1, "元素晶片": 27891 } }, boost: 6e7, goldMultiplier: 2200, usageGain: 14000 }
                 ],
                 side2: [
                     { name: "五行镐Ⅱ", cost: { fragments: { "五行镐": 10 } }, boost: 75000, goldMultiplier: 12.5, usageGain: 75 },
@@ -1684,9 +1686,28 @@
             }
         }
 
+        // 更新标题显示伤害数值
+        function updateTitleDamage() {
+            try {
+                // 使用与游戏内相同的方式计算和显示伤害
+                const damageValue = calculateTotalDamage();
+                // 确保伤害至少为1
+                const finalDamage = Math.max(1, damageValue || 1);
+                const formattedDamage = formatNumber(finalDamage);
+                document.title = `伤害：${formattedDamage}`;
+            } catch (e) {
+                console.error('更新标题失败:', e);
+            }
+        }
+        
         // 格式化数字为万进制，保留两位小数（整数不保留）
         function formatNumber(num) {
             num = Number(num) || 0;
+            
+            // 确保gameData.units存在
+            if (!gameData.units) {
+                gameData.units = ['', '万', '亿', '万亿', '兆'];
+            }
             
             if (num < 10000000) {
                 // 对于小于千万的数字，如果是整数则不保留小数
@@ -1708,6 +1729,27 @@
                 return num.toString() + gameData.units[unitIndex];
             } else {
                 return num.toFixed(2).replace(/\.?0+$/, '') + gameData.units[unitIndex];
+            }
+        }
+        
+        // 更新title标签显示当前伤害和在线时长
+        function updateTitleDamage() {
+            try {
+                // 使用calculateTotalDamage()计算单次伤害，与游戏内显示保持一致
+                const damageValue = calculateTotalDamage();
+                // 确保伤害至少为1
+                const finalDamage = Math.max(1, damageValue || 1);
+                
+                // 获取并格式化在线时长
+                let playTimeText = '0秒';
+                if (window.gameState && window.gameState.totalPlayTimeSeconds !== undefined) {
+                    playTimeText = formatPlayTime(window.gameState.totalPlayTimeSeconds);
+                }
+                
+                // 更新标题格式，移除括号
+                document.title = `伤害：${formatNumber(finalDamage)}，总在线时长：${playTimeText}`;
+            } catch (e) {
+                console.error('更新标题失败:', e);
             }
         }
 
@@ -1786,6 +1828,7 @@
                     autoMiningEnabled: Boolean(window.gameState.autoMiningEnabled || false),
                     totalDamage: Math.max(0, Number(window.gameState.totalDamage) || 0),
                     gameStage: Math.max(1, Number(window.gameState.gameStage) || 1),
+                    totalPlayTimeSeconds: Math.max(0, Number(window.gameState.totalPlayTimeSeconds) || 0),
                     achievements: { ...(window.gameState.achievements || {}) },
                     resources: { ...(window.gameState.resources || {}) },
                     pickaxes: { ...(window.gameState.pickaxes || {}) },
@@ -1878,6 +1921,7 @@
                 window.gameState.autoMiningEnabled = Boolean(parsedState.autoMiningEnabled || false);
                 window.gameState.totalDamage = Math.max(0, Number(parsedState.totalDamage) || 0);
                 window.gameState.gameStage = Math.max(1, Number(parsedState.gameStage) || 1);
+                window.gameState.totalPlayTimeSeconds = Math.max(0, Number(parsedState.totalPlayTimeSeconds) || 0);
                 window.gameState.achievements = { ...(parsedState.achievements || window.gameState.achievements) };
                 window.gameState.gold = Math.max(0, Number(parsedState.gold) || 0);
                 window.gameState.trophies = Math.max(0, Number(parsedState.trophies) || 0);
@@ -2840,6 +2884,9 @@
                 
                 // 累计总伤害
                 window.gameState.totalDamage = (window.gameState.totalDamage || 0) + totalDamage;
+                
+                // 更新标题显示伤害数值
+                updateTitleDamage();
                 
                 // 增加使用增益 - 根据当前使用的镐子的usageGain属性
                 try {
@@ -4046,6 +4093,8 @@
                 totalDamage: 0,
                 // 新增：游戏阶段（1或2）
                 gameStage: 1,
+                // 新增：在线时长统计（秒）
+                totalPlayTimeSeconds: 0,
                 // 新增：成就系统
                 achievements: {
                     "初入游戏": true,
@@ -4105,16 +4154,63 @@
             };
         }
         
-        // 初始化游戏
+        // 格式化在线时长（秒）为友好的显示格式
+        function formatPlayTime(seconds) {
+            const days = Math.floor(seconds / (24 * 3600));
+            const hours = Math.floor((seconds % (24 * 3600)) / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const remainingSeconds = seconds % 60;
+            
+            if (days > 0) {
+                return `${days}天，${hours}时，${minutes}分，${remainingSeconds}秒`;
+            } else if (hours > 0) {
+                return `${hours}时，${minutes}分，${remainingSeconds}秒`;
+            } else if (minutes > 0) {
+                return `${minutes}分，${remainingSeconds}秒`;
+            } else {
+                return `${remainingSeconds}秒`;
+            }
+        }
+        
+        // 更新在线时长显示
+        function updatePlayTimeDisplay() {
+            const playTimeElement = document.getElementById('total-play-time');
+            if (playTimeElement && window.gameState && window.gameState.totalPlayTimeSeconds !== undefined) {
+                playTimeElement.textContent = formatPlayTime(window.gameState.totalPlayTimeSeconds);
+            }
+        }
+        
+        // 初始化游戏 - 增强版
         function initGame() {
+            console.log('开始游戏初始化...');
+            
+            // 确保gameState存在
+            if (!window.gameState) {
+                console.log('gameState不存在，初始化默认状态');
+                initGameState();
+            }
+            
             // 加载保存的游戏状态，如果失败将使用默认状态
-            loadGame();
+            try {
+                loadGame();
+                console.log('游戏状态加载完成');
+            } catch (loadError) {
+                console.error('加载游戏状态失败，使用默认状态:', loadError);
+                if (!window.gameState) {
+                    initGameState();
+                }
+            }
             
             // 初始化方块血量（如果不存在）
             if (!gameState.blockHp) {
                 gameState.blockHp = {};
             }
-            initBlockHp();
+            try {
+                initBlockHp();
+                console.log('方块血量初始化完成');
+            } catch (hpError) {
+                console.error('初始化方块血量失败:', hpError);
+            }
             
             // 确保游戏状态中的所有必要属性都存在
             if (!window.gameState.alchemyValue) window.gameState.alchemyValue = 0;
@@ -4127,12 +4223,35 @@
             if (!window.gameState.autoMiningEnabled) window.gameState.autoMiningEnabled = false;
             if (!window.gameState.totalDamage) window.gameState.totalDamage = 0;
             if (!window.gameState.gameStage) window.gameState.gameStage = 1;
+            if (!window.gameState.totalPlayTimeSeconds) window.gameState.totalPlayTimeSeconds = 0;
+            // 确保achievements对象存在
+            if (!window.gameState.achievements) window.gameState.achievements = {"初入游戏": true};
+            
+            // 创建在线时长显示元素
+            if (!document.getElementById('play-time-display')) {
+                const statsContainer = document.querySelector('#stats-container .stats');
+                if (statsContainer) {
+                    const playTimeElement = document.createElement('div');
+                    playTimeElement.id = 'play-time-display';
+                    playTimeElement.className = 'stat-item';
+                    playTimeElement.innerHTML = '<span class="stat-label">在线时长：</span><span class="stat-value" id="total-play-time">0秒</span>';
+                    statsContainer.appendChild(playTimeElement);
+                }
+            }
+            
+            // 确保gameData存在
+            if (!window.gameData) {
+                console.error('gameData不存在，创建默认数据');
+                window.gameData = { blocks: { main1: [] } };
+            }
             
 
    
             
             // 确保初入游戏成就始终是解锁状态
-            window.gameState.achievements["初入游戏"] = true;
+            if (window.gameState.achievements) {
+                window.gameState.achievements["初入游戏"] = true;
+            }
             
             // 移除统计数据中的游戏阶段显示
             try {
@@ -4147,85 +4266,354 @@
             }
             
             // 设置初始经验需求
-            document.getElementById("exp-needed").textContent = getExpNeeded(0);
-            
-            // 添加事件监听器
             try {
-                document.getElementById("block-display").addEventListener("click", mineBlock);
+                const expNeededElement = document.getElementById("exp-needed");
+                if (expNeededElement) {
+                    expNeededElement.textContent = typeof getExpNeeded === 'function' ? getExpNeeded(0) : '100';
+                }
             } catch (e) {
-                console.error('添加方块点击事件监听失败:', e);
+                console.error('设置初始经验需求失败:', e);
             }
             
-            try {
-                document.getElementById("prev-block").addEventListener("click", function() {
-                    try {
-                        const blockCount = gameData.blocks[gameState.currentBlockCategory].length;
-                        gameState.currentBlockIndex = (gameState.currentBlockIndex - 1 + blockCount) % blockCount;
-                        updateUI();
-                    } catch (e) {
-                        console.error('切换到上一个方块失败:', e);
-                    }
-                });
+            // 添加事件监听器 - 优化版本，避免重复绑定
+            function bindBlockClickListener() {
+                const blockDisplay = document.getElementById("block-display");
+                if (!blockDisplay) {
+                    console.error('未找到方块显示元素，尝试稍后重新绑定');
+                    return;
+                }
                 
-                document.getElementById("next-block").addEventListener("click", function() {
+                console.log('找到方块显示元素，开始绑定点击事件（避免重复绑定）');
+                
+                // 确保全局保存blockClickHandler函数，以便正确移除
+                if (window._blockClickHandler) {
                     try {
-                        const blockCount = gameData.blocks[gameState.currentBlockCategory].length;
-                        gameState.currentBlockIndex = (gameState.currentBlockIndex + 1) % blockCount;
-                        updateUI();
+                        // 移除之前可能添加的监听器
+                        blockDisplay.removeEventListener("click", window._blockClickHandler);
+                        console.log('移除了之前的监听器');
                     } catch (e) {
-                        console.error('切换到下一个方块失败:', e);
+                        console.warn('移除监听器时出现错误:', e);
                     }
-                });
+                }
+                
+                // 创建新的点击处理函数并保存到全局
+                window._blockClickHandler = function() {
+                    if (typeof mineBlock === 'function') {
+                        try {
+                            mineBlock();
+                        } catch (e) {
+                            console.error('挖矿函数执行失败:', e);
+                        }
+                    }
+                };
+                
+                // 只使用一种方法绑定事件，避免重复执行
+                try {
+                    // 重置onclick
+                    blockDisplay.onclick = null;
+                    // 使用addEventListener并保存引用
+                    blockDisplay.addEventListener("click", window._blockClickHandler);
+                    console.log('成功绑定单个点击事件监听器');
+                } catch (e) {
+                    // 降级使用onclick作为备用方案
+                    console.warn('使用addEventListener失败，降级到onclick:', e);
+                    blockDisplay.onclick = window._blockClickHandler;
+                }
+            }
+            
+            // 只绑定一次事件监听器
+            bindBlockClickListener();
+            
+            try {
+                // 增强方块切换按钮事件绑定
+                function bindBlockNavigation() {
+                    const prevBlock = document.getElementById("prev-block");
+                    const nextBlock = document.getElementById("next-block");
+                    
+                    // 处理上一个方块
+                    if (prevBlock) {
+                        console.log('找到上一个方块按钮，绑定事件');
+                        // 使用onclick作为主要方法
+                        prevBlock.onclick = function() {
+                            try {
+                                if (gameData && gameState) {
+                                    const blockCount = gameData.blocks[gameState.currentBlockCategory]?.length || 1;
+                                    gameState.currentBlockIndex = (gameState.currentBlockIndex - 1 + blockCount) % blockCount;
+                                    if (typeof updateUI === 'function') updateUI();
+                                }
+                            } catch (e) {
+                                console.error('切换到上一个方块失败:', e);
+                            }
+                        };
+                        // 同时使用addEventListener作为备份
+                        try {
+                            function prevBlockHandler() {
+                                try {
+                                    if (gameData && gameState) {
+                                        const blockCount = gameData.blocks[gameState.currentBlockCategory]?.length || 1;
+                                        gameState.currentBlockIndex = (gameState.currentBlockIndex - 1 + blockCount) % blockCount;
+                                        if (typeof updateUI === 'function') updateUI();
+                                    }
+                                } catch (e) {
+                                    console.error('切换到上一个方块失败:', e);
+                                }
+                            }
+                            prevBlock.removeEventListener("click", prevBlockHandler);
+                            prevBlock.addEventListener("click", prevBlockHandler);
+                        } catch (e) {
+                            console.warn('为上一个方块按钮添加addEventListener失败，但onclick已设置:', e);
+                        }
+                    }
+                    
+                    // 处理下一个方块
+                    if (nextBlock) {
+                        console.log('找到下一个方块按钮，绑定事件');
+                        // 使用onclick作为主要方法
+                        nextBlock.onclick = function() {
+                            try {
+                                if (gameData && gameState) {
+                                    const blockCount = gameData.blocks[gameState.currentBlockCategory]?.length || 1;
+                                    gameState.currentBlockIndex = (gameState.currentBlockIndex + 1) % blockCount;
+                                    if (typeof updateUI === 'function') updateUI();
+                                }
+                            } catch (e) {
+                                console.error('切换到下一个方块失败:', e);
+                            }
+                        };
+                        // 同时使用addEventListener作为备份
+                        try {
+                            function nextBlockHandler() {
+                                try {
+                                    if (gameData && gameState) {
+                                        const blockCount = gameData.blocks[gameState.currentBlockCategory]?.length || 1;
+                                        gameState.currentBlockIndex = (gameState.currentBlockIndex + 1) % blockCount;
+                                        if (typeof updateUI === 'function') updateUI();
+                                    }
+                                } catch (e) {
+                                    console.error('切换到下一个方块失败:', e);
+                                }
+                            }
+                            nextBlock.removeEventListener("click", nextBlockHandler);
+                            nextBlock.addEventListener("click", nextBlockHandler);
+                        } catch (e) {
+                            console.warn('为下一个方块按钮添加addEventListener失败，但onclick已设置:', e);
+                        }
+                    }
+                }
+                
+                bindBlockNavigation();
+                setTimeout(bindBlockNavigation, 100);
             } catch (e) {
                 console.error('添加方块切换事件监听失败:', e);
             }
             
-            // 分类切换
+            // 分类切换 - 增强版
             try {
-                document.querySelectorAll(".block-category .category-btn").forEach(button => {
-                    button.addEventListener("click", function() {
-                        const category = this.dataset.category;
-                        const gameStage = gameState?.gameStage || 1;
+                function bindCategoryButtons() {
+                    console.log('绑定分类按钮事件');
+                    const categoryButtons = document.querySelectorAll(".block-category .category-btn");
+                    if (categoryButtons.length === 0) {
+                        console.warn('未找到分类按钮');
+                        return;
+                    }
+                    
+                    categoryButtons.forEach(button => {
+                        if (!button) return;
                         
-                        // 根据游戏阶段检查是否允许访问该类别
-                        let canAccess = true;
-                        if (category === 'main2' || category === 'side2') {
-                            canAccess = gameStage >= 2;
-                        } else if (category === 'main3') {
-                            canAccess = gameStage >= 3;
-                        }
+                        // 使用onclick作为主要方法
+                        button.onclick = function() {
+                            try {
+                                const category = this.getAttribute('data-category') || this.dataset.category;
+                                const gameStage = gameState?.gameStage || 1;
+                                
+                                // 根据游戏阶段检查是否允许访问该类别
+                                let canAccess = true;
+                                if (category === 'main2' || category === 'side2') {
+                                    canAccess = gameStage >= 2;
+                                } else if (category === 'main3') {
+                                    canAccess = gameStage >= 3;
+                                }
+                                
+                                if (canAccess && gameState) {
+                                    // 安全地更新所有按钮的active状态
+                                    try {
+                                        const allButtons = document.querySelectorAll(".block-category .category-btn");
+                                        allButtons.forEach(btn => {
+                                            if (btn && btn.classList) {
+                                                btn.classList.remove("active");
+                                            }
+                                        });
+                                        if (this.classList) {
+                                            this.classList.add("active");
+                                        }
+                                    } catch (e) {
+                                        console.error('更新按钮active状态失败:', e);
+                                    }
+                                    
+                                    gameState.currentBlockCategory = category;
+                                    gameState.currentBlockIndex = 0;
+                                    if (typeof updateUI === 'function') updateUI();
+                                }
+                            } catch (e) {
+                                console.error('分类切换失败:', e);
+                            }
+                        };
                         
-                        if (canAccess) {
-                            document.querySelectorAll(".block-category .category-btn").forEach(btn => btn.classList.remove("active"));
-                            this.classList.add("active");
-                            gameState.currentBlockCategory = category;
-                            gameState.currentBlockIndex = 0;
-                            updateUI();
+                        // 同时使用addEventListener作为备份
+                        try {
+                            function categoryClickHandler() {
+                                try {
+                                    const category = this.getAttribute('data-category') || this.dataset.category;
+                                    const gameStage = gameState?.gameStage || 1;
+                                    
+                                    // 根据游戏阶段检查是否允许访问该类别
+                                    let canAccess = true;
+                                    if (category === 'main2' || category === 'side2') {
+                                        canAccess = gameStage >= 2;
+                                    } else if (category === 'main3') {
+                                        canAccess = gameStage >= 3;
+                                    }
+                                    
+                                    if (canAccess && gameState) {
+                                        try {
+                                            const allButtons = document.querySelectorAll(".block-category .category-btn");
+                                            allButtons.forEach(btn => {
+                                                if (btn && btn.classList) {
+                                                    btn.classList.remove("active");
+                                                }
+                                            });
+                                            if (this.classList) {
+                                                this.classList.add("active");
+                                            }
+                                        } catch (e) {
+                                            console.error('更新按钮active状态失败:', e);
+                                        }
+                                        
+                                        gameState.currentBlockCategory = category;
+                                        gameState.currentBlockIndex = 0;
+                                        if (typeof updateUI === 'function') updateUI();
+                                    }
+                                } catch (e) {
+                                    console.error('分类切换失败:', e);
+                                }
+                            }
+                            button.removeEventListener("click", categoryClickHandler);
+                            button.addEventListener("click", categoryClickHandler);
+                        } catch (e) {
+                            console.warn('为分类按钮添加addEventListener失败，但onclick已设置:', e);
                         }
                     });
-                });
+                }
+                
+                bindCategoryButtons();
+                setTimeout(bindCategoryButtons, 100);
             } catch (e) {
                 console.error('添加分类切换事件监听失败:', e);
             }
             
-            // 标签切换
+            // 标签切换 - 增强版
             try {
-                document.querySelectorAll(".tab-btn").forEach(button => {
-                    button.addEventListener("click", function() {
-                        try {
-                            document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-                            document.querySelectorAll(".tab-content").forEach(content => content.classList.remove("active"));
-                            
-                            this.classList.add("active");
-                            const tabContent = document.getElementById(`${this.dataset.tab}-tab`);
-                            if (tabContent) {
-                                tabContent.classList.add("active");
+                function bindTabButtons() {
+                    console.log('绑定标签按钮事件');
+                    const tabButtons = document.querySelectorAll(".tab-btn");
+                    if (tabButtons.length === 0) {
+                        console.warn('未找到标签按钮');
+                        return;
+                    }
+                    
+                    tabButtons.forEach(button => {
+                        if (!button) return;
+                        
+                        // 使用onclick作为主要方法
+                        button.onclick = function() {
+                            try {
+                                console.log('标签按钮点击:', this.id);
+                                // 安全地更新所有按钮和内容的active状态
+                                try {
+                                    const allButtons = document.querySelectorAll(".tab-btn");
+                                    allButtons.forEach(btn => {
+                                        if (btn && btn.classList) {
+                                            btn.classList.remove("active");
+                                        }
+                                    });
+                                    const allContents = document.querySelectorAll(".tab-content");
+                                    allContents.forEach(content => {
+                                        if (content && content.classList) {
+                                            content.classList.remove("active");
+                                        }
+                                    });
+                                } catch (stateError) {
+                                    console.error('更新标签状态失败:', stateError);
+                                }
+                                
+                                // 激活当前按钮
+                                if (this.classList) {
+                                    this.classList.add("active");
+                                }
+                                
+                                // 激活对应内容
+                                const tabId = this.getAttribute('data-tab') || this.dataset.tab;
+                                if (tabId) {
+                                    const tabContent = document.getElementById(`${tabId}-tab`);
+                                    if (tabContent && tabContent.classList) {
+                                        tabContent.classList.add("active");
+                                    }
+                                }
+                            } catch (e) {
+                                console.error('切换标签失败:', e);
                             }
+                        };
+                        
+                        // 同时使用addEventListener作为备份
+                        try {
+                            function tabClickHandler() {
+                                try {
+                                    console.log('标签按钮addEventListener触发:', this.id);
+                                    // 安全地更新所有按钮和内容的active状态
+                                    try {
+                                        const allButtons = document.querySelectorAll(".tab-btn");
+                                        allButtons.forEach(btn => {
+                                            if (btn && btn.classList) {
+                                                btn.classList.remove("active");
+                                            }
+                                        });
+                                        const allContents = document.querySelectorAll(".tab-content");
+                                        allContents.forEach(content => {
+                                            if (content && content.classList) {
+                                                content.classList.remove("active");
+                                            }
+                                        });
+                                    } catch (stateError) {
+                                        console.error('更新标签状态失败:', stateError);
+                                    }
+                                    
+                                    // 激活当前按钮
+                                    if (this.classList) {
+                                        this.classList.add("active");
+                                    }
+                                    
+                                    // 激活对应内容
+                                    const tabId = this.getAttribute('data-tab') || this.dataset.tab;
+                                    if (tabId) {
+                                        const tabContent = document.getElementById(`${tabId}-tab`);
+                                        if (tabContent && tabContent.classList) {
+                                            tabContent.classList.add("active");
+                                        }
+                                    }
+                                } catch (e) {
+                                    console.error('切换标签失败:', e);
+                                }
+                            }
+                            button.removeEventListener("click", tabClickHandler);
+                            button.addEventListener("click", tabClickHandler);
                         } catch (e) {
-                            console.error('切换标签失败:', e);
+                            console.warn('为标签按钮添加addEventListener失败，但onclick已设置:', e);
                         }
                     });
-                });
+                }
+                
+                bindTabButtons();
+                setTimeout(bindTabButtons, 100);
             } catch (e) {
                 console.error('添加标签切换事件监听失败:', e);
             }
@@ -4256,22 +4644,128 @@
                 console.error('添加商店分类切换事件监听失败:', e);
             }
             
-            // 添加自动挖矿切换按钮事件
+            // 添加自动挖矿切换按钮事件 - 优化版本，避免重复绑定
             try {
-                const autoMiningToggle = document.getElementById("auto-mining-toggle");
-                if (autoMiningToggle) {
-                    autoMiningToggle.addEventListener("click", toggleAutoMining);
+                function bindAutoMiningToggle() {
+                    const autoMiningToggle = document.getElementById("auto-mining-toggle");
+                    if (!autoMiningToggle) {
+                        console.error('未找到自动挖矿切换按钮，尝试稍后重新绑定');
+                        return;
+                    }
+                    
+                    console.log('找到自动挖矿切换按钮，绑定事件（避免重复绑定）');
+                    
+                    // 确保全局保存toggleAutoMining函数引用，以便正确移除
+                    if (window._autoMiningHandler) {
+                        try {
+                            // 移除之前可能添加的监听器
+                            autoMiningToggle.removeEventListener("click", window._autoMiningHandler);
+                            console.log('移除了之前的监听器');
+                        } catch (e) {
+                            console.warn('移除监听器时出现错误:', e);
+                        }
+                    }
+                    
+                    // 创建新的点击处理函数并保存到全局
+                    window._autoMiningHandler = function() {
+                        try {
+                            if (typeof toggleAutoMining === 'function') {
+                                console.log('执行toggleAutoMining函数');
+                                toggleAutoMining();
+                            } else {
+                                console.error('toggleAutoMining函数未定义');
+                            }
+                        } catch (e) {
+                            console.error('切换自动挖矿失败:', e);
+                        }
+                    };
+                    
+                    // 只使用一种方法绑定事件，避免重复执行
+                    try {
+                        // 重置onclick
+                        autoMiningToggle.onclick = null;
+                        // 使用addEventListener并保存引用
+                        autoMiningToggle.addEventListener("click", window._autoMiningHandler);
+                        console.log('成功绑定单个自动挖矿切换事件监听器');
+                    } catch (e) {
+                        // 降级使用onclick作为备用方案
+                        console.warn('使用addEventListener失败，降级到onclick:', e);
+                        autoMiningToggle.onclick = window._autoMiningHandler;
+                    }
                 }
                 
-                // 添加浇树按钮事件
-                const waterTreeCubeBtn = document.getElementById("water-tree-cube-btn");
-                const waterTreeCrystalBtn = document.getElementById("water-tree-crystal-btn");
-                const waterTreeTripleBtn = document.getElementById("water-tree-triple-btn");
-                if (waterTreeCubeBtn && waterTreeCrystalBtn && waterTreeTripleBtn) {
-                    waterTreeCubeBtn.addEventListener("click", waterTreeWithCube);
-                    waterTreeCrystalBtn.addEventListener("click", waterTreeWithCrystal);
-                    waterTreeTripleBtn.addEventListener("click", waterTreeWithTripleCube);
+                // 只绑定一次事件监听器
+                bindAutoMiningToggle();
+                
+                // 添加浇树按钮事件 - 增强版
+                function bindWaterTreeButtons() {
+                    const waterTreeCubeBtn = document.getElementById("water-tree-cube-btn");
+                    const waterTreeCrystalBtn = document.getElementById("water-tree-crystal-btn");
+                    const waterTreeTripleBtn = document.getElementById("water-tree-triple-btn");
+                    
+                    // 绑定方块浇水按钮
+                    if (waterTreeCubeBtn) {
+                        console.log('找到方块浇水按钮，绑定事件');
+                        waterTreeCubeBtn.onclick = function() {
+                            try {
+                                if (typeof waterTreeWithCube === 'function') {
+                                    waterTreeWithCube();
+                                }
+                            } catch (e) {
+                                console.error('用方块浇水失败:', e);
+                            }
+                        };
+                        try {
+                            waterTreeCubeBtn.removeEventListener("click", waterTreeWithCube);
+                            waterTreeCubeBtn.addEventListener("click", waterTreeWithCube);
+                        } catch (e) {
+                            console.warn('为方块浇水按钮添加addEventListener失败，但onclick已设置:', e);
+                        }
+                    }
+                    
+                    // 绑定水晶浇水按钮
+                    if (waterTreeCrystalBtn) {
+                        console.log('找到水晶浇水按钮，绑定事件');
+                        waterTreeCrystalBtn.onclick = function() {
+                            try {
+                                if (typeof waterTreeWithCrystal === 'function') {
+                                    waterTreeWithCrystal();
+                                }
+                            } catch (e) {
+                                console.error('用水晶浇水失败:', e);
+                            }
+                        };
+                        try {
+                            waterTreeCrystalBtn.removeEventListener("click", waterTreeWithCrystal);
+                            waterTreeCrystalBtn.addEventListener("click", waterTreeWithCrystal);
+                        } catch (e) {
+                            console.warn('为水晶浇水按钮添加addEventListener失败，但onclick已设置:', e);
+                        }
+                    }
+                    
+                    // 绑定三重方块浇水按钮
+                    if (waterTreeTripleBtn) {
+                        console.log('找到三重方块浇水按钮，绑定事件');
+                        waterTreeTripleBtn.onclick = function() {
+                            try {
+                                if (typeof waterTreeWithTripleCube === 'function') {
+                                    waterTreeWithTripleCube();
+                                }
+                            } catch (e) {
+                                console.error('用三重方块浇水失败:', e);
+                            }
+                        };
+                        try {
+                            waterTreeTripleBtn.removeEventListener("click", waterTreeWithTripleCube);
+                            waterTreeTripleBtn.addEventListener("click", waterTreeWithTripleCube);
+                        } catch (e) {
+                            console.warn('为三重方块浇水按钮添加addEventListener失败，但onclick已设置:', e);
+                        }
+                    }
                 }
+                
+                bindWaterTreeButtons();
+                setTimeout(bindWaterTreeButtons, 100);
             } catch (e) {
                 console.error('添加按钮事件监听失败:', e);
             }
@@ -4284,9 +4778,51 @@
             // 根据游戏阶段动态显示UI标签
             updateTabsVisibility();
             
-            // 炼药按钮
+            // 初始化标题显示伤害数值
+            updateTitleDamage();
+            
+            // 炼药按钮 - 增强版
             try {
-                document.getElementById("alchemy-btn").addEventListener("click", performAlchemy);
+                function bindAlchemyButton() {
+                    const alchemyBtn = document.getElementById("alchemy-btn");
+                    if (alchemyBtn) {
+                        console.log('找到炼药按钮，绑定事件');
+                        // 使用onclick作为主要方法
+                        alchemyBtn.onclick = function() {
+                            try {
+                                if (typeof performAlchemy === 'function') {
+                                    performAlchemy();
+                                }
+                            } catch (e) {
+                                console.error('执行炼药失败:', e);
+                                try {
+                                    alert('炼药失败：' + (e.message || '未知错误'));
+                                } catch (alertError) {
+                                    console.error('显示错误提示失败:', alertError);
+                                }
+                            }
+                        };
+                        // 同时使用addEventListener作为备份
+                        try {
+                            function alchemyHandler() {
+                                try {
+                                    if (typeof performAlchemy === 'function') {
+                                        performAlchemy();
+                                    }
+                                } catch (e) {
+                                    console.error('执行炼药失败:', e);
+                                }
+                            }
+                            alchemyBtn.removeEventListener("click", alchemyHandler);
+                            alchemyBtn.addEventListener("click", alchemyHandler);
+                        } catch (e) {
+                            console.warn('为炼药按钮添加addEventListener失败，但onclick已设置:', e);
+                        }
+                    }
+                }
+                
+                bindAlchemyButton();
+                setTimeout(bindAlchemyButton, 100);
             } catch (e) {
                 console.error('添加炼药按钮事件监听失败:', e);
             }
@@ -4329,9 +4865,48 @@
                 console.error('添加兑换按钮事件监听失败:', e.stack || e);
             }
             
-            // 一键换取炼药价值按钮
+            // 一键换取炼药价值按钮 - 增强版
             try {
-                document.getElementById("convert-alchemy-btn").addEventListener("click", convertToAlchemyValue);
+                function bindConvertAlchemyButton() {
+                    const convertAlchemyBtn = document.getElementById("convert-alchemy-btn");
+                    if (convertAlchemyBtn) {
+                        console.log('找到一键换取炼药价值按钮，绑定事件');
+                        // 使用onclick作为主要方法
+                        convertAlchemyBtn.onclick = function() {
+                            try {
+                                if (typeof convertToAlchemyValue === 'function') {
+                                    convertToAlchemyValue();
+                                }
+                            } catch (e) {
+                                console.error('一键换取炼药价值失败:', e);
+                                try {
+                                    alert('一键换取失败：' + (e.message || '未知错误'));
+                                } catch (alertError) {
+                                    console.error('显示错误提示失败:', alertError);
+                                }
+                            }
+                        };
+                        // 同时使用addEventListener作为备份
+                        try {
+                            function convertAlchemyHandler() {
+                                try {
+                                    if (typeof convertToAlchemyValue === 'function') {
+                                        convertToAlchemyValue();
+                                    }
+                                } catch (e) {
+                                    console.error('一键换取炼药价值失败:', e);
+                                }
+                            }
+                            convertAlchemyBtn.removeEventListener("click", convertAlchemyHandler);
+                            convertAlchemyBtn.addEventListener("click", convertAlchemyHandler);
+                        } catch (e) {
+                            console.warn('为一键换取炼药价值按钮添加addEventListener失败，但onclick已设置:', e);
+                        }
+                    }
+                }
+                
+                bindConvertAlchemyButton();
+                setTimeout(bindConvertAlchemyButton, 100);
             } catch (e) {
                 console.error('添加一键换取炼药价值按钮事件监听失败:', e);
             }
@@ -4344,6 +4919,33 @@
                 setInterval(saveGame, 5000);
             } catch (e) {
                 console.error('设置自动保存失败:', e);
+            }
+            
+            // 初始化在线时长显示
+            updatePlayTimeDisplay();
+            
+            // 设置在线时长更新定时器 - 每秒更新一次
+            try {
+                // 确保只创建一个定时器
+                if (window._playTimeInterval) {
+                    clearInterval(window._playTimeInterval);
+                }
+                window._playTimeInterval = setInterval(function() {
+                    try {
+                        if (window.gameState && window.gameState.totalPlayTimeSeconds !== undefined) {
+                            window.gameState.totalPlayTimeSeconds += 1;
+                            updatePlayTimeDisplay();
+                            // 同时更新标题，确保在线时长实时显示
+                            if (typeof updateTitleDamage === 'function') {
+                                updateTitleDamage();
+                            }
+                        }
+                    } catch (intervalError) {
+                        console.error('更新在线时长时出错:', intervalError);
+                    }
+                }, 1000);
+            } catch (timerError) {
+                console.error('设置在线时长更新定时器失败:', timerError);
             }
         }
         
@@ -4461,6 +5063,30 @@
             
             // 更新当前阶段显示
             updateGameStageDisplay();
+            
+            // 添加缺失的startAutoMining函数，确保游戏状态恢复时能正确启动自动挖矿
+            function startAutoMining() {
+                try {
+                    console.log('启动自动挖矿');
+                    // 如果已有定时器运行，先清除
+                    if (autoMiningInterval) {
+                        clearInterval(autoMiningInterval);
+                        autoMiningInterval = null;
+                    }
+                    
+                    // 只有在启用状态下才启动定时器
+                    if (window.gameState && window.gameState.autoMiningEnabled) {
+                        // 自动挖矿速度：(20*阶段)次每秒
+                        const miningInterval = 1000 / (20 * (window.gameState.gameStage || 1));
+                        autoMiningInterval = setInterval(() => {
+                            mineBlock(true); // 传入参数表示自动挖矿
+                        }, miningInterval);
+                        console.log('自动挖矿已启动，间隔:', miningInterval, 'ms');
+                    }
+                } catch (e) {
+                    console.error('启动自动挖矿失败:', e);
+                }
+            }
             
             // 开始自动挖矿定时器（如果启用）
             if (window.gameState && window.gameState.autoMiningEnabled) {
@@ -4629,19 +5255,76 @@
             }
         }
         
-        // 添加页面加载完成后的兑换信息更新
+        // 添加页面加载完成后的兑换信息更新和游戏初始化
+        // 1. 保留原有的window.load事件监听器
         window.addEventListener('load', function() {
-            console.log('页面加载完成，初始化兑换功能');
-            // 立即更新一次兑换信息
-            updateConvertUI();
+            console.log('页面load事件触发，初始化游戏和兑换功能');
             
-            // 设置定时更新
-            setInterval(updateConvertUI, 200); // 每200毫秒更新一次
-            console.log('兑换信息自动更新已启动');
+            // 启动游戏
+            try {
+                initGame();
+                
+                // 立即更新一次兑换信息
+                if (typeof updateConvertUI === 'function') {
+                    updateConvertUI();
+                }
+                
+                // 设置定时更新
+                try {
+                    setInterval(function() {
+                        if (typeof updateConvertUI === 'function') {
+                            updateConvertUI();
+                        }
+                    }, 200); // 每200毫秒更新一次
+                    console.log('兑换信息自动更新已启动');
+                } catch (intervalError) {
+                    console.error('设置定时更新失败:', intervalError);
+                }
+            } catch (initError) {
+                console.error('初始化失败:', initError);
+            }
         });
         
-        // 启动游戏
-        window.onload = initGame;
+        // 2. 添加DOMContentLoaded事件监听器（更快触发）
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOMContentLoaded事件触发，准备初始化游戏');
+            // 延迟一点时间确保所有资源都已准备好
+            setTimeout(function() {
+                // 检查是否已经初始化
+                if (!window.gameInitialized) {
+                    window.gameInitialized = true;
+                    try {
+                        initGame();
+                        
+                        // 立即更新一次兑换信息
+                        if (typeof updateConvertUI === 'function') {
+                            updateConvertUI();
+                        }
+                    } catch (e) {
+                        console.error('DOMContentLoaded初始化失败:', e);
+                    }
+                }
+            }, 100);
+        });
+        
+        // 3. 添加兼容性polyfill
+        if (!Element.prototype.matches) {
+            Element.prototype.matches = 
+                Element.prototype.msMatchesSelector || 
+                Element.prototype.webkitMatchesSelector;
+        }
+        
+        if (!Element.prototype.closest) {
+            Element.prototype.closest = function(s) {
+                var el = this;
+                if (!document.documentElement.contains(el)) return null;
+                do {
+                    if (el.matches(s)) return el;
+                    el = el.parentElement || el.parentNode;
+                } while (el !== null && el.nodeType === 1);
+                return null;
+            };
+        }
     </script>
 </body>
 </html>
