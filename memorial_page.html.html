@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>张小平之墓</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', 'SimSun', serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            width: 90%;
+            margin: 40px auto;
+            backdrop-filter: blur(5px);
+        }
+        .tombstone {
+            background-color: #c7c7c7;
+            border-radius: 5px 5px 10px 10px;
+            padding: 50px 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid #a0a0a0;
+            transform: perspective(1000px) rotateX(2deg);
+            transform-origin: bottom;
+        }
+        .tombstone::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 40px;
+            background-color: #c7c7c7;
+            border-radius: 8px 8px 0 0;
+            border: 1px solid #a0a0a0;
+            border-bottom: none;
+        }
+        .tombstone::after {
+            content: '🕯️';
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 32px;
+            animation: flicker 2s infinite alternate;
+        }
+        @keyframes flicker {
+            0% {
+                opacity: 0.8;
+                transform: translateX(-50%) scale(1);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1.05);
+            }
+        }
+        .name {
+            font-size: 52px;
+            font-weight: bold;
+            color: #222;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            letter-spacing: 3px;
+        }
+        .birth-death {
+            font-size: 22px;
+            color: #444;
+            margin-bottom: 35px;
+            font-style: italic;
+            border-top: 1px solid #a0a0a0;
+            border-bottom: 1px solid #a0a0a0;
+            padding: 15px 0;
+            display: inline-block;
+        }
+        .message {
+            font-size: 18px;
+            color: #333;
+            line-height: 1.8;
+            margin-bottom: 0;
+            font-family: 'SimSun', serif;
+            font-style: italic;
+        }
+        .visit-button {
+            background: linear-gradient(135deg, #4CAF50, #2e7d32);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .visit-button:hover {
+            background: linear-gradient(135deg, #45a049, #1b5e20);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+        .visit-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
+        }
+        .visit-count {
+            font-size: 28px;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 35px;
+            text-align: center;
+            background-color: #f1f8e9;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 5px solid #4CAF50;
+        }
+        .leaderboard {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            border: 1px solid #eaeaea;
+        }
+        .leaderboard h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .device-stats {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .stat-value {
+            color: #2196F3;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: rgba(33, 150, 243, 0.1);
+            padding: 5px 10px;
+            border-radius: 15px;
+        }
+        .leaderboard h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #4CAF50, #2e7d32);
+            border-radius: 2px;
+        }
+        .leaderboard-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .leaderboard-item {
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        .leaderboard-item:hover {
+            background-color: #f1f8e9;
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        /* 前三名特殊样式 */
+        .leaderboard-item:nth-child(1) {
+            border-left-color: #ffd700;
+            background-color: #fffaf0;
+            font-weight: bold;
+        }
+        .leaderboard-item:nth-child(2) {
+            border-left-color: #c0c0c0;
+            background-color: #f8f8f8;
+        }
+        .leaderboard-item:nth-child(3) {
+            border-left-color: #cd7f32;
+            background-color: #fff8e1;
+        }
+        .leaderboard-rank {
+            font-weight: bold;
+            color: #4CAF50;
+            margin-right: 15px;
+            font-size: 18px;
+            min-width: 25px;
+            text-align: center;
+        }
+        /* 前三名排名颜色 */
+        .leaderboard-item:nth-child(1) .leaderboard-rank {
+            color: #ffd700;
+        }
+        .leaderboard-item:nth-child(2) .leaderboard-rank {
+            color: #c0c0c0;
+        }
+        .leaderboard-item:nth-child(3) .leaderboard-rank {
+            color: #cd7f32;
+        }
+        .user-info {
+            flex-grow: 1;
+            font-size: 16px;
+            color: #333;
+        }
+        .visit-number {
+            font-weight: bold;
+            color: #4CAF50;
+            font-size: 16px;
+            background-color: rgba(76, 175, 80, 0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+        .user-input {
+            margin-bottom: 30px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .device-info,
+        .device-code-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .device-code-section {
+            margin-top: 15px;
+        }
+        .current-device-code {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+            background-color: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid #e9ecef;
+        }
+        #currentDeviceCode {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #2196F3;
+            background-color: #fff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        /* 优化墓碑样式 */
+        .tombstone {
+            background-color: #707070;
+            background-image: 
+                linear-gradient(45deg, rgba(100, 100, 100, 0.3) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(100, 100, 100, 0.3) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(100, 100, 100, 0.3) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(100, 100, 100, 0.3) 75%),
+                linear-gradient(to bottom, rgba(120, 120, 120, 0.1) 0%, rgba(120, 120, 120, 0.2) 100%);
+            background-size: 10px 10px, 10px 10px, 10px 10px, 10px 10px, 100% 100%;
+            background-position: 0 0, 0 5px, 5px -5px, -5px 0px, 0 0;
+            border-radius: 10px 10px 5px 5px;
+            padding: 80px 40px 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            box-shadow: 
+                inset 0 0 40px rgba(0, 0, 0, 0.3), 
+                0 15px 30px rgba(0, 0, 0, 0.2),
+                0 2px 5px rgba(0, 0, 0, 0.3);
+            border: 2px solid #505050;
+            transform: perspective(1200px) rotateX(3deg);
+            transform-origin: bottom center;
+            min-height: 300px;
+            overflow: visible;
+        }
+        
+        .tombstone::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 30px;
+            background-color: #606060;
+            border-radius: 50% 50% 0 0;
+            border: 2px solid #505050;
+            border-bottom: none;
+            box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+        
+        .tombstone::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(135deg, transparent 35%, rgba(255, 255, 255, 0.1) 35%, rgba(255, 255, 255, 0.1) 65%, transparent 65%);
+            border-radius: 10px 10px 0 0;
+            opacity: 0.8;
+        }
+        
+        .tombstone .stone-mark {
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            width: 80%;
+            height: 40px;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%);
+            transform: translateY(-50%) rotate(-2deg);
+            opacity: 0.7;
+            z-index: 0;
+        }
+        .user-input input {
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            width: 300px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        .user-input input:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+            transform: translateY(-1px);
+        }
+        .save-message {
+            color: #4CAF50;
+            font-size: 16px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+            animation: fadeInOut 3s ease-in-out;
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        footer {
+            margin-top: auto;
+            padding: 30px 20px;
+            color: #fff;
+            font-size: 16px;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            width: 100%;
+            backdrop-filter: blur(5px);
+        }
+        footer p {
+            margin: 0;
+            letter-spacing: 1px;
+        }
+        
+        /* 数据共享功能样式 */
+        .data-sharing {
+            margin-top: 40px;
+            padding: 25px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid #eaeaea;
+            text-align: center;
+        }
+        
+        .data-sharing h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 22px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .data-sharing h3::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, #2196F3, #1976D2);
+            border-radius: 2px;
+        }
+        
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .share-button {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+        
+        .share-button:hover {
+            background: linear-gradient(135deg, #1976D2, #0d47a1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(33, 150, 243, 0.4);
+        }
+        
+        .share-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+        }
+        
+        .import-input {
+            display: none;
+        }
+        
+        .import-label {
+            display: inline-block;
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+        }
+        
+        .import-label:hover {
+            background: linear-gradient(135deg, #F57C00, #E65100);
+            box-shadow: 0 6px 16px rgba(255, 152, 0, 0.4);
+        }
+        
+        .share-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+.share-guide {
+            margin-top: 20px;
+            text-align: left;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .share-guide h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .guide-steps {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.8;
+            padding-left: 25px;
+            margin: 0;
+        }
+        
+        .guide-steps li {
+            margin-bottom: 8px;
+            position: relative;
+        }
+        
+        .guide-steps li::marker {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        /* 当前设备特殊样式 */
+        .leaderboard-item.current-device {
+            animation: pulse 2s infinite;
+            border: 2px solid #2196F3;
+            box-shadow: 0 0 10px rgba(33, 150, 243, 0.3);
+        }
+        
+        /* 设备详情样式 */
+        .device-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .gap-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 2px;
+        }
+        
+        .leaderboard-item:hover {
+            transform: translateY(-2px);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        /* 模态框样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-close:hover {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 500;
+            color: #666;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .rank-badge {
+            background-color: #4CAF50;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+        
+        .count-badge {
+            background-color: #2196F3;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+        
+        .gap-badge {
+            background-color: #FF9800;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+        
+        /* 样式已优化 */
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .modal-close-btn {
+            background-color: #f5f5f5;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-close-btn:hover {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+                box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 10px rgba(33, 150, 243, 0.3);
+            }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+                margin: 20px auto;
+            }
+            .tombstone {
+                padding: 40px 20px;
+            }
+            .name {
+                font-size: 36px;
+                letter-spacing: 2px;
+            }
+            .birth-death {
+                font-size: 18px;
+            }
+            .message {
+                font-size: 16px;
+            }
+            .user-input input {
+                width: 250px;
+            }
+            .visit-button {
+                padding: 15px 30px;
+                font-size: 18px;
+            }
+            
+            /* 设备统计响应式调整 */
+            .device-stats {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .stat-item {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            /* 排行榜项响应式调整 */
+            .user-info {
+                font-size: 14px;
+            }
+            
+            .visit-number {
+                font-size: 14px;
+                padding: 3px 8px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .name {
+                font-size: 32px;
+            }
+            .visit-count {
+                font-size: 24px;
+            }
+            .user-input input {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tombstone">
+            <div class="stone-mark"></div>
+            <div class="stone-mark" style="top: 30%; transform: translateY(-50%) rotate(1deg); opacity: 0.5;"></div>
+            <div class="stone-mark" style="top: 70%; transform: translateY(-50%) rotate(-1.5deg); opacity: 0.6;"></div>
+            <div class="name">张小平</div>
+            <div class="birth-death">生卒年不详/一生最爱滑动变阻器</div>
+            <img src="30F976E17924EDFA104990D2BDC00FB8.jpg" alt="纪念照片" style="max-width: 100%; height: auto; margin: 20px 0; border: 2px solid #505050; border-radius: 8px;">
+            <div class="message">张小平我操你妈我操你妈操你妈你妈死了你死光了全家没有了你78断了你没78你78没了你78比日本人的还小显微镜才能看见你妈死了你没妈没爸没父母我操你妈操你全家你全家死光了
+        </div>
+        
+        <div class="user-input">
+            <input type="text" id="usernameInput" placeholder="请输入您的名字">
+            <button id="renameUserButton" class="share-button">保存名字</button>
+            <button class="visit-button" id="visitButton">扫墓</button>
+        </div>
+        
+        <div class="visit-count">总扫墓次数: <span id="totalVisits">0</span></div>
+        
+        <div class="leaderboard">
+            <h2>扫墓排行榜</h2>
+            <ul class="leaderboard-list" id="leaderboardList">
+                <!-- 排行榜将通过JavaScript动态生成 -->
+                <li class="leaderboard-item">
+                    <div class="leaderboard-rank">1</div>
+                    <div class="user-info">暂无记录</div>
+                    <div class="visit-number">0次</div>
+                </li>
+            </ul>
+        </div>
+        
+        
+        
+        <div class="save-message" id="saveMessage"></div>
+        
+        
+    </div>
+    
+    <footer>
+        <p>张小平没母全家死光</p>
+    </footer>
+
+    <script>
+        // 数据初始化和加载
+        let totalVisits = 0;
+        let username = '访客';
+        let userVisits = {};
+        
+        // DOM 元素引用
+        const visitButton = document.getElementById('visitButton');
+        const totalVisitsElement = document.getElementById('totalVisits');
+        const leaderboardList = document.getElementById('leaderboardList');
+        const usernameInput = document.getElementById('usernameInput');
+        const renameUserButton = document.getElementById('renameUserButton');
+        const saveMessage = document.getElementById('saveMessage');
+
+        // 从localStorage加载数据
+        function loadData() {
+            try {
+                // 尝试从localStorage加载数据
+                const savedData = localStorage.getItem('memorialPageData');
+                
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    
+                    // 加载基础数据
+                    totalVisits = data.totalVisits || 0;
+                    username = data.username || '访客';
+                    userVisits = data.userVisits || {};
+                    
+                    // 更新用户名输入框
+                    usernameInput.value = username;
+                    
+                } else {
+                    // 如果没有保存的数据，初始化新数据
+                    username = '访客';
+                    userVisits = {};
+                    
+                    // 保存初始化数据
+                    saveData();
+                }
+                
+                // 更新DOM中的总访问次数
+                totalVisitsElement.textContent = totalVisits;
+                
+                // 更新排行榜
+                updateLeaderboard();
+                
+            } catch (error) {
+                console.error('加载数据失败:', error);
+                // 重置为初始状态
+                totalVisits = 0;
+                username = '访客';
+                userVisits = {};
+                
+                // 更新DOM
+                usernameInput.value = username;
+                totalVisitsElement.textContent = totalVisits;
+                
+                // 保存重置后的数据
+                saveData();
+            }
+        }
+        
+        // 保存数据到localStorage
+        function saveData() {
+            try {
+                const data = {
+                    totalVisits,
+                    username,
+                    userVisits
+                };
+                
+                localStorage.setItem('memorialPageData', JSON.stringify(data));
+            } catch (error) {
+                console.error('保存数据失败:', error);
+                saveMessage.textContent = '保存失败，请稍后重试';
+                setTimeout(() => {
+                    saveMessage.textContent = '';
+                }, 3000);
+            }
+        }
+        
+        // 更新用户排行榜
+        function updateLeaderboard() {
+            // 清空排行榜
+            leaderboardList.innerHTML = '';
+            
+            // 将用户对象转换为数组并按访问次数排序
+            const sortedUsers = Object.entries(userVisits)
+                .map(([username, count]) => ({ username, count }))
+                .sort((a, b) => b.count - a.count);
+            
+            // 如果没有数据，显示默认消息
+            if (sortedUsers.length === 0) {
+                const defaultItem = document.createElement('li');
+                defaultItem.className = 'leaderboard-item';
+                defaultItem.innerHTML = `
+                    <div class="leaderboard-rank">1</div>
+                    <div class="user-info">暂无记录</div>
+                    <div class="visit-number">0次</div>
+                `;
+                leaderboardList.appendChild(defaultItem);
+                return;
+            }
+            
+            // 创建排行榜项
+            sortedUsers.forEach((user, index) => {
+                const listItem = document.createElement('li');
+                listItem.className = 'leaderboard-item';
+                
+                // 设置排行榜项的基础样式
+                let rankColor = '#4CAF50';
+                let bgColor = '#f9f9f9';
+                
+                // 为前三名设置特殊颜色
+                if (index === 0) {
+                    rankColor = '#ffd700';
+                    bgColor = '#fffaf0';
+                } else if (index === 1) {
+                    rankColor = '#c0c0c0';
+                    bgColor = '#f8f8f8';
+                } else if (index === 2) {
+                    rankColor = '#cd7f32';
+                    bgColor = '#fff8e1';
+                }
+                
+                // 为当前用户添加特殊样式
+                const isCurrentUser = user.username === username;
+                if (isCurrentUser) {
+                    bgColor = '#e3f2fd';
+                    listItem.classList.add('current-user');
+                }
+                
+                listItem.style.backgroundColor = bgColor;
+                listItem.style.borderLeftColor = isCurrentUser ? '#2196F3' : rankColor;
+                
+                listItem.innerHTML = `
+                    <div class="leaderboard-rank">${index + 1}</div>
+                    <div class="user-info">
+                        ${user.username}${isCurrentUser ? ' (当前用户)' : ''}
+                    </div>
+                    <div class="visit-number">${user.count}次</div>
+                `;
+                leaderboardList.appendChild(listItem);
+            });
+        }
+        
+        // 用户改名功能
+        renameUserButton.addEventListener('click', function() {
+            const newName = usernameInput.value.trim();
+            if (newName && newName !== '') {
+                // 如果用户名已更改，需要更新用户访问记录
+                if (username !== newName) {
+                    // 将原用户的访问次数迁移到新用户名
+                    if (userVisits[username]) {
+                        const oldCount = userVisits[username];
+                        // 如果新用户名已存在，合并访问次数
+                        userVisits[newName] = (userVisits[newName] || 0) + oldCount;
+                        // 删除原用户名记录
+                        delete userVisits[username];
+                    }
+                    
+                    // 更新用户名
+                    username = newName;
+                    saveData();
+                    updateLeaderboard();
+                    saveMessage.textContent = '用户名已更新';
+                    setTimeout(() => {
+                        saveMessage.textContent = '';
+                    }, 3000);
+                }
+            } else {
+                saveMessage.textContent = '用户名不能为空';
+                setTimeout(() => {
+                    saveMessage.textContent = '';
+                }, 3000);
+            }
+        });
+
+        // 处理扫墓按钮点击
+        visitButton.addEventListener('click', function() {
+            try {
+                // 增加总访问次数
+                totalVisits++;
+                totalVisitsElement.textContent = totalVisits;
+                
+                // 更新当前用户访问次数
+                userVisits[username] = (userVisits[username] || 0) + 1;
+                
+                // 更新排行榜 - 添加错误处理，确保即使更新排行榜失败也能保存数据
+                try {
+                    updateLeaderboard();
+                } catch (error) {
+                    console.error('更新用户排行榜失败:', error);
+                }
+                
+                try {
+                    // 保存数据
+                    saveData();
+                } catch (error) {
+                    console.error('保存数据失败:', error);
+                }
+                
+                // 添加点击效果（可选）
+                visitButton.style.backgroundColor = '#ff6b6b';
+                setTimeout(() => {
+                    visitButton.style.backgroundColor = '#4CAF50';
+                }, 100);
+            } catch (error) {
+                console.error('扫墓操作失败:', error);
+                // 即使出错也尝试保存已经增加的次数
+                try {
+                    saveData();
+                } catch (saveError) {
+                    console.error('保存数据失败:', saveError);
+                }
+            }
+        });
+        
+        // 初始化页面
+        loadData();
+        
+        // 数据导入导出功能已简化
+
+        // 更新用户排行榜
+        function updateLeaderboard() {
+            // 清空排行榜
+            leaderboardList.innerHTML = '';
+            
+            // 将用户对象转换为数组并按访问次数排序
+            const sortedUsers = Object.entries(userVisits)
+                .map(([username, count]) => ({ username, count }))
+                .sort((a, b) => b.count - a.count);
+            
+            // 如果没有数据，显示默认消息
+            if (sortedUsers.length === 0) {
+                const defaultItem = document.createElement('li');
+                defaultItem.className = 'leaderboard-item';
+                defaultItem.innerHTML = `
+                    <div class="leaderboard-rank">1</div>
+                    <div class="user-info">暂无记录</div>
+                    <div class="visit-number">0次</div>
+                `;
+                leaderboardList.appendChild(defaultItem);
+                return;
+            }
+            
+            // 创建排行榜项
+            sortedUsers.forEach((user, index) => {
+                const listItem = document.createElement('li');
+                listItem.className = 'leaderboard-item';
+                listItem.innerHTML = `
+                    <div class="leaderboard-rank">${index + 1}</div>
+                    <div class="user-info">${user.username}</div>
+                    <div class="visit-number">${user.count}次</div>
+                `;
+                leaderboardList.appendChild(listItem);
+            });
+        }
+        
+        // 更新设备统计信息（已移除，不再需要）
+        // function updateDeviceStats() {
+        //     // 设备统计功能已移除
+        // }
+        
+        // 更新设备排行榜（已移除，不再需要）
+        // function updateDeviceLeaderboard() {
+        //     // 设备排行榜功能已移除
+        // }
+        
+        // 设备相关功能已全部移除
+
+        // 扫墓按钮点击事件已在上方定义，避免重复绑定
+
+        // 页面加载时初始化
+        window.addEventListener('load', loadData);
+        
+        // 测试模式功能 - 用于模拟数据
+        function setupTestMode() {
+            // 创建测试按钮（仅在开发环境可见）
+            const testButton = document.createElement('button');
+            testButton.id = 'testModeButton';
+            testButton.textContent = '测试数据';
+            testButton.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background-color: #ff5722;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 14px;
+                z-index: 999;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+                transition: all 0.3s ease;
+            `;
+            
+            // 测试按钮悬停效果
+            testButton.onmouseover = function() {
+                this.style.backgroundColor = '#e64a19';
+                this.style.transform = 'scale(1.05)';
+            };
+            
+            testButton.onmouseout = function() {
+                this.style.backgroundColor = '#ff5722';
+                this.style.transform = 'scale(1)';
+            };
+            
+            // 测试按钮点击事件
+            testButton.onclick = function() {
+                // 模拟一些用户数据
+                userVisits['用户1'] = 45;
+                userVisits['用户2'] = 67;
+                userVisits['用户3'] = 23;
+                totalVisits = 135;
+                
+                // 保存数据并更新界面
+                saveData();
+                updateLeaderboard();
+                totalVisitsElement.textContent = totalVisits;
+                
+                alert('数据已更新！');
+            };
+            
+            // 添加到文档
+            document.body.appendChild(testButton);
+        }
+        
+        // 在DOM加载完成后自动设置测试模式
+        setupTestMode();
+    </script>
+</body>
+</html>
