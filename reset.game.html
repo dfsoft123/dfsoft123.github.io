@@ -2143,12 +2143,12 @@
                 
                 // 第二阶段才显示树系统和树增益
                 if (treeSystemElement) {
-                    treeSystemElement.style.display = (window.gameState.gameStage >= 2) ? "block" : "none";
+                    treeSystemElement.style.display = (window.gameState.main2Unlocked === 1) ? "block" : "none";
                 }
                 
                 if (treeBoostElement) {
                     // 第一阶段完全不显示浇树增益
-                    if (window.gameState.gameStage >= 2) {
+                    if (window.gameState.main2Unlocked === 1) {
                         treeBoostElement.textContent = "浇树增益: " + calculateTreeBoost().toFixed(2);
                         treeBoostElement.style.display = "block";
                         // 确保可见性
@@ -2167,7 +2167,7 @@
                 
                 // 浇树增益显示逻辑（游戏阶段>=2）- 直接通过ID获取元素
                 const treeBoostElementStats = document.getElementById('tree-boost');
-                if (treeBoostElementStats && window.gameState.gameStage >= 2) {
+                if (treeBoostElementStats && window.gameState.main2Unlocked === 1) {
                     // 确保统计面板和增益面板使用相同的计算方法
                     const treeBoost = Math.pow(window.gameState.treeLevel || 1, 0.4);
                     treeBoostElementStats.textContent = "浇树增益: " + treeBoost.toFixed(2);
@@ -2360,7 +2360,7 @@
             ];
             
             // 第二阶段及以上才添加浇树增益
-            if (window.gameState && window.gameState.gameStage >= 2) {
+            if (window.gameState && window.gameState.main2Unlocked === 1) {
                 boosts.push({ name: "浇树增益", value: calculateTreeBoost().toFixed(2) });
                 
                 // 游戏阶段≥第三阶段第一部分时，在浇树增益下方添加能量增益
@@ -2699,7 +2699,7 @@
         function waterTreeWithCube() {
             try {
                 // 检查是否在第二阶段
-                if (window.gameState.gameStage < 2) {
+                if (window.gameState.main2Unlocked !== 1) {
                     alert("需要获得五行镐进入第二阶段才能浇树！");
                     return;
                 }
@@ -3508,19 +3508,19 @@
                 const waterTreeCrystalBtn = document.getElementById('water-tree-crystal-btn');
                 const waterTreeTripleBtn = document.getElementById('water-tree-triple-btn');
                 
-                const isStage2 = window.gameState && window.gameState.gameStage >= 2;
+                const isStage2 = window.gameState && window.gameState.main2Unlocked === 1;
                 
                 if (waterTreeCubeBtn) {
                     waterTreeCubeBtn.disabled = !isStage2;
-                    waterTreeCubeBtn.textContent = isStage2 ? '浇树 (消耗1个水立方)' : '到达阶段2解锁浇树系统';
+                    waterTreeCubeBtn.textContent = '浇树 (消耗1个水立方)'; // 一直显示实际文本
                 }
                 if (waterTreeCrystalBtn) {
                     waterTreeCrystalBtn.disabled = !isStage2;
-                    waterTreeCrystalBtn.textContent = isStage2 ? '浇树 (消耗1个水结晶)' : '到达阶段2解锁浇树系统';
+                    waterTreeCrystalBtn.textContent = '浇树 (消耗1个水结晶)'; // 一直显示实际文本
                 }
                 if (waterTreeTripleBtn) {
                     waterTreeTripleBtn.disabled = !isStage2;
-                    waterTreeTripleBtn.textContent = isStage2 ? '浇树 (消耗1个淼立方)' : '到达阶段2解锁浇树系统';
+                    waterTreeTripleBtn.textContent = '浇树 (消耗1个淼立方)'; // 一直显示实际文本
                 }
             } catch (e) {
                 console.error('更新树木UI失败:', e);
