@@ -3516,15 +3516,15 @@
                 
                 if (waterTreeCubeBtn) {
                     waterTreeCubeBtn.disabled = !isStage2;
-                    waterTreeCubeBtn.textContent = isStage2 ? '浇树 (消耗1个水立方)' : '到达阶段2解锁浇树系统';
+                    waterTreeCubeBtn.textContent = '浇树 (消耗1个水立方)'; // 一直显示实际文本
                 }
                 if (waterTreeCrystalBtn) {
                     waterTreeCrystalBtn.disabled = !isStage2;
-                    waterTreeCrystalBtn.textContent = isStage2 ? '浇树 (消耗1个水结晶)' : '到达阶段2解锁浇树系统';
+                    waterTreeCrystalBtn.textContent = '浇树 (消耗1个水结晶)'; // 一直显示实际文本
                 }
                 if (waterTreeTripleBtn) {
                     waterTreeTripleBtn.disabled = !isStage2;
-                    waterTreeTripleBtn.textContent = isStage2 ? '浇树 (消耗1个淼立方)' : '到达阶段2解锁浇树系统';
+                    waterTreeTripleBtn.textContent = '浇树 (消耗1个淼立方)'; // 一直显示实际文本
                 }
             } catch (e) {
                 console.error('更新树木UI失败:', e);
