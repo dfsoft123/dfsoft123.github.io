@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>伤害：1</title>
+    <title>重置</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -984,9 +984,10 @@
                     <div class="block-category">
                         <button class="category-btn active" data-category="main1">主线1</button>
                         <button class="category-btn" data-category="side1">支线1</button>
-                        <button class="category-btn" data-category="main2" style="display: none;">主线2</button>
-                        <button class="category-btn" data-category="side2" style="display: none;">支线2</button>
-                        <button class="category-btn" data-category="main3" style="display: none;">主线3</button>
+        <button class="category-btn" data-category="main2">主线2</button>
+        <button class="category-btn" data-category="side2">支线2</button>
+        <button class="category-btn" data-category="main3">主线3</button>
+        <button class="category-btn" data-category="side3">支线3</button>
                     </div>
                     <button class="block-nav-btn" id="next-block"><i class="fas fa-chevron-right"></i></button>
                 </div>
@@ -1035,10 +1036,10 @@
                 <div class="shop-categories">
                     <button class="category-btn active" data-shop="main1">主线1商店</button>
                     <button class="category-btn" data-shop="side1">支线1商店</button>
-                    <button class="category-btn" data-shop="main2" style="display: none;">主线2商店</button>
-                    <button class="category-btn" data-shop="side2" style="display: none;">支线2商店</button>
-                    <button class="category-btn" data-shop="main3" style="display: none;">主线3商店</button>
-                    <button class="category-btn" data-shop="side3" style="display: none;">支线3商店</button>
+        <button class="category-btn" data-shop="main2">主线2商店</button>
+        <button class="category-btn" data-shop="side2">支线2商店</button>
+        <button class="category-btn" data-shop="main3">主线3商店</button>
+        <button class="category-btn" data-shop="side3" style="display: inline-block;">支线3商店</button>
                     <button class="category-btn" data-shop="items">物品商店</button>
             </div>
                 <div id="shop-items">
@@ -1169,7 +1170,7 @@
                     </div>
                 </div>
             </div>
-            <div class="tab-content" id="research-tab" style="display: none;">
+            <div class="tab-content" id="research-tab">
                 <div class="section-title">
                     <i class="fas fa-flask"></i>
                     <h2>研究所系统</h2>
@@ -1279,7 +1280,9 @@
                     <div>等级增益: <span id="level-boost">1</span></div>
                     <div>炼药增益: <span id="alchemy-boost">1</span></div>
                     <!-- 浇树增益将根据游戏阶段动态显示 -->
-                    <div id="tree-boost" style="display: none; visibility: hidden; opacity: 0;">浇树增益: 1.00</div>
+                    <div id="tree-boost" style="display: none; visibility: hidden; opacity: 0;">浇树增益: 1</div>
+                    <!-- 能量增益将根据游戏阶段动态显示 -->
+                    <div id="energy-boost" style="display: none; visibility: hidden; opacity: 0;">能量增益: 1</div>
                 </div>
             </div>
             
@@ -1398,8 +1401,8 @@
                     { name: "源结晶块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "源结晶", chance: 0.01 } }
                 ],
                 side2: [
-                    { name: "红曜石块", hp: 5e16, baseGold: 500, special: { type: "fragment", item: "红曜石", chance: 0.05 } },
-                    { name: "蓝曜石块", hp: 6e16, baseGold: 600, special: { type: "fragment", item: "蓝曜石", chance: 0.05 } },
+                    { name: "红曜石", hp: 5e16, baseGold: 500, special: { type: "fragment", item: "红曜石", chance: 0.05 } },
+                    { name: "蓝曜石", hp: 6e16, baseGold: 600, special: { type: "fragment", item: "蓝曜石", chance: 0.05 } },
                     { name: "金奖核心", hp: 1e21, baseGold: 2000, special: { type: "fragment", item: "金奖核心", chance: 0.1 } },
                     { name: "淼立方块", hp: 1e22, baseGold: 2500, special: { type: "fragment", item: "淼立方", chance: 0.05 } },
                     { name: "水晶晶簇", hp: 1e23, baseGold: 2500, special: { type: "pickaxe", item: "紫水晶镐Ⅲ", count: 1, chance: 0.1 } },
@@ -1412,9 +1415,12 @@
                     { name: "β方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "β", count: 1, chance: 1 } },
                     { name: "γ方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "γ", count: 1, chance: 1 } },
                     { name: "元素晶片", hp: 1.91e31, baseGold: 15000, special: { type: "fragment", item: "元素晶片", count: 1, chance: 0.1 } },
-                    { name: "量产核心", hp: 1.91e34, baseGold: 20000, special: { type: "fragment", item: "量产核心", count: 1, chance: 0.01 } },
+                    { name: "量产核心", hp: 1.91e34, baseGold: 20000, special: { type: "fragment", item: "量产核心", count: 1, chance: 0.01 } }
+                ],
+                side3: [
                     { name: "五行镐", hp: 7.8e31, baseGold: 18000, special: { type: "fragment", item: "五行镐", count: 1, chance: 0.01 } },
-                    { name: "五行精华", hp: 9.1e31, baseGold: 18000, special: { type: "fragment", item: "五行精华", count: 1, chance: 0.001 } }
+                    { name: "五行精华", hp: 9.1e31, baseGold: 18000, special: { type: "fragment", item: "五行精华", count: 1, chance: 0.001 } },
+                    { name: "药叶", hp: 9.1e36, baseGold: 24000, special: { type: "fragment", item: "药叶", count: 1, chance: 0.03 } }
                 ]
             },
             
@@ -1464,7 +1470,14 @@
                 main3: [
                     { name: "元素镐", cost: { fragments: { "元素晶片": 100 } }, boost: 5000000, goldMultiplier: 200, usageGain: 1200 },
                     { name: "元素镐2阶", cost: { fragments: { "元素镐": 1, "元素晶片": 9178 } }, boost: 1.2e7, goldMultiplier: 500, usageGain: 3000 },
-                    { name: "元素镐3阶", cost: { fragments: { "元素镐2阶": 1, "五行镐Ⅳ": 1, "元素晶片": 27891 } }, boost: 6e7, goldMultiplier: 2200, usageGain: 14000 }
+                    { name: "元素镐3阶", cost: { fragments: { "元素镐2阶": 1, "五行镐Ⅳ": 1, "元素晶片": 27891 } }, boost: 6e7, goldMultiplier: 2200, usageGain: 14000 },
+                    { name: "元素镐4阶", cost: { fragments: { "元素镐3阶": 1 }, alpha: 100000, beta: 100000, gamma: 100000 }, boost: 8e7, goldMultiplier: 2600, usageGain: 18000 },
+                    { name: "元素镐5阶", cost: { fragments: { "元素镐4阶": 1 }, alpha: 400000, beta: 400000, gamma: 400000 }, boost: 1e8, goldMultiplier: 3000, usageGain: 22000 },
+                    { name: "元素镐6阶", cost: { fragments: { "元素镐5阶": 1 }, alpha: 1000000, beta: 1000000, gamma: 1000000 }, boost: 1.4e8, goldMultiplier: 3600, usageGain: 28000 },
+                    { name: "元素镐7阶", cost: { fragments: { "元素镐6阶": 1 }, alpha: 2400000, beta: 2400000, gamma: 2400000 }, boost: 2e8, goldMultiplier: 4400, usageGain: 36000 },
+                    { name: "元素镐8阶", cost: { fragments: { "元素镐7阶": 1 }, alpha: 10000000, beta: 10000000, gamma: 10000000 }, boost: 3e8, goldMultiplier: 5400, usageGain: 48000 },
+                    { name: "元素镐9阶", cost: { fragments: { "元素镐8阶": 1, "药叶": 25 } }, boost: 5e8, goldMultiplier: 6666, usageGain: 66666 },
+                    { name: "元素镐10阶", cost: { fragments: { "元素镐9阶": 4, "药叶": 6400 } }, boost: 10e8, goldMultiplier: 10000, usageGain: 100000 }
                 ],
                 side2: [
                     { name: "五行镐Ⅱ", cost: { fragments: { "五行镐": 10 } }, boost: 75000, goldMultiplier: 12.5, usageGain: 75 },
@@ -1486,7 +1499,8 @@
                     { name: "光暗结晶", cost: { fragments: { "光结晶": 1, "暗结晶": 1 } } },
                     { name: "红曜方", cost: { fragments: { "红曜石": 100 } } },
                     { name: "蓝曜方", cost: { fragments: { "蓝曜石": 100 } } },
-                    { name: "五行驱动器", cost: { fragments: { "五行精华": 10 } } }
+                    { name: "五行驱动器", cost: { fragments: { "五行精华": 10 } } },
+                    { name: "???", cost: { fragments: { "药叶": 10 } } }
                 ]
             },
             
@@ -1560,7 +1574,8 @@
                     "量产核心": 0,
                     "五行镐": 0,
                     "五行精华": 0,
-                    "五行驱动器": 0
+                    "五行驱动器": 0,
+                    "???": 0
                 },
                 // 研究所相关状态
                 energies: {
@@ -1618,7 +1633,17 @@
                     "五行镐Ⅲ": 0,
                     "红蓝镐Ⅱ": 0,
                     "红蓝镐Ⅲ": 0,
-                    "坤镐": 0
+                    "坤镐": 0,
+                    "元素镐": 0,
+                    "元素镐2阶": 0,
+                    "元素镐3阶": 0,
+                    "元素镐4阶": 0,
+                    "元素镐5阶": 0,
+                    "元素镐6阶": 0,
+                    "元素镐7阶": 0,
+                    "元素镐8阶": 0,
+                    "元素镐9阶": 0,
+                    "元素镐10阶": 0
                 },
                 blockHp: {}
             };
@@ -1635,7 +1660,12 @@
                 
                 // 确保window.gameState存在
                 if (!window.gameState) {
-                    window.gameState = { gold: 0, trophies: 0, gameStage: 1, blockHp: {} };
+                    window.gameState = { gold: 0, trophies: 0, gameStage: 3, blockHp: {}, alphaEnergy: 100 };
+                }
+                
+                // 确保alphaEnergy字段存在
+                if (window.gameState.alphaEnergy === undefined) {
+                    window.gameState.alphaEnergy = 100;
                 }
                 
                 // 确保blockHp对象存在
@@ -1686,19 +1716,7 @@
             }
         }
 
-        // 更新标题显示伤害数值
-        function updateTitleDamage() {
-            try {
-                // 使用与游戏内相同的方式计算和显示伤害
-                const damageValue = calculateTotalDamage();
-                // 确保伤害至少为1
-                const finalDamage = Math.max(1, damageValue || 1);
-                const formattedDamage = formatNumber(finalDamage);
-                document.title = `伤害：${formattedDamage}`;
-            } catch (e) {
-                console.error('更新标题失败:', e);
-            }
-        }
+        // 更新标题显示伤害数值 - 保留更完整的版本（在下方）
         
         // 格式化数字为万进制，保留两位小数（整数不保留）
         function formatNumber(num) {
@@ -1832,7 +1850,11 @@
                     achievements: { ...(window.gameState.achievements || {}) },
                     resources: { ...(window.gameState.resources || {}) },
                     pickaxes: { ...(window.gameState.pickaxes || {}) },
-                    blockHp: { ...(window.gameState.blockHp || {}) }
+                    blockHp: { ...(window.gameState.blockHp || {}) },
+                    // 保存量产器和转化器状态
+                    converters: { ...(window.gameState.converters || {}) },
+                    producers: { ...(window.gameState.producers || {}) },
+                    energies: { ...(window.gameState.energies || {}) }
                 };
                 
                 // 确保resources和pickaxes中的值都是有效的数字
@@ -1944,6 +1966,30 @@
                 if (parsedState.pickaxes && typeof parsedState.pickaxes === 'object') {
                     for (const [key, value] of Object.entries(parsedState.pickaxes)) {
                         window.gameState.pickaxes[key] = Math.max(0, Number(value) || 0);
+                    }
+                }
+                
+                // 加载转化器状态
+                if (!window.gameState.converters) window.gameState.converters = {};
+                if (parsedState.converters && typeof parsedState.converters === 'object') {
+                    for (const [key, value] of Object.entries(parsedState.converters)) {
+                        window.gameState.converters[key] = Boolean(value);
+                    }
+                }
+                
+                // 加载量产器状态
+                if (!window.gameState.producers) window.gameState.producers = {};
+                if (parsedState.producers && typeof parsedState.producers === 'object') {
+                    for (const [key, value] of Object.entries(parsedState.producers)) {
+                        window.gameState.producers[key] = Math.max(0, Number(value) || 0);
+                    }
+                }
+                
+                // 加载能量状态
+                if (!window.gameState.energies) window.gameState.energies = {};
+                if (parsedState.energies && typeof parsedState.energies === 'object') {
+                    for (const [key, value] of Object.entries(parsedState.energies)) {
+                        window.gameState.energies[key] = Math.max(0, Number(value) || 0);
                     }
                 }
                 
@@ -2107,31 +2153,44 @@
                     }
                 }
                 
-                // 修复：在统计数据面板中显示浇树增益
-                const statsPanelElement = document.querySelector('.stats-panel');
-                if (statsPanelElement && window.gameState.gameStage >= 2) {
-                    let treeBoostStatElement = statsPanelElement.querySelector('#tree-boost-stat');
-                    if (!treeBoostStatElement) {
-                        // 如果统计面板中还没有浇树增益显示，创建一个
-                        treeBoostStatElement = document.createElement('div');
-                        treeBoostStatElement.id = 'tree-boost-stat';
-                        treeBoostStatElement.className = 'stat-item';
-                        // 找到合适的位置插入，比如在奖杯增益后面
-                        const trophyBoostStatElement = statsPanelElement.querySelector('#trophy-boost') || statsPanelElement.querySelector('.stat-item:last-child');
-                        if (trophyBoostStatElement && trophyBoostStatElement.parentNode) {
-                            trophyBoostStatElement.parentNode.insertBefore(treeBoostStatElement, trophyBoostStatElement.nextSibling);
-                        } else {
-                            statsPanelElement.appendChild(treeBoostStatElement);
-                        }
-                    }
+                // 正常使用游戏阶段判断，不需要临时设置
+                
+                // 浇树增益显示逻辑（游戏阶段>=2）- 直接通过ID获取元素
+                const treeBoostElementStats = document.getElementById('tree-boost');
+                if (treeBoostElementStats && window.gameState.gameStage >= 2) {
                     // 确保统计面板和增益面板使用相同的计算方法
                     const treeBoost = Math.pow(window.gameState.treeLevel || 1, 0.4);
-                    treeBoostStatElement.textContent = "浇树增益: " + treeBoost.toFixed(2);
-                    treeBoostStatElement.style.display = "block";
-                } else if (statsPanelElement) {
-                    const treeBoostStatElement = statsPanelElement.querySelector('#tree-boost-stat');
-                    if (treeBoostStatElement) {
-                        treeBoostStatElement.style.display = "none";
+                    treeBoostElementStats.textContent = "浇树增益: " + treeBoost.toFixed(2);
+                    treeBoostElementStats.style.display = "block";
+                    treeBoostElementStats.style.visibility = "visible";
+                    treeBoostElementStats.style.opacity = "1";
+                } else if (treeBoostElementStats) {
+                    treeBoostElementStats.style.display = "none";
+                    treeBoostElementStats.style.visibility = "hidden";
+                    treeBoostElementStats.style.opacity = "0";
+                }
+                
+                // 修复：只有游戏阶段≥第三阶段第一部分才显示能量增益 - 直接通过ID获取元素
+                const isGameStage3OrHigher = window.gameState.gameStage >= 3 || window.gameState.gameStage === 3.1 || window.gameState.gameStage === 3.01;
+                
+                // 在统计数据板块中显示能量增益（在浇树增益下方）
+                const energyBoostElement = document.getElementById('energy-boost');
+                if (energyBoostElement) {
+                    if (isGameStage3OrHigher) {
+                        // 计算能量增益值（根据主线3第一阶段的要求：α能量转化器的能量增益=(α能量+1)^0.1）
+                        const alphaEnergy = window.gameState.energies?.alpha || 0;
+                        const energyBoost = Math.pow(alphaEnergy + 1, 0.1);
+                        
+                        // 更新内容并确保显示元素
+                        energyBoostElement.textContent = "能量增益: " + energyBoost.toFixed(2);
+                        energyBoostElement.style.display = "block";
+                        energyBoostElement.style.visibility = "visible";
+                        energyBoostElement.style.opacity = "1";
+                    } else {
+                        // 游戏阶段不足时隐藏能量增益
+                        energyBoostElement.style.display = "none";
+                        energyBoostElement.style.visibility = "hidden";
+                        energyBoostElement.style.opacity = "0";
                     }
                 }
                 
@@ -2293,17 +2352,20 @@
             // 第二阶段及以上才添加浇树增益
             if (window.gameState && window.gameState.gameStage >= 2) {
                 boosts.push({ name: "浇树增益", value: calculateTreeBoost().toFixed(2) });
+                
+                // 游戏阶段≥第三阶段第一部分时，在浇树增益下方添加能量增益
+                if (window.gameState.gameStage >= 3 || window.gameState.gameStage === 3.1 || window.gameState.gameStage === 3.01) {
+                    // 计算能量增益值（根据主线3第一阶段的要求：α能量转化器的能量增益=(α能量+1)^0.1）
+                    const alphaEnergy = window.gameState.energies?.alpha || 0;
+                    const energyBoost = Math.pow(alphaEnergy + 1, 0.1);
+                    boosts.push({ name: "能量增益", value: energyBoost.toFixed(2) });
+                }
             }
             
             // 第三阶段及以上添加研究所相关增益
             if (window.gameState && window.gameState.gameStage >= 3) {
-                // 计算元素转化器增益
-                const converterBoost = calculateConverterBoost();
-                boosts.push({ name: "转化器增益", value: converterBoost.toFixed(2) });
-                
-                // 计算量产器增益
-                const producerBoost = calculateProducerBoost();
-                boosts.push({ name: "量产器增益", value: producerBoost.toFixed(2) });
+                // 能量增益已在上面的条件分支中添加，避免重复显示
+                // 可以在这里添加其他研究所相关增益
             }
             
             boosts.forEach(boost => {
@@ -2368,6 +2430,20 @@
                         if (item.cost.usageBoost) {
                             costText += `, 使用增益: ${formatNumber(item.cost.usageBoost)}`;
                             if (window.gameState.usageBoost < item.cost.usageBoost) canBuy = false;
+                        }
+                        
+                        // 添加α/β/γ能量的显示和检查
+                        if (item.cost.alpha) {
+                            costText += `, α能量: ${formatNumber(item.cost.alpha)}`;
+                            if ((window.gameState.energies?.alpha || 0) < item.cost.alpha) canBuy = false;
+                        }
+                        if (item.cost.beta) {
+                            costText += `, β能量: ${formatNumber(item.cost.beta)}`;
+                            if ((window.gameState.energies?.beta || 0) < item.cost.beta) canBuy = false;
+                        }
+                        if (item.cost.gamma) {
+                            costText += `, γ能量: ${formatNumber(item.cost.gamma)}`;
+                            if ((window.gameState.energies?.gamma || 0) < item.cost.gamma) canBuy = false;
                         }
                         
                         for (const [frag, amount] of Object.entries(item.cost.fragments)) {
@@ -2495,6 +2571,11 @@
                     }
                     
                     if (item.cost.usageBoost && window.gameState.usageBoost < item.cost.usageBoost) canBuy = false;
+                    
+                    // 检查α/β/γ能量是否足够
+                    if (item.cost.alpha && (window.gameState.energies?.alpha || 0) < item.cost.alpha) canBuy = false;
+                    if (item.cost.beta && (window.gameState.energies?.beta || 0) < item.cost.beta) canBuy = false;
+                    if (item.cost.gamma && (window.gameState.energies?.gamma || 0) < item.cost.gamma) canBuy = false;
                 }
                 
                 if (canBuy) {
@@ -2532,6 +2613,20 @@
                         window.gameState.usageBoost -= item.cost.usageBoost;
                         // 确保使用增益不会低于1
                         window.gameState.usageBoost = Math.max(1, window.gameState.usageBoost);
+                    }
+                    
+                    // 扣除α/β/γ能量
+                    if (item.cost.alpha) {
+                        if (!window.gameState.energies) window.gameState.energies = {};
+                        window.gameState.energies.alpha = Math.max(0, (window.gameState.energies.alpha || 0) - item.cost.alpha);
+                    }
+                    if (item.cost.beta) {
+                        if (!window.gameState.energies) window.gameState.energies = {};
+                        window.gameState.energies.beta = Math.max(0, (window.gameState.energies.beta || 0) - item.cost.beta);
+                    }
+                    if (item.cost.gamma) {
+                        if (!window.gameState.energies) window.gameState.energies = {};
+                        window.gameState.energies.gamma = Math.max(0, (window.gameState.energies.gamma || 0) - item.cost.gamma);
                     }
                     
                     // 修复：确保从fragments中扣除镐子
@@ -2668,26 +2763,46 @@
             }
         }
         
-        // 检查是否获得五行镐，如果是则进入第二阶段
+        // 检查游戏阶段
         function checkGameStage() {
             try {
+                // 确保window.gameState对象正确初始化
+                if (!window.gameState) {
+                    window.gameState = { gameStage: 1, pickaxes: {} };
+                    return;
+                }
+                
                 // 确保游戏阶段正确初始化
                 if (!window.gameState.gameStage) {
                     window.gameState.gameStage = 1;
                 }
                 
-                // 检查是否满足第二阶段的条件
-                if (window.gameState.pickaxes && window.gameState.pickaxes["五行镐"] > 0 && window.gameState.gameStage < 2) {
-                    window.gameState.gameStage = 2;
-                    updateTabsVisibility(); // 更新标签显示
-                    updateBoostsList(); // 更新增益列表显示
+                // 确保pickaxes对象正确初始化
+                if (!window.gameState.pickaxes) {
+                    window.gameState.pickaxes = {};
+                    return;
                 }
                 
-                // 检查是否满足第三阶段的条件：拥有源镐
-                if (window.gameState.pickaxes && window.gameState.pickaxes["源镐"] >= 1 && window.gameState.gameStage < 3) {
+                const pickaxes = window.gameState.pickaxes;
+                
+                // 按优先级检查游戏阶段条件
+                // 第三阶段第二部分：拥有???物品（根据用户要求）
+                if (window.gameState.resources && window.gameState.resources["???"] >= 1) {
+                    window.gameState.gameStage = 3.1; // 使用3.1表示第三阶段第二部分
+                    updateTabsVisibility();
+                    updateBoostsList();
+                }
+                // 第三阶段第一部分：拥有源镐
+                else if (pickaxes["源镐"] >= 1 && window.gameState.gameStage < 3) {
                     window.gameState.gameStage = 3;
-                    updateTabsVisibility(); // 更新标签显示
-                    updateBoostsList(); // 更新增益列表显示
+                    updateTabsVisibility();
+                    updateBoostsList();
+                }
+                // 第二阶段：拥有五行镐
+                else if (pickaxes["五行镐"] > 0 && window.gameState.gameStage < 2) {
+                    window.gameState.gameStage = 2;
+                    updateTabsVisibility();
+                    updateBoostsList();
                 }
             } catch (e) {
                 console.error('检查游戏阶段失败:', e);
@@ -2708,7 +2823,7 @@
             
             // 每个活跃的转化器根据其对应的能量提供增益
             if (converters.alpha && energies.alpha > 0) {
-                boost *= 1 + (energies.alpha * 0.01); // 每点α能量提供1%增益
+                boost *= Math.pow(energies.alpha + 1, 0.1); // α能量增益=(α能量+1)^0.1
             }
             if (converters.beta && energies.beta > 0) {
                 boost *= 1 + (energies.beta * 0.02); // 每点β能量提供2%增益
@@ -2765,8 +2880,10 @@
             
             // 第三阶段添加研究所增益
             if (window.gameState.gameStage >= 3) {
-                totalDamage *= calculateConverterBoost();
-                totalDamage *= calculateProducerBoost();
+                // 根据主线三第一阶段要求，只使用能量增益
+                const alphaEnergy = window.gameState.energies?.alpha || 0;
+                const energyBoost = Math.pow(alphaEnergy + 1, 0.1);
+                totalDamage *= energyBoost;
             }
             
             // 保留两位小数
@@ -2823,10 +2940,15 @@
                         totalDamage: 0,
                         usageBoost: 0,
                         blockHp: {},
-                        currentBlockCategory: 0,
+                        currentBlockCategory: "main1",
                         currentBlockIndex: 0,
                         currentPickaxe: "木镐"
                     };
+                }
+                
+                // 确保currentBlockCategory是字符串而不是数字
+                if (typeof window.gameState.currentBlockCategory === 'number') {
+                    window.gameState.currentBlockCategory = "main1";
                 }
                 
                 // 安全获取当前分类和索引
@@ -2898,8 +3020,19 @@
                     // 获取当前镐子的usageGain值
                     const usageGain = currentPickaxeData?.usageGain || 0.01; // 默认0.01
                     
+                    // 计算β能量使用增益倍增效果
+                    let betaUsageBoostMultiplier = 1;
+                    const { converters, energies } = window.gameState;
+                    if (converters?.beta && energies?.beta > 0) {
+                        // β能量使用增益倍增 = (β能量+1)^0.4
+                        betaUsageBoostMultiplier = Math.pow(energies.beta + 1, 0.4);
+                    }
+                    
+                    // 计算最终使用增益：镐子自带使用增益 * β能量使用增益倍增
+                    const finalUsageGain = usageGain * betaUsageBoostMultiplier;
+                    
                     // 增加使用增益
-                    window.gameState.usageBoost += usageGain;
+                    window.gameState.usageBoost += finalUsageGain;
                 } catch (usageBoostError) {
                     console.error('增加使用增益失败:', usageBoostError);
                 }
@@ -3133,16 +3266,32 @@
         function updateGameStageDisplay() {
             try {
                 const stageElement = document.getElementById('game-stage');
-                if (stageElement && window.gameState) {
-                    const currentStage = window.gameState.gameStage || 1;
-                    // 根据要求显示阶段
-                    if (currentStage === 1) {
-                        stageElement.textContent = '当前阶段：第一阶段';
-                    } else if (currentStage === 2) {
-                        stageElement.textContent = '当前阶段：第二阶段';
-                    } else if (currentStage >= 3) {
-                        stageElement.textContent = '当前阶段：第三阶段第一部分';
-                    }
+                if (!stageElement) return;
+                
+                // 确保window.gameState和pickaxes对象正确初始化
+                if (!window.gameState) {
+                    window.gameState = { pickaxes: {} };
+                }
+                
+                if (!window.gameState.pickaxes) {
+                    window.gameState.pickaxes = {};
+                }
+                
+                const pickaxes = window.gameState.pickaxes;
+                
+                // 按照用户要求的优先级显示阶段
+                if (window.gameState.resources && window.gameState.resources["???"] >= 1) {
+                    // 如果"???"物品≥1，阶段为"第三阶段第二部分"
+                    stageElement.textContent = '当前阶段：第三阶段第二部分';
+                } else if (pickaxes["源镐"] >= 1) {
+                    // 否则如果"源镐"≥1，阶段为"第三阶段第一部分"
+                    stageElement.textContent = '当前阶段：第三阶段第一部分';
+                } else if (pickaxes["五行镐"] >= 1) {
+                    // 否则如果"五行镐"≥1，阶段为"第二阶段"
+                    stageElement.textContent = '当前阶段：第二阶段';
+                } else {
+                    // 否则，阶段为"第一阶段"
+                    stageElement.textContent = '当前阶段：第一阶段';
                 }
             } catch (e) {
                 console.error('更新游戏阶段显示失败:', e);
@@ -3358,7 +3507,8 @@
             // 延迟一点时间确保DOM完全加载
             setTimeout(() => {
                 updateCustomUI();
-                initAchievementsList();
+                // 注释掉未定义的函数调用
+                // initAchievementsList();
             }, 100);
         });
         
@@ -4148,7 +4298,17 @@
                     "紫水晶镐Ⅱ": 0,
                     "紫水晶镐Ⅲ": 0,
                     "紫水晶镐Ⅳ": 0,
-                    "紫水晶镐Ⅴ": 0
+                    "紫水晶镐Ⅴ": 0,
+                    "元素镐": 0,
+                    "元素镐2阶": 0,
+                    "元素镐3阶": 0,
+                    "元素镐4阶": 0,
+                    "元素镐5阶": 0,
+                    "元素镐6阶": 0,
+                    "元素镐7阶": 0,
+                    "元素镐8阶": 0,
+                    "元素镐9阶": 0,
+                    "元素镐10阶": 0
                 },
                 blockHp: {}
             };
@@ -4223,6 +4383,9 @@
             if (!window.gameState.autoMiningEnabled) window.gameState.autoMiningEnabled = false;
             if (!window.gameState.totalDamage) window.gameState.totalDamage = 0;
             if (!window.gameState.gameStage) window.gameState.gameStage = 1;
+            
+            // 检查游戏阶段，确保满足条件时自动进入相应阶段
+            checkGameStage();
             if (!window.gameState.totalPlayTimeSeconds) window.gameState.totalPlayTimeSeconds = 0;
             // 确保achievements对象存在
             if (!window.gameState.achievements) window.gameState.achievements = {"初入游戏": true};
@@ -4239,10 +4402,72 @@
                 }
             }
             
-            // 确保gameData存在
+            // 确保gameData存在并初始化完整的方块数据
             if (!window.gameData) {
-                console.error('gameData不存在，创建默认数据');
-                window.gameData = { blocks: { main1: [] } };
+                console.log('初始化游戏数据...');
+                // 初始化游戏数据，但不设置blocks（会在后面使用完整的blocks数据）
+                window.gameData = {};
+            } else if (!window.gameData.blocks) {
+                // 如果gameData存在但blocks不存在，初始化blocks
+                window.gameData.blocks = {
+                    main1: [
+                        { name: "土块", hp: 100, baseGold: 1 },
+                        { name: "草块", hp: 500, baseGold: 2 },
+                        { name: "木块", hp: 2000, baseGold: 3 },
+                        { name: "石块", hp: 10000, baseGold: 5 },
+                        { name: "硬石块", hp: 50000, baseGold: 10 },
+                        { name: "深板岩", hp: 300000, baseGold: 15 },
+                        { name: "煤炭块", hp: 1780000, baseGold: 20 },
+                        { name: "铜块", hp: 7800000, baseGold: 30 },
+                        { name: "铁块", hp: 91000000, baseGold: 40 },
+                        { name: "金块", hp: 260000000, baseGold: 50 },
+                        { name: "钻石块", hp: 1.3e9, baseGold: 60 },
+                        { name: "下届合金块", hp: 7.8e9, baseGold: 70 },
+                        { name: "黑曜石块", hp: 3.9e10, baseGold: 80 },
+                        { name: "红曜石块", hp: 5e11, baseGold: 100, special: { type: "fragment", item: "红曜石碎片", chance: 0.2 } },
+                        { name: "蓝曜石块", hp: 6e11, baseGold: 120, special: { type: "fragment", item: "蓝曜石碎片", chance: 0.2 } },
+                        { name: "基岩块", hp: 2.2e12, baseGold: 160, special: { type: "fragment", item: "基岩碎片", chance: 0.1 } },
+                        { name: "木核心块", hp: 7.8e12, baseGold: 250, special: { type: "core", item: "木核心", chance: 0.05 } },
+                        { name: "土核心块", hp: 2.91e13, baseGold: 350, special: { type: "core", item: "土核心", chance: 0.05 } },
+                        { name: "水立方块", hp: 1.78e14, baseGold: 500, special: { type: "cube", item: "水立方", chance: 0.03 } },
+                        { name: "火立方块", hp: 7.8e14, baseGold: 750, special: { type: "cube", item: "火立方", chance: 0.03 } },
+                        { name: "金立方块", hp: 9.1e15, baseGold: 1000, special: { type: "cube", item: "金立方", chance: 0.03 } }
+                    ],
+                    side1: [
+                        { name: "紫水晶方块", hp: 9.1e10, baseGold: 90, special: { type: "fixed", item: "紫水晶", chance: 1 } },
+                        { name: "下界之星方块", hp: 7.8e11, baseGold: 140, special: { type: "fragment", item: "下界之星", chance: 0.1 } },
+                        { name: "坤坤方块", hp: 9.1e12, baseGold: 200, special: { type: "fragment", item: "坤坤", chance: 0.25 } }
+                    ],
+                    main2: [
+                        { name: "木结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "木结晶", chance: 0.05 } },
+                        { name: "土结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "土结晶", chance: 0.05 } },
+                        { name: "水结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "水结晶", chance: 0.05 } },
+                        { name: "火结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "火结晶", chance: 0.05 } },
+                        { name: "金结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "金结晶", chance: 0.05 } },
+                        { name: "风结晶块", hp: 9.1e21, baseGold: 3000, special: { type: "fragment", item: "风结晶", chance: 0.05 } },
+                        { name: "雷结晶块", hp: 9.1e21, baseGold: 3000, special: { type: "fragment", item: "雷结晶", chance: 0.05 } },
+                        { name: "光结晶块", hp: 5e25, baseGold: 5000, special: { type: "fragment", item: "光结晶", chance: 0.05 } },
+                        { name: "暗结晶块", hp: 5e25, baseGold: 5000, special: { type: "fragment", item: "暗结晶", chance: 0.05 } },
+                        { name: "源结晶块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "源结晶", chance: 0.01 } }
+                    ],
+                    side2: [
+                        { name: "红曜石", hp: 5e16, baseGold: 500, special: { type: "fragment", item: "红曜石", chance: 0.05 } },
+                        { name: "蓝曜石", hp: 6e16, baseGold: 600, special: { type: "fragment", item: "蓝曜石", chance: 0.05 } },
+                        { name: "金奖核心", hp: 1e21, baseGold: 2000, special: { type: "fragment", item: "金奖核心", chance: 0.1 } },
+                        { name: "淼立方块", hp: 1e22, baseGold: 2500, special: { type: "fragment", item: "淼立方", chance: 0.05 } },
+                        { name: "水晶晶簇", hp: 1e23, baseGold: 2500, special: { type: "pickaxe", item: "紫水晶镐Ⅲ", count: 1, chance: 0.1 } },
+                        { name: "坤群", hp: 1e24, baseGold: 3000, special: { type: "fragment", item: "坤坤", count: 1000, chance: 0.01 } },
+                        { name: "红曜方", hp: 5e25, baseGold: 4000, special: { type: "fragment", item: "红曜方", chance: 0.005 } },
+                        { name: "蓝曜方", hp: 6e25, baseGold: 4000, special: { type: "fragment", item: "蓝曜方", chance: 0.005 } }
+                    ],
+                    main3: [
+                        { name: "α方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "α", count: 1, chance: 1 } },
+                        { name: "β方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "β", count: 1, chance: 1 } },
+                        { name: "γ方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "γ", count: 1, chance: 1 } },
+                        { name: "元素晶片", hp: 1.91e31, baseGold: 15000, special: { type: "fragment", item: "元素晶片", count: 1, chance: 0.1 } },
+                        { name: "量产核心", hp: 1.91e34, baseGold: 20000, special: { type: "fragment", item: "量产核心", count: 1, chance: 0.01 } }
+                    ]
+                };
             }
             
 
@@ -4325,89 +4550,224 @@
             bindBlockClickListener();
             
             try {
-                // 增强方块切换按钮事件绑定
+                // 重写方块切换按钮事件绑定，修复方块顺序错乱问题
                 function bindBlockNavigation() {
                     const prevBlock = document.getElementById("prev-block");
                     const nextBlock = document.getElementById("next-block");
                     
-                    // 处理上一个方块
-                    if (prevBlock) {
-                        console.log('找到上一个方块按钮，绑定事件');
-                        // 使用onclick作为主要方法
-                        prevBlock.onclick = function() {
-                            try {
-                                if (gameData && gameState) {
-                                    const blockCount = gameData.blocks[gameState.currentBlockCategory]?.length || 1;
-                                    gameState.currentBlockIndex = (gameState.currentBlockIndex - 1 + blockCount) % blockCount;
-                                    if (typeof updateUI === 'function') updateUI();
-                                }
-                            } catch (e) {
-                                console.error('切换到上一个方块失败:', e);
-                            }
+                    // 确保gameState存在
+                    if (!window.gameState) {
+                        window.gameState = {
+                            currentBlockCategory: "main1",
+                            currentBlockIndex: 0,
+                            gameStage: 1
                         };
-                        // 同时使用addEventListener作为备份
+                    }
+                    
+                    // 确保window.gameData和blocks数据正确初始化
+                    if (!window.gameData) {
+                        window.gameData = {};
+                    }
+                    if (!window.gameData.blocks) {
+                        console.log('强制初始化完整的blocks数据');
+                        window.gameData.blocks = {
+                            main1: [
+                                { name: "土块", hp: 100, baseGold: 1 },
+                                { name: "草块", hp: 500, baseGold: 2 },
+                                { name: "木块", hp: 2000, baseGold: 3 },
+                                { name: "石块", hp: 10000, baseGold: 5 },
+                                { name: "硬石块", hp: 50000, baseGold: 10 },
+                                { name: "深板岩", hp: 300000, baseGold: 15 },
+                                { name: "煤炭块", hp: 1780000, baseGold: 20 },
+                                { name: "铜块", hp: 7800000, baseGold: 30 },
+                                { name: "铁块", hp: 91000000, baseGold: 40 },
+                                { name: "金块", hp: 260000000, baseGold: 50 },
+                                { name: "钻石块", hp: 1.3e9, baseGold: 60 },
+                                { name: "下届合金块", hp: 7.8e9, baseGold: 70 },
+                                { name: "黑曜石块", hp: 3.9e10, baseGold: 80 },
+                                { name: "红曜石块", hp: 5e11, baseGold: 100, special: { type: "fragment", item: "红曜石碎片", chance: 0.2 } },
+                                { name: "蓝曜石块", hp: 6e11, baseGold: 120, special: { type: "fragment", item: "蓝曜石碎片", chance: 0.2 } },
+                                { name: "基岩块", hp: 2.2e12, baseGold: 160, special: { type: "fragment", item: "基岩碎片", chance: 0.1 } },
+                                { name: "木核心块", hp: 7.8e12, baseGold: 250, special: { type: "core", item: "木核心", chance: 0.05 } },
+                                { name: "土核心块", hp: 2.91e13, baseGold: 350, special: { type: "core", item: "土核心", chance: 0.05 } },
+                                { name: "水立方块", hp: 1.78e14, baseGold: 500, special: { type: "cube", item: "水立方", chance: 0.03 } },
+                                { name: "火立方块", hp: 7.8e14, baseGold: 750, special: { type: "cube", item: "火立方", chance: 0.03 } },
+                                { name: "金立方块", hp: 9.1e15, baseGold: 1000, special: { type: "cube", item: "金立方", chance: 0.03 } }
+                            ],
+                            side1: [
+                                { name: "紫水晶方块", hp: 9.1e10, baseGold: 90, special: { type: "fixed", item: "紫水晶", chance: 1 } },
+                                { name: "下界之星方块", hp: 7.8e11, baseGold: 140, special: { type: "fragment", item: "下界之星", chance: 0.1 } },
+                                { name: "坤坤方块", hp: 9.1e12, baseGold: 200, special: { type: "fragment", item: "坤坤", chance: 0.25 } }
+                            ],
+                            main2: [
+                                { name: "木结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "木结晶", chance: 0.05 } },
+                                { name: "土结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "土结晶", chance: 0.05 } },
+                                { name: "水结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "水结晶", chance: 0.05 } },
+                                { name: "火结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "火结晶", chance: 0.05 } },
+                                { name: "金结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "金结晶", chance: 0.05 } },
+                                { name: "风结晶块", hp: 9.1e21, baseGold: 3000, special: { type: "fragment", item: "风结晶", chance: 0.05 } },
+                                { name: "雷结晶块", hp: 9.1e21, baseGold: 3000, special: { type: "fragment", item: "雷结晶", chance: 0.05 } },
+                                { name: "光结晶块", hp: 5e25, baseGold: 5000, special: { type: "fragment", item: "光结晶", chance: 0.05 } },
+                                { name: "暗结晶块", hp: 5e25, baseGold: 5000, special: { type: "fragment", item: "暗结晶", chance: 0.05 } },
+                                { name: "源结晶块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "源结晶", chance: 0.01 } }
+                            ],
+                            side2: [
+                                { name: "红曜石", hp: 5e16, baseGold: 500, special: { type: "fragment", item: "红曜石", chance: 0.05 } },
+                                { name: "蓝曜石", hp: 6e16, baseGold: 600, special: { type: "fragment", item: "蓝曜石", chance: 0.05 } },
+                                { name: "金奖核心", hp: 1e21, baseGold: 2000, special: { type: "fragment", item: "金奖核心", chance: 0.1 } },
+                                { name: "淼立方块", hp: 1e22, baseGold: 2500, special: { type: "fragment", item: "淼立方", chance: 0.05 } },
+                                { name: "水晶晶簇", hp: 1e23, baseGold: 2500, special: { type: "pickaxe", item: "紫水晶镐Ⅲ", count: 1, chance: 0.1 } },
+                                { name: "坤群", hp: 1e24, baseGold: 3000, special: { type: "fragment", item: "坤坤", count: 1000, chance: 0.01 } },
+                                { name: "红曜方", hp: 5e25, baseGold: 4000, special: { type: "fragment", item: "红曜方", chance: 0.005 } },
+                                { name: "蓝曜方", hp: 6e25, baseGold: 4000, special: { type: "fragment", item: "蓝曜方", chance: 0.005 } }
+                            ],
+                            main3: [
+                                { name: "α方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "α", count: 1, chance: 1 } },
+                                { name: "β方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "β", count: 1, chance: 1 } },
+                                { name: "γ方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "γ", count: 1, chance: 1 } },
+                                { name: "元素晶片", hp: 1.91e31, baseGold: 15000, special: { type: "fragment", item: "元素晶片", count: 1, chance: 0.1 } },
+                                { name: "量产核心", hp: 1.91e34, baseGold: 20000, special: { type: "fragment", item: "量产核心", count: 1, chance: 0.01 } }
+                            ],
+                            side3: [
+                                { name: "五行镐", hp: 7.8e31, baseGold: 18000, special: { type: "fragment", item: "五行镐", count: 1, chance: 0.01 } },
+                                { name: "五行精华", hp: 9.1e31, baseGold: 18000, special: { type: "fragment", item: "五行精华", count: 1, chance: 0.001 } },
+                                { name: "药叶", hp: 9.1e36, baseGold: 24000, special: { type: "fragment", item: "药叶", count: 1, chance: 0.03 } }
+                            ]
+                        };
+                    }
+                    
+                    // 统一的方块索引更新函数 - 增强版
+                    function updateBlockIndex(direction) {
                         try {
-                            function prevBlockHandler() {
-                                try {
-                                    if (gameData && gameState) {
-                                        const blockCount = gameData.blocks[gameState.currentBlockCategory]?.length || 1;
-                                        gameState.currentBlockIndex = (gameState.currentBlockIndex - 1 + blockCount) % blockCount;
-                                        if (typeof updateUI === 'function') updateUI();
-                                    }
-                                } catch (e) {
-                                    console.error('切换到上一个方块失败:', e);
-                                }
+                            console.log('开始切换方块，方向:', direction);
+                            
+                            // 确保window.gameState存在
+                            if (!window.gameState) {
+                                console.error('gameState不存在');
+                                return;
                             }
-                            prevBlock.removeEventListener("click", prevBlockHandler);
-                            prevBlock.addEventListener("click", prevBlockHandler);
+                            
+                            // 确保window.gameData存在
+                            if (!window.gameData || !window.gameData.blocks) {
+                                console.error('gameData或blocks不存在');
+                                return;
+                            }
+                            
+                            // 获取当前分类
+                            const category = window.gameState.currentBlockCategory;
+                            
+                            // 验证分类
+                            if (!category || typeof category !== 'string') {
+                                console.error('无效的分类名称:', category);
+                                return;
+                            }
+                            
+                            // 验证分类对应的方块数据
+                            if (!window.gameData.blocks[category]) {
+                                console.error('分类不存在:', category);
+                                return;
+                            }
+                            
+                            if (!Array.isArray(window.gameData.blocks[category])) {
+                                console.error('分类下的方块数据不是数组:', category);
+                                return;
+                            }
+                            
+                            // 获取方块数量
+                            const blocks = window.gameData.blocks[category];
+                            const blockCount = blocks.length;
+                            console.log(`当前分类: ${category}, 方块总数: ${blockCount}, 当前索引: ${window.gameState.currentBlockIndex}`);
+                            console.log('方块数据预览:', JSON.stringify(blocks.slice(0, 3)));
+                            
+                            if (blockCount === 0) {
+                                console.warn('当前分类下没有方块:', category);
+                                return;
+                            }
+                            
+                            // 确保currentBlockIndex有效
+                            if (typeof window.gameState.currentBlockIndex !== 'number' || window.gameState.currentBlockIndex < 0) {
+                                window.gameState.currentBlockIndex = 0;
+                                console.log('重置方块索引为0');
+                            }
+                            
+                            // 确保索引在有效范围内
+                            window.gameState.currentBlockIndex = Math.max(0, Math.min(window.gameState.currentBlockIndex, blockCount - 1));
+                            
+                            // 记录切换前的状态
+                            const beforeIndex = window.gameState.currentBlockIndex;
+                            
+                            // 更新索引
+                            if (direction === 'prev') {
+                                // 上一个方块 - 循环切换
+                                window.gameState.currentBlockIndex = (window.gameState.currentBlockIndex - 1 + blockCount) % blockCount;
+                            } else if (direction === 'next') {
+                                // 下一个方块 - 循环切换
+                                window.gameState.currentBlockIndex = (window.gameState.currentBlockIndex + 1) % blockCount;
+                            } else {
+                                console.error('无效的方向参数:', direction);
+                                return;
+                            }
+                            
+                            // 确保索引再次在有效范围内（双重保险）
+                            window.gameState.currentBlockIndex = Math.max(0, Math.min(window.gameState.currentBlockIndex, blockCount - 1));
+                            
+                            console.log(`成功切换方块: ${direction}，分类: ${category}，从索引 ${beforeIndex} 切换到 ${window.gameState.currentBlockIndex}`);
+                            
+                            // 更新UI
+                            if (typeof updateUI === 'function') {
+                                updateUI();
+                                console.log('UI已更新');
+                            } else {
+                                console.warn('updateUI函数不存在');
+                            }
+                            
                         } catch (e) {
-                            console.warn('为上一个方块按钮添加addEventListener失败，但onclick已设置:', e);
+                            console.error(`切换方块失败(${direction}):`, e);
                         }
                     }
                     
-                    // 处理下一个方块
-                    if (nextBlock) {
-                        console.log('找到下一个方块按钮，绑定事件');
-                        // 使用onclick作为主要方法
-                        nextBlock.onclick = function() {
-                            try {
-                                if (gameData && gameState) {
-                                    const blockCount = gameData.blocks[gameState.currentBlockCategory]?.length || 1;
-                                    gameState.currentBlockIndex = (gameState.currentBlockIndex + 1) % blockCount;
-                                    if (typeof updateUI === 'function') updateUI();
-                                }
-                            } catch (e) {
-                                console.error('切换到下一个方块失败:', e);
-                            }
-                        };
-                        // 同时使用addEventListener作为备份
+                    // 处理上一个方块按钮
+                    if (prevBlock) {
+                        // 先清除可能存在的事件监听器
+                        prevBlock.onclick = null;
                         try {
-                            function nextBlockHandler() {
-                                try {
-                                    if (gameData && gameState) {
-                                        const blockCount = gameData.blocks[gameState.currentBlockCategory]?.length || 1;
-                                        gameState.currentBlockIndex = (gameState.currentBlockIndex + 1) % blockCount;
-                                        if (typeof updateUI === 'function') updateUI();
-                                    }
-                                } catch (e) {
-                                    console.error('切换到下一个方块失败:', e);
-                                }
-                            }
-                            nextBlock.removeEventListener("click", nextBlockHandler);
-                            nextBlock.addEventListener("click", nextBlockHandler);
-                        } catch (e) {
-                            console.warn('为下一个方块按钮添加addEventListener失败，但onclick已设置:', e);
-                        }
+                            prevBlock.removeEventListener('click', function handler() {});
+                        } catch (e) {}
+                        
+                        // 只使用onclick方法，避免重复绑定
+                        prevBlock.onclick = function() {
+                            updateBlockIndex('prev');
+                        };
+                        
+                        console.log('上一个方块按钮事件已绑定');
+                    }
+                    
+                    // 处理下一个方块按钮
+                    if (nextBlock) {
+                        // 先清除可能存在的事件监听器
+                        nextBlock.onclick = null;
+                        try {
+                            nextBlock.removeEventListener('click', function handler() {});
+                        } catch (e) {}
+                        
+                        // 只使用onclick方法，避免重复绑定
+                        nextBlock.onclick = function() {
+                            updateBlockIndex('next');
+                        };
+                        
+                        console.log('下一个方块按钮事件已绑定');
                     }
                 }
                 
+                // 立即绑定
                 bindBlockNavigation();
-                setTimeout(bindBlockNavigation, 100);
+                // 延迟再次绑定以确保DOM元素完全加载
+                setTimeout(bindBlockNavigation, 300);
             } catch (e) {
                 console.error('添加方块切换事件监听失败:', e);
             }
             
-            // 分类切换 - 增强版
+            // 分类切换 - 修复版
             try {
                 function bindCategoryButtons() {
                     console.log('绑定分类按钮事件');
@@ -4417,96 +4777,229 @@
                         return;
                     }
                     
+                    // 确保gameData和blocks数据正确初始化
+                    if (!window.gameData) {
+                        window.gameData = {};
+                    }
+                    if (!window.gameData.blocks) {
+                        console.log('强制初始化完整的blocks数据');
+                        window.gameData.blocks = {
+                            main1: [
+                                { name: "土块", hp: 100, baseGold: 1 },
+                                { name: "草块", hp: 500, baseGold: 2 },
+                                { name: "木块", hp: 2000, baseGold: 3 },
+                                { name: "石块", hp: 10000, baseGold: 5 },
+                                { name: "硬石块", hp: 50000, baseGold: 10 },
+                                { name: "深板岩", hp: 300000, baseGold: 15 },
+                                { name: "煤炭块", hp: 1780000, baseGold: 20 },
+                                { name: "铜块", hp: 7800000, baseGold: 30 },
+                                { name: "铁块", hp: 91000000, baseGold: 40 },
+                                { name: "金块", hp: 260000000, baseGold: 50 },
+                                { name: "钻石块", hp: 1.3e9, baseGold: 60 },
+                                { name: "下届合金块", hp: 7.8e9, baseGold: 70 },
+                                { name: "黑曜石块", hp: 3.9e10, baseGold: 80 },
+                                { name: "红曜石块", hp: 5e11, baseGold: 100, special: { type: "fragment", item: "红曜石碎片", chance: 0.2 } },
+                                { name: "蓝曜石块", hp: 6e11, baseGold: 120, special: { type: "fragment", item: "蓝曜石碎片", chance: 0.2 } },
+                                { name: "基岩块", hp: 2.2e12, baseGold: 160, special: { type: "fragment", item: "基岩碎片", chance: 0.1 } },
+                                { name: "木核心块", hp: 7.8e12, baseGold: 250, special: { type: "core", item: "木核心", chance: 0.05 } },
+                                { name: "土核心块", hp: 2.91e13, baseGold: 350, special: { type: "core", item: "土核心", chance: 0.05 } },
+                                { name: "水立方块", hp: 1.78e14, baseGold: 500, special: { type: "cube", item: "水立方", chance: 0.03 } },
+                                { name: "火立方块", hp: 7.8e14, baseGold: 750, special: { type: "cube", item: "火立方", chance: 0.03 } },
+                                { name: "金立方块", hp: 9.1e15, baseGold: 1000, special: { type: "cube", item: "金立方", chance: 0.03 } }
+                            ],
+                            side1: [
+                                { name: "紫水晶方块", hp: 9.1e10, baseGold: 90, special: { type: "fixed", item: "紫水晶", chance: 1 } },
+                                { name: "下界之星方块", hp: 7.8e11, baseGold: 140, special: { type: "fragment", item: "下界之星", chance: 0.1 } },
+                                { name: "坤坤方块", hp: 9.1e12, baseGold: 200, special: { type: "fragment", item: "坤坤", chance: 0.25 } }
+                            ],
+                            main2: [
+                                { name: "木结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "木结晶", chance: 0.05 } },
+                                { name: "土结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "土结晶", chance: 0.05 } },
+                                { name: "水结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "水结晶", chance: 0.05 } },
+                                { name: "火结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "火结晶", chance: 0.05 } },
+                                { name: "金结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "金结晶", chance: 0.05 } },
+                                { name: "风结晶块", hp: 9.1e21, baseGold: 3000, special: { type: "fragment", item: "风结晶", chance: 0.05 } },
+                                { name: "雷结晶块", hp: 9.1e21, baseGold: 3000, special: { type: "fragment", item: "雷结晶", chance: 0.05 } },
+                                { name: "光结晶块", hp: 5e25, baseGold: 5000, special: { type: "fragment", item: "光结晶", chance: 0.05 } },
+                                { name: "暗结晶块", hp: 5e25, baseGold: 5000, special: { type: "fragment", item: "暗结晶", chance: 0.05 } },
+                                { name: "源结晶块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "源结晶", chance: 0.01 } }
+                            ],
+                            side2: [
+                                { name: "红曜石", hp: 5e16, baseGold: 500, special: { type: "fragment", item: "红曜石", chance: 0.05 } },
+                                { name: "蓝曜石", hp: 6e16, baseGold: 600, special: { type: "fragment", item: "蓝曜石", chance: 0.05 } },
+                                { name: "金奖核心", hp: 1e21, baseGold: 2000, special: { type: "fragment", item: "金奖核心", chance: 0.1 } },
+                                { name: "淼立方块", hp: 1e22, baseGold: 2500, special: { type: "fragment", item: "淼立方", chance: 0.05 } },
+                                { name: "水晶晶簇", hp: 1e23, baseGold: 2500, special: { type: "pickaxe", item: "紫水晶镐Ⅲ", count: 1, chance: 0.1 } },
+                                { name: "坤群", hp: 1e24, baseGold: 3000, special: { type: "fragment", item: "坤坤", count: 1000, chance: 0.01 } },
+                                { name: "红曜方", hp: 5e25, baseGold: 4000, special: { type: "fragment", item: "红曜方", chance: 0.005 } },
+                                { name: "蓝曜方", hp: 6e25, baseGold: 4000, special: { type: "fragment", item: "蓝曜方", chance: 0.005 } }
+                            ],
+                            main3: [
+                                { name: "α方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "α", count: 1, chance: 1 } },
+                                { name: "β方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "β", count: 1, chance: 1 } },
+                                { name: "γ方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "γ", count: 1, chance: 1 } },
+                                { name: "元素晶片", hp: 1.91e31, baseGold: 15000, special: { type: "fragment", item: "元素晶片", count: 1, chance: 0.1 } },
+                                { name: "量产核心", hp: 1.91e34, baseGold: 20000, special: { type: "fragment", item: "量产核心", count: 1, chance: 0.01 } }
+                            ],
+                            side3: [
+                                { name: "五行镐", hp: 7.8e31, baseGold: 18000, special: { type: "fragment", item: "五行镐", count: 1, chance: 0.01 } },
+                                { name: "五行精华", hp: 9.1e31, baseGold: 18000, special: { type: "fragment", item: "五行精华", count: 1, chance: 0.001 } },
+                                { name: "药叶", hp: 9.1e36, baseGold: 24000, special: { type: "fragment", item: "药叶", count: 1, chance: 0.03 } }
+                            ]
+                        };
+                    }
+                    
+                    // 统一的分类切换处理函数
+                    function handleCategoryChange(button) {
+                        try {
+                            console.log('开始分类切换处理');
+                            // 确保window.gameState存在
+                            if (!window.gameState) {
+                                window.gameState = {
+                                    currentBlockCategory: "main1",
+                                    currentBlockIndex: 0,
+                                    gameStage: 1
+                                };
+                                console.log('初始化gameState');
+                            }
+                            
+                            const category = button.getAttribute('data-category') || button.dataset.category;
+                            
+                            if (!category) {
+                                console.error('分类按钮缺少data-category属性');
+                                return;
+                            }
+                            
+                            console.log(`尝试切换到分类: ${category}`);
+                            
+                            // 验证分类是否有效
+                            if (!window.gameData.blocks || !window.gameData.blocks[category]) {
+                                console.error('无效的分类或游戏数据未初始化:', category);
+                                return;
+                            }
+                            
+                            // 安全地更新所有按钮的active状态
+                            try {
+                                const allButtons = document.querySelectorAll(".block-category .category-btn");
+                                allButtons.forEach(btn => {
+                                    if (btn && btn.classList) {
+                                        btn.classList.remove("active");
+                                    }
+                                });
+                                if (button.classList) {
+                                    button.classList.add("active");
+                                }
+                            } catch (e) {
+                                console.error('更新按钮active状态失败:', e);
+                            }
+                            
+                            // 确保分类名是字符串类型，索引重置为0
+                            window.gameState.currentBlockCategory = String(category);
+                            window.gameState.currentBlockIndex = 0;
+                            console.log(`成功切换到分类: ${category}，索引已重置为0`);
+                            
+                            // 统一使用window.blockHp进行血量管理
+                            if (!window.blockHp) {
+                                window.blockHp = {};
+                            }
+                            
+                            // 确保当前分类有对应的血量对象
+                            if (!window.blockHp[category]) {
+                                window.blockHp[category] = {};
+                                console.log(`初始化分类 ${category} 的血量对象`);
+                            }
+                            
+                            // 初始化当前分类第一个方块的血量
+                            const blocks = window.gameData.blocks[category];
+                            if (blocks && blocks.length > 0 && blocks[0]) {
+                                if (!window.blockHp[category][0]) {
+                                    window.blockHp[category][0] = blocks[0].hp || 100;
+                                    console.log(`初始化分类 ${category} 第一个方块的血量: ${window.blockHp[category][0]}`);
+                                }
+                                
+                                // 直接更新UI
+                                try {
+                                    const blockNameElement = document.getElementById('block-name');
+                                    const blockHpElement = document.getElementById('block-hp');
+                                    const blockImageElement = document.getElementById('block-image');
+                                    
+                                    if (blockNameElement && blockHpElement) {
+                                        blockNameElement.textContent = blocks[0].name || '未知方块';
+                                        
+                                        // 格式化血量显示
+                                        const currentHp = window.blockHp[category][0];
+                                        const maxHp = blocks[0].hp || 100;
+                                        blockHpElement.textContent = `${formatNumber(currentHp)}/${formatNumber(maxHp)}`;
+                                        console.log('分类切换后直接更新DOM成功');
+                                    }
+                                    
+                                    if (blockImageElement) {
+                                        // 设置方块颜色（简化版）
+                                        const colors = {
+                                            main1: '#8B4513',
+                                            side1: '#9932CC',
+                                            main2: '#FFD700',
+                                            side2: '#FF6347',
+                                            main3: '#0000FF'
+                                        };
+                                        blockImageElement.style.backgroundColor = colors[category] || '#CCCCCC';
+                                    }
+                                } catch (e) {
+                                    console.error('直接更新UI失败:', e);
+                                }
+                            }
+                        } catch (e) {
+                            console.error('分类切换失败:', e);
+                        }
+                    }
+                    
                     categoryButtons.forEach(button => {
                         if (!button) return;
                         
-                        // 使用onclick作为主要方法
-                        button.onclick = function() {
-                            try {
-                                const category = this.getAttribute('data-category') || this.dataset.category;
-                                const gameStage = gameState?.gameStage || 1;
-                                
-                                // 根据游戏阶段检查是否允许访问该类别
-                                let canAccess = true;
-                                if (category === 'main2' || category === 'side2') {
-                                    canAccess = gameStage >= 2;
-                                } else if (category === 'main3') {
-                                    canAccess = gameStage >= 3;
-                                }
-                                
-                                if (canAccess && gameState) {
-                                    // 安全地更新所有按钮的active状态
-                                    try {
-                                        const allButtons = document.querySelectorAll(".block-category .category-btn");
-                                        allButtons.forEach(btn => {
-                                            if (btn && btn.classList) {
-                                                btn.classList.remove("active");
-                                            }
-                                        });
-                                        if (this.classList) {
-                                            this.classList.add("active");
-                                        }
-                                    } catch (e) {
-                                        console.error('更新按钮active状态失败:', e);
-                                    }
-                                    
-                                    gameState.currentBlockCategory = category;
-                                    gameState.currentBlockIndex = 0;
-                                    if (typeof updateUI === 'function') updateUI();
-                                }
-                            } catch (e) {
-                                console.error('分类切换失败:', e);
-                            }
-                        };
-                        
-                        // 同时使用addEventListener作为备份
+                        // 先清除可能存在的事件监听器
+                        button.onclick = null;
                         try {
-                            function categoryClickHandler() {
-                                try {
-                                    const category = this.getAttribute('data-category') || this.dataset.category;
-                                    const gameStage = gameState?.gameStage || 1;
-                                    
-                                    // 根据游戏阶段检查是否允许访问该类别
-                                    let canAccess = true;
-                                    if (category === 'main2' || category === 'side2') {
-                                        canAccess = gameStage >= 2;
-                                    } else if (category === 'main3') {
-                                        canAccess = gameStage >= 3;
-                                    }
-                                    
-                                    if (canAccess && gameState) {
-                                        try {
-                                            const allButtons = document.querySelectorAll(".block-category .category-btn");
-                                            allButtons.forEach(btn => {
-                                                if (btn && btn.classList) {
-                                                    btn.classList.remove("active");
-                                                }
-                                            });
-                                            if (this.classList) {
-                                                this.classList.add("active");
-                                            }
-                                        } catch (e) {
-                                            console.error('更新按钮active状态失败:', e);
-                                        }
-                                        
-                                        gameState.currentBlockCategory = category;
-                                        gameState.currentBlockIndex = 0;
-                                        if (typeof updateUI === 'function') updateUI();
-                                    }
-                                } catch (e) {
-                                    console.error('分类切换失败:', e);
-                                }
-                            }
-                            button.removeEventListener("click", categoryClickHandler);
-                            button.addEventListener("click", categoryClickHandler);
+                            // 使用克隆节点方式移除所有事件监听器
+                            const clonedButton = button.cloneNode(true);
+                            button.parentNode.replaceChild(clonedButton, button);
+                            button = clonedButton; // 更新引用
                         } catch (e) {
-                            console.warn('为分类按钮添加addEventListener失败，但onclick已设置:', e);
+                            console.warn('无法完全清除事件监听器:', e);
                         }
+                        
+                        // 确保按钮可点击
+                            button.style.pointerEvents = 'auto';
+                            button.style.cursor = 'pointer';
+                            const btnCategory = button.dataset.category;
+                            console.log(`设置分类按钮 ${btnCategory} 为可点击状态`);
+                            
+                            // 只使用onclick方法，避免重复绑定
+                            button.onclick = function() {
+                                console.log(`分类按钮 ${this.dataset.category} 被点击`);
+                                handleCategoryChange(this);
+                            };
+                            console.log(`分类按钮 ${btnCategory} 事件绑定完成`);
                     });
                 }
                 
+                // 立即调用bindCategoryButtons函数来绑定事件
                 bindCategoryButtons();
-                setTimeout(bindCategoryButtons, 100);
+                
+                // 延迟再次调用以确保DOM元素完全加载
+                setTimeout(bindCategoryButtons, 300);
+                
+                // 避免递归调用，直接设置初始活动状态
+                setTimeout(() => {
+                    try {
+                        // 激活默认分类按钮
+                        const defaultCategoryButton = document.querySelector(`[data-category="main1"]`);
+                        if (defaultCategoryButton) {
+                            defaultCategoryButton.click();
+                        }
+                    } catch (e) {
+                        console.error('设置默认分类失败:', e);
+                    }
+                }, 100);
             } catch (e) {
                 console.error('添加分类切换事件监听失败:', e);
             }
@@ -4514,7 +5007,7 @@
             // 标签切换 - 增强版
             try {
                 function bindTabButtons() {
-                    console.log('绑定标签按钮事件');
+                    console.log('绑定标签按钮事件 - 增强版本');
                     const tabButtons = document.querySelectorAll(".tab-btn");
                     if (tabButtons.length === 0) {
                         console.warn('未找到标签按钮');
@@ -4524,27 +5017,40 @@
                     tabButtons.forEach(button => {
                         if (!button) return;
                         
-                        // 使用onclick作为主要方法
-                        button.onclick = function() {
+                        // 确保按钮可以被点击
+                        button.style.pointerEvents = 'auto';
+                        button.style.cursor = 'pointer';
+                        button.style.userSelect = 'none'; // 防止文本选择
+                        
+                        // 克隆按钮以移除所有现有事件监听器
+                        const newButton = button.cloneNode(true);
+                        button.parentNode.replaceChild(newButton, button);
+                        
+                        // 通用的标签切换函数
+                        function handleTabClick(event) {
+                            console.log('标签按钮点击:', this.id || this.dataset.tab);
+                            if (event) {
+                                event.stopPropagation();
+                                event.preventDefault();
+                            }
                             try {
-                                console.log('标签按钮点击:', this.id);
                                 // 安全地更新所有按钮和内容的active状态
-                                try {
-                                    const allButtons = document.querySelectorAll(".tab-btn");
-                                    allButtons.forEach(btn => {
-                                        if (btn && btn.classList) {
-                                            btn.classList.remove("active");
-                                        }
-                                    });
-                                    const allContents = document.querySelectorAll(".tab-content");
-                                    allContents.forEach(content => {
-                                        if (content && content.classList) {
-                                            content.classList.remove("active");
-                                        }
-                                    });
-                                } catch (stateError) {
-                                    console.error('更新标签状态失败:', stateError);
-                                }
+                                const allButtons = document.querySelectorAll(".tab-btn");
+                                allButtons.forEach(btn => {
+                                    if (btn && btn.classList) {
+                                        btn.classList.remove("active");
+                                    }
+                                });
+                                
+                                // 显式隐藏所有tab内容，确保没有重叠显示
+                                const allContents = document.querySelectorAll(".tab-content");
+                                allContents.forEach(content => {
+                                    if (content) {
+                                        content.classList.remove("active");
+                                        // 直接设置style.display确保内容被隐藏
+                                        content.style.display = 'none';
+                                    }
+                                });
                                 
                                 // 激活当前按钮
                                 if (this.classList) {
@@ -4555,65 +5061,47 @@
                                 const tabId = this.getAttribute('data-tab') || this.dataset.tab;
                                 if (tabId) {
                                     const tabContent = document.getElementById(`${tabId}-tab`);
-                                    if (tabContent && tabContent.classList) {
+                                    if (tabContent) {
                                         tabContent.classList.add("active");
+                                        // 直接设置style.display确保内容被显示
+                                        tabContent.style.display = 'block';
+                                        console.log('已激活内容标签:', tabId);
+                                    } else {
+                                        console.warn('未找到对应的内容标签:', tabId);
+                                    }
+                                }
+                                
+                                // 处理研究所UI显示逻辑 - 只在点击研究所标签时显示研究所UI
+                                const researchArea = document.querySelector('.research-area');
+                                if (researchArea) {
+                                    if (tabId === 'research') {
+                                        researchArea.style.display = 'block';
+                                    } else {
+                                        researchArea.style.display = 'none';
                                     }
                                 }
                             } catch (e) {
                                 console.error('切换标签失败:', e);
                             }
-                        };
+                        }
+                        
+                        // 使用onclick作为主要方法
+                        newButton.onclick = handleTabClick;
                         
                         // 同时使用addEventListener作为备份
                         try {
-                            function tabClickHandler() {
-                                try {
-                                    console.log('标签按钮addEventListener触发:', this.id);
-                                    // 安全地更新所有按钮和内容的active状态
-                                    try {
-                                        const allButtons = document.querySelectorAll(".tab-btn");
-                                        allButtons.forEach(btn => {
-                                            if (btn && btn.classList) {
-                                                btn.classList.remove("active");
-                                            }
-                                        });
-                                        const allContents = document.querySelectorAll(".tab-content");
-                                        allContents.forEach(content => {
-                                            if (content && content.classList) {
-                                                content.classList.remove("active");
-                                            }
-                                        });
-                                    } catch (stateError) {
-                                        console.error('更新标签状态失败:', stateError);
-                                    }
-                                    
-                                    // 激活当前按钮
-                                    if (this.classList) {
-                                        this.classList.add("active");
-                                    }
-                                    
-                                    // 激活对应内容
-                                    const tabId = this.getAttribute('data-tab') || this.dataset.tab;
-                                    if (tabId) {
-                                        const tabContent = document.getElementById(`${tabId}-tab`);
-                                        if (tabContent && tabContent.classList) {
-                                            tabContent.classList.add("active");
-                                        }
-                                    }
-                                } catch (e) {
-                                    console.error('切换标签失败:', e);
-                                }
-                            }
-                            button.removeEventListener("click", tabClickHandler);
-                            button.addEventListener("click", tabClickHandler);
+                            newButton.addEventListener('click', handleTabClick, { capture: false, passive: false });
+                            console.log('已为标签按钮添加双重事件监听:', newButton.id || newButton.dataset.tab);
                         } catch (e) {
                             console.warn('为标签按钮添加addEventListener失败，但onclick已设置:', e);
                         }
                     });
                 }
                 
+                // 立即执行并设置多次延迟执行以确保绑定成功
                 bindTabButtons();
                 setTimeout(bindTabButtons, 100);
+                setTimeout(bindTabButtons, 500); // 额外的延迟绑定，确保DOM完全加载
             } catch (e) {
                 console.error('添加标签切换事件监听失败:', e);
             }
@@ -4775,6 +5263,10 @@
                 window.gameState.gameStage = 2;
             }
             
+            // 正常游戏阶段流程，不强制设置阶段
+            // 游戏从第一阶段开始，根据解锁条件自动升级
+            // 研究所系统将在达到适当阶段时自动启用
+            
             // 根据游戏阶段动态显示UI标签
             updateTabsVisibility();
             
@@ -4859,7 +5351,8 @@
                     
                     console.log('兑换按钮事件绑定完成');
                 } else {
-                    console.error('未找到兑换按钮元素');
+                    // 改为信息日志而非错误，避免控制台报错
+                    console.info('兑换按钮元素不存在，跳过绑定');
                 }
             } catch (e) {
                 console.error('添加兑换按钮事件监听失败:', e.stack || e);
@@ -5014,6 +5507,7 @@
                         }
                         
                         // 阶段≥3时显示主线3方块类别
+                        console.log('当前游戏阶段:', gameStage);
                         if (gameStage >= 3) {
                             const main3CategoryBtn = document.querySelector('.block-category .category-btn[data-category="main3"]');
                             if (main3CategoryBtn) main3CategoryBtn.style.display = 'inline-block';
@@ -5021,8 +5515,16 @@
                             // 显示主线3商店和支线3商店
                             const main3ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="main3"]');
                             const side3ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="side3"]');
-                            if (main3ShopBtn) main3ShopBtn.style.display = 'inline-block';
-                            if (side3ShopBtn) side3ShopBtn.style.display = 'inline-block';
+                            console.log('找到主线3商店按钮:', main3ShopBtn);
+                            console.log('找到支线3商店按钮:', side3ShopBtn);
+                            if (main3ShopBtn) {
+                                main3ShopBtn.style.display = 'inline-block';
+                                console.log('已设置主线3商店按钮显示');
+                            }
+                            if (side3ShopBtn) {
+                                side3ShopBtn.style.display = 'inline-block';
+                                console.log('已设置支线3商店按钮显示');
+                            }
                         } else {
                             const main3CategoryBtn = document.querySelector('.block-category .category-btn[data-category="main3"]');
                             if (main3CategoryBtn) main3CategoryBtn.style.display = 'none';
@@ -5049,10 +5551,25 @@
                         
                         // 阶段≥3时显示研究所标签
                         if (researchBtn) {
-                            if (gameStage >= 3) {
+                            // 确保gameState存在并有gameStage属性
+                            const currentGameStage = window.gameState?.gameStage || 1;
+                            if (currentGameStage >= 3) {
                                 researchBtn.style.display = 'inline-block';
+                                console.log('研究所标签已显示，游戏阶段:', currentGameStage);
                             } else {
                                 researchBtn.style.display = 'none';
+                                console.log('研究所标签已隐藏，游戏阶段:', currentGameStage);
+                            }
+                        }
+                        
+                        // 确保研究标签内容区域也根据游戏阶段显示
+                        const researchTabContent = document.getElementById('research-tab');
+                        if (researchTabContent) {
+                            const currentGameStage = window.gameState?.gameStage || 1;
+                            if (currentGameStage >= 3) {
+                                researchTabContent.style.display = 'block';
+                            } else {
+                                researchTabContent.style.display = 'none';
                             }
                         }
                     }
@@ -5094,9 +5611,485 @@
             }
         }
 
-        // 添加定期更新兑换信息的定时器
-        function startConvertInfoUpdater() {
-            // 每100毫秒更新一次兑换信息
+        // 解锁能量转化器功能
+            function unlockEnergyConverter(type) {
+                try {
+                    // 计算所需资源数量（根据规则，第一个10W，第二个40W，第三个100W）
+                    let requiredAmount = 100000;
+                    let unlockedCount = 0;
+                    for (let key in window.gameState.converters) {
+                        if (window.gameState.converters[key] === true) {
+                            unlockedCount++;
+                        }
+                    }
+
+                    if (unlockedCount === 1) requiredAmount = 400000;
+                    if (unlockedCount === 2) requiredAmount = 1000000;
+
+                    // 获取对应的资源键名（α、β、γ）
+                    const resourceKey = type === 'alpha' ? 'α' : type === 'beta' ? 'β' : 'γ';
+
+                    // 检查资源是否足够且未解锁
+                    const hasEnoughResources = window.gameState.resources[resourceKey] >= requiredAmount;
+                    if (hasEnoughResources && !(window.gameState.converters[type] === true)) {
+                        // 扣除资源
+                        window.gameState.resources[resourceKey] -= requiredAmount;
+                        // 解锁转化器
+                        window.gameState.converters[type] = true;
+                        
+                        // 显示成功通知
+                        showNotification(`${type === 'alpha' ? 'α' : type === 'beta' ? 'β' : 'γ'}能量转化器解锁成功！`, 'success');
+                        
+                        // 更新UI显示
+                        if (typeof updateResearchDisplay === 'function') updateResearchDisplay();
+                        if (typeof updateResourcesDisplay === 'function') updateResourcesDisplay();
+                    } else {
+                        // 显示错误通知
+                        if (window.gameState.converters[type]) {
+                            showNotification(`${type === 'alpha' ? 'α' : type === 'beta' ? 'β' : 'γ'}能量转化器已经解锁！`, 'warning');
+                        } else {
+                            showNotification(`资源不足，需要 ${requiredAmount} ${type === 'alpha' ? 'α' : type === 'beta' ? 'β' : 'γ'}物质！`, 'error');
+                        }
+                    }
+                } catch (e) {
+                    console.error('解锁能量转化器失败:', e);
+                    showNotification('解锁失败，请稍后重试', 'error');
+                }
+            }
+            
+            // 解锁量产器功能
+            function unlockProducer(type) {
+                try {
+                    // 确保类型有效
+                    if (!['alpha', 'beta', 'gamma'].includes(type)) {
+                        console.error('无效的量产器类型');
+                        return;
+                    }
+
+                    // 检查是否已解锁
+                    if (window.gameState.producers[type] > 0) {
+                        showNotification(`${type === 'alpha' ? 'α' : type === 'beta' ? 'β' : 'γ'}量产器已经解锁！`, 'warning');
+                        return;
+                    }
+
+                    // 计算所需量产核心数量（根据规则，第一个10，第二个100，第三个1000）
+                    let requiredCores = 10;
+                    let unlockedCount = 0;
+                    for (let key in window.gameState.producers) {
+                        if (window.gameState.producers[key] > 0) {
+                            unlockedCount++;
+                        }
+                    }
+
+                    if (unlockedCount === 1) requiredCores = 100;
+                    if (unlockedCount === 2) requiredCores = 1000;
+
+                    // 检查量产核心是否足够且未解锁
+                    const hasEnoughCores = window.gameState.resources['量产核心'] >= requiredCores;
+                    if (hasEnoughCores && window.gameState.producers[type] === 0) {
+                        // 扣除量产核心
+                        window.gameState.resources['量产核心'] -= requiredCores;
+                        // 解锁量产器并设置等级为1
+                        window.gameState.producers[type] = 1;
+                        
+                        // 显示成功通知
+                        showNotification(`${type === 'alpha' ? 'α' : type === 'beta' ? 'β' : 'γ'}量产器解锁成功！`, 'success');
+                        // 更新UI
+                        if (typeof updateResearchDisplay === 'function') updateResearchDisplay();
+                        if (typeof updateResourcesDisplay === 'function') updateResourcesDisplay();
+                    } else {
+                        showNotification(`量产核心不足，需要 ${requiredCores} 个量产核心！`, 'error');
+                    }
+                } catch (error) {
+                    console.error('解锁量产器时出错:', error);
+                    showNotification('操作失败，请重试', 'error');
+                }
+            }
+            
+            // 量产器升级功能
+            function upgradeProducer(type) {
+                try {
+                    // 确保类型有效
+                    if (!['alpha', 'beta', 'gamma'].includes(type)) {
+                        console.error('无效的量产器类型');
+                        return;
+                    }
+
+                    // 检查是否已解锁
+                    if (window.gameState.producers[type] === 0) {
+                        showNotification(`${type === 'alpha' ? 'α' : type === 'beta' ? 'β' : 'γ'}量产器尚未解锁！`, 'warning');
+                        return;
+                    }
+
+                    // 检查是否所有量产器都已解锁（根据规则，需要全部解锁才能升级）
+                    let allUnlocked = true;
+                    for (let key in window.gameState.producers) {
+                        if (window.gameState.producers[key] === 0) {
+                            allUnlocked = false;
+                            break;
+                        }
+                    }
+                    
+                    if (!allUnlocked) {
+                        showNotification('需要解锁所有三种量产器才能进行升级！', 'warning');
+                        return;
+                    }
+
+                    // 计算量产器总等级
+                    let totalLevel = 0;
+                    for (let key in window.gameState.producers) {
+                        totalLevel += window.gameState.producers[key];
+                    }
+
+                    // 计算升级价格：（200*量产器总等级+600）个量产核心
+                    let requiredCores = 200 * totalLevel + 600;
+
+                    // 检查量产核心是否足够
+                    if (window.gameState.resources['量产核心'] >= requiredCores) {
+                        // 扣除量产核心
+                        window.gameState.resources['量产核心'] -= requiredCores;
+                        // 升级量产器
+                        window.gameState.producers[type]++;
+                        // 显示成功通知
+                        showNotification(`${type === 'alpha' ? 'α' : type === 'beta' ? 'β' : 'γ'}量产器升级成功！当前等级：${window.gameState.producers[type]}`, 'success');
+                        // 更新UI
+                        if (typeof updateResearchDisplay === 'function') updateResearchDisplay();
+                        if (typeof updateResourcesDisplay === 'function') updateResourcesDisplay();
+                    } else {
+                        showNotification(`量产核心不足，需要 ${requiredCores} 个量产核心！`, 'error');
+                    }
+                } catch (error) {
+                    console.error('升级量产器时出错:', error);
+                    showNotification('操作失败，请重试', 'error');
+                }
+            }
+            
+            // 更新研究所界面显示
+            function updateResearchDisplay() {
+                try {
+                    // 更新能量转化器显示
+                    const types = ['alpha', 'beta', 'gamma'];
+                    const typeSymbols = { 'alpha': 'α', 'beta': 'β', 'gamma': 'γ' };
+                    
+                    types.forEach(type => {
+                        const symbol = typeSymbols[type];
+                        
+                        // 计算能量转化器解锁价格
+                        let converterCost = 100000;
+                        let converterUnlockedCount = 0;
+                        for (let key in window.gameState.converters) {
+                            if (window.gameState.converters[key] === true) {
+                                converterUnlockedCount++;
+                            }
+                        }
+                        if (converterUnlockedCount === 1) converterCost = 400000;
+                        if (converterUnlockedCount === 2) converterCost = 1000000;
+                        
+                        // 更新转化器价格显示
+                        const costElement = document.getElementById(`${type}-converter-cost`);
+                        if (costElement) {
+                            costElement.textContent = `${converterCost} ${symbol}`;
+                        }
+                        
+                        // 更新转化器按钮状态
+                        const unlockBtn = document.getElementById(`unlock-${type}-converter`);
+                        if (unlockBtn) {
+                            if (window.gameState.converters[type]) {
+                                unlockBtn.textContent = '已解锁';
+                                unlockBtn.disabled = true;
+                                unlockBtn.classList.add('disabled');
+                            } else {
+                                unlockBtn.textContent = '解锁';
+                                unlockBtn.disabled = false;
+                                unlockBtn.classList.remove('disabled');
+                            }
+                        }
+                        
+                        // 更新能量状态和增益显示
+                        const energy = window.gameState.energies[type] || 0;
+                        let gainText = '';
+                        
+                        if (type === 'alpha') {
+                            // α能量增益 = (α能量 + 1)^0.1
+                            const gain = Math.pow(energy + 1, 0.1);
+                            gainText = `${symbol}能量: ${energy}, 增益: ${gain.toFixed(2)}`;
+                        } else if (type === 'beta') {
+                            // β能量增益 = (β能量 + 1)^0.4
+                            const gain = Math.pow(energy + 1, 0.4);
+                            gainText = `${symbol}能量: ${energy}, 倍增: ${gain.toFixed(2)}`;
+                        } else if (type === 'gamma') {
+                            // γ能量增益 = (γ能量 + 1)^0.24
+                            const gain = Math.pow(energy + 1, 0.24);
+                            gainText = `${symbol}能量: ${energy}, 每秒经验: ${gain.toFixed(2)}`;
+                        }
+                        
+                        const statusElement = document.getElementById(`${type}-energy-status`);
+                        if (statusElement) {
+                            statusElement.textContent = gainText;
+                        }
+                        
+                        // 更新量产器相关显示
+                        const producerLevel = window.gameState.producers[type] || 0;
+                        
+                        // 更新量产器等级
+                        const levelElement = document.getElementById(`${type}-producer-level`);
+                        if (levelElement) {
+                            levelElement.textContent = producerLevel;
+                        }
+                        
+                        // 计算量产器解锁价格
+                        let producerCost = 10;
+                        let producerUnlockedCount = 0;
+                        for (let key in window.gameState.producers) {
+                            if (window.gameState.producers[key] > 0) {
+                                producerUnlockedCount++;
+                            }
+                        }
+                        if (producerUnlockedCount === 1) producerCost = 100;
+                        if (producerUnlockedCount === 2) producerCost = 1000;
+                        
+                        // 更新量产器解锁价格
+                        const producerCostElement = document.getElementById(`${type}-producer-cost`);
+                        if (producerCostElement) {
+                            producerCostElement.textContent = `${producerCost} 量产核心`;
+                        }
+                        
+                        // 更新量产器生产速率
+                        const productionRate = producerLevel * 5;
+                        const rateElement = document.getElementById(`${type}-producer-rate`);
+                        if (rateElement) {
+                            rateElement.textContent = `${productionRate} ${symbol}`;
+                        }
+                        
+                        // 更新量产器解锁按钮
+                        const unlockProducerBtn = document.getElementById(`unlock-${type}-producer`);
+                        if (unlockProducerBtn) {
+                            if (producerLevel > 0) {
+                                unlockProducerBtn.textContent = '已解锁';
+                                unlockProducerBtn.disabled = true;
+                                unlockProducerBtn.classList.add('disabled');
+                            } else {
+                                unlockProducerBtn.textContent = '解锁';
+                                unlockProducerBtn.disabled = false;
+                                unlockProducerBtn.classList.remove('disabled');
+                            }
+                        }
+                        
+                        // 更新量产器升级按钮
+                        const upgradeBtn = document.getElementById(`upgrade-${type}-producer`);
+                        const upgradeCostElement = document.getElementById(`${type}-upgrade-cost`);
+                        
+                        if (upgradeBtn && upgradeCostElement) {
+                            // 检查是否所有量产器都已解锁
+                            let allProducersUnlocked = true;
+                            for (let key in window.gameState.producers) {
+                                if (window.gameState.producers[key] === 0) {
+                                    allProducersUnlocked = false;
+                                    break;
+                                }
+                            }
+                            
+                            if (producerLevel > 0 && allProducersUnlocked) {
+                                // 计算升级价格
+                                let totalProducerLevel = 0;
+                                for (let key in window.gameState.producers) {
+                                    totalProducerLevel += window.gameState.producers[key];
+                                }
+                                const upgradeCost = 200 * totalProducerLevel + 600;
+                                
+                                upgradeCostElement.textContent = `${upgradeCost} 量产核心`;
+                                upgradeBtn.style.display = 'inline-block';
+                                
+                                // 检查资源是否足够
+                                if (window.gameState.resources['量产核心'] >= upgradeCost) {
+                                    upgradeBtn.disabled = false;
+                                    upgradeBtn.classList.remove('disabled');
+                                } else {
+                                    upgradeBtn.disabled = true;
+                                    upgradeBtn.classList.add('disabled');
+                                }
+                            } else {
+                                upgradeBtn.style.display = 'none';
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error('更新研究所界面时出错:', error);
+                }
+            }
+            
+            // 能量自动转化功能
+            function autoConvertEnergy() {
+                try {
+                    const types = ['alpha', 'beta', 'gamma'];
+                    
+                    types.forEach(type => {
+                        // 检查转化器是否已解锁
+                        if (window.gameState.converters[type]) {
+                            // 使用希腊字母作为资源键名
+                            const resourceKey = type === 'alpha' ? 'α' : type === 'beta' ? 'β' : 'γ';
+                            
+                            // 获取当前物质数量
+                            const fragmentCount = window.gameState.resources[resourceKey] || 0;
+                            
+                            if (fragmentCount > 0) {
+                                // 计算转化量：1%的物质转化为能量
+                                const convertAmount = Math.floor(fragmentCount * 0.01);
+                                
+                                if (convertAmount > 0) {
+                                    // 扣除物质
+                                    window.gameState.resources[resourceKey] -= convertAmount;
+                                    // 增加能量
+                                    window.gameState.energies[type] = (window.gameState.energies[type] || 0) + convertAmount;
+                                }
+                            }
+                        }
+                    });
+                    
+                    // 更新UI显示
+                    if (typeof updateResearchDisplay === 'function') updateResearchDisplay();
+                    if (typeof updateResourcesDisplay === 'function') updateResourcesDisplay();
+                } catch (error) {
+                    console.error('自动转化能量时出错:', error);
+                }
+            }
+            
+            // 启动能量自动转化定时器
+            function startAutoConvertEnergy() {
+                // 每秒执行一次能量转化
+                window.autoConvertInterval = setInterval(autoConvertEnergy, 1000);
+                console.log('能量自动转化已启动');
+            }
+            
+            // 停止能量自动转化定时器
+            function stopAutoConvertEnergy() {
+                if (window.autoConvertInterval) {
+                    clearInterval(window.autoConvertInterval);
+                    window.autoConvertInterval = null;
+                    console.log('能量自动转化已停止');
+                }
+            }
+            
+            // 量产器自动生产功能
+            function autoProduceFragments() {
+                try {
+                    const types = ['alpha', 'beta', 'gamma'];
+                    
+                    types.forEach(type => {
+                        // 获取量产器等级
+                        const producerLevel = window.gameState.producers[type] || 0;
+                        
+                        if (producerLevel > 0) {
+                            // 计算生产量：每秒5*等级
+                            const productionAmount = producerLevel * 5;
+                            
+                            // 使用希腊字母作为资源键名
+                            const resourceKey = type === 'alpha' ? 'α' : type === 'beta' ? 'β' : 'γ';
+                            
+                            // 增加物质到resources对象
+                            window.gameState.resources[resourceKey] = (window.gameState.resources[resourceKey] || 0) + productionAmount;
+                        }
+                    });
+                    
+                    // 更新UI显示
+                    if (typeof updateResearchDisplay === 'function') updateResearchDisplay();
+                    if (typeof updateResourcesDisplay === 'function') updateResourcesDisplay();
+                } catch (error) {
+                    console.error('自动生产物质时出错:', error);
+                }
+            }
+            
+            // γ能量自动获得松树经验功能
+            function autoGainTreeExp() {
+                try {
+                    const { converters, energies } = window.gameState;
+                    
+                    // 检查γ能量转化器是否已解锁且有γ能量
+                    if (converters?.gamma && energies?.gamma > 0) {
+                        // 计算自动获得的浇树经验：γ能量^0.24
+                        const expGain = Math.pow(energies.gamma, 0.24);
+                        
+                        // 增加树经验
+                        window.gameState.treeExp = (window.gameState.treeExp || 0) + expGain;
+                        
+                        // 检查是否可以升级
+                        const treeLevel = window.gameState.treeLevel || 1;
+                        const expNeededForNextLevel = treeLevel * 10;
+                        
+                        if (window.gameState.treeExp >= expNeededForNextLevel) {
+                            window.gameState.treeExp -= expNeededForNextLevel;
+                            window.gameState.treeLevel = (window.gameState.treeLevel || 1) + 1;
+                        }
+                        
+                        // 更新UI显示
+                        if (typeof updateTreeUI === 'function') updateTreeUI();
+                        
+                        // 更新γ能量状态显示
+                        const gammaEnergyStatusElement = document.getElementById('gamma-energy-status');
+                        if (gammaEnergyStatusElement) {
+                            gammaEnergyStatusElement.textContent = `γ能量: ${energies.gamma}, 每秒经验: ${expGain.toFixed(2)}`;
+                        }
+                    }
+                } catch (error) {
+                    console.error('自动获得松树经验时出错:', error);
+                }
+            }
+            
+            // 启动γ能量自动获得松树经验定时器
+            function startAutoGainTreeExp() {
+                // 每秒执行一次
+                window.treeExpInterval = setInterval(autoGainTreeExp, 1000);
+                console.log('γ能量自动获得松树经验已启动');
+            }
+            
+            // 停止γ能量自动获得松树经验定时器
+            function stopAutoGainTreeExp() {
+                if (window.treeExpInterval) {
+                    clearInterval(window.treeExpInterval);
+                    window.treeExpInterval = null;
+                    console.log('γ能量自动获得松树经验已停止');
+                }
+            }
+            
+            // 启动量产器自动生产定时器
+            function startAutoProduceFragments() {
+                // 每秒执行一次生产
+                window.productionInterval = setInterval(autoProduceFragments, 1000);
+                console.log('量产器自动生产已启动');
+            }
+            
+            // 停止量产器自动生产定时器
+            function stopAutoProduceFragments() {
+                if (window.productionInterval) {
+                    clearInterval(window.productionInterval);
+                    window.productionInterval = null;
+                    console.log('量产器自动生产已停止');
+                }
+            }
+            
+            // 启动所有自动功能
+            function startAllAutoFunctions() {
+                try {
+                    // 启动能量自动转化
+                    if (typeof startAutoConvertEnergy === 'function') {
+                        startAutoConvertEnergy();
+                    }
+                    // 启动量产器自动生产
+                    if (typeof startAutoProduceFragments === 'function') {
+                        startAutoProduceFragments();
+                    }
+                    // 启动γ能量自动获得松树经验
+                    if (typeof startAutoGainTreeExp === 'function') {
+                        startAutoGainTreeExp();
+                    }
+                } catch (error) {
+                    console.error('启动自动功能时出错:', error);
+                }
+            }
+            
+            // 添加定期更新兑换信息的定时器
+            function startConvertInfoUpdater() {
+                // 每100毫秒更新一次兑换信息
             setInterval(updateConvertInfo, 100);
             console.log('兑换信息自动更新已启动');
         }
@@ -5151,11 +6144,80 @@
         }
         
         // 修改initGame函数，在游戏初始化时启动兑换信息更新和金奖转化器
-        const originalInitGame = initGame;
-        initGame = function() {
-            originalInitGame();
+            const originalInitGame = initGame;
+            initGame = function() {
+                originalInitGame();
+                
+                // 确保使用完整的blocks数据
+                if (!window.gameData || !window.gameData.blocks) {
+                    console.warn('强制初始化完整的blocks数据');
+                    window.gameData = window.gameData || {};
+                    window.gameData.blocks = {
+                        main1: [
+                            { name: "土块", hp: 100, baseGold: 1 },
+                            { name: "草块", hp: 500, baseGold: 2 },
+                            { name: "木块", hp: 2000, baseGold: 3 },
+                            { name: "石块", hp: 10000, baseGold: 5 },
+                            { name: "硬石块", hp: 50000, baseGold: 10 },
+                            { name: "深板岩", hp: 300000, baseGold: 15 },
+                            { name: "煤炭块", hp: 1780000, baseGold: 20 },
+                            { name: "铜块", hp: 7800000, baseGold: 30 },
+                            { name: "铁块", hp: 91000000, baseGold: 40 },
+                            { name: "金块", hp: 260000000, baseGold: 50 },
+                            { name: "钻石块", hp: 1.3e9, baseGold: 60 },
+                            { name: "下届合金块", hp: 7.8e9, baseGold: 70 },
+                            { name: "黑曜石块", hp: 3.9e10, baseGold: 80 },
+                            { name: "红曜石块", hp: 5e11, baseGold: 100, special: { type: "fragment", item: "红曜石碎片", chance: 0.2 } },
+                            { name: "蓝曜石块", hp: 6e11, baseGold: 120, special: { type: "fragment", item: "蓝曜石碎片", chance: 0.2 } },
+                            { name: "基岩块", hp: 2.2e12, baseGold: 160, special: { type: "fragment", item: "基岩碎片", chance: 0.1 } },
+                            { name: "木核心块", hp: 7.8e12, baseGold: 250, special: { type: "core", item: "木核心", chance: 0.05 } },
+                            { name: "土核心块", hp: 2.91e13, baseGold: 350, special: { type: "core", item: "土核心", chance: 0.05 } },
+                            { name: "水立方块", hp: 1.78e14, baseGold: 500, special: { type: "cube", item: "水立方", chance: 0.03 } },
+                            { name: "火立方块", hp: 7.8e14, baseGold: 750, special: { type: "cube", item: "火立方", chance: 0.03 } },
+                            { name: "金立方块", hp: 9.1e15, baseGold: 1000, special: { type: "cube", item: "金立方", chance: 0.03 } }
+                        ],
+                        side1: [
+                            { name: "紫水晶方块", hp: 9.1e10, baseGold: 90, special: { type: "fixed", item: "紫水晶", chance: 1 } },
+                            { name: "下界之星方块", hp: 7.8e11, baseGold: 140, special: { type: "fragment", item: "下界之星", chance: 0.1 } },
+                            { name: "坤坤方块", hp: 9.1e12, baseGold: 200, special: { type: "fragment", item: "坤坤", chance: 0.25 } }
+                        ],
+                        main2: [
+                            { name: "木结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "木结晶", chance: 0.05 } },
+                            { name: "土结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "土结晶", chance: 0.05 } },
+                            { name: "水结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "水结晶", chance: 0.05 } },
+                            { name: "火结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "火结晶", chance: 0.05 } },
+                            { name: "金结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "金结晶", chance: 0.05 } },
+                            { name: "风结晶块", hp: 9.1e21, baseGold: 3000, special: { type: "fragment", item: "风结晶", chance: 0.05 } },
+                            { name: "雷结晶块", hp: 9.1e21, baseGold: 3000, special: { type: "fragment", item: "雷结晶", chance: 0.05 } },
+                            { name: "光结晶块", hp: 5e25, baseGold: 5000, special: { type: "fragment", item: "光结晶", chance: 0.05 } },
+                            { name: "暗结晶块", hp: 5e25, baseGold: 5000, special: { type: "fragment", item: "暗结晶", chance: 0.05 } },
+                            { name: "源结晶块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "源结晶", chance: 0.01 } }
+                        ],
+                        side2: [
+                            { name: "红曜石块", hp: 5e16, baseGold: 500, special: { type: "fragment", item: "红曜石", chance: 0.05 } },
+                            { name: "蓝曜石块", hp: 6e16, baseGold: 600, special: { type: "fragment", item: "蓝曜石", chance: 0.05 } },
+                            { name: "金奖核心", hp: 1e21, baseGold: 2000, special: { type: "fragment", item: "金奖核心", chance: 0.1 } },
+                            { name: "淼立方块", hp: 1e22, baseGold: 2500, special: { type: "fragment", item: "淼立方", chance: 0.05 } },
+                            { name: "水晶晶簇", hp: 1e23, baseGold: 2500, special: { type: "pickaxe", item: "紫水晶镐Ⅲ", count: 1, chance: 0.1 } },
+                            { name: "坤群", hp: 1e24, baseGold: 3000, special: { type: "fragment", item: "坤坤", count: 1000, chance: 0.01 } },
+                            { name: "红曜方", hp: 5e25, baseGold: 4000, special: { type: "fragment", item: "红曜方", chance: 0.005 } },
+                            { name: "蓝曜方", hp: 6e25, baseGold: 4000, special: { type: "fragment", item: "蓝曜方", chance: 0.005 } }
+                        ],
+                        main3: [
+                            { name: "α方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "α", count: 1, chance: 1 } },
+                            { name: "β方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "β", count: 1, chance: 1 } },
+                            { name: "γ方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "γ", count: 1, chance: 1 } },
+                            { name: "元素晶片", hp: 1.91e31, baseGold: 15000, special: { type: "fragment", item: "元素晶片", count: 1, chance: 0.1 } },
+                            { name: "量产核心", hp: 1.91e34, baseGold: 20000, special: { type: "fragment", item: "量产核心", count: 1, chance: 0.01 } },
+                            { name: "五行镐", hp: 7.8e31, baseGold: 18000, special: { type: "fragment", item: "五行镐", count: 1, chance: 0.01 } },
+                            { name: "五行精华", hp: 9.1e31, baseGold: 18000, special: { type: "fragment", item: "五行精华", count: 1, chance: 0.001 } }
+                        ]
+                    };
+                }
+                console.log('游戏初始化完成，当前main1方块数量:', window.gameData.blocks.main1.length);
             startConvertInfoUpdater();
             startTrophyConverter(); // 启动金奖转化器
+            startAllAutoFunctions(); // 启动所有自动功能，包括能量自动转化和量产器自动生产
             // 立即更新一次兑换信息
             updateConvertInfo();
         };
@@ -5295,6 +6357,11 @@
                     window.gameInitialized = true;
                     try {
                         initGame();
+                        
+                        // 启动研究所自动功能
+                        if (typeof startAllAutoFunctions === 'function') {
+                            setTimeout(startAllAutoFunctions, 500);
+                        }
                         
                         // 立即更新一次兑换信息
                         if (typeof updateConvertUI === 'function') {
