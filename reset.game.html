@@ -168,6 +168,15 @@
             box-shadow: 0 6px 16px rgba(78, 205, 196, 0.4);
         }
         
+        /* 浇树按钮横向排布 */
+        .water-tree-buttons {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
         .water-tree-results {
             padding: 15px;
             background-color: var(--card-bg-dark);
@@ -1631,6 +1640,7 @@
                     "源镐": 0,
                     "五行镐Ⅱ": 0,
                     "五行镐Ⅲ": 0,
+                    "五行镐Ⅳ":0,
                     "红蓝镐Ⅱ": 0,
                     "红蓝镐Ⅲ": 0,
                     "坤镐": 0,
@@ -2780,13 +2790,19 @@
             try {
                 // 确保window.gameState对象正确初始化
                 if (!window.gameState) {
-                    window.gameState = { gameStage: 1, pickaxes: {} };
+                    window.gameState = { gameStage: 1, pickaxes: {}, main2Unlocked: 0, main3Unlocked: 0 };
                     return;
                 }
                 
-                // 确保游戏阶段正确初始化
+                // 确保游戏阶段和必要变量正确初始化
                 if (!window.gameState.gameStage) {
                     window.gameState.gameStage = 1;
+                }
+                if (window.gameState.main2Unlocked === undefined) {
+                    window.gameState.main2Unlocked = 0;
+                }
+                if (window.gameState.main3Unlocked === undefined) {
+                    window.gameState.main3Unlocked = 0;
                 }
                 
                 // 确保pickaxes对象正确初始化
@@ -2797,21 +2813,32 @@
                 
                 const pickaxes = window.gameState.pickaxes;
                 
+                // 根据用户要求更新主线解锁状态
+                // 只要到过主线2，就将main2Unlocked设为1
+                if (pickaxes["五行镐"] > 0 && window.gameState.main2Unlocked === 0) {
+                    window.gameState.main2Unlocked = 1;
+                }
+                
+                // 只要到过主线3，就将main3Unlocked设为1
+                if (pickaxes["源镐"] > 0 && window.gameState.main3Unlocked === 0) {
+                    window.gameState.main3Unlocked = 1;
+                }
+                
                 // 按优先级检查游戏阶段条件
-                // 第三阶段第二部分：拥有???物品（根据用户要求）
-                if (window.gameState.resources && window.gameState.resources["???"] >= 1) {
+                // 第三阶段第二部分："???"数量≥0
+                if (window.gameState.resources && window.gameState.resources["???"] >= 0) {
                     window.gameState.gameStage = 3.1; // 使用3.1表示第三阶段第二部分
                     updateTabsVisibility();
                     updateBoostsList();
                 }
-                // 第三阶段第一部分：拥有源镐
-                else if (pickaxes["源镐"] >= 1 && window.gameState.gameStage < 3) {
+                // 第三阶段第一部分：main3Unlocked为1
+                else if (window.gameState.main3Unlocked === 1) {
                     window.gameState.gameStage = 3;
                     updateTabsVisibility();
                     updateBoostsList();
                 }
-                // 第二阶段：拥有五行镐
-                else if (pickaxes["五行镐"] > 0 && window.gameState.gameStage < 2) {
+                // 第二阶段：main2Unlocked为1
+                else if (window.gameState.main2Unlocked === 1) {
                     window.gameState.gameStage = 2;
                     updateTabsVisibility();
                     updateBoostsList();
@@ -3307,29 +3334,28 @@
                 const stageElement = document.getElementById('game-stage');
                 if (!stageElement) return;
                 
-                // 确保window.gameState和pickaxes对象正确初始化
+                // 确保window.gameState正确初始化
                 if (!window.gameState) {
-                    window.gameState = { pickaxes: {} };
+                    window.gameState = { 
+                        main2Unlocked: 0, 
+                        main3Unlocked: 0, 
+                        resources: { "???": 0 }
+                    };
                 }
                 
-                if (!window.gameState.pickaxes) {
-                    window.gameState.pickaxes = {};
-                }
+                // 获取游戏状态变量
+                const main2Unlocked = window.gameState.main2Unlocked || 0;
+                const main3Unlocked = window.gameState.main3Unlocked || 0;
+                const questionMarksCount = (window.gameState.resources && window.gameState.resources["???"]) || 0;
                 
-                const pickaxes = window.gameState.pickaxes;
-                
-                // 按照用户要求的优先级显示阶段
-                if (window.gameState.resources && window.gameState.resources["???"] >= 1) {
-                    // 如果"???"物品≥1，阶段为"第三阶段第二部分"
+                // 根据解锁状态和资源数量显示相应的阶段文本
+                if (main3Unlocked === 1 && questionMarksCount >= 0) {
                     stageElement.textContent = '当前阶段：第三阶段第二部分';
-                } else if (pickaxes["源镐"] >= 1) {
-                    // 否则如果"源镐"≥1，阶段为"第三阶段第一部分"
+                } else if (main3Unlocked === 1) {
                     stageElement.textContent = '当前阶段：第三阶段第一部分';
-                } else if (pickaxes["五行镐"] >= 1) {
-                    // 否则如果"五行镐"≥1，阶段为"第二阶段"
+                } else if (main2Unlocked === 1) {
                     stageElement.textContent = '当前阶段：第二阶段';
                 } else {
-                    // 否则，阶段为"第一阶段"
                     stageElement.textContent = '当前阶段：第一阶段';
                 }
             } catch (e) {
@@ -3342,11 +3368,11 @@
             try {
                 // 确保gameState存在
                 if (!window.gameState) {
-                    window.gameState = { gold: 0, trophies: 0, gameStage: 1 };
+                    window.gameState = { gold: 0, trophies: 0, main2Unlocked: 0 };
                 }
                 
-                // 检查是否到达阶段2
-                if (window.gameState.gameStage < 2) {
+                // 检查是否到达阶段2（使用main2Unlocked变量）
+                if (window.gameState.main2Unlocked !== 1) {
                     alert('需要到达第二阶段才能解锁浇树系统！');
                     return;
                 }
@@ -3358,8 +3384,8 @@
         // 浇树功能 - 使用水结晶
         function waterTreeWithCrystal() {
             try {
-                // 检查是否在第二阶段
-                if (window.gameState.gameStage < 2) {
+                // 检查是否在第二阶段（使用main2Unlocked变量）
+                if (window.gameState.main2Unlocked !== 1) {
                     alert("需要获得五行镐进入第二阶段才能浇树！");
                     return;
                 }
@@ -3406,8 +3432,8 @@
         // 浇树功能 - 使用淼立方
         function waterTreeWithTripleCube() {
             try {
-                // 检查是否在第二阶段
-                if (window.gameState.gameStage < 2) {
+                // 检查是否在第二阶段（使用main2Unlocked变量）
+                if (window.gameState.main2Unlocked !== 1) {
                     alert("需要获得五行镐进入第二阶段才能浇树！");
                     return;
                 }
@@ -3456,7 +3482,7 @@
             try {
                 // 确保gameState存在
                 if (!window.gameState) {
-                    window.gameState = { gold: 0, trophies: 0, gameStage: 1 };
+                    window.gameState = { gold: 0, trophies: 0, main2Unlocked: 0 };
                 }
                 
                 // 更新浇树区域的树系统UI
@@ -5503,9 +5529,10 @@
                     
                     // 确保所有必要的按钮都存在
                     if (boostBtn && resourcesBtn && shopBtn && alchemyBtn) {
-                        const gameStage = window.gameState?.gameStage || 1;
-                        // 检查是否解锁了源镐（第三阶段第一部分的条件）
-                        const hasSourcePickaxe = window.gameState?.pickaxes?.["源镐"] >= 1;
+                        // 获取游戏状态变量
+                        const main2Unlocked = window.gameState?.main2Unlocked || 0;
+                        const main3Unlocked = window.gameState?.main3Unlocked || 0;
+                        const questionMarksCount = window.gameState?.resources?.["???"] || 0;
                         
                         // 获取所有需要控制的元素
                         const sideBtn = tabsContainer.querySelector('[data-tab="side"]');
@@ -5530,52 +5557,37 @@
                         if (main1ShopBtn) main1ShopBtn.style.display = 'none';
                         if (main2ShopBtn) main2ShopBtn.style.display = 'none';
                         if (main3ShopBtn) main3ShopBtn.style.display = 'none';
-                        if (sideShopBtn) sideShopBtn.style.display = 'none';
+                        // 支线商店标签和UI标签不隐藏，始终显示
                         if (itemsShopBtn) itemsShopBtn.style.display = 'none';
-                        if (sideBtn) sideBtn.style.display = 'none';
+                        // sideBtn不隐藏，始终显示支线UI标签
                         
-                        // 第一阶段显示规则
-                        if (gameStage === 1) {
-                            // UI标签：仅显示增益、资源、商店、炼药
-                            boostBtn.style.display = 'inline-block';
-                            resourcesBtn.style.display = 'inline-block';
-                            shopBtn.style.display = 'inline-block';
-                            alchemyBtn.style.display = 'inline-block';
-                            
-                            // 方块标签：仅显示主线1和支线
-                            if (main1CategoryBtn) main1CategoryBtn.style.display = 'inline-block';
-                            if (sideCategoryBtn) sideCategoryBtn.style.display = 'inline-block';
-                            if (sideBtn) sideBtn.style.display = 'inline-block';
-                            
-                            // 商店标签：仅显示主线1商店、支线商店和物品商店
-                            if (main1ShopBtn) main1ShopBtn.style.display = 'inline-block';
-                            if (sideShopBtn) sideShopBtn.style.display = 'inline-block';
-                            if (itemsShopBtn) itemsShopBtn.style.display = 'inline-block';
-                        }
-                        // 第二阶段显示规则
-                        else if (gameStage === 2) {
-                            // UI标签：显示增益、资源、商店、炼药、浇树
+                        // 第三阶段第二部分（主线3已解锁且???数量≥0）
+                        if (main3Unlocked === 1 && questionMarksCount >= 0) {
+                            // UI标签：显示增益、资源、商店、炼药、浇树、研究所，支线UI标签已始终显示
                             boostBtn.style.display = 'inline-block';
                             resourcesBtn.style.display = 'inline-block';
                             shopBtn.style.display = 'inline-block';
                             alchemyBtn.style.display = 'inline-block';
                             if (waterTreeBtn) waterTreeBtn.style.display = 'inline-block';
-                            if (sideBtn) sideBtn.style.display = 'inline-block';
+                            if (researchBtn) researchBtn.style.display = 'inline-block';
+                            // sideBtn已在函数开始时设置为不隐藏
                             if (main2Btn) main2Btn.style.display = 'inline-block';
                             
-                            // 方块标签：显示主线1、主线2和支线
+                            // 方块标签：显示主线1、主线2、主线3和支线
                             if (main1CategoryBtn) main1CategoryBtn.style.display = 'inline-block';
                             if (main2CategoryBtn) main2CategoryBtn.style.display = 'inline-block';
+                            if (main3CategoryBtn) main3CategoryBtn.style.display = 'inline-block';
                             if (sideCategoryBtn) sideCategoryBtn.style.display = 'inline-block';
                             
-                            // 商店标签：显示主线1商店、主线2商店和物品商店
+                            // 商店标签：显示所有商店
                             if (main1ShopBtn) main1ShopBtn.style.display = 'inline-block';
                             if (main2ShopBtn) main2ShopBtn.style.display = 'inline-block';
+                            if (main3ShopBtn) main3ShopBtn.style.display = 'inline-block';
+                            if (sideShopBtn) sideShopBtn.style.display = 'inline-block';
                             if (itemsShopBtn) itemsShopBtn.style.display = 'inline-block';
-                            // 注意：第二阶段不显示支线商店
                         }
-                        // 第三阶段（第一部分和第二部分）显示规则
-                        else if (gameStage >= 3 || hasSourcePickaxe) {
+                        // 第三阶段第一部分（主线3已解锁但???数量<0）
+                        else if (main3Unlocked === 1) {
                             // UI标签：显示增益、资源、商店、炼药、浇树、研究所
                             boostBtn.style.display = 'inline-block';
                             resourcesBtn.style.display = 'inline-block';
@@ -5597,6 +5609,45 @@
                             if (main2ShopBtn) main2ShopBtn.style.display = 'inline-block';
                             if (main3ShopBtn) main3ShopBtn.style.display = 'inline-block';
                             if (sideShopBtn) sideShopBtn.style.display = 'inline-block';
+                            if (itemsShopBtn) itemsShopBtn.style.display = 'inline-block';
+                        }
+                        // 第二阶段（主线2已解锁）
+                        else if (main2Unlocked === 1) {
+                            // UI标签：显示增益、资源、商店、炼药、浇树，支线UI标签已始终显示
+                            boostBtn.style.display = 'inline-block';
+                            resourcesBtn.style.display = 'inline-block';
+                            shopBtn.style.display = 'inline-block';
+                            alchemyBtn.style.display = 'inline-block';
+                            if (waterTreeBtn) waterTreeBtn.style.display = 'inline-block';
+                            // sideBtn已在函数开始时设置为不隐藏
+                            if (main2Btn) main2Btn.style.display = 'inline-block';
+                            
+                            // 方块标签：显示主线1、主线2和支线
+                            if (main1CategoryBtn) main1CategoryBtn.style.display = 'inline-block';
+                            if (main2CategoryBtn) main2CategoryBtn.style.display = 'inline-block';
+                            if (sideCategoryBtn) sideCategoryBtn.style.display = 'inline-block';
+                            
+                            // 商店标签：显示主线1商店、主线2商店、支线商店和物品商店
+                            if (main1ShopBtn) main1ShopBtn.style.display = 'inline-block';
+                            if (main2ShopBtn) main2ShopBtn.style.display = 'inline-block';
+                            if (sideShopBtn) sideShopBtn.style.display = 'inline-block';
+                            if (itemsShopBtn) itemsShopBtn.style.display = 'inline-block';
+                        }
+                        // 第一阶段（主线2未解锁）
+                        else {
+                            // UI标签：仅显示增益、资源、商店、炼药，支线UI标签已始终显示
+                            boostBtn.style.display = 'inline-block';
+                            resourcesBtn.style.display = 'inline-block';
+                            shopBtn.style.display = 'inline-block';
+                            alchemyBtn.style.display = 'inline-block';
+                            
+                            // 方块标签：仅显示主线1和支线
+                            if (main1CategoryBtn) main1CategoryBtn.style.display = 'inline-block';
+                            if (sideCategoryBtn) sideCategoryBtn.style.display = 'inline-block';
+                            // sideBtn已在函数开始时设置为不隐藏
+                            
+                            // 商店标签：显示主线1商店和物品商店，支线商店已在函数开始时设置为显示
+                            if (main1ShopBtn) main1ShopBtn.style.display = 'inline-block';
                             if (itemsShopBtn) itemsShopBtn.style.display = 'inline-block';
                         }
                         
