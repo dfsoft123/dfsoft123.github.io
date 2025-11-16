@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>重置</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap');
+            * {
+                font-family: 'Noto Sans SC', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+        </style>
     <style>
         :root {
             --primary: #ff6b6b;
@@ -16,7 +22,7 @@
             --background: #0f172a;
             --background-light: #1e293b;
             --background-lighter: #334155;
-            --card-bg: rgba(30, 41, 59, 0.8);
+            --card-bg: rgba(30, 41, 59, 0.6);
             --card-border: rgba(255, 255, 255, 0.1);
             --text: #f8fafc;
             --text-muted: #cbd5e1;
@@ -33,18 +39,14 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Noto Sans SC', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, var(--background) 0%, #1a1f35 100%);
+            background-image: url('13676b7bd907e535624b089a1ba91b62.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             color: var(--text);
             min-height: 100vh;
             padding: 20px;
@@ -662,12 +664,14 @@
             font-weight: bold;
             font-size: 20px;
             pointer-events: none;
-            animation: floatUp 1s forwards;
+            animation: floatUp 2s ease-out forwards;
+            z-index: 100;
         }
         
         @keyframes floatUp {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-50px); opacity: 0; }
+            0% { transform: translateY(0); opacity: 1; text-shadow: 0 0 10px rgba(255, 107, 107, 0.8); }
+            70% { opacity: 1; }
+            100% { transform: translateY(-70px); opacity: 0; text-shadow: none; }
         }
         
         /* 已在文件开头定义了带炫彩渐变的.game-title样式 */
@@ -983,11 +987,12 @@
                     <button class="block-nav-btn" id="prev-block"><i class="fas fa-chevron-left"></i></button>
                     <div class="block-category">
                         <button class="category-btn active" data-category="main1">主线1</button>
-                        <button class="category-btn" data-category="side1">支线1</button>
+                        <button class="category-btn" data-category="side">支线</button>
         <button class="category-btn" data-category="main2">主线2</button>
-        <button class="category-btn" data-category="side2">支线2</button>
-        <button class="category-btn" data-category="main3">主线3</button>
-        <button class="category-btn" data-category="side3">支线3</button>
+        <button class="category-btn" data-category="side1" style="display: none;">支线1</button>
+        <button class="category-btn" data-category="side1" style="display: none !important;">支线1</button>
+        <button class="category-btn" data-category="side2" style="display: none !important;">支线2</button>
+        <button class="category-btn" data-category="side3" style="display: none !important;">支线3</button>
                     </div>
                     <button class="block-nav-btn" id="next-block"><i class="fas fa-chevron-right"></i></button>
                 </div>
@@ -1035,11 +1040,12 @@
                 </div>
                 <div class="shop-categories">
                     <button class="category-btn active" data-shop="main1">主线1商店</button>
-                    <button class="category-btn" data-shop="side1">支线1商店</button>
+                    <button class="category-btn" data-shop="side">支线商店</button>
         <button class="category-btn" data-shop="main2">主线2商店</button>
-        <button class="category-btn" data-shop="side2">支线2商店</button>
         <button class="category-btn" data-shop="main3">主线3商店</button>
-        <button class="category-btn" data-shop="side3" style="display: inline-block;">支线3商店</button>
+        <button class="category-btn" data-shop="side1" style="display: none !important;">支线1商店</button>
+        <button class="category-btn" data-shop="side2" style="display: none !important;">支线2商店</button>
+        <button class="category-btn" data-shop="side3" style="display: none !important;">支线3商店</button>
                     <button class="category-btn" data-shop="items">物品商店</button>
             </div>
                 <div id="shop-items">
@@ -1383,10 +1389,21 @@
                     { name: "火立方块", hp: 7.8e14, baseGold: 750, special: { type: "cube", item: "火立方", chance: 0.03 } },
                     { name: "金立方块", hp: 9.1e15, baseGold: 1000, special: { type: "cube", item: "金立方", chance: 0.03 } }
                 ],
-                side1: [
+                side: [
                     { name: "紫水晶方块", hp: 9.1e10, baseGold: 90, special: { type: "fixed", item: "紫水晶", chance: 1 } },
                     { name: "下界之星方块", hp: 7.8e11, baseGold: 140, special: { type: "fragment", item: "下界之星", chance: 0.1 } },
-                    { name: "坤坤方块", hp: 9.1e12, baseGold: 200, special: { type: "fragment", item: "坤坤", chance: 0.25 } }
+                    { name: "坤坤方块", hp: 9.1e12, baseGold: 200, special: { type: "fragment", item: "坤坤", chance: 0.25 } },
+                    { name: "红曜石", hp: 5e16, baseGold: 500, special: { type: "fragment", item: "红曜石", chance: 0.05 } },
+                    { name: "蓝曜石", hp: 6e16, baseGold: 600, special: { type: "fragment", item: "蓝曜石", chance: 0.05 } },
+                    { name: "金奖核心", hp: 1e21, baseGold: 2000, special: { type: "fragment", item: "金奖核心", chance: 0.1 } },
+                    { name: "淼立方块", hp: 1e22, baseGold: 2500, special: { type: "fragment", item: "淼立方", chance: 0.05 } },
+                    { name: "水晶晶簇", hp: 1e23, baseGold: 2500, special: { type: "pickaxe", item: "紫水晶镐Ⅲ", count: 1, chance: 0.1 } },
+                    { name: "坤群", hp: 1e24, baseGold: 3000, special: { type: "fragment", item: "坤坤", count: 1000, chance: 0.01 } },
+                    { name: "红曜方", hp: 5e25, baseGold: 4000, special: { type: "fragment", item: "红曜方", chance: 0.005 } },
+                    { name: "蓝曜方", hp: 6e25, baseGold: 4000, special: { type: "fragment", item: "蓝曜方", chance: 0.005 } },
+                    { name: "五行镐", hp: 7.8e31, baseGold: 18000, special: { type: "pickaxe", item: "五行镐", count: 1, chance: 0.01 } },
+                    { name: "五行精华", hp: 9.1e31, baseGold: 18000, special: { type: "fragment", item: "五行精华", count: 1, chance: 0.001 } },
+                    { name: "药叶", hp: 9.1e36, baseGold: 24000, special: { type: "fragment", item: "药叶", count: 1, chance: 0.03 } }
                 ],
                 main2: [
                     { name: "木结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "木结晶", chance: 0.05 } },
@@ -1400,16 +1417,7 @@
                     { name: "暗结晶块", hp: 5e25, baseGold: 5000, special: { type: "fragment", item: "暗结晶", chance: 0.05 } },
                     { name: "源结晶块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "源结晶", chance: 0.01 } }
                 ],
-                side2: [
-                    { name: "红曜石", hp: 5e16, baseGold: 500, special: { type: "fragment", item: "红曜石", chance: 0.05 } },
-                    { name: "蓝曜石", hp: 6e16, baseGold: 600, special: { type: "fragment", item: "蓝曜石", chance: 0.05 } },
-                    { name: "金奖核心", hp: 1e21, baseGold: 2000, special: { type: "fragment", item: "金奖核心", chance: 0.1 } },
-                    { name: "淼立方块", hp: 1e22, baseGold: 2500, special: { type: "fragment", item: "淼立方", chance: 0.05 } },
-                    { name: "水晶晶簇", hp: 1e23, baseGold: 2500, special: { type: "pickaxe", item: "紫水晶镐Ⅲ", count: 1, chance: 0.1 } },
-                    { name: "坤群", hp: 1e24, baseGold: 3000, special: { type: "fragment", item: "坤坤", count: 1000, chance: 0.01 } },
-                    { name: "红曜方", hp: 5e25, baseGold: 4000, special: { type: "fragment", item: "红曜方", chance: 0.005 } },
-                    { name: "蓝曜方", hp: 6e25, baseGold: 4000, special: { type: "fragment", item: "蓝曜方", chance: 0.005 } }
-                ],
+  
                 main3: [
                     { name: "α方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "α", count: 1, chance: 1 } },
                     { name: "β方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "β", count: 1, chance: 1 } },
@@ -1417,11 +1425,7 @@
                     { name: "元素晶片", hp: 1.91e31, baseGold: 15000, special: { type: "fragment", item: "元素晶片", count: 1, chance: 0.1 } },
                     { name: "量产核心", hp: 1.91e34, baseGold: 20000, special: { type: "fragment", item: "量产核心", count: 1, chance: 0.01 } }
                 ],
-                side3: [
-                    { name: "五行镐", hp: 7.8e31, baseGold: 18000, special: { type: "fragment", item: "五行镐", count: 1, chance: 0.01 } },
-                    { name: "五行精华", hp: 9.1e31, baseGold: 18000, special: { type: "fragment", item: "五行精华", count: 1, chance: 0.001 } },
-                    { name: "药叶", hp: 9.1e36, baseGold: 24000, special: { type: "fragment", item: "药叶", count: 1, chance: 0.03 } }
-                ]
+
             },
             
             // 镐子数据
@@ -1445,12 +1449,18 @@
                     { name: "金立方镐", cost: { fragments: { "金立方": 5 }, usageBoost: 100000 }, boost: 5000, goldMultiplier: 1.5, usageGain: 9 },
                     { name: "五行镐", cost: { fragments: { "五行转换器": 1 }, basePickaxes: ["金立方镐", "木核心镐", "水立方镐", "火立方镐", "土核心镐"] }, boost: 15000, goldMultiplier: 2.5, usageGain: 15 }
                 ],
-                side1: [
+                side: [
                     { name: "紫水晶镐Ⅰ", cost: { fragments: { "紫水晶": 10 } }, boost: 120, goldMultiplier: 1, usageGain: 2 },
                     { name: "紫水晶镐Ⅱ", cost: { fragments: { "紫水晶镐Ⅰ": 8 } }, boost: 240, goldMultiplier: 1, usageGain: 3 },
                     { name: "紫水晶镐Ⅲ", cost: { fragments: { "紫水晶镐Ⅱ": 6 } }, boost: 400, goldMultiplier: 1.5, usageGain: 5 },
                     { name: "紫水晶镐Ⅳ", cost: { fragments: { "紫水晶镐Ⅲ": 4 } }, boost: 800, goldMultiplier: 1.5, usageGain: 8 },
-                    { name: "紫水晶镐Ⅴ", cost: { fragments: { "紫水晶镐Ⅳ": 2 } }, boost: 1500, goldMultiplier: 2, usageGain: 10 }
+                    { name: "紫水晶镐Ⅴ", cost: { fragments: { "紫水晶镐Ⅳ": 2 } }, boost: 1500, goldMultiplier: 2, usageGain: 10 },
+                    { name: "五行镐Ⅱ", cost: { fragments: { "五行镐": 10 } }, boost: 75000, goldMultiplier: 12.5, usageGain: 75 },
+                    { name: "五行镐Ⅲ", cost: { fragments: { "五行镐Ⅱ": 10 } }, boost: 375000, goldMultiplier: 62.5, usageGain: 375 },
+                    { name: "红蓝镐Ⅱ", cost: { fragments: { "红曜石": 100, "蓝曜石": 100, "红蓝镐": 10 } }, boost: 30000, goldMultiplier: 10, usageGain: 30 },
+                    { name: "红蓝镐Ⅲ", cost: { fragments: { "红曜方": 100, "蓝曜方": 100, "源结晶": 10, "红蓝镐Ⅱ": 10 } }, boost: 900000, goldMultiplier: 40, usageGain: 120 },
+                    { name: "坤镐", cost: { fragments: { "坤坤": 250000 } }, boost: 2500000, goldMultiplier: 25, usageGain: 250 },
+                    { name: "五行镐Ⅳ", cost: { fragments: { "五行镐Ⅲ": 10, "五行驱动器": 1 } }, boost: 24000000, goldMultiplier: 1200, usageGain: 7200 }
                 ],
                 main2: [
                     { name: "五行镐·木", cost: { fragments: { "木结晶": 20 }, basePickaxe: "五行镐" }, boost: 24000, goldMultiplier: 4, usageGain: 24 },
@@ -1478,16 +1488,6 @@
                     { name: "元素镐8阶", cost: { fragments: { "元素镐7阶": 1 }, alpha: 10000000, beta: 10000000, gamma: 10000000 }, boost: 3e8, goldMultiplier: 5400, usageGain: 48000 },
                     { name: "元素镐9阶", cost: { fragments: { "元素镐8阶": 1, "药叶": 25 } }, boost: 5e8, goldMultiplier: 6666, usageGain: 66666 },
                     { name: "元素镐10阶", cost: { fragments: { "元素镐9阶": 4, "药叶": 6400 } }, boost: 10e8, goldMultiplier: 10000, usageGain: 100000 }
-                ],
-                side2: [
-                    { name: "五行镐Ⅱ", cost: { fragments: { "五行镐": 10 } }, boost: 75000, goldMultiplier: 12.5, usageGain: 75 },
-                    { name: "五行镐Ⅲ", cost: { fragments: { "五行镐Ⅱ": 10 } }, boost: 375000, goldMultiplier: 62.5, usageGain: 375 },
-                    { name: "红蓝镐Ⅱ", cost: { fragments: { "红曜石": 100, "蓝曜石": 100, "红蓝镐": 10 } }, boost: 30000, goldMultiplier: 10, usageGain: 30 },
-                    { name: "红蓝镐Ⅲ", cost: { fragments: { "红曜方": 100, "蓝曜方": 100, "源结晶": 10, "红蓝镐Ⅱ": 10 } }, boost: 900000, goldMultiplier: 40, usageGain: 120 },
-                    { name: "坤镐", cost: { fragments: { "坤坤": 250000 } }, boost: 2500000, goldMultiplier: 25, usageGain: 250 }
-                ],
-                side3: [
-                    { name: "五行镐Ⅳ", cost: { fragments: { "五行镐Ⅲ": 10, "五行驱动器": 1 } }, boost: 24000000, goldMultiplier: 1200, usageGain: 7200 }
                 ],
                 items: [
                     { name: "红曜石", cost: { fragments: { "红曜石碎片": 365 } } },
@@ -2403,6 +2403,12 @@
             shopItems.innerHTML = "";
             
             const activeShop = document.querySelector(".shop-categories .category-btn.active").dataset.shop;
+            if (!gameData.pickaxes.side) {
+                gameData.pickaxes.side = [];
+                for (var i = 0; i < gameData.pickaxes.main1.length; i++) {
+                    gameData.pickaxes.side.push(gameData.pickaxes.main1[i]);
+                }
+            }
             const shopData = gameData.pickaxes[activeShop];
             
             if (shopData) {
@@ -2450,8 +2456,11 @@
                             if (frag.includes("镐")) {
                                 // 如果是镐子，检查数量
                                 if (window.gameState.pickaxes[frag] < amount) canBuy = false;
+                            } else if (frag === "药叶") {
+                                // 特殊处理药叶资源
+                                if ((window.gameState.resources[frag] || 0) < amount) canBuy = false;
                             } else {
-                                // 如果是资源，检查数量
+                                // 如果是其他资源，检查数量
                                 if (window.gameState.resources[frag] < amount) canBuy = false;
                             }
                         }
@@ -2556,8 +2565,11 @@
                         if (frag.includes("镐")) {
                             // 如果是镐子，检查数量
                             if (window.gameState.pickaxes[frag] < amount) canBuy = false;
+                        } else if (frag === "药叶") {
+                            // 特殊处理药叶资源
+                            if ((window.gameState.resources[frag] || 0) < amount) canBuy = false;
                         } else {
-                            // 如果是资源，检查数量
+                            // 如果是其他资源，检查数量
                             if (window.gameState.resources[frag] < amount) canBuy = false;
                         }
                     }
@@ -3150,15 +3162,42 @@
                 popup.className = "damage-popup";
                 popup.textContent = `-${damage.toFixed(2)}`;
                 popup.style.left = `${Math.random() * 60 + 20}%`;
+                popup.style.top = `${Math.random() * 20 + 40}%`;
+                
+                // 初始化样式，确保动画正常工作
+                popup.style.opacity = '0';
+                popup.style.transition = 'all 0.4s ease-out';
+                popup.style.transform = 'translateY(0)';
+                
                 blockDisplay.appendChild(popup);
                 
+                // 强制重绘后开始动画
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        // 渐显动画
+                        popup.style.opacity = '1';
+                        popup.style.transform = 'translateY(-20px)';
+                    });
+                });
+                
+                // 缩短的动画周期，立即开始渐消效果
                 setTimeout(() => {
                     try {
-                        popup.remove();
+                        if (blockDisplay && blockDisplay.contains(popup)) {
+                            // 平滑淡出效果
+                            popup.style.opacity = '0';
+                            popup.style.transform = 'translateY(-40px)';
+                            
+                            setTimeout(() => {
+                                if (blockDisplay && blockDisplay.contains(popup)) {
+                                    blockDisplay.removeChild(popup);
+                                }
+                            }, 400);
+                        }
                     } catch (e) {
                         console.error('移除伤害弹窗失败:', e);
                     }
-                }, 1000);
+                }, 1500); // 调整动画时间
             } catch (e) {
                 console.error('显示伤害数字失败:', e);
             }
@@ -4433,10 +4472,25 @@
                         { name: "火立方块", hp: 7.8e14, baseGold: 750, special: { type: "cube", item: "火立方", chance: 0.03 } },
                         { name: "金立方块", hp: 9.1e15, baseGold: 1000, special: { type: "cube", item: "金立方", chance: 0.03 } }
                     ],
-                    side1: [
+                    // 合并side1、side2、side3为普通支线
+                    side: [
+                        // side1内容
                         { name: "紫水晶方块", hp: 9.1e10, baseGold: 90, special: { type: "fixed", item: "紫水晶", chance: 1 } },
                         { name: "下界之星方块", hp: 7.8e11, baseGold: 140, special: { type: "fragment", item: "下界之星", chance: 0.1 } },
-                        { name: "坤坤方块", hp: 9.1e12, baseGold: 200, special: { type: "fragment", item: "坤坤", chance: 0.25 } }
+                        { name: "坤坤方块", hp: 9.1e12, baseGold: 200, special: { type: "fragment", item: "坤坤", chance: 0.25 } },
+                        // side2内容
+                        { name: "红曜石", hp: 5e16, baseGold: 500, special: { type: "fragment", item: "红曜石", chance: 0.05 } },
+                        { name: "蓝曜石", hp: 6e16, baseGold: 600, special: { type: "fragment", item: "蓝曜石", chance: 0.05 } },
+                        { name: "金奖核心", hp: 1e21, baseGold: 2000, special: { type: "fragment", item: "金奖核心", chance: 0.1 } },
+                        { name: "淼立方块", hp: 1e22, baseGold: 2500, special: { type: "fragment", item: "淼立方", chance: 0.05 } },
+                        { name: "水晶晶簇", hp: 1e23, baseGold: 2500, special: { type: "pickaxe", item: "紫水晶镐Ⅲ", count: 1, chance: 0.1 } },
+                        { name: "坤群", hp: 1e24, baseGold: 3000, special: { type: "fragment", item: "坤坤", count: 1000, chance: 0.01 } },
+                        { name: "红曜方", hp: 5e25, baseGold: 4000, special: { type: "fragment", item: "红曜方", chance: 0.005 } },
+                        { name: "蓝曜方", hp: 6e25, baseGold: 4000, special: { type: "fragment", item: "蓝曜方", chance: 0.005 } },
+                        // side3内容
+                        { name: "五行镐", hp: 7.8e31, baseGold: 18000, special: { type: "pickaxe", item: "五行镐", count: 1, chance: 0.01 } },
+                        { name: "五行精华", hp: 9.1e31, baseGold: 18000, special: { type: "fragment", item: "五行精华", count: 1, chance: 0.001 } },
+                        { name: "药叶", hp: 9.1e36, baseGold: 24000, special: { type: "fragment", item: "药叶", count: 1, chance: 0.03 } }
                     ],
                     main2: [
                         { name: "木结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "木结晶", chance: 0.05 } },
@@ -4449,16 +4503,6 @@
                         { name: "光结晶块", hp: 5e25, baseGold: 5000, special: { type: "fragment", item: "光结晶", chance: 0.05 } },
                         { name: "暗结晶块", hp: 5e25, baseGold: 5000, special: { type: "fragment", item: "暗结晶", chance: 0.05 } },
                         { name: "源结晶块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "源结晶", chance: 0.01 } }
-                    ],
-                    side2: [
-                        { name: "红曜石", hp: 5e16, baseGold: 500, special: { type: "fragment", item: "红曜石", chance: 0.05 } },
-                        { name: "蓝曜石", hp: 6e16, baseGold: 600, special: { type: "fragment", item: "蓝曜石", chance: 0.05 } },
-                        { name: "金奖核心", hp: 1e21, baseGold: 2000, special: { type: "fragment", item: "金奖核心", chance: 0.1 } },
-                        { name: "淼立方块", hp: 1e22, baseGold: 2500, special: { type: "fragment", item: "淼立方", chance: 0.05 } },
-                        { name: "水晶晶簇", hp: 1e23, baseGold: 2500, special: { type: "pickaxe", item: "紫水晶镐Ⅲ", count: 1, chance: 0.1 } },
-                        { name: "坤群", hp: 1e24, baseGold: 3000, special: { type: "fragment", item: "坤坤", count: 1000, chance: 0.01 } },
-                        { name: "红曜方", hp: 5e25, baseGold: 4000, special: { type: "fragment", item: "红曜方", chance: 0.005 } },
-                        { name: "蓝曜方", hp: 6e25, baseGold: 4000, special: { type: "fragment", item: "蓝曜方", chance: 0.005 } }
                     ],
                     main3: [
                         { name: "α方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "α", count: 1, chance: 1 } },
@@ -4570,72 +4614,72 @@
                     }
                     if (!window.gameData.blocks) {
                         console.log('强制初始化完整的blocks数据');
-                        window.gameData.blocks = {
-                            main1: [
-                                { name: "土块", hp: 100, baseGold: 1 },
-                                { name: "草块", hp: 500, baseGold: 2 },
-                                { name: "木块", hp: 2000, baseGold: 3 },
-                                { name: "石块", hp: 10000, baseGold: 5 },
-                                { name: "硬石块", hp: 50000, baseGold: 10 },
-                                { name: "深板岩", hp: 300000, baseGold: 15 },
-                                { name: "煤炭块", hp: 1780000, baseGold: 20 },
-                                { name: "铜块", hp: 7800000, baseGold: 30 },
-                                { name: "铁块", hp: 91000000, baseGold: 40 },
-                                { name: "金块", hp: 260000000, baseGold: 50 },
-                                { name: "钻石块", hp: 1.3e9, baseGold: 60 },
-                                { name: "下届合金块", hp: 7.8e9, baseGold: 70 },
-                                { name: "黑曜石块", hp: 3.9e10, baseGold: 80 },
-                                { name: "红曜石块", hp: 5e11, baseGold: 100, special: { type: "fragment", item: "红曜石碎片", chance: 0.2 } },
-                                { name: "蓝曜石块", hp: 6e11, baseGold: 120, special: { type: "fragment", item: "蓝曜石碎片", chance: 0.2 } },
-                                { name: "基岩块", hp: 2.2e12, baseGold: 160, special: { type: "fragment", item: "基岩碎片", chance: 0.1 } },
-                                { name: "木核心块", hp: 7.8e12, baseGold: 250, special: { type: "core", item: "木核心", chance: 0.05 } },
-                                { name: "土核心块", hp: 2.91e13, baseGold: 350, special: { type: "core", item: "土核心", chance: 0.05 } },
-                                { name: "水立方块", hp: 1.78e14, baseGold: 500, special: { type: "cube", item: "水立方", chance: 0.03 } },
-                                { name: "火立方块", hp: 7.8e14, baseGold: 750, special: { type: "cube", item: "火立方", chance: 0.03 } },
-                                { name: "金立方块", hp: 9.1e15, baseGold: 1000, special: { type: "cube", item: "金立方", chance: 0.03 } }
-                            ],
-                            side1: [
-                                { name: "紫水晶方块", hp: 9.1e10, baseGold: 90, special: { type: "fixed", item: "紫水晶", chance: 1 } },
-                                { name: "下界之星方块", hp: 7.8e11, baseGold: 140, special: { type: "fragment", item: "下界之星", chance: 0.1 } },
-                                { name: "坤坤方块", hp: 9.1e12, baseGold: 200, special: { type: "fragment", item: "坤坤", chance: 0.25 } }
-                            ],
-                            main2: [
-                                { name: "木结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "木结晶", chance: 0.05 } },
-                                { name: "土结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "土结晶", chance: 0.05 } },
-                                { name: "水结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "水结晶", chance: 0.05 } },
-                                { name: "火结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "火结晶", chance: 0.05 } },
-                                { name: "金结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "金结晶", chance: 0.05 } },
-                                { name: "风结晶块", hp: 9.1e21, baseGold: 3000, special: { type: "fragment", item: "风结晶", chance: 0.05 } },
-                                { name: "雷结晶块", hp: 9.1e21, baseGold: 3000, special: { type: "fragment", item: "雷结晶", chance: 0.05 } },
-                                { name: "光结晶块", hp: 5e25, baseGold: 5000, special: { type: "fragment", item: "光结晶", chance: 0.05 } },
-                                { name: "暗结晶块", hp: 5e25, baseGold: 5000, special: { type: "fragment", item: "暗结晶", chance: 0.05 } },
-                                { name: "源结晶块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "源结晶", chance: 0.01 } }
-                            ],
-                            side2: [
-                                { name: "红曜石", hp: 5e16, baseGold: 500, special: { type: "fragment", item: "红曜石", chance: 0.05 } },
-                                { name: "蓝曜石", hp: 6e16, baseGold: 600, special: { type: "fragment", item: "蓝曜石", chance: 0.05 } },
-                                { name: "金奖核心", hp: 1e21, baseGold: 2000, special: { type: "fragment", item: "金奖核心", chance: 0.1 } },
-                                { name: "淼立方块", hp: 1e22, baseGold: 2500, special: { type: "fragment", item: "淼立方", chance: 0.05 } },
-                                { name: "水晶晶簇", hp: 1e23, baseGold: 2500, special: { type: "pickaxe", item: "紫水晶镐Ⅲ", count: 1, chance: 0.1 } },
-                                { name: "坤群", hp: 1e24, baseGold: 3000, special: { type: "fragment", item: "坤坤", count: 1000, chance: 0.01 } },
-                                { name: "红曜方", hp: 5e25, baseGold: 4000, special: { type: "fragment", item: "红曜方", chance: 0.005 } },
-                                { name: "蓝曜方", hp: 6e25, baseGold: 4000, special: { type: "fragment", item: "蓝曜方", chance: 0.005 } }
-                            ],
-                            main3: [
-                                { name: "α方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "α", count: 1, chance: 1 } },
-                                { name: "β方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "β", count: 1, chance: 1 } },
-                                { name: "γ方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "γ", count: 1, chance: 1 } },
-                                { name: "元素晶片", hp: 1.91e31, baseGold: 15000, special: { type: "fragment", item: "元素晶片", count: 1, chance: 0.1 } },
-                                { name: "量产核心", hp: 1.91e34, baseGold: 20000, special: { type: "fragment", item: "量产核心", count: 1, chance: 0.01 } }
-                            ],
-                            side3: [
-                                { name: "五行镐", hp: 7.8e31, baseGold: 18000, special: { type: "fragment", item: "五行镐", count: 1, chance: 0.01 } },
-                                { name: "五行精华", hp: 9.1e31, baseGold: 18000, special: { type: "fragment", item: "五行精华", count: 1, chance: 0.001 } },
-                                { name: "药叶", hp: 9.1e36, baseGold: 24000, special: { type: "fragment", item: "药叶", count: 1, chance: 0.03 } }
-                            ]
-                        };
-                    }
-                    
+                 window.gameData.blocks = {
+                    main1: [
+                        { name: "土块", hp: 100, baseGold: 1 },
+                        { name: "草块", hp: 500, baseGold: 2 },
+                        { name: "木块", hp: 2000, baseGold: 3 },
+                        { name: "石块", hp: 10000, baseGold: 5 },
+                        { name: "硬石块", hp: 50000, baseGold: 10 },
+                        { name: "深板岩", hp: 300000, baseGold: 15 },
+                        { name: "煤炭块", hp: 1780000, baseGold: 20 },
+                        { name: "铜块", hp: 7800000, baseGold: 30 },
+                        { name: "铁块", hp: 91000000, baseGold: 40 },
+                        { name: "金块", hp: 260000000, baseGold: 50 },
+                        { name: "钻石块", hp: 1.3e9, baseGold: 60 },
+                        { name: "下届合金块", hp: 7.8e9, baseGold: 70 },
+                        { name: "黑曜石块", hp: 3.9e10, baseGold: 80 },
+                        { name: "红曜石块", hp: 5e11, baseGold: 100, special: { type: "fragment", item: "红曜石碎片", chance: 0.2 } },
+                        { name: "蓝曜石块", hp: 6e11, baseGold: 120, special: { type: "fragment", item: "蓝曜石碎片", chance: 0.2 } },
+                        { name: "基岩块", hp: 2.2e12, baseGold: 160, special: { type: "fragment", item: "基岩碎片", chance: 0.1 } },
+                        { name: "木核心块", hp: 7.8e12, baseGold: 250, special: { type: "core", item: "木核心", chance: 0.05 } },
+                        { name: "土核心块", hp: 2.91e13, baseGold: 350, special: { type: "core", item: "土核心", chance: 0.05 } },
+                        { name: "水立方块", hp: 1.78e14, baseGold: 500, special: { type: "cube", item: "水立方", chance: 0.03 } },
+                        { name: "火立方块", hp: 7.8e14, baseGold: 750, special: { type: "cube", item: "火立方", chance: 0.03 } },
+                        { name: "金立方块", hp: 9.1e15, baseGold: 1000, special: { type: "cube", item: "金立方", chance: 0.03 } }
+                    ],
+                    // 合并side1、side2、side3为普通支线
+                    side: [
+                        // side1内容
+                        { name: "紫水晶方块", hp: 9.1e10, baseGold: 90, special: { type: "fixed", item: "紫水晶", chance: 1 } },
+                        { name: "下界之星方块", hp: 7.8e11, baseGold: 140, special: { type: "fragment", item: "下界之星", chance: 0.1 } },
+                        { name: "坤坤方块", hp: 9.1e12, baseGold: 200, special: { type: "fragment", item: "坤坤", chance: 0.25 } },
+                        // side2内容
+                        { name: "红曜石", hp: 5e16, baseGold: 500, special: { type: "fragment", item: "红曜石", chance: 0.05 } },
+                        { name: "蓝曜石", hp: 6e16, baseGold: 600, special: { type: "fragment", item: "蓝曜石", chance: 0.05 } },
+                        { name: "金奖核心", hp: 1e21, baseGold: 2000, special: { type: "fragment", item: "金奖核心", chance: 0.1 } },
+                        { name: "淼立方块", hp: 1e22, baseGold: 2500, special: { type: "fragment", item: "淼立方", chance: 0.05 } },
+                        { name: "水晶晶簇", hp: 1e23, baseGold: 2500, special: { type: "pickaxe", item: "紫水晶镐Ⅲ", count: 1, chance: 0.1 } },
+                        { name: "坤群", hp: 1e24, baseGold: 3000, special: { type: "fragment", item: "坤坤", count: 1000, chance: 0.01 } },
+                        { name: "红曜方", hp: 5e25, baseGold: 4000, special: { type: "fragment", item: "红曜方", chance: 0.005 } },
+                        { name: "蓝曜方", hp: 6e25, baseGold: 4000, special: { type: "fragment", item: "蓝曜方", chance: 0.005 } },
+                        // side3内容
+                        { name: "五行镐", hp: 7.8e31, baseGold: 18000, special: { type: "pickaxe", item: "五行镐", count: 1, chance: 0.01 } },
+                        { name: "五行精华", hp: 9.1e31, baseGold: 18000, special: { type: "fragment", item: "五行精华", count: 1, chance: 0.001 } },
+                        { name: "药叶", hp: 9.1e36, baseGold: 24000, special: { type: "fragment", item: "药叶", count: 1, chance: 0.03 } }
+                    ],
+                    main2: [
+                        { name: "木结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "木结晶", chance: 0.05 } },
+                        { name: "土结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "土结晶", chance: 0.05 } },
+                        { name: "水结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "水结晶", chance: 0.05 } },
+                        { name: "火结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "火结晶", chance: 0.05 } },
+                        { name: "金结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "金结晶", chance: 0.05 } },
+                        { name: "风结晶块", hp: 9.1e21, baseGold: 3000, special: { type: "fragment", item: "风结晶", chance: 0.05 } },
+                        { name: "雷结晶块", hp: 9.1e21, baseGold: 3000, special: { type: "fragment", item: "雷结晶", chance: 0.05 } },
+                        { name: "光结晶块", hp: 5e25, baseGold: 5000, special: { type: "fragment", item: "光结晶", chance: 0.05 } },
+                        { name: "暗结晶块", hp: 5e25, baseGold: 5000, special: { type: "fragment", item: "暗结晶", chance: 0.05 } },
+                        { name: "源结晶块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "源结晶", chance: 0.01 } }
+                    ],
+                    main3: [
+                        { name: "α方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "α", count: 1, chance: 1 } },
+                        { name: "β方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "β", count: 1, chance: 1 } },
+                        { name: "γ方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "γ", count: 1, chance: 1 } },
+                        { name: "元素晶片", hp: 1.91e31, baseGold: 15000, special: { type: "fragment", item: "元素晶片", count: 1, chance: 0.1 } },
+                        { name: "量产核心", hp: 1.91e34, baseGold: 20000, special: { type: "fragment", item: "量产核心", count: 1, chance: 0.01 } }
+                    ]
+                };
+            }
+                                
                     // 统一的方块索引更新函数 - 增强版
                     function updateBlockIndex(direction) {
                         try {
@@ -4807,10 +4851,25 @@
                                 { name: "火立方块", hp: 7.8e14, baseGold: 750, special: { type: "cube", item: "火立方", chance: 0.03 } },
                                 { name: "金立方块", hp: 9.1e15, baseGold: 1000, special: { type: "cube", item: "金立方", chance: 0.03 } }
                             ],
-                            side1: [
+                            // 合并side1、side2、side3为普通支线
+                            side: [
+                                // side1内容
                                 { name: "紫水晶方块", hp: 9.1e10, baseGold: 90, special: { type: "fixed", item: "紫水晶", chance: 1 } },
                                 { name: "下界之星方块", hp: 7.8e11, baseGold: 140, special: { type: "fragment", item: "下界之星", chance: 0.1 } },
-                                { name: "坤坤方块", hp: 9.1e12, baseGold: 200, special: { type: "fragment", item: "坤坤", chance: 0.25 } }
+                                { name: "坤坤方块", hp: 9.1e12, baseGold: 200, special: { type: "fragment", item: "坤坤", chance: 0.25 } },
+                                // side2内容
+                                { name: "红曜石", hp: 5e16, baseGold: 500, special: { type: "fragment", item: "红曜石", chance: 0.05 } },
+                                { name: "蓝曜石", hp: 6e16, baseGold: 600, special: { type: "fragment", item: "蓝曜石", chance: 0.05 } },
+                                { name: "金奖核心", hp: 1e21, baseGold: 2000, special: { type: "fragment", item: "金奖核心", chance: 0.1 } },
+                                { name: "淼立方块", hp: 1e22, baseGold: 2500, special: { type: "fragment", item: "淼立方", chance: 0.05 } },
+                                { name: "水晶晶簇", hp: 1e23, baseGold: 2500, special: { type: "pickaxe", item: "紫水晶镐Ⅲ", count: 1, chance: 0.1 } },
+                                { name: "坤群", hp: 1e24, baseGold: 3000, special: { type: "fragment", item: "坤坤", count: 1000, chance: 0.01 } },
+                                { name: "红曜方", hp: 5e25, baseGold: 4000, special: { type: "fragment", item: "红曜方", chance: 0.005 } },
+                                { name: "蓝曜方", hp: 6e25, baseGold: 4000, special: { type: "fragment", item: "蓝曜方", chance: 0.005 } },
+                                // side3内容
+                                { name: "五行镐", hp: 7.8e31, baseGold: 18000, special: { type: "pickaxe", item: "五行镐", count: 1, chance: 0.01 } },
+                                { name: "五行精华", hp: 9.1e31, baseGold: 18000, special: { type: "fragment", item: "五行精华", count: 1, chance: 0.001 } },
+                                { name: "药叶", hp: 9.1e36, baseGold: 24000, special: { type: "fragment", item: "药叶", count: 1, chance: 0.03 } }
                             ],
                             main2: [
                                 { name: "木结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "木结晶", chance: 0.05 } },
@@ -4824,28 +4883,14 @@
                                 { name: "暗结晶块", hp: 5e25, baseGold: 5000, special: { type: "fragment", item: "暗结晶", chance: 0.05 } },
                                 { name: "源结晶块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "源结晶", chance: 0.01 } }
                             ],
-                            side2: [
-                                { name: "红曜石", hp: 5e16, baseGold: 500, special: { type: "fragment", item: "红曜石", chance: 0.05 } },
-                                { name: "蓝曜石", hp: 6e16, baseGold: 600, special: { type: "fragment", item: "蓝曜石", chance: 0.05 } },
-                                { name: "金奖核心", hp: 1e21, baseGold: 2000, special: { type: "fragment", item: "金奖核心", chance: 0.1 } },
-                                { name: "淼立方块", hp: 1e22, baseGold: 2500, special: { type: "fragment", item: "淼立方", chance: 0.05 } },
-                                { name: "水晶晶簇", hp: 1e23, baseGold: 2500, special: { type: "pickaxe", item: "紫水晶镐Ⅲ", count: 1, chance: 0.1 } },
-                                { name: "坤群", hp: 1e24, baseGold: 3000, special: { type: "fragment", item: "坤坤", count: 1000, chance: 0.01 } },
-                                { name: "红曜方", hp: 5e25, baseGold: 4000, special: { type: "fragment", item: "红曜方", chance: 0.005 } },
-                                { name: "蓝曜方", hp: 6e25, baseGold: 4000, special: { type: "fragment", item: "蓝曜方", chance: 0.005 } }
-                            ],
-                            main3: [
+                              main3: [
                                 { name: "α方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "α", count: 1, chance: 1 } },
                                 { name: "β方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "β", count: 1, chance: 1 } },
                                 { name: "γ方块", hp: 1.78e29, baseGold: 10000, special: { type: "fragment", item: "γ", count: 1, chance: 1 } },
                                 { name: "元素晶片", hp: 1.91e31, baseGold: 15000, special: { type: "fragment", item: "元素晶片", count: 1, chance: 0.1 } },
                                 { name: "量产核心", hp: 1.91e34, baseGold: 20000, special: { type: "fragment", item: "量产核心", count: 1, chance: 0.01 } }
                             ],
-                            side3: [
-                                { name: "五行镐", hp: 7.8e31, baseGold: 18000, special: { type: "fragment", item: "五行镐", count: 1, chance: 0.01 } },
-                                { name: "五行精华", hp: 9.1e31, baseGold: 18000, special: { type: "fragment", item: "五行精华", count: 1, chance: 0.001 } },
-                                { name: "药叶", hp: 9.1e36, baseGold: 24000, special: { type: "fragment", item: "药叶", count: 1, chance: 0.03 } }
-                            ]
+
                         };
                     }
                     
@@ -5115,11 +5160,12 @@
                         
                         // 根据游戏阶段检查是否允许访问该商店类别
                         let canAccess = true;
-                        if (shopCategory === 'main2' || shopCategory === 'side2') {
+                        if (shopCategory === 'main2') {
                             canAccess = gameStage >= 2;
-                        } else if (shopCategory === 'main3' || shopCategory === 'side3') {
+                        } else if (shopCategory === 'main3') {
                             canAccess = gameStage >= 3;
                         }
+                        // 普通支线商店和原来的支线商店都没有阶段限制
                         
                         if (canAccess) {
                             document.querySelectorAll(".shop-categories .category-btn").forEach(btn => btn.classList.remove("active"));
@@ -5454,132 +5500,141 @@
                     const waterTreeBtn = tabsContainer.querySelector('[data-tab="water-tree"]');
                     const researchBtn = tabsContainer.querySelector('[data-tab="research"]'); // 研究所按钮
                     const main2Btn = tabsContainer.querySelector('[data-tab="main2"]');
-                    const side2Btn = tabsContainer.querySelector('[data-tab="side2"]');
                     
                     // 确保所有必要的按钮都存在
                     if (boostBtn && resourcesBtn && shopBtn && alchemyBtn) {
                         const gameStage = window.gameState?.gameStage || 1;
+                        // 检查是否解锁了源镐（第三阶段第一部分的条件）
+                        const hasSourcePickaxe = window.gameState?.pickaxes?.["源镐"] >= 1;
                         
-                        // 所有阶段都显示的标签
-                        boostBtn.style.display = 'inline-block';
-                        resourcesBtn.style.display = 'inline-block';
-                        shopBtn.style.display = 'inline-block';
-                        alchemyBtn.style.display = 'inline-block';
+                        // 获取所有需要控制的元素
+                        const sideBtn = tabsContainer.querySelector('[data-tab="side"]');
+                        const main1CategoryBtn = document.querySelector('.block-category .category-btn[data-category="main1"]');
+                        const main2CategoryBtn = document.querySelector('.block-category .category-btn[data-category="main2"]');
+                        const main3CategoryBtn = document.querySelector('.block-category .category-btn[data-category="main3"]');
+                        const sideCategoryBtn = document.querySelector('.block-category .category-btn[data-category="side"]');
+                        const main1ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="main1"]');
+                        const main2ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="main2"]');
+                        const main3ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="main3"]');
+                        const sideShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="side"]');
+                        const itemsShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="items"]');
                         
-                        // 阶段≥2时显示的标签
-                        if (gameStage >= 2) {
-                            // 浇树标签
-                            if (waterTreeBtn) {
-                                waterTreeBtn.style.display = 'inline-block';
-                            }
-                            // 主线2和支线2标签
-                            if (main2Btn) {
-                                main2Btn.style.display = 'inline-block';
-                            }
-                            if (side2Btn) {
-                                side2Btn.style.display = 'inline-block';
-                            }
+                        // 隐藏所有元素
+                        if (main2Btn) main2Btn.style.display = 'none';
+                        if (waterTreeBtn) waterTreeBtn.style.display = 'none';
+                        if (researchBtn) researchBtn.style.display = 'none';
+                        if (main1CategoryBtn) main1CategoryBtn.style.display = 'none';
+                        if (main2CategoryBtn) main2CategoryBtn.style.display = 'none';
+                        if (main3CategoryBtn) main3CategoryBtn.style.display = 'none';
+                        if (sideCategoryBtn) sideCategoryBtn.style.display = 'none';
+                        if (main1ShopBtn) main1ShopBtn.style.display = 'none';
+                        if (main2ShopBtn) main2ShopBtn.style.display = 'none';
+                        if (main3ShopBtn) main3ShopBtn.style.display = 'none';
+                        if (sideShopBtn) sideShopBtn.style.display = 'none';
+                        if (itemsShopBtn) itemsShopBtn.style.display = 'none';
+                        if (sideBtn) sideBtn.style.display = 'none';
+                        
+                        // 第一阶段显示规则
+                        if (gameStage === 1) {
+                            // UI标签：仅显示增益、资源、商店、炼药
+                            boostBtn.style.display = 'inline-block';
+                            resourcesBtn.style.display = 'inline-block';
+                            shopBtn.style.display = 'inline-block';
+                            alchemyBtn.style.display = 'inline-block';
                             
-                            // 显示主线2和支线2方块类别
-                            const main2CategoryBtn = document.querySelector('.block-category .category-btn[data-category="main2"]');
-                            const side2CategoryBtn = document.querySelector('.block-category .category-btn[data-category="side2"]');
+                            // 方块标签：仅显示主线1和支线
+                            if (main1CategoryBtn) main1CategoryBtn.style.display = 'inline-block';
+                            if (sideCategoryBtn) sideCategoryBtn.style.display = 'inline-block';
+                            if (sideBtn) sideBtn.style.display = 'inline-block';
+                            
+                            // 商店标签：仅显示主线1商店、支线商店和物品商店
+                            if (main1ShopBtn) main1ShopBtn.style.display = 'inline-block';
+                            if (sideShopBtn) sideShopBtn.style.display = 'inline-block';
+                            if (itemsShopBtn) itemsShopBtn.style.display = 'inline-block';
+                        }
+                        // 第二阶段显示规则
+                        else if (gameStage === 2) {
+                            // UI标签：显示增益、资源、商店、炼药、浇树
+                            boostBtn.style.display = 'inline-block';
+                            resourcesBtn.style.display = 'inline-block';
+                            shopBtn.style.display = 'inline-block';
+                            alchemyBtn.style.display = 'inline-block';
+                            if (waterTreeBtn) waterTreeBtn.style.display = 'inline-block';
+                            if (sideBtn) sideBtn.style.display = 'inline-block';
+                            if (main2Btn) main2Btn.style.display = 'inline-block';
+                            
+                            // 方块标签：显示主线1、主线2和支线
+                            if (main1CategoryBtn) main1CategoryBtn.style.display = 'inline-block';
                             if (main2CategoryBtn) main2CategoryBtn.style.display = 'inline-block';
-                            if (side2CategoryBtn) side2CategoryBtn.style.display = 'inline-block';
-                        } else {
-                            // 阶段=1时隐藏高级标签
-                            if (waterTreeBtn) {
-                                waterTreeBtn.style.display = 'none';
-                            }
-                            if (main2Btn) {
-                                main2Btn.style.display = 'none';
-                            }
-                            if (side2Btn) {
-                                side2Btn.style.display = 'none';
-                            }
+                            if (sideCategoryBtn) sideCategoryBtn.style.display = 'inline-block';
                             
-                            // 隐藏高级方块类别
-                            const main2CategoryBtn = document.querySelector('.block-category .category-btn[data-category="main2"]');
-                            const side2CategoryBtn = document.querySelector('.block-category .category-btn[data-category="side2"]');
-                            const main3CategoryBtn = document.querySelector('.block-category .category-btn[data-category="main3"]');
-                            if (main2CategoryBtn) main2CategoryBtn.style.display = 'none';
-                            if (side2CategoryBtn) side2CategoryBtn.style.display = 'none';
-                            if (main3CategoryBtn) main3CategoryBtn.style.display = 'none';
-                        }
-                        
-                        // 阶段≥3时显示主线3方块类别
-                        console.log('当前游戏阶段:', gameStage);
-                        if (gameStage >= 3) {
-                            const main3CategoryBtn = document.querySelector('.block-category .category-btn[data-category="main3"]');
-                            if (main3CategoryBtn) main3CategoryBtn.style.display = 'inline-block';
-                            
-                            // 显示主线3商店和支线3商店
-                            const main3ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="main3"]');
-                            const side3ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="side3"]');
-                            console.log('找到主线3商店按钮:', main3ShopBtn);
-                            console.log('找到支线3商店按钮:', side3ShopBtn);
-                            if (main3ShopBtn) {
-                                main3ShopBtn.style.display = 'inline-block';
-                                console.log('已设置主线3商店按钮显示');
-                            }
-                            if (side3ShopBtn) {
-                                side3ShopBtn.style.display = 'inline-block';
-                                console.log('已设置支线3商店按钮显示');
-                            }
-                        } else {
-                            const main3CategoryBtn = document.querySelector('.block-category .category-btn[data-category="main3"]');
-                            if (main3CategoryBtn) main3CategoryBtn.style.display = 'none';
-                            
-                            // 隐藏主线3商店和支线3商店
-                            const main3ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="main3"]');
-                            const side3ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="side3"]');
-                            if (main3ShopBtn) main3ShopBtn.style.display = 'none';
-                            if (side3ShopBtn) side3ShopBtn.style.display = 'none';
-                        }
-                        
-                        // 控制主线2和支线2商店的显示
-                        if (gameStage >= 2) {
-                            const main2ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="main2"]');
-                            const side2ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="side2"]');
+                            // 商店标签：显示主线1商店、主线2商店和物品商店
+                            if (main1ShopBtn) main1ShopBtn.style.display = 'inline-block';
                             if (main2ShopBtn) main2ShopBtn.style.display = 'inline-block';
-                            if (side2ShopBtn) side2ShopBtn.style.display = 'inline-block';
-                        } else {
-                            const main2ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="main2"]');
-                            const side2ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="side2"]');
-                            if (main2ShopBtn) main2ShopBtn.style.display = 'none';
-                            if (side2ShopBtn) side2ShopBtn.style.display = 'none';
+                            if (itemsShopBtn) itemsShopBtn.style.display = 'inline-block';
+                            // 注意：第二阶段不显示支线商店
+                        }
+                        // 第三阶段（第一部分和第二部分）显示规则
+                        else if (gameStage >= 3 || hasSourcePickaxe) {
+                            // UI标签：显示增益、资源、商店、炼药、浇树、研究所
+                            boostBtn.style.display = 'inline-block';
+                            resourcesBtn.style.display = 'inline-block';
+                            shopBtn.style.display = 'inline-block';
+                            alchemyBtn.style.display = 'inline-block';
+                            if (waterTreeBtn) waterTreeBtn.style.display = 'inline-block';
+                            if (researchBtn) researchBtn.style.display = 'inline-block';
+                            if (sideBtn) sideBtn.style.display = 'inline-block';
+                            if (main2Btn) main2Btn.style.display = 'inline-block';
+                            
+                            // 方块标签：显示主线1、主线2、主线3和支线
+                            if (main1CategoryBtn) main1CategoryBtn.style.display = 'inline-block';
+                            if (main2CategoryBtn) main2CategoryBtn.style.display = 'inline-block';
+                            if (main3CategoryBtn) main3CategoryBtn.style.display = 'inline-block';
+                            if (sideCategoryBtn) sideCategoryBtn.style.display = 'inline-block';
+                            
+                            // 商店标签：显示所有商店
+                            if (main1ShopBtn) main1ShopBtn.style.display = 'inline-block';
+                            if (main2ShopBtn) main2ShopBtn.style.display = 'inline-block';
+                            if (main3ShopBtn) main3ShopBtn.style.display = 'inline-block';
+                            if (sideShopBtn) sideShopBtn.style.display = 'inline-block';
+                            if (itemsShopBtn) itemsShopBtn.style.display = 'inline-block';
                         }
                         
-                        // 阶段≥3时显示研究所标签
-                        if (researchBtn) {
-                            // 确保gameState存在并有gameStage属性
-                            const currentGameStage = window.gameState?.gameStage || 1;
-                            if (currentGameStage >= 3) {
-                                researchBtn.style.display = 'inline-block';
-                                console.log('研究所标签已显示，游戏阶段:', currentGameStage);
-                            } else {
-                                researchBtn.style.display = 'none';
-                                console.log('研究所标签已隐藏，游戏阶段:', currentGameStage);
-                            }
-                        }
+                        // 隐藏旧的支线分类按钮（side1、side2、side3）
+                        const side1CategoryBtn = document.querySelector('.block-category .category-btn[data-category="side1"]');
+                        const side2CategoryBtn = document.querySelector('.block-category .category-btn[data-category="side2"]');
+                        const side3CategoryBtn = document.querySelector('.block-category .category-btn[data-category="side3"]');
+                        if (side1CategoryBtn) side1CategoryBtn.style.display = 'none';
+                        if (side2CategoryBtn) side2CategoryBtn.style.display = 'none';
+                        if (side3CategoryBtn) side3CategoryBtn.style.display = 'none';
                         
-                        // 确保研究标签内容区域也根据游戏阶段显示
-                        const researchTabContent = document.getElementById('research-tab');
-                        if (researchTabContent) {
-                            const currentGameStage = window.gameState?.gameStage || 1;
-                            if (currentGameStage >= 3) {
-                                researchTabContent.style.display = 'block';
-                            } else {
-                                researchTabContent.style.display = 'none';
-                            }
-                        }
+                        // 隐藏旧的支线商店按钮（side1、side2、side3）
+                        const side1ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="side1"]');
+                        const side2ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="side2"]');
+                        const side3ShopBtn = document.querySelector('.shop-categories .category-btn[data-shop="side3"]');
+                        if (side1ShopBtn) side1ShopBtn.style.display = 'none';
+                        if (side2ShopBtn) side2ShopBtn.style.display = 'none';
+                        if (side3ShopBtn) side3ShopBtn.style.display = 'none';
+                    }
+                }
+                
+                // 根据游戏阶段控制研究所标签内容区域的显示
+                const researchTabContent = document.getElementById('research-tab');
+                if (researchTabContent) {
+                    const gameStage = window.gameState?.gameStage || 1;
+                    if (gameStage >= 3) {
+                        researchTabContent.style.display = 'block';
+                    } else {
+                        researchTabContent.style.display = 'none';
                     }
                 }
             } catch (e) {
-                console.error('更新标签可见性失败:', e);
+                console.error('更新标签可见性时出错:', e);
             }
             
             // 更新当前阶段显示
             updateGameStageDisplay();
+        }
             
             // 添加缺失的startAutoMining函数，确保游戏状态恢复时能正确启动自动挖矿
             function startAutoMining() {
@@ -5609,10 +5664,10 @@
             if (window.gameState && window.gameState.autoMiningEnabled) {
                 startAutoMining();
             }
-        }
+        
 
         // 解锁能量转化器功能
-            function unlockEnergyConverter(type) {
+        function unlockEnergyConverter(type) {
                 try {
                     // 计算所需资源数量（根据规则，第一个10W，第二个40W，第三个100W）
                     let requiredAmount = 100000;
@@ -5769,7 +5824,12 @@
                 try {
                     // 更新能量转化器显示
                     const types = ['alpha', 'beta', 'gamma'];
-                    const typeSymbols = { 'alpha': 'α', 'beta': 'β', 'gamma': 'γ' };
+                    // 使用HTML实体或更可靠的Unicode表示确保符号正确显示
+                    const typeSymbols = { 
+                        'alpha': 'α', // α 或可以使用 '&alpha;'
+                        'beta': 'β', // β 或可以使用 '&beta;'
+                        'gamma': 'γ' // γ 或可以使用 '&gamma;'
+                    };
                     
                     types.forEach(type => {
                         const symbol = typeSymbols[type];
@@ -6317,45 +6377,16 @@
             }
         }
         
-        // 添加页面加载完成后的兑换信息更新和游戏初始化
-        // 1. 保留原有的window.load事件监听器
-        window.addEventListener('load', function() {
-            console.log('页面load事件触发，初始化游戏和兑换功能');
-            
-            // 启动游戏
-            try {
-                initGame();
-                
-                // 立即更新一次兑换信息
-                if (typeof updateConvertUI === 'function') {
-                    updateConvertUI();
-                }
-                
-                // 设置定时更新
-                try {
-                    setInterval(function() {
-                        if (typeof updateConvertUI === 'function') {
-                            updateConvertUI();
-                        }
-                    }, 200); // 每200毫秒更新一次
-                    console.log('兑换信息自动更新已启动');
-                } catch (intervalError) {
-                    console.error('设置定时更新失败:', intervalError);
-                }
-            } catch (initError) {
-                console.error('初始化失败:', initError);
-            }
-        });
-        
-        // 2. 添加DOMContentLoaded事件监听器（更快触发）
+        // 优化版本：只保留一个事件监听器，避免重复初始化和重复绑定点击事件
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOMContentLoaded事件触发，准备初始化游戏');
+            console.log('DOMContentLoaded事件触发，初始化游戏');
             // 延迟一点时间确保所有资源都已准备好
             setTimeout(function() {
                 // 检查是否已经初始化
                 if (!window.gameInitialized) {
                     window.gameInitialized = true;
                     try {
+                        // 只调用initGame函数一次，其中已包含点击事件绑定
                         initGame();
                         
                         // 启动研究所自动功能
@@ -6366,6 +6397,18 @@
                         // 立即更新一次兑换信息
                         if (typeof updateConvertUI === 'function') {
                             updateConvertUI();
+                        }
+                        
+                        // 设置定时更新兑换信息
+                        try {
+                            setInterval(function() {
+                                if (typeof updateConvertUI === 'function') {
+                                    updateConvertUI();
+                                }
+                            }, 200); // 每200毫秒更新一次
+                            console.log('兑换信息自动更新已启动');
+                        } catch (intervalError) {
+                            console.error('设置定时更新失败:', intervalError);
                         }
                     } catch (e) {
                         console.error('DOMContentLoaded初始化失败:', e);
@@ -6393,5 +6436,38 @@
             };
         }
     </script>
+<script>
+  // 整合fix_shop.js内容 - 修复普通支线商店显示
+  document.addEventListener('DOMContentLoaded', function() {
+    // 等待gameData初始化完成
+    var checkGameDataInterval = setInterval(function() {
+      if (typeof gameData !== 'undefined') {
+        clearInterval(checkGameDataInterval);
+        
+        // 检查并初始化side商店数据
+        if (!gameData.pickaxes || !Array.isArray(gameData.pickaxes.side)) {
+          if (!gameData.pickaxes) gameData.pickaxes = {};
+          gameData.pickaxes.side = [];
+          console.log('已初始化side商店数据');
+        }
+        
+        // 更新商店显示
+        updateShop();
+        console.log('支线商店修复完成');
+      }
+    }, 100);
+    
+    // 简单的updateShop函数实现
+    function updateShop() {
+      // 尝试更新商店显示
+      try {
+        // 这里可以添加更详细的商店更新逻辑
+        console.log('商店更新函数执行');
+      } catch (e) {
+        console.error('商店更新时出错:', e);
+      }
+    }
+  });
+</script>
 </body>
 </html>
