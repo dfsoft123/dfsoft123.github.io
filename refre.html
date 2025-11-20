@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>爽玩v91.78.13</title>
+    <title>爽玩</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap');
@@ -1412,7 +1412,7 @@
                     { name: "蓝曜方", hp: 6e25, baseGold: 4000, special: { type: "fragment", item: "蓝曜方", chance: 0.005 } },
                     { name: "五行镐", hp: 7.8e31, baseGold: 18000, special: { type: "pickaxe", item: "五行镐", count: 1, chance: 0.01 } },
                     { name: "五行精华", hp: 9.1e31, baseGold: 18000, special: { type: "fragment", item: "五行精华", count: 1, chance: 0.001 } },
-                    { name: "药叶", hp: 9.1e36, baseGold: 24000, special: { type: "fragment", item: "药叶", count: 1, chance: 0.03 } }
+                    { name: "药叶", hp: 9.1e44, baseGold: 100000, special: { type: "fragment", item: "药叶", count: 1, chance: 0.03 } }
                 ],
                 main2: [
                     { name: "木结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "木结晶", chance: 0.05 } },
@@ -1469,7 +1469,9 @@
                     { name: "红蓝镐Ⅱ", cost: { fragments: { "红曜石": 100, "蓝曜石": 100, "红蓝镐": 10 } }, boost: 30000, goldMultiplier: 10, usageGain: 30 },
                     { name: "红蓝镐Ⅲ", cost: { fragments: { "红曜方": 100, "蓝曜方": 100, "源结晶": 10, "红蓝镐Ⅱ": 10 } }, boost: 900000, goldMultiplier: 40, usageGain: 120 },
                     { name: "坤镐", cost: { fragments: { "坤坤": 250000 } }, boost: 2500000, goldMultiplier: 25, usageGain: 250 },
-                    { name: "五行镐Ⅳ", cost: { fragments: { "五行镐Ⅲ": 10, "五行驱动器": 1 } }, boost: 24000000, goldMultiplier: 1200, usageGain: 7200 }
+                    { name: "五行镐Ⅳ", cost: { fragments: { "五行镐Ⅲ": 10, "五行驱动器": 1 } }, boost: 24000000, goldMultiplier: 1200, usageGain: 7200 },
+                    { name: "奖杯镐", cost: { trophies: 1e9}, boost:2.5e8 , goldMultiplier: 25000, usageGain: 25000 },
+                    { name: "使用镐", cost: { usageBoost: 1e12}, boost: 1e9, goldMultiplier: 2500, usageGain: 250000 }
                 ],
                 main2: [
                     { name: "五行镐·木", cost: { fragments: { "木结晶": 20 }, basePickaxe: "五行镐" }, boost: 24000, goldMultiplier: 4, usageGain: 24 },
@@ -1485,6 +1487,7 @@
                     { name: "七行镐·暗", cost: { fragments: { "暗结晶": 20 }, basePickaxe: "七行镐" }, boost: 240000, goldMultiplier: 40, usageGain: 240 },
                     { name: "九行镐", cost: { fragments: { "光暗结晶": 20 }, basePickaxes: ["七行镐·光", "七行镐·暗"] }, boost: 1000000, goldMultiplier: 40, usageGain: 240 },
                     { name: "源镐", cost: { fragments: { "源结晶": 1000 }, basePickaxes: ["九行镐", "红蓝镐Ⅲ"] }, boost: 3000000, goldMultiplier: 120, usageGain: 750 }
+                
                 ],
                 main3: [
                     { name: "元素镐", cost: { fragments: { "元素晶片": 100 } }, boost: 5000000, goldMultiplier: 200, usageGain: 1200 },
@@ -1496,7 +1499,7 @@
                     { name: "元素镐7阶", cost: { fragments: { "元素镐6阶": 1 }, alpha: 2400000, beta: 2400000, gamma: 2400000 }, boost: 2e8, goldMultiplier: 4400, usageGain: 36000 },
                     { name: "元素镐8阶", cost: { fragments: { "元素镐7阶": 1 }, alpha: 10000000, beta: 10000000, gamma: 10000000 }, boost: 3e8, goldMultiplier: 5400, usageGain: 48000 },
                     { name: "元素镐9阶", cost: { fragments: { "元素镐8阶": 1, "药叶": 25 } }, boost: 5e8, goldMultiplier: 6666, usageGain: 66666 },
-                    { name: "元素镐10阶", cost: { fragments: { "元素镐9阶": 4, "药叶": 6400 } }, boost: 10e8, goldMultiplier: 10000, usageGain: 100000 }
+                    { name: "元素镐10阶", cost: { fragments: { "元素镐9阶": 4, "药叶": 6400 } }, boost: 1e9, goldMultiplier: 10000, usageGain: 100000 }
                 ],
                 items: [
                     { name: "红曜石", cost: { fragments: { "红曜石碎片": 365 } } },
@@ -1522,7 +1525,8 @@
                 "土核心": 80,
                 "水立方": 120,
                 "火立方": 160,
-                "金立方": 200
+                "金立方": 200,
+                "药叶": 1e5
             },
             
             // 万进制单位
@@ -1653,7 +1657,141 @@
                     "元素镐7阶": 0,
                     "元素镐8阶": 0,
                     "元素镐9阶": 0,
-                    "元素镐10阶": 0
+                    "元素镐10阶": 0,
+                    "奖杯镐":0,
+                    "使用镐":0
+                },
+                blockHp: {}
+            };
+        }
+        
+        // 初始化游戏状态函数
+        function initGameState() {
+            window.gameState = {
+                level: 0,
+                exp: 0,
+                gold: 0,
+                trophies: 0,
+                currentBlockCategory: "main1",
+                currentBlockIndex: 0,
+                currentPickaxe: "木镐",
+                usageBoost: 1,
+                alchemyBoost: 1,
+                alchemyValue: 0,
+                gameStage: 1,
+                resources: {
+                    "红曜石碎片": 0,
+                    "蓝曜石碎片": 0,
+                    "基岩碎片": 0,
+                    "木核心": 0,
+                    "土核心": 0,
+                    "水立方": 0,
+                    "火立方": 0,
+                    "金立方": 0,
+                    "紫水晶": 0,
+                    "下界之星": 0,
+                    "坤坤": 0,
+                    "红曜石": 0,
+                    "蓝曜石": 0,
+                    "五行转换器": 0,
+                    "木结晶": 0,
+                    "土结晶": 0,
+                    "水结晶": 0,
+                    "火结晶": 0,
+                    "金结晶": 0,
+                    "风结晶": 0,
+                    "雷结晶": 0,
+                    "光结晶": 0,
+                    "暗结晶": 0,
+                    "源结晶": 0,
+                    "金奖核心": 0,
+                    "淼立方": 0,
+                    "红曜方": 0,
+                    "蓝曜方": 0,
+                    "五行结晶": 0,
+                    "风雷结晶": 0,
+                    "光暗结晶": 0,
+                    "金奖转化器": 0,
+                    "α": 0,
+                    "β": 0,
+                    "γ": 0,
+                    "元素晶片": 0,
+                    "量产核心": 0,
+                    "五行镐": 0,
+                    "五行精华": 0,
+                    "五行驱动器": 0,
+                    "???": 0
+                },
+                // 研究所相关状态
+                energies: {
+                    alpha: 0,
+                    beta: 0,
+                    gamma: 0
+                },
+                converters: {
+                    alpha: false,
+                    beta: false,
+                    gamma: false
+                },
+                producers: {
+                    alpha: 0,
+                    beta: 0,
+                    gamma: 0
+                },
+                pickaxes: {
+                    "木镐": 1,
+                    "石镐": 0,
+                    "铁镐": 0,
+                    "金镐": 0,
+                    "钻石镐": 0,
+                    "下届合金镐": 0,
+                    "黑曜石镐": 0,
+                    "红曜石镐": 0,
+                    "蓝曜石镐": 0,
+                    "红蓝镐": 0,
+                    "基岩镐": 0,
+                    "木核心镐": 0,
+                    "土核心镐": 0,
+                    "水立方镐": 0,
+                    "火立方镐": 0,
+                    "金立方镐": 0,
+                    "五行镐": 0,
+                    "紫水晶镐Ⅰ": 0,
+                    "紫水晶镐Ⅱ": 0,
+                    "紫水晶镐Ⅲ": 0,
+                    "紫水晶镐Ⅳ": 0,
+                    "紫水晶镐Ⅴ": 0,
+                    "五行镐·木": 0,
+                    "五行镐·土": 0,
+                    "五行镐·水": 0,
+                    "五行镐·火": 0,
+                    "五行镐·金": 0,
+                    "五行镐·五行": 0,
+                    "五行镐·风": 0,
+                    "五行镐·雷": 0,
+                    "七行镐": 0,
+                    "七行镐·光": 0,
+                    "七行镐·暗": 0,
+                    "九行镐": 0,
+                    "源镐": 0,
+                    "五行镐Ⅱ": 0,
+                    "五行镐Ⅲ": 0,
+                    "五行镐Ⅳ":0,
+                    "红蓝镐Ⅱ": 0,
+                    "红蓝镐Ⅲ": 0,
+                    "坤镐": 0,
+                    "元素镐": 0,
+                    "元素镐2阶": 0,
+                    "元素镐3阶": 0,
+                    "元素镐4阶": 0,
+                    "元素镐5阶": 0,
+                    "元素镐6阶": 0,
+                    "元素镐7阶": 0,
+                    "元素镐8阶": 0,
+                    "元素镐9阶": 0,
+                    "元素镐10阶": 0,
+                    "奖杯镐":0,
+                    "使用镐":0
                 },
                 blockHp: {}
             };
@@ -1878,7 +2016,9 @@
                 
                 // 尝试保存到localStorage
                 try {
-                    localStorage.setItem('miningGameState', JSON.stringify(cleanGameState));
+                    const currentAccountId = getCurrentAccountId();
+                    const storageKey = currentAccountId ? `miningGameState_${currentAccountId}` : 'miningGameState';
+                    localStorage.setItem(storageKey, JSON.stringify(cleanGameState));
                     
                     // 显示保存通知
                     try {
@@ -1897,7 +2037,9 @@
                             // 移除blockHp以减少数据大小
                             const minimalGameState = { ...cleanGameState };
                             delete minimalGameState.blockHp;
-                            localStorage.setItem('miningGameState', JSON.stringify(minimalGameState));
+                            const currentAccountId = getCurrentAccountId();
+                            const storageKey = currentAccountId ? `miningGameState_${currentAccountId}` : 'miningGameState';
+                            localStorage.setItem(storageKey, JSON.stringify(minimalGameState));
                             return true;
                         } catch (retryError) {
                             console.error('精简数据后保存仍失败:', retryError);
@@ -1912,6 +2054,203 @@
             return false;
         }
 
+        // ====== 账号管理系统 ======
+        // 账号数据结构: { id: string, name: string, createdAt: timestamp }
+        // 账号列表存储键: 'miningGameAccounts'
+        // 当前账号ID存储键: 'miningGameCurrentAccountId'
+        // 账号游戏数据存储键: 'miningGameState_{accountId}'
+        
+        // 初始化账号系统
+        function initAccountSystem() {
+            try {
+                // 检查是否已有账号列表
+                let accounts = localStorage.getItem('miningGameAccounts');
+                let currentAccountId = localStorage.getItem('miningGameCurrentAccountId');
+                
+                // 如果没有账号列表或当前账号ID，创建默认账号
+                if (!accounts || !currentAccountId) {
+                    const defaultAccount = {
+                        id: 'default_' + Date.now(),
+                        name: '默认账号',
+                        createdAt: Date.now()
+                    };
+                    
+                    localStorage.setItem('miningGameAccounts', JSON.stringify([defaultAccount]));
+                    localStorage.setItem('miningGameCurrentAccountId', defaultAccount.id);
+                    
+                    // 将现有游戏数据迁移到默认账号
+                    const existingGameState = localStorage.getItem('miningGameState');
+                    if (existingGameState) {
+                        localStorage.setItem('miningGameState_' + defaultAccount.id, existingGameState);
+                        // 保留原数据以兼容旧版本
+                    }
+                }
+            } catch (e) {
+                console.error('初始化账号系统失败:', e);
+            }
+        }
+        
+        // 获取账号列表
+        function getAccounts() {
+            try {
+                const accountsJson = localStorage.getItem('miningGameAccounts');
+                return accountsJson ? JSON.parse(accountsJson) : [];
+            } catch (e) {
+                console.error('获取账号列表失败:', e);
+                return [];
+            }
+        }
+        
+        // 保存账号列表
+        function saveAccounts(accounts) {
+            try {
+                localStorage.setItem('miningGameAccounts', JSON.stringify(accounts));
+                return true;
+            } catch (e) {
+                console.error('保存账号列表失败:', e);
+                return false;
+            }
+        }
+        
+        // 获取当前账号ID
+        function getCurrentAccountId() {
+            return localStorage.getItem('miningGameCurrentAccountId');
+        }
+        
+        // 设置当前账号ID
+        function setCurrentAccountId(accountId) {
+            try {
+                localStorage.setItem('miningGameCurrentAccountId', accountId);
+                return true;
+            } catch (e) {
+                console.error('设置当前账号失败:', e);
+                return false;
+            }
+        }
+        
+        // 创建新账号
+        function createAccount(accountName) {
+            try {
+                const accounts = getAccounts();
+                const newAccount = {
+                    id: 'account_' + Date.now(),
+                    name: accountName || '新账号',
+                    createdAt: Date.now()
+                };
+                
+                accounts.push(newAccount);
+                if (saveAccounts(accounts)) {
+                    return newAccount;
+                }
+                return null;
+            } catch (e) {
+                console.error('创建账号失败:', e);
+                return null;
+            }
+        }
+        
+        // 切换账号
+        function switchAccount(accountId) {
+            try {
+                const accounts = getAccounts();
+                const accountExists = accounts.some(account => account.id === accountId);
+                
+                if (accountExists) {
+                    // 先保存当前账号数据
+                    saveGame();
+                    
+                    // 设置新的当前账号
+                    setCurrentAccountId(accountId);
+                    
+                    // 重置游戏状态，确保不会有旧账号数据残留
+                    window.gameState = null;
+                    initGameState();
+                    
+                    // 重新加载游戏状态
+                    loadGame();
+                    
+                    // 更新UI
+                    updateUI();
+                    
+                    return true;
+                }
+                return false;
+            } catch (e) {
+                console.error('切换账号失败:', e);
+                return false;
+            }
+        }
+        
+        // 重命名账号
+        function renameAccount(accountId, newName) {
+            try {
+                const accounts = getAccounts();
+                const accountIndex = accounts.findIndex(account => account.id === accountId);
+                
+                if (accountIndex !== -1) {
+                    accounts[accountIndex].name = newName;
+                    return saveAccounts(accounts);
+                }
+                return false;
+            } catch (e) {
+                console.error('重命名账号失败:', e);
+                return false;
+            }
+        }
+        
+        // 删除账号（确保至少保留一个账号）
+        function deleteAccount(accountId) {
+            try {
+                let accounts = getAccounts();
+                
+                // 确保至少保留一个账号
+                if (accounts.length <= 1) {
+                    return false;
+                }
+                
+                // 过滤掉要删除的账号
+                const newAccounts = accounts.filter(account => account.id !== accountId);
+                
+                // 如果删除的是当前账号，切换到第一个可用账号
+                const currentAccountId = getCurrentAccountId();
+                if (currentAccountId === accountId && newAccounts.length > 0) {
+                    setCurrentAccountId(newAccounts[0].id);
+                }
+                
+                // 保存更新后的账号列表
+                if (saveAccounts(newAccounts)) {
+                    // 删除该账号的游戏数据
+                    localStorage.removeItem('miningGameState_' + accountId);
+                    
+                    // 如果删除的是当前账号，重新加载游戏状态
+                    if (currentAccountId === accountId) {
+                        loadGame();
+                        updateUI();
+                    }
+                    
+                    return true;
+                }
+                
+                return false;
+            } catch (e) {
+                console.error('删除账号失败:', e);
+                return false;
+            }
+        }
+        
+        // 获取当前账号信息
+        function getCurrentAccount() {
+            try {
+                const accounts = getAccounts();
+                const currentAccountId = getCurrentAccountId();
+                return accounts.find(account => account.id === currentAccountId) || null;
+            } catch (e) {
+                console.error('获取当前账号信息失败:', e);
+                return null;
+            }
+        }
+        
+        // ====== 修改后的游戏状态加载和保存 ======
         // 加载游戏状态
         function loadGame() {
             try {
@@ -1920,8 +2259,23 @@
                     initGameState();
                 }
                 
-                // 尝试从localStorage加载
-                const savedState = localStorage.getItem('miningGameState');
+                // 清除当前游戏状态，确保完全加载新数据，不残留旧数据
+                initGameState();
+                
+                // 尝试从localStorage加载，使用当前账号ID
+                const currentAccountId = getCurrentAccountId();
+                const storageKey = currentAccountId ? `miningGameState_${currentAccountId}` : 'miningGameState';
+                let savedState = localStorage.getItem(storageKey);
+                
+                // 如果当前账号没有保存的数据，尝试从默认位置加载（首次迁移）
+                if (!savedState && currentAccountId) {
+                    const defaultState = localStorage.getItem('miningGameState');
+                    if (defaultState) {
+                        // 将默认位置的数据迁移到当前账号
+                        savedState = defaultState;
+                        localStorage.setItem(storageKey, savedState);
+                    }
+                }
                 if (!savedState) {
                     console.log('没有找到保存的游戏数据');
                     return false;
@@ -2081,6 +2435,243 @@
         }
 
         // 更新UI
+        // 创建账号管理UI
+        function createAccountManagementUI() {
+            try {
+                // 检查是否已存在账号管理UI
+                if (document.getElementById('account-management-ui')) return;
+                
+                // 创建账号管理按钮
+                const accountButton = document.createElement('button');
+                accountButton.id = 'account-management-btn';
+                accountButton.textContent = '账号管理';
+                accountButton.style.cssText = `
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    padding: 8px 16px;
+                    background: rgba(135, 206, 250, 0.8);
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    z-index: 1000;
+                `;
+                accountButton.addEventListener('click', showAccountManagementUI);
+                document.body.appendChild(accountButton);
+                
+                // 创建账号管理弹窗
+                const modal = document.createElement('div');
+                modal.id = 'account-management-ui';
+                modal.style.cssText = `
+                    display: none;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.5);
+                    z-index: 2000;
+                    justify-content: center;
+                    align-items: center;
+                `;
+                
+                const modalContent = document.createElement('div');
+                modalContent.style.cssText = `
+                    background: rgba(135, 206, 250, 0.8);
+                    border-radius: 8px;
+                    padding: 20px;
+                    width: 400px;
+                    max-height: 80vh;
+                    overflow-y: auto;
+                `;
+                
+                modalContent.innerHTML = `
+                    <h2 style="margin-top: 0; color: #333;">账号管理</h2>
+                    <div id="current-account-info" style="margin-bottom: 20px; padding: 10px; background: rgba(135, 206, 250, 0.8); border-radius: 4px;"></div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <h3 style="margin-top: 0; margin-bottom: 10px; color: #555;">所有账号</h3>
+                        <div id="accounts-list" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 5px;"></div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <input type="text" id="new-account-name" placeholder="新账号名称" style="width: 250px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <button id="create-account-btn" style="padding: 8px 12px; background: #2196F3; color: white; border: none; border-radius: 4px; cursor: pointer;">创建账号</button>
+                    </div>
+                    
+                    <div style="text-align: right;">
+                        <button id="close-account-ui" style="padding: 8px 16px; background: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;">关闭</button>
+                    </div>
+                `;
+                
+                modal.appendChild(modalContent);
+                document.body.appendChild(modal);
+                
+                // 绑定事件
+                document.getElementById('close-account-ui').addEventListener('click', hideAccountManagementUI);
+                document.getElementById('create-account-btn').addEventListener('click', handleCreateAccount);
+                
+            } catch (e) {
+                console.error('创建账号管理UI失败:', e);
+            }
+        }
+        
+        // 显示账号管理UI
+        function showAccountManagementUI() {
+            const modal = document.getElementById('account-management-ui');
+            if (modal) {
+                modal.style.display = 'flex';
+                updateAccountsList();
+            }
+        }
+        
+        // 隐藏账号管理UI
+        function hideAccountManagementUI() {
+            const modal = document.getElementById('account-management-ui');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        // 更新账号列表显示
+        function updateAccountsList() {
+            try {
+                const accountsListElement = document.getElementById('accounts-list');
+                const currentAccountInfoElement = document.getElementById('current-account-info');
+                
+                if (!accountsListElement || !currentAccountInfoElement) return;
+                
+                // 清空列表
+                accountsListElement.innerHTML = '';
+                
+                const accounts = getAccounts();
+                const currentAccountId = getCurrentAccountId();
+                const currentAccount = getCurrentAccount();
+                
+                // 更新当前账号信息
+                if (currentAccount) {
+                    currentAccountInfoElement.textContent = `当前账号: ${currentAccount.name}`;
+                } else {
+                    currentAccountInfoElement.textContent = '未选择账号';
+                }
+                
+                // 添加账号项
+                accounts.forEach(account => {
+                    const accountItem = document.createElement('div');
+                    accountItem.style.cssText = `
+                        padding: 8px;
+                        margin-bottom: 5px;
+                        border-radius: 4px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        ${account.id === currentAccountId ? 'background: rgba(135, 206, 250, 0.8);' : 'background: rgba(135, 206, 250, 0.6);'}
+                    `;
+                    
+                    const accountInfo = document.createElement('span');
+                    accountInfo.textContent = account.name;
+                    if (account.id === currentAccountId) {
+                        accountInfo.style.fontWeight = 'bold';
+                    }
+                    
+                    const actions = document.createElement('div');
+                    actions.style.display = 'flex';
+                    actions.style.gap = '5px';
+                    
+                    // 切换按钮
+                    if (account.id !== currentAccountId) {
+                        const switchBtn = document.createElement('button');
+                        switchBtn.textContent = '切换';
+                        switchBtn.style.cssText = 'padding: 4px 8px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;';
+                        switchBtn.addEventListener('click', () => handleSwitchAccount(account.id));
+                        actions.appendChild(switchBtn);
+                    }
+                    
+                    // 重命名按钮
+                    const renameBtn = document.createElement('button');
+                    renameBtn.textContent = '重命名';
+                    renameBtn.style.cssText = 'padding: 4px 8px; background: #FF9800; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;';
+                    renameBtn.addEventListener('click', () => handleRenameAccount(account.id, account.name));
+                    actions.appendChild(renameBtn);
+                    
+                    // 删除按钮（至少保留一个账号）
+                    if (accounts.length > 1) {
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.textContent = '删除';
+                        deleteBtn.style.cssText = 'padding: 4px 8px; background: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;';
+                        deleteBtn.addEventListener('click', () => handleDeleteAccount(account.id, account.name));
+                        actions.appendChild(deleteBtn);
+                    }
+                    
+                    accountItem.appendChild(accountInfo);
+                    accountItem.appendChild(actions);
+                    accountsListElement.appendChild(accountItem);
+                });
+                
+            } catch (e) {
+                console.error('更新账号列表失败:', e);
+            }
+        }
+        
+        // 处理创建账号
+        function handleCreateAccount() {
+            const nameInput = document.getElementById('new-account-name');
+            const accountName = nameInput.value.trim() || '新账号';
+            
+            const newAccount = createAccount(accountName);
+            if (newAccount) {
+                nameInput.value = '';
+                updateAccountsList();
+                alert(`账号创建成功: ${newAccount.name}`);
+            } else {
+                alert('账号创建失败');
+            }
+        }
+        
+        // 处理切换账号
+        function handleSwitchAccount(accountId) {
+            if (confirm('确定要切换账号吗？当前账号进度将自动保存。')) {
+                if (switchAccount(accountId)) {
+                    updateAccountsList();
+                    alert('账号切换成功');
+                } else {
+                    alert('账号切换失败');
+                }
+            }
+        }
+        
+        // 处理重命名账号
+        function handleRenameAccount(accountId, currentName) {
+            const newName = prompt('请输入新的账号名称:', currentName);
+            if (newName !== null) {
+                const trimmedName = newName.trim();
+                if (trimmedName) {
+                    if (renameAccount(accountId, trimmedName)) {
+                        updateAccountsList();
+                        alert('账号重命名成功');
+                    } else {
+                        alert('账号重命名失败');
+                    }
+                } else {
+                    alert('账号名称不能为空');
+                }
+            }
+        }
+        
+        // 处理删除账号
+        function handleDeleteAccount(accountId, accountName) {
+            if (confirm(`确定要删除账号 "${accountName}" 吗？该操作不可恢复。`)) {
+                if (deleteAccount(accountId)) {
+                    updateAccountsList();
+                    alert('账号删除成功');
+                } else {
+                    alert('账号删除失败或无法删除最后一个账号');
+                }
+            }
+        }
+        
         function updateUI() {
             try {
                 // 确保window.gameState存在
@@ -2143,65 +2734,43 @@
                 
                 // 第二阶段才显示树系统和树增益
                 if (treeSystemElement) {
-                    treeSystemElement.style.display = (window.gameState.gameStage >= 2) ? "block" : "none";
+                    treeSystemElement.style.display = (window.gameState.main2Unlocked === 1) ? "block" : "none";
                 }
                 
                 if (treeBoostElement) {
-                    // 第一阶段完全不显示浇树增益
-                    if (window.gameState.gameStage >= 2) {
-                        treeBoostElement.textContent = "浇树增益: " + calculateTreeBoost().toFixed(2);
-                        treeBoostElement.style.display = "block";
-                        // 确保可见性
-                        treeBoostElement.style.visibility = "visible";
-                        treeBoostElement.style.opacity = "1";
-                    } else {
-                        // 确保完全隐藏，避免任何显示
-                        treeBoostElement.style.display = "none";
-                        // 额外添加visibility和opacity来确保不显示
-                        treeBoostElement.style.visibility = "hidden";
-                        treeBoostElement.style.opacity = "0";
-                    }
+                    // 永久显示浇树增益
+                    treeBoostElement.textContent = "浇树增益: " + calculateTreeBoost().toFixed(2);
+                    treeBoostElement.style.display = "block";
+                    // 确保可见性
+                    treeBoostElement.style.visibility = "visible";
+                    treeBoostElement.style.opacity = "1";
                 }
                 
                 // 正常使用游戏阶段判断，不需要临时设置
                 
-                // 浇树增益显示逻辑（游戏阶段>=2）- 直接通过ID获取元素
+                // 浇树增益显示逻辑 - 永久显示
                 const treeBoostElementStats = document.getElementById('tree-boost');
-                if (treeBoostElementStats && window.gameState.gameStage >= 2) {
+                if (treeBoostElementStats) {
                     // 确保统计面板和增益面板使用相同的计算方法
                     const treeBoost = Math.pow(window.gameState.treeLevel || 1, 0.4);
                     treeBoostElementStats.textContent = "浇树增益: " + treeBoost.toFixed(2);
                     treeBoostElementStats.style.display = "block";
                     treeBoostElementStats.style.visibility = "visible";
                     treeBoostElementStats.style.opacity = "1";
-                } else if (treeBoostElementStats) {
-                    treeBoostElementStats.style.display = "none";
-                    treeBoostElementStats.style.visibility = "hidden";
-                    treeBoostElementStats.style.opacity = "0";
                 }
                 
-                // 修复：只有游戏阶段≥第三阶段第一部分才显示能量增益 - 直接通过ID获取元素
-                const isGameStage3OrHigher = window.gameState.gameStage >= 3 || window.gameState.gameStage === 3.1 || window.gameState.gameStage === 3.01;
-                
-                // 在统计数据板块中显示能量增益（在浇树增益下方）
+                // 能量增益显示逻辑 - 永久显示
                 const energyBoostElement = document.getElementById('energy-boost');
                 if (energyBoostElement) {
-                    if (isGameStage3OrHigher) {
-                        // 计算能量增益值（根据主线3第一阶段的要求：α能量转化器的能量增益=(α能量+1)^0.1）
-                        const alphaEnergy = window.gameState.energies?.alpha || 0;
-                        const energyBoost = Math.pow(alphaEnergy + 1, 0.1);
-                        
-                        // 更新内容并确保显示元素
-                        energyBoostElement.textContent = "能量增益: " + energyBoost.toFixed(2);
-                        energyBoostElement.style.display = "block";
-                        energyBoostElement.style.visibility = "visible";
-                        energyBoostElement.style.opacity = "1";
-                    } else {
-                        // 游戏阶段不足时隐藏能量增益
-                        energyBoostElement.style.display = "none";
-                        energyBoostElement.style.visibility = "hidden";
-                        energyBoostElement.style.opacity = "0";
-                    }
+                    // 计算能量增益值（根据主线3第一阶段的要求：α能量转化器的能量增益=(α能量+1)^0.1）
+                    const alphaEnergy = window.gameState.energies?.alpha || 0;
+                    const energyBoost = Math.pow(alphaEnergy + 1, 0.1);
+                    
+                    // 更新内容并确保显示元素
+                    energyBoostElement.textContent = "能量增益: " + energyBoost.toFixed(2);
+                    energyBoostElement.style.display = "block";
+                    energyBoostElement.style.visibility = "visible";
+                    energyBoostElement.style.opacity = "1";
                 }
                 
                 // 更新成就列表
@@ -2267,9 +2836,15 @@
                 if (blockRewardsElement && currentBlock) {
                     let rewardsText = `基础奖励: ${currentBlock.baseGold}金币`;
                     if (currentBlock.special) {
-                        // 显示增强后的掉落概率                    
-                    const enhancedDisplayChance = Math.min(currentBlock.special.chance * 10, 1.0);
-                    rewardsText += `, ${(enhancedDisplayChance * 100)}%概率掉落${currentBlock.special.item}`;
+                        // 限制概率显示不超过100%
+                        const specialChance = Math.min(100, currentBlock.special.chance * 10 * 100);
+                        rewardsText += `, ${specialChance}%概率掉落${currentBlock.special.item}`;
+                    }
+                    // 添加普通掉落概率显示，并确保显示×10后的概率且不超过100%
+                    if (currentBlock.dropChance && currentBlock.dropItem) {
+                        // 限制概率显示不超过100%
+                        const displayChance = Math.min(100, currentBlock.dropChance * 10 * 100);
+                        rewardsText += `, ${displayChance}%概率掉落${currentBlock.dropItem}`;
                     }
                     blockRewardsElement.textContent = rewardsText;
                 }
@@ -2362,7 +2937,7 @@
             ];
             
             // 第二阶段及以上才添加浇树增益
-            if (window.gameState && window.gameState.gameStage >= 2) {
+            if (window.gameState && window.gameState.main2Unlocked === 1) {
                 boosts.push({ name: "浇树增益", value: calculateTreeBoost().toFixed(2) });
                 
                 // 游戏阶段≥第三阶段第一部分时，在浇树增益下方添加能量增益
@@ -2447,7 +3022,16 @@
                         }
                         if (item.cost.usageBoost) {
                             costText += `, 使用增益: ${formatNumber(item.cost.usageBoost)}`;
-                            if (window.gameState.usageBoost < item.cost.usageBoost) canBuy = false;
+                            // 对于"使用镐"，需要使用增益大于1e12才能购买
+                            if (item.name === "使用镐" && window.gameState.usageBoost <= 1e12) {
+                                canBuy = false;
+                                // 添加一个特殊标记，用于后续样式处理
+                                isPickaxeDisabled = true;
+                            }
+                            // 其他使用usageBoost的物品保持原逻辑
+                            else if (window.gameState.usageBoost < item.cost.usageBoost) {
+                                canBuy = false;
+                            }
                         }
                         
                         // 添加α/β/γ能量的显示和检查
@@ -2462,6 +3046,16 @@
                         if (item.cost.gamma) {
                             costText += `, γ能量: ${formatNumber(item.cost.gamma)}`;
                             if ((window.gameState.energies?.gamma || 0) < item.cost.gamma) canBuy = false;
+                        }
+                        // 添加普通能量的显示和检查
+                        if (item.cost.energy) {
+                            costText += `, 能量: ${formatNumber(item.cost.energy)}`;
+                            if ((window.gameState.resources?.energy || 0) < item.cost.energy) canBuy = false;
+                        }
+                        // 添加使用增益的显示（在前面的usageBoost条件之外再添加一次显示，确保始终显示）
+                        if (item.cost.usage && !costText.includes("使用增益")) {
+                            costText += `, 使用增益: ${formatNumber(item.cost.usage)}`;
+                            if (window.gameState.usageBoost < item.cost.usage) canBuy = false;
                         }
                         
                         for (const [frag, amount] of Object.entries(item.cost.fragments)) {
@@ -2495,7 +3089,7 @@
                         </div>
                         ${item.boost ? `<div>增益: ${item.boost}, 金币倍率: ${item.goldMultiplier}, 使用增益增加: ${item.usageGain}</div>` : ""}
                         ${item.name === "金奖转化器" ? '<div style="font-size: 12px; color: #666; margin: 5px 0;">每秒自动将金币转化为奖杯</div>' : ""}
-                        <button class="buy-btn" data-item="${item.name}" ${!canBuy ? 'disabled' : ''}>购买</button>
+                        <button class="buy-btn" data-item="${item.name}" ${!canBuy || (item.name === "使用镐" && window.gameState.usageBoost <= 1e12) ? 'disabled' : ''} style="${item.name === "使用镐" && window.gameState.usageBoost <= 1e12 ? 'background-color: #666 !important; color: #fff !important; cursor: not-allowed !important; opacity: 0.7 !important;' : ''}">购买</button>
                     `;
                     
                     shopItems.appendChild(shopItem);
@@ -2522,10 +3116,47 @@
             });
         }
         
-        // 添加金奖转化器开关按钮的样式
+        // 添加金奖转化器开关按钮的样式和禁用购买按钮的样式
         (function() {
             const style = document.createElement('style');
             style.textContent = `
+                /* 基础购买按钮样式 */
+                .buy-btn {
+                    background-color: var(--primary);
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                }
+                
+                .buy-btn:hover:not(:disabled) {
+                    background-color: var(--primary-dark);
+                    transform: translateY(-2px);
+                }
+                
+                /* 禁用状态样式 */
+                .buy-btn:disabled {
+                    background-color: #666 !important;
+                    color: #fff !important;
+                    cursor: not-allowed !important;
+                    opacity: 0.7 !important;
+                    transform: none !important;
+                    box-shadow: none !important;
+                }
+                
+                /* 使用镐特殊禁用样式 - 强制覆盖所有其他样式 */
+                .buy-btn[data-item="使用镐"] {
+                    background-color: #666 !important;
+                    color: #fff !important;
+                    cursor: not-allowed !important;
+                    opacity: 0.7 !important;
+                    transform: none !important;
+                    box-shadow: none !important;
+                }
+                
                 .trophy-converter-toggle {
                     padding: 4px 8px;
                     margin-left: 8px;
@@ -2594,13 +3225,17 @@
                         }
                     }
                     
-                    if (item.cost.usageBoost && window.gameState.usageBoost < item.cost.usageBoost) canBuy = false;
-                    
                     // 检查α/β/γ能量是否足够
                     if (item.cost.alpha && (window.gameState.energies?.alpha || 0) < item.cost.alpha) canBuy = false;
                     if (item.cost.beta && (window.gameState.energies?.beta || 0) < item.cost.beta) canBuy = false;
                     if (item.cost.gamma && (window.gameState.energies?.gamma || 0) < item.cost.gamma) canBuy = false;
                 }
+                
+                // 无论是否有fragments成本，都需要检查usageBoost条件
+                // 对于"使用镐"，需要使用增益大于1e12才能购买
+                if (item.name === "使用镐" && window.gameState.usageBoost <= 1e12) canBuy = false;
+                // 其他使用usageBoost的物品保持原逻辑
+                else if (item.cost.usageBoost && window.gameState.usageBoost < item.cost.usageBoost && item.name !== "使用镐") canBuy = false;
                 
                 if (canBuy) {
                     // 扣除成本
@@ -2700,11 +3335,8 @@
         // 浇树功能 - 使用水立方
         function waterTreeWithCube() {
             try {
-                // 检查是否在第二阶段
-                if (window.gameState.main2Unlocked !== 1) {
-                    alert("需要获得五行镐进入第二阶段才能浇树！");
-                    return;
-                }
+                // 移除阶段限制，允许随时浇树
+                // 原阶段限制代码已删除
                 
                 // 检查是否有水立方
                 if ((window.gameState.resources && window.gameState.resources["水立方"] || 0) < 1) {
@@ -2769,10 +3401,14 @@
                 }
                 
                 if (window.gameState.autoMiningEnabled) {
-                    // 自动挖矿速度：(20*阶段)次每秒
-                    const miningInterval = 1000 / (20 * (window.gameState.gameStage || 1));
+                    // 自动挖矿间隔永久为0
+                    const miningInterval = 0;
                     autoMiningInterval = setInterval(() => {
-                        mineBlock(true); // 传入参数表示自动挖矿
+                        // 每次自动点击执行78次或91次挖矿（随机选择）
+                        const clickCount = Math.random() > 0.5 ? 78 : 91;
+                        for (let i = 0; i < clickCount; i++) {
+                            mineBlock(true); // 传入参数表示自动挖矿
+                        }
                     }, miningInterval);
                 } else {
                     if (autoMiningInterval) {
@@ -3110,31 +3746,71 @@
                         window.gameState.gold = (window.gameState.gold || 0) + goldGained;
                         window.gameState.exp = (window.gameState.exp || 0) + expGained;
                         
-                        // 检查特殊掉落
-                        // 提高掉落概率到10倍，但不超过100%            
-            const enhancedDropChance = Math.min(currentBlock.special.chance * 10, 1.0);
-            if (currentBlock.special && Math.random() < enhancedDropChance) {
+                        // 处理特殊掉落(special.chance)
+                        if (currentBlock.special && currentBlock.special.chance) {
+                            // 所有方块爆率×10，超过100%则设为100%
+                            const enhancedDropChance = Math.min(currentBlock.special.chance * 10, 1.0);
+                            if (Math.random() < enhancedDropChance) {
                             const itemName = currentBlock.special.item;
                             if (itemName) {
+                                // 计算掉落数量：向上取整(原爆率×10 × 原掉落数量)
+                                const originalChance = currentBlock.special.chance;
+                                const originalCount = currentBlock.special.count || 1;
+                                const dropCount = Math.ceil(originalChance * 10 * originalCount);
+                                
                                 // 根据掉落类型进行不同处理
                                 if (currentBlock.special.type === 'pickaxe') {
                                     // 处理镐子掉落
                                     if (!window.gameState.pickaxes) {
                                         window.gameState.pickaxes = {};
                                     }
-                                    const count = currentBlock.special.count || 1;
-                                    window.gameState.pickaxes[itemName] = (window.gameState.pickaxes[itemName] || 0) + count;
+                                    window.gameState.pickaxes[itemName] = (window.gameState.pickaxes[itemName] || 0) + dropCount;
                                     // 显示获得镐子的通知
-                                    showNotification(`获得了 ${count} 把${itemName}！`);
+                                    showNotification(`获得了 ${dropCount} 把${itemName}！`);
                                 } else {
                                     // 处理普通资源掉落
                                     if (!window.gameState.resources) {
                                         window.gameState.resources = {};
                                     }
-                                    const count = currentBlock.special.count || 1;
-                                    window.gameState.resources[itemName] = (window.gameState.resources[itemName] || 0) + count;
+                                    window.gameState.resources[itemName] = (window.gameState.resources[itemName] || 0) + dropCount;
                                     // 显示获得资源的通知
-                                    showNotification(`获得了 ${count} 个${itemName}！`);
+                                    showNotification(`获得了 ${dropCount} 个${itemName}！`);
+                                }
+                            }
+                        }
+                        }
+                        
+                        // 处理普通掉落(dropChance)
+                        if (currentBlock.dropChance && currentBlock.dropItem) {
+                            // 所有方块爆率×10，超过100%则设为100%
+                            const enhancedDropChance = Math.min(currentBlock.dropChance * 10, 1.0);
+                            if (Math.random() < enhancedDropChance) {
+                                // 计算掉落数量
+                                const actualDropAmount = currentBlock.dropChance >= 1.0 ? 
+                                    (currentBlock.dropAmount || 1) * 10 : 
+                                    (currentBlock.dropAmount || 1);
+                                
+                                // 处理不同类型的掉落物品
+                                if (currentBlock.dropItem === 'iridium') {
+                                    window.gameState.iridiumIngots = (window.gameState.iridiumIngots || 0) + actualDropAmount;
+                                    showNotification(`获得了 ${actualDropAmount} 个铱锭！`);
+                                } else if (currentBlock.dropItem === 'hassium') {
+                                    window.gameState.hassiumIngots = (window.gameState.hassiumIngots || 0) + actualDropAmount;
+                                    showNotification(`获得了 ${actualDropAmount} 个𬭶锭！`);
+                                } else if (currentBlock.dropItem === 'singularity') {
+                                    window.gameState.singularity = (window.gameState.singularity || 0) + actualDropAmount;
+                                    showNotification(`获得了 ${actualDropAmount} 个奇点！`);
+                                } else if (currentBlock.dropItem === 'endCore') {
+                                    window.gameState.endCore = (window.gameState.endCore || 0) + actualDropAmount;
+                                    showNotification(`获得了 ${actualDropAmount} 个终焉核心！`);
+                                } else {
+                                    // 处理其他可能的掉落物品
+                                    if (!window.gameState.resources) {
+                                        window.gameState.resources = {};
+                                    }
+                                    window.gameState.resources[currentBlock.dropItem] = 
+                                        (window.gameState.resources[currentBlock.dropItem] || 0) + actualDropAmount;
+                                    showNotification(`获得了 ${actualDropAmount} 个${currentBlock.dropItem}！`);
                                 }
                             }
                         }
@@ -3388,11 +4064,8 @@
         // 浇树功能 - 使用水结晶
         function waterTreeWithCrystal() {
             try {
-                // 检查是否在第二阶段（使用main2Unlocked变量）
-                if (window.gameState.main2Unlocked !== 1) {
-                    alert("需要获得五行镐进入第二阶段才能浇树！");
-                    return;
-                }
+                // 移除阶段限制，允许随时浇树
+                // 原阶段限制代码已删除
                 
                 // 检查是否有水结晶
                 if ((window.gameState.resources && window.gameState.resources["水结晶"] || 0) < 1) {
@@ -3436,11 +4109,8 @@
         // 浇树功能 - 使用淼立方
         function waterTreeWithTripleCube() {
             try {
-                // 检查是否在第二阶段（使用main2Unlocked变量）
-                if (window.gameState.main2Unlocked !== 1) {
-                    alert("需要获得五行镐进入第二阶段才能浇树！");
-                    return;
-                }
+                // 移除阶段限制，允许随时浇树
+                // 原阶段限制代码已删除
                 
                 // 检查是否有淼立方
                 if ((window.gameState.resources && window.gameState.resources["淼立方"] || 0) < 1) {
@@ -4290,8 +4960,7 @@
             }
         }
 
-        // 初始化游戏状态到默认值
-        function initGameState() {
+        if (!window.gameState) {
             window.gameState = {
                 level: 0,
                 exp: 0,
@@ -4303,32 +4972,7 @@
                 usageBoost: 1,
                 alchemyBoost: 1,
                 alchemyValue: 0,
-                // 新增：树系统
-                treeLevel: 1,
-                treeExp: 0,
-                // 新增：自动挖矿
-                autoMiningEnabled: false,
-                // 新增：总伤害统计
-                totalDamage: 0,
-                // 新增：游戏阶段（1或2）
                 gameStage: 1,
-                // 新增：在线时长统计（秒）
-                totalPlayTimeSeconds: 0,
-                // 新增：成就系统
-                achievements: {
-                    "初入游戏": true,
-                    "获得奖杯": false,
-                    "伤害一万": false,
-                    "伤害一亿": false,
-                    "伤害一万亿": false,
-                    "伤害一兆": false,
-                    "伤害一万兆": false,
-                    "红蓝镐": false,
-                    "只因你太美": false,
-                    "五行镐": false,
-                    "炼药": false,
-                    "浇树": false
-                },
                 resources: {
                     "红曜石碎片": 0,
                     "蓝曜石碎片": 0,
@@ -4343,7 +4987,50 @@
                     "坤坤": 0,
                     "红曜石": 0,
                     "蓝曜石": 0,
-                    "五行转换器": 0
+                    "五行转换器": 0,
+                    "木结晶": 0,
+                    "土结晶": 0,
+                    "水结晶": 0,
+                    "火结晶": 0,
+                    "金结晶": 0,
+                    "风结晶": 0,
+                    "雷结晶": 0,
+                    "光结晶": 0,
+                    "暗结晶": 0,
+                    "源结晶": 0,
+                    "金奖核心": 0,
+                    "淼立方": 0,
+                    "红曜方": 0,
+                    "蓝曜方": 0,
+                    "五行结晶": 0,
+                    "风雷结晶": 0,
+                    "光暗结晶": 0,
+                    "金奖转化器": 0,
+                    "α": 0,
+                    "β": 0,
+                    "γ": 0,
+                    "元素晶片": 0,
+                    "量产核心": 0,
+                    "五行镐": 0,
+                    "五行精华": 0,
+                    "五行驱动器": 0,
+                    "???": 0
+                },
+                // 研究所相关状态
+                energies: {
+                    alpha: 0,
+                    beta: 0,
+                    gamma: 0
+                },
+                converters: {
+                    alpha: false,
+                    beta: false,
+                    gamma: false
+                },
+                producers: {
+                    alpha: 0,
+                    beta: 0,
+                    gamma: 0
                 },
                 pickaxes: {
                     "木镐": 1,
@@ -4368,6 +5055,25 @@
                     "紫水晶镐Ⅲ": 0,
                     "紫水晶镐Ⅳ": 0,
                     "紫水晶镐Ⅴ": 0,
+                    "五行镐·木": 0,
+                    "五行镐·土": 0,
+                    "五行镐·水": 0,
+                    "五行镐·火": 0,
+                    "五行镐·金": 0,
+                    "五行镐·五行": 0,
+                    "五行镐·风": 0,
+                    "五行镐·雷": 0,
+                    "七行镐": 0,
+                    "七行镐·光": 0,
+                    "七行镐·暗": 0,
+                    "九行镐": 0,
+                    "源镐": 0,
+                    "五行镐Ⅱ": 0,
+                    "五行镐Ⅲ": 0,
+                    "五行镐Ⅳ":0,
+                    "红蓝镐Ⅱ": 0,
+                    "红蓝镐Ⅲ": 0,
+                    "坤镐": 0,
                     "元素镐": 0,
                     "元素镐2阶": 0,
                     "元素镐3阶": 0,
@@ -4377,12 +5083,13 @@
                     "元素镐7阶": 0,
                     "元素镐8阶": 0,
                     "元素镐9阶": 0,
-                    "元素镐10阶": 0
+                    "元素镐10阶": 0,
+                    "奖杯镐":0,
+                    "使用镐":0
                 },
                 blockHp: {}
             };
         }
-        
         // 格式化在线时长（秒）为友好的显示格式
         function formatPlayTime(seconds) {
             const days = Math.floor(seconds / (24 * 3600));
@@ -4520,7 +5227,7 @@
                         // side3内容
                         { name: "五行镐", hp: 7.8e31, baseGold: 18000, special: { type: "pickaxe", item: "五行镐", count: 1, chance: 0.01 } },
                         { name: "五行精华", hp: 9.1e31, baseGold: 18000, special: { type: "fragment", item: "五行精华", count: 1, chance: 0.001 } },
-                        { name: "药叶", hp: 9.1e36, baseGold: 24000, special: { type: "fragment", item: "药叶", count: 1, chance: 0.03 } }
+                        { name: "药叶", hp: 9.1e44, baseGold: 100000, special: { type: "fragment", item: "药叶", count: 1, chance: 0.03 } }
                     ],
                     main2: [
                         { name: "木结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "木结晶", chance: 0.05 } },
@@ -4595,11 +5302,14 @@
                     }
                 }
                 
-                // 创建新的点击处理函数并保存到全局
+                // 创建新的点击处理函数并保存到全局，每次点击触发10次挖矿
                 window._blockClickHandler = function() {
                     if (typeof mineBlock === 'function') {
                         try {
-                            mineBlock();
+                            // 每次点击触发10次挖矿
+                            for (let i = 0; i < 10; i++) {
+                                mineBlock();
+                            }
                         } catch (e) {
                             console.error('挖矿函数执行失败:', e);
                         }
@@ -4686,7 +5396,7 @@
                         // side3内容
                         { name: "五行镐", hp: 7.8e31, baseGold: 18000, special: { type: "pickaxe", item: "五行镐", count: 1, chance: 0.01 } },
                         { name: "五行精华", hp: 9.1e31, baseGold: 18000, special: { type: "fragment", item: "五行精华", count: 1, chance: 0.001 } },
-                        { name: "药叶", hp: 9.1e36, baseGold: 24000, special: { type: "fragment", item: "药叶", count: 1, chance: 0.03 } }
+                        { name: "药叶", hp: 9.1e44, baseGold: 100000, special: { type: "fragment", item: "药叶", count: 1, chance: 0.03 } }
                     ],
                     main2: [
                         { name: "木结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "木结晶", chance: 0.05 } },
@@ -4899,7 +5609,7 @@
                                 // side3内容
                                 { name: "五行镐", hp: 7.8e31, baseGold: 18000, special: { type: "pickaxe", item: "五行镐", count: 1, chance: 0.01 } },
                                 { name: "五行精华", hp: 9.1e31, baseGold: 18000, special: { type: "fragment", item: "五行精华", count: 1, chance: 0.001 } },
-                                { name: "药叶", hp: 9.1e36, baseGold: 24000, special: { type: "fragment", item: "药叶", count: 1, chance: 0.03 } }
+                                { name: "药叶", hp: 9.1e44, baseGold: 100000, special: { type: "fragment", item: "药叶", count: 1, chance: 0.03 } }
                             ],
                             main2: [
                                 { name: "木结晶块", hp: 7.8e18, baseGold: 2000, special: { type: "fragment", item: "木结晶", chance: 0.05 } },
@@ -5565,15 +6275,19 @@
                         if (itemsShopBtn) itemsShopBtn.style.display = 'none';
                         // sideBtn不隐藏，始终显示支线UI标签
                         
+                        // 获取游戏阶段
+                        const gameStage = window.gameState?.gameStage || 1;
+                        
                         // 第三阶段第二部分（主线3已解锁且???数量≥0）
                         if (main3Unlocked === 1 && questionMarksCount >= 0) {
-                            // UI标签：显示增益、资源、商店、炼药、浇树、研究所，支线UI标签已始终显示
+                            // UI标签：显示增益、资源、商店、炼药、浇树，支线UI标签已始终显示
                             boostBtn.style.display = 'inline-block';
                             resourcesBtn.style.display = 'inline-block';
                             shopBtn.style.display = 'inline-block';
                             alchemyBtn.style.display = 'inline-block';
                             if (waterTreeBtn) waterTreeBtn.style.display = 'inline-block';
-                            if (researchBtn) researchBtn.style.display = 'inline-block';
+                            // 研究所标签仅在游戏阶段≥3时显示
+                            if (researchBtn && gameStage >= 3) researchBtn.style.display = 'inline-block';
                             // sideBtn已在函数开始时设置为不隐藏
                             if (main2Btn) main2Btn.style.display = 'inline-block';
                             
@@ -5592,13 +6306,14 @@
                         }
                         // 第三阶段第一部分（主线3已解锁但???数量<0）
                         else if (main3Unlocked === 1) {
-                            // UI标签：显示增益、资源、商店、炼药、浇树、研究所
+                            // UI标签：显示增益、资源、商店、炼药、浇树
                             boostBtn.style.display = 'inline-block';
                             resourcesBtn.style.display = 'inline-block';
                             shopBtn.style.display = 'inline-block';
                             alchemyBtn.style.display = 'inline-block';
                             if (waterTreeBtn) waterTreeBtn.style.display = 'inline-block';
-                            if (researchBtn) researchBtn.style.display = 'inline-block';
+                            // 研究所标签仅在游戏阶段≥3时显示
+                            if (researchBtn && gameStage >= 3) researchBtn.style.display = 'inline-block';
                             if (sideBtn) sideBtn.style.display = 'inline-block';
                             if (main2Btn) main2Btn.style.display = 'inline-block';
                             
@@ -5673,16 +6388,8 @@
                     }
                 }
                 
-                // 根据游戏阶段控制研究所标签内容区域的显示
-                const researchTabContent = document.getElementById('research-tab');
-                if (researchTabContent) {
-                    const gameStage = window.gameState?.gameStage || 1;
-                    if (gameStage >= 3) {
-                        researchTabContent.style.display = 'block';
-                    } else {
-                        researchTabContent.style.display = 'none';
-                    }
-                }
+                // 研究所UI的显示现在完全由标签点击事件控制（见handleTabClick函数）
+                // 删除了根据游戏阶段自动显示研究所UI的代码
             } catch (e) {
                 console.error('更新标签可见性时出错:', e);
             }
@@ -6441,6 +7148,18 @@
                 if (!window.gameInitialized) {
                     window.gameInitialized = true;
                     try {
+                    // 初始化账号系统
+                        if (typeof initAccountSystem === 'function') {
+                            initAccountSystem();
+                            console.log('账号系统初始化完成');
+                        }
+                        
+                        // 创建账号管理UI
+                        if (typeof createAccountManagementUI === 'function') {
+                            createAccountManagementUI();
+                            console.log('账号管理UI创建完成');
+                        }
+                        
                         // 只调用initGame函数一次，其中已包含点击事件绑定
                         initGame();
                         
@@ -6471,6 +7190,96 @@
                 }
             }, 100);
         });
+        
+        // 账号系统测试函数
+        function testAccountSystem() {
+            console.log('======== 开始测试账号系统 ========');
+            
+            // 保存原始账号
+            const originalAccountId = getCurrentAccountId();
+            const originalAccountName = getCurrentAccount().name;
+            
+            try {
+                // 测试1: 创建新账号
+                console.log('\n测试1: 创建新账号');
+                const testAccountId = createAccount('测试账号');
+                console.log(`创建测试账号成功: ID=${testAccountId}, 名称=测试账号`);
+                
+                // 测试2: 切换到新账号
+                console.log('\n测试2: 切换到新账号');
+                switchAccount(testAccountId);
+                console.log(`切换账号成功，当前账号: ${getCurrentAccount().name}`);
+                
+                // 测试3: 重命名账号
+                console.log('\n测试3: 重命名账号');
+                renameAccount(testAccountId, '重命名的测试账号');
+                console.log(`重命名账号成功，新名称: ${getCurrentAccount().name}`);
+                
+                // 测试4: 数据隔离验证
+                console.log('\n测试4: 数据隔离验证');
+                // 修改当前账号数据
+                if (window.gameState) {
+                    window.gameState.gold = 99999;
+                    saveGame();
+                    console.log('已修改当前账号数据并保存');
+                }
+                
+                // 测试5: 切换回原始账号
+                console.log('\n测试5: 切换回原始账号');
+                switchAccount(originalAccountId);
+                console.log(`切换回原始账号成功: ${getCurrentAccount().name}`);
+                
+                // 测试6: 删除测试账号
+                console.log('\n测试6: 删除测试账号');
+                // 获取所有账号，确保至少有一个账号
+                const accounts = getAccounts();
+                if (accounts.length > 1) {
+                    deleteAccount(testAccountId);
+                    console.log('删除测试账号成功');
+                } else {
+                    console.log('账号数量不足，跳过删除测试');
+                }
+                
+                console.log('\n======== 账号系统测试完成 ========');
+                return true;
+            } catch (error) {
+                console.error('账号系统测试失败:', error);
+                // 恢复原始账号
+                if (originalAccountId) {
+                    switchAccount(originalAccountId);
+                }
+                console.log('\n======== 账号系统测试失败 ========');
+                return false;
+            }
+        }
+        
+        // 添加测试账号系统的按钮
+        function addTestAccountSystemButton() {
+            const testButton = document.createElement('button');
+            testButton.textContent = '测试账号系统';
+            testButton.style.position = 'fixed';
+            testButton.style.bottom = '10px';
+            testButton.style.right = '10px';
+            testButton.style.padding = '10px 20px';
+            testButton.style.backgroundColor = '#4CAF50';
+            testButton.style.color = 'white';
+            testButton.style.border = 'none';
+            testButton.style.borderRadius = '5px';
+            testButton.style.cursor = 'pointer';
+            testButton.style.zIndex = '9999';
+            testButton.onclick = function() {
+                testAccountSystem();
+                alert('账号系统测试完成，请查看控制台输出');
+            };
+            document.body.appendChild(testButton);
+        }
+        
+        // 在DOM加载完成后添加测试按钮
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', addTestAccountSystemButton);
+        } else {
+            addTestAccountSystemButton();
+        }
         
         // 3. 添加兼容性polyfill
         if (!Element.prototype.matches) {
@@ -6524,109 +7333,169 @@
     }
   });
 </script>
+
+<!-- 整合auto_level_up_fix.js内容 -->
 <script>
-// 自动点击功能增强脚本 - 修复版
-console.log('加载自动点击功能增强脚本...');
+// 自动升级功能修复脚本
+console.log('加载自动升级功能修复脚本...');
 
-// 等待DOM加载完成
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAutoClickEnhancer);
-} else {
-    initAutoClickEnhancer();
-}
+// 保存原始的setInterval函数
+const originalSetInterval = window.setInterval;
 
-function initAutoClickEnhancer() {
-    console.log('初始化自动点击增强功能...');
+// 修复经验增加时的自动升级逻辑
+function setupAutoLevelUpFix() {
+    console.log('设置自动升级修复...');
     
-    // 1. 修改自动点击间隔为0（立即执行）并实现每次执行10次点击事件
-    const originalSetInterval = window.setInterval;
-    window.setInterval = function(callback, delay, ...args) {
-        // 检测是否是自动挖矿相关的定时器
-        if (callback.toString().includes('mineBlock') || 
-            callback.toString().includes('gain') || 
-            callback.toString().includes('click') ||
-            delay > 0 && delay < 100) { // 小额延迟可能是点击间隔
-            console.log('检测到自动点击定时器，将延迟设为0并增强为10次点击');
-            
-            // 创建增强的回调函数，每次执行10次点击
-            const enhancedCallback = function() {
-                for (let i = 0; i < 10; i++) {
-                    try {
-                        callback();
-                    } catch (e) {
-                        console.log('执行点击函数时出错:', e);
-                    }
-                }
-            };
-            
-            return originalSetInterval(enhancedCallback, 0, ...args);
+    // 1. 立即启动定期检查升级的定时器
+    if (typeof checkLevelUp === 'function') {
+        console.log('启动自动升级检查定时器');
+        // 清除可能存在的旧定时器
+        if (window.levelUpInterval) {
+            clearInterval(window.levelUpInterval);
         }
-        return originalSetInterval(callback, delay, ...args);
-    };
-    
-    // 2. 只在方块元素上添加点击事件，确保只有点击方块才触发
-    const blockDisplay = document.getElementById('block-display');
-    if (blockDisplay) {
-        console.log('找到方块元素，添加增强的点击事件');
-        
-        // 保存原始的事件监听器
-        const newBlockDisplay = blockDisplay.cloneNode(true);
-        blockDisplay.parentNode.replaceChild(newBlockDisplay, blockDisplay);
-        
-        // 添加增强的点击事件
-        newBlockDisplay.addEventListener('click', function(event) {
-            console.log('检测到方块点击，触发10次点击事件');
-            event.stopPropagation();
-            
-            // 触发10次点击事件
-            for (let i = 0; i < 10; i++) {
-                // 尝试调用各种可能的点击处理函数
-                try {
-                    if (typeof mineBlock === 'function') {
-                        mineBlock(false);
-                    } else if (typeof handleClick === 'function') {
-                        handleClick();
-                    } else if (typeof gainLingyuan === 'function') {
-                        gainLingyuan();
-                    } else if (typeof simpleMineBlock === 'function') {
-                        simpleMineBlock();
-                    }
-                } catch (e) {
-                    console.log('调用点击函数时出错:', e);
-                }
+        // 设置新的定时器，每500毫秒检查一次升级（更频繁以提高响应性）
+        window.levelUpInterval = originalSetInterval(() => {
+            try {
+                checkLevelUp();
+            } catch (error) {
+                console.error('执行自动升级检查时出错:', error);
             }
-        });
-        
-        // 增强触摸事件
-        newBlockDisplay.addEventListener('touchstart', function(event) {
-            console.log('检测到方块触摸，触发10次点击事件');
-            event.preventDefault();
-            event.stopPropagation();
-            
-            // 触发10次点击事件
-            for (let i = 0; i < 10; i++) {
-                // 尝试调用各种可能的点击处理函数
-                try {
-                    if (typeof mineBlock === 'function') {
-                        mineBlock(false);
-                    } else if (typeof handleClick === 'function') {
-                        handleClick();
-                    } else if (typeof gainLingyuan === 'function') {
-                        gainLingyuan();
-                    } else if (typeof simpleMineBlock === 'function') {
-                        simpleMineBlock();
-                    }
-                } catch (e) {
-                    console.log('调用点击函数时出错:', e);
-                }
-            }
-        }, { passive: false });
+        }, 500);
     }
     
-    console.log('自动点击增强功能初始化完成！');
-    console.log('- 自动挖矿每次执行10次点击事件，间隔为0毫秒');
-    console.log('- 只有点击方块才会触发点击事件');
+    // 2. 尝试监听经验变化
+    // 重写可能修改经验的方法
+    let originalGameState = window.gameState;
+    Object.defineProperty(window, 'gameState', {
+        set: function(newState) {
+            // 保存新状态
+            originalGameState = newState;
+            // 检查经验是否变化
+            if (newState && typeof checkLevelUp === 'function') {
+                checkLevelUp();
+            }
+        },
+        get: function() {
+            return originalGameState;
+        }
+    });
+    
+    // 3. 增强checkLevelUp函数
+    const originalCheckLevelUp = window.checkLevelUp;
+    window.checkLevelUp = function() {
+        try {
+            console.log('执行升级检查');
+            // 如果存在原始的checkLevelUp函数，调用它
+            if (typeof originalCheckLevelUp === 'function') {
+                originalCheckLevelUp();
+            } else {
+                // 实现基本的升级检查逻辑
+                if (window.gameState && typeof window.gameState.exp === 'number' && typeof getExpNeeded === 'function') {
+                    const currentExp = window.gameState.exp;
+                    const expNeeded = getExpNeeded();
+                    console.log(`当前经验: ${currentExp}, 需要经验: ${expNeeded}`);
+                    
+                    // 如果经验足够，尝试升级
+                    if (currentExp >= expNeeded) {
+                        console.log('经验足够，执行升级');
+                        // 这里可以添加基本的升级逻辑
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('检查升级时出错:', error);
+        }
+    };
+    
+    console.log('自动升级修复设置完成');
 }
+
+// 4. 监听页面加载事件，确保DOM完全加载后执行
+function applyFixWhenReady() {
+    if (document.readyState === 'complete') {
+        // 页面已经完全加载，立即执行修复
+        setupAutoLevelUpFix();
+        // 立即执行一次升级检查
+        if (typeof checkLevelUp === 'function') {
+            setTimeout(checkLevelUp, 100);
+        }
+    } else {
+        // 等待页面完全加载
+        window.addEventListener('load', function() {
+            setupAutoLevelUpFix();
+            // 立即执行一次升级检查
+            if (typeof checkLevelUp === 'function') {
+                setTimeout(checkLevelUp, 100);
+            }
+        });
+    }
+}
+
+// 立即执行修复
+applyFixWhenReady();
 </script>
+
+<!-- 整合fix_overrides.js内容 -->
+<script>
+// 等待页面加载完成后执行
+window.addEventListener('load', function() {
+    console.log('修复覆盖脚本已加载');
+    
+    // 覆盖startAllAutoFunctions函数
+    window.startAllAutoFunctions = function() {
+        try {
+            console.log('覆盖版startAllAutoFunctions执行');
+            // 启动能量自动转化
+            if (typeof startAutoConvertEnergy === 'function') {
+                startAutoConvertEnergy();
+            }
+            // 启动量产器自动生产
+            if (typeof startAutoProduceFragments === 'function') {
+                startAutoProduceFragments();
+            }
+            // 启动γ能量自动获得松树经验
+            if (typeof startAutoGainTreeExp === 'function') {
+                startAutoGainTreeExp();
+            }
+            
+            // 添加定期检查升级的定时器
+            if (typeof checkLevelUp === 'function') {
+                // 清除可能存在的旧定时器
+                if (window.levelUpInterval) {
+                    clearInterval(window.levelUpInterval);
+                }
+                // 设置新的定时器，每1秒检查一次升级
+                window.levelUpInterval = setInterval(checkLevelUp, 1000);
+                console.log('自动升级检查已启动');
+            }
+        } catch (error) {
+            console.error('启动自动功能时出错:', error);
+        }
+    };
+    
+    // 覆盖checkLevelUp函数，确保它有正确的try-catch结构
+    const originalCheckLevelUp = window.checkLevelUp;
+    window.checkLevelUp = function() {
+        try {
+            if (typeof originalCheckLevelUp === 'function') {
+                originalCheckLevelUp();
+            } else {
+                console.log('原始checkLevelUp函数不存在，执行基本检查');
+                // 这里可以添加基本的升级检查逻辑
+            }
+        } catch (error) {
+            console.error('检查升级时出错:', error);
+        }
+    };
+    
+    console.log('修复覆盖脚本已完成所有函数覆盖');
+    
+    // 尝试重新启动自动功能
+    if (typeof window.startAllAutoFunctions === 'function') {
+        setTimeout(window.startAllAutoFunctions, 1000);
+    }
+});
+</script>
+
 </body>
 </html>
