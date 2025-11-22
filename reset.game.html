@@ -4128,19 +4128,18 @@
                 const waterTreeCrystalBtn = document.getElementById('water-tree-crystal-btn');
                 const waterTreeTripleBtn = document.getElementById('water-tree-triple-btn');
                 
-                const isStage2 = window.gameState && window.gameState.main2Unlocked === 1;
-                
+                // 移除阶段限制，按钮始终可用
                 if (waterTreeCubeBtn) {
-                    waterTreeCubeBtn.disabled = !isStage2;
-                    waterTreeCubeBtn.textContent = '浇树 (消耗1个水立方)'; // 一直显示实际文本
+                    waterTreeCubeBtn.disabled = false; // 始终可用
+                    waterTreeCubeBtn.textContent = '浇树 (消耗1个水立方)';
                 }
                 if (waterTreeCrystalBtn) {
-                    waterTreeCrystalBtn.disabled = !isStage2;
-                    waterTreeCrystalBtn.textContent = '浇树 (消耗1个水结晶)'; // 一直显示实际文本
+                    waterTreeCrystalBtn.disabled = false; // 始终可用
+                    waterTreeCrystalBtn.textContent = '浇树 (消耗1个水结晶)';
                 }
                 if (waterTreeTripleBtn) {
-                    waterTreeTripleBtn.disabled = !isStage2;
-                    waterTreeTripleBtn.textContent = '浇树 (消耗1个淼立方)'; // 一直显示实际文本
+                    waterTreeTripleBtn.disabled = false; // 始终可用
+                    waterTreeTripleBtn.textContent = '浇树 (消耗1个淼立方)';
                 }
             } catch (e) {
                 console.error('更新树木UI失败:', e);
@@ -6220,6 +6219,33 @@
                         
                         // 获取游戏阶段
                         const gameStage = window.gameState?.gameStage || 1;
+                        
+                        // 当游戏阶段≥3时，直接显示主线3标签
+                        if (gameStage >= 3) {
+                            // UI标签：显示增益、资源、商店、炼药、浇树，支线UI标签已始终显示
+                            boostBtn.style.display = 'inline-block';
+                            resourcesBtn.style.display = 'inline-block';
+                            shopBtn.style.display = 'inline-block';
+                            alchemyBtn.style.display = 'inline-block';
+                            if (waterTreeBtn) waterTreeBtn.style.display = 'inline-block';
+                            // 研究所标签显示
+                            if (researchBtn) researchBtn.style.display = 'inline-block';
+                            if (main2Btn) main2Btn.style.display = 'inline-block';
+                            
+                            // 方块标签：显示主线1、主线2、主线3和支线
+                            if (main1CategoryBtn) main1CategoryBtn.style.display = 'inline-block';
+                            if (main2CategoryBtn) main2CategoryBtn.style.display = 'inline-block';
+                            if (main3CategoryBtn) main3CategoryBtn.style.display = 'inline-block';
+                            if (sideCategoryBtn) sideCategoryBtn.style.display = 'inline-block';
+                            
+                            // 商店标签：显示所有商店
+                            if (main1ShopBtn) main1ShopBtn.style.display = 'inline-block';
+                            if (main2ShopBtn) main2ShopBtn.style.display = 'inline-block';
+                            if (main3ShopBtn) main3ShopBtn.style.display = 'inline-block';
+                            if (sideShopBtn) sideShopBtn.style.display = 'inline-block';
+                            if (itemsShopBtn) itemsShopBtn.style.display = 'inline-block';
+                            return; // 提前返回，跳过后续判断
+                        }
                         
                         // 第三阶段第二部分（主线3已解锁且???数量≥0）
                         if (main3Unlocked === 1 && questionMarksCount >= 0) {
