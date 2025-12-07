@@ -880,12 +880,18 @@
         let currentStats = {};
         let history = [];
         const HISTORY_KEY = 'characterCounterHistoryV3';
+        const CURRENT_TEXT_KEY = 'characterCounterCurrentTextV3'; // 保存当前文本的键
         const MAX_HISTORY_ITEMS = 20;
         let currentOutputTab = 1; // 1:只去除空格, 2:只去除换行, 3:去除空格和换行
         let currentOutputText = "";
 
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
+            // 从localStorage恢复当前文本
+            const savedText = localStorage.getItem(CURRENT_TEXT_KEY);
+            if (savedText) {
+                document.getElementById('textInput').value = savedText;
+            }
             countCharacters();
             setupFileUpload();
             setupDragAndDrop();
@@ -893,18 +899,29 @@
             generateAllOutputs();
             
             // 设置自动统计
-            document.getElementById('autoGenerate').addEventListener('change', function() {
-                if (this.checked) {
-                    document.getElementById('textInput').addEventListener('input', countCharacters);
+            const autoGenerateCheckbox = document.getElementById('autoGenerate');
+            const textInput = document.getElementById('textInput');
+            
+            function setupAutoGenerate() {
+                if (autoGenerateCheckbox.checked) {
+                    textInput.addEventListener('input', countCharacters);
                 } else {
-                    document.getElementById('textInput').removeEventListener('input', countCharacters);
+                    textInput.removeEventListener('input', countCharacters);
+                }
+            }
+            
+            autoGenerateCheckbox.addEventListener('change', setupAutoGenerate);
+            setupAutoGenerate(); // 初始设置
+            
+            // 设置自动保存提示
+            const autoSaveCheckbox = document.getElementById('autoSave');
+            autoSaveCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    showNotification('已开启自动保存记录功能！', 'success');
+                } else {
+                    showNotification('已关闭自动保存记录功能！', 'info');
                 }
             });
-            
-            // 触发一次自动统计
-            if (document.getElementById('autoGenerate').checked) {
-                document.getElementById('textInput').addEventListener('input', countCharacters);
-            }
         });
 
         // 字符统计函数
@@ -916,9 +933,16 @@
             displayStats(stats);
             updateSummary(stats);
             
+            // 自动保存当前文本到localStorage
+            localStorage.setItem(CURRENT_TEXT_KEY, text);
+            
             // 自动保存记录
             if (document.getElementById('autoSave').checked && text.trim().length > 0) {
-                saveToHistory();
+                // 延迟保存，避免频繁保存
+                clearTimeout(window.autoSaveTimeout);
+                window.autoSaveTimeout = setTimeout(() => {
+                    saveToHistory();
+                }, 1000); // 1秒延迟
             }
             
             // 自动生成输出
@@ -1180,6 +1204,19 @@
                 return;
             }
             
+            // 检查是否已经存在相同的记录（避免重复保存）
+            const isDuplicate = history.some(item => {
+                return item.text === text && 
+                       item.output1 === removeSpacesOnly(text) &&
+                       item.output2 === removeNewlinesOnly(text) &&
+                       item.output3 === removeSpacesAndNewlines(text);
+            });
+            
+            if (isDuplicate) {
+                showNotification('相同的记录已存在！', 'info');
+                return;
+            }
+            
             // 生成三种输出模式的文本
             const output1 = removeSpacesOnly(text);
             const output2 = removeNewlinesOnly(text);
@@ -1211,7 +1248,7 @@
             // 更新历史记录显示
             renderHistory();
             
-            showNotification('记录已保存！', 'success');
+            showNotification('记录已保存到历史记录！', 'success');
         }
 
         // 加载历史记录
@@ -1387,6 +1424,9 @@
             if (item) {
                 document.getElementById('textInput').value = item.text;
                 
+                // 保存加载的文本到localStorage
+                localStorage.setItem(CURRENT_TEXT_KEY, item.text);
+                
                 // 更新统计
                 currentStats = item.stats;
                 displayStats(item.stats);
@@ -1472,6 +1512,9 @@
             document.getElementById('outputArea').textContent = '';
             document.getElementById('fileInfo').textContent = '';
             
+            // 清除localStorage中的当前文本
+            localStorage.removeItem(CURRENT_TEXT_KEY);
+            
             // 重置统计
             const emptyStats = {
                 chineseChars: 0, digits: 0, foreignChars: 0, punctuation: 0,
@@ -1551,6 +1594,10 @@
             try {
                 const text = await readFile(file);
                 document.getElementById('textInput').value = text;
+                
+                // 保存加载的文本到localStorage
+                localStorage.setItem(CURRENT_TEXT_KEY, text);
+                
                 countCharacters();
                 showNotification(`文件 "${file.name}" 已加载！`, 'success');
             } catch (error) {
