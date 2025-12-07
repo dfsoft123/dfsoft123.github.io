@@ -3,2619 +3,1646 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>星际矿工 | 挖矿游戏</title>
+    <title>智能字数统计工具 - 多种输出模式</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        /* === 全局现代化主题 === */
-        :root {
-            --space-blue: #0f172a;
-            --space-dark: #1e293b;
-            --neon-blue: #06b6d4;
-            --neon-purple: #8b5cf6;
-            --neon-pink: #ec4899;
-            --accent-gold: #fbbf24;
-            --text-light: #f1f5f9;
-            --text-dim: #94a3b8;
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --card-bg: rgba(30, 30, 46, 0.9);
-        }
-
-        /* === 基础重置 === */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border: #dee2e6;
+            --shadow: rgba(0, 0, 0, 0.1);
         }
 
         body {
-            font-family: 'Exo 2', sans-serif;
-            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 100%);
-            color: var(--text-light);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
+            padding: 20px;
+            color: var(--dark);
         }
 
-        /* === 背景效果 === */
-        .particles-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            overflow: hidden;
-        }
-
-        .particle {
-            position: absolute;
-            background: radial-gradient(circle, var(--neon-blue) 0%, transparent 70%);
-            border-radius: 50%;
-            animation: float 20s infinite linear;
-            opacity: 0.6;
-        }
-
-        .particle:nth-child(1) { top: 10%; left: 10%; width: 3px; height: 3px; animation-delay: 0s; }
-        .particle:nth-child(2) { top: 30%; left: 80%; width: 2px; height: 2px; animation-delay: -5s; }
-        .particle:nth-child(3) { top: 70%; left: 20%; width: 4px; height: 4px; animation-delay: -10s; }
-        .particle:nth-child(4) { top: 50%; left: 60%; width: 3px; height: 3px; animation-delay: -15s; }
-        .particle:nth-child(5) { top: 80%; left: 90%; width: 2px; height: 2px; animation-delay: -20s; }
-        .particle:nth-child(6) { top: 20%; left: 40%; width: 3px; height: 3px; animation-delay: -3s; }
-        .particle:nth-child(7) { top: 60%; left: 70%; width: 2px; height: 2px; animation-delay: -8s; }
-        .particle:nth-child(8) { top: 40%; left: 25%; width: 4px; height: 4px; animation-delay: -12s; }
-
-        .glow-effect {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100vw;
-            height: 100vh;
-            background: radial-gradient(circle at center, 
-                rgba(6, 182, 212, 0.1) 0%, 
-                rgba(139, 92, 246, 0.05) 40%, 
-                transparent 70%);
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* === 主容器 === */
-        .main-container {
-            max-width: 1800px;
+        .container {
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 1.5rem;
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
         }
 
-        /* === 玻璃态卡片 === */
-        .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px var(--shadow);
         }
 
-        .glass-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-        }
-
-        /* === 顶部游戏信息栏 === */
-        .game-header {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
-            padding: 1.2rem 2rem;
-            gap: 2rem;
-            animation: slideDown 0.8s ease-out;
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 1.2rem;
-        }
-
-        .logo-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-            border-radius: 50%;
+        header h1 {
+            color: var(--primary);
+            font-size: 2.8rem;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            animation: pulse 2s infinite;
+            gap: 15px;
         }
 
-        .logo-icon i {
-            font-size: 2.2rem;
+        header h1 i {
+            color: var(--secondary);
+        }
+
+        header p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1100px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 25px var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+        }
+
+        .card h2 i {
+            color: var(--secondary);
+        }
+
+        .input-area {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 20px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 16px;
+            line-height: 1.6;
+            resize: vertical;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            margin-bottom: 20px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 160px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
             color: white;
         }
 
-        .logo-text h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 900;
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(6, 182, 212, 0.3);
-            margin-bottom: 0.2rem;
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
         }
 
-        .tagline {
-            color: var(--text-dim);
-            font-size: 1rem;
-            letter-spacing: 2px;
+        .btn-secondary {
+            background: var(--light);
+            color: var(--dark);
+            border: 2px solid var(--border);
         }
 
-        .game-title-center {
-            text-align: center;
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
         }
 
-        .game-title-center h2 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.8rem;
-            color: var(--text-light);
-            margin-bottom: 0.3rem;
+        .btn-success {
+            background: var(--success);
+            color: white;
         }
 
-        .game-title-center p {
-            color: var(--text-dim);
-            font-size: 0.9rem;
+        .btn-success:hover {
+            background: #3bb5d8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 201, 240, 0.4);
         }
 
-        .stats-section {
-            display: flex;
-            justify-content: flex-end;
+        .btn-warning {
+            background: var(--warning);
+            color: white;
         }
 
-        .stat-card {
-            background: rgba(30, 30, 46, 0.9);
-            padding: 1rem 1.5rem;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            border: 1px solid rgba(6, 182, 212, 0.2);
-            min-width: 200px;
+        .btn-warning:hover {
+            background: #e01a72;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(247, 37, 133, 0.4);
         }
 
-        .stat-icon {
-            font-size: 1.3rem;
-            color: var(--neon-blue);
+        .btn-info {
+            background: #7209b7;
+            color: white;
         }
 
-        .stat-info .stat-label {
-            font-size: 0.8rem;
-            color: var(--text-dim);
-            margin-bottom: 0.2rem;
-        }
-
-        .stat-info .stat-value {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--neon-blue);
-        }
-
-        /* === 主要游戏区域 === */
-        .game-main-area {
-            display: grid;
-            grid-template-columns: 320px 1fr 320px;
-            gap: 1.5rem;
-            height: calc(100vh - 180px);
-        }
-
-        /* === 左侧面板 - 玩家状态 === */
-        .left-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-
-        .left-panel::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .left-panel::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-        }
-
-        .left-panel::-webkit-scrollbar-thumb {
-            background: var(--neon-blue);
-            border-radius: 10px;
-        }
-
-        /* 玩家档案卡片 */
-        .player-profile-card {
-            padding: 1.5rem;
-        }
-
-        .card-header {
-            margin-bottom: 1.2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .card-header h2, .card-header h3 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            margin-bottom: 0.3rem;
-            color: var(--neon-blue);
+        .btn-info:hover {
+            background: #60099a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(114, 9, 183, 0.4);
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
         }
 
-        .status-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            transition: background 0.3s ease;
-        }
-
-        .status-item:hover {
-            background: rgba(6, 182, 212, 0.1);
-        }
-
-        .status-label {
-            color: var(--text-dim);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 1rem;
-        }
-
-        .status-value {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: var(--neon-blue);
-            text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
-        }
-
-        .damage-container {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-
-        .damage-level {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            margin-top: 5px;
-        }
-
-        /* 经验进度卡片 */
-        .experience-card {
-            padding: 1.5rem;
-        }
-
-        .exp-text {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
-            color: var(--neon-blue);
-        }
-
-        .progress-container {
-            margin: 15px 0;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
-            border-radius: 10px;
-            transition: width 0.5s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.3), 
-                transparent);
-            animation: shimmer 2s infinite;
-        }
-
-        .exp-percentage {
-            text-align: center;
-            font-weight: bold;
-            color: var(--neon-blue);
-            margin-top: 5px;
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        /* 镐子信息卡片 */
-        .pickaxe-card {
-            padding: 1.5rem;
-        }
-
-        .pickaxe-display {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.2rem;
-            margin: 1.2rem 0;
-        }
-
-        .pickaxe-icon-wrapper {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .pickaxe-icon {
-            font-size: 4rem;
-            color: var(--accent-gold);
-            background: rgba(251, 191, 36, 0.1);
-            padding: 1.5rem;
-            border-radius: 50%;
-            width: 100px;
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .pickaxe-level-badge {
-            position: absolute;
-            bottom: -5px;
-            background: var(--neon-blue);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        .pickaxe-stats {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-        }
-
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.8rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .stat-row:last-child {
-            border-bottom: none;
-        }
-
-        .bonus-value {
-            color: var(--accent-gold);
-            font-weight: bold;
-        }
-
-        .cost-value {
-            color: var(--accent-gold);
-            font-weight: bold;
-        }
-
-        .exp-value {
-            color: #4caf50;
-            font-weight: bold;
-        }
-
-        /* 升级按钮 */
-        .upgrade-button {
-            width: 100%;
-            font-size: 1.1rem;
-            padding: 15px;
-            margin-top: 15px;
-            background: linear-gradient(45deg, var(--accent-gold), #ffa500);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            font-weight: bold;
-        }
-
-        .upgrade-button:hover {
-            background: linear-gradient(45deg, #ffa500, #ff8c00);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(255, 165, 0, 0.3);
-        }
-
-        .upgrade-button:disabled {
-            background: #666;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .max-level-button {
-            background: linear-gradient(45deg, var(--neon-blue), #0096c7) !important;
-            cursor: default !important;
-        }
-
-        /* === 中间面板 - 核心游戏区 === */
-        .center-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            overflow: hidden;
-        }
-
-        /* 挖矿区域 */
-        .mining-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-            position: relative;
-        }
-
-        .mining-area-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .mining-area-header h2 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.2rem;
-            color: var(--neon-blue);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .block-switcher {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 2rem;
-            width: 100%;
-        }
-
-        .switch-button {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(6, 182, 212, 0.3);
-            color: var(--neon-blue);
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
-        }
-
-        .switch-button:hover {
-            background: rgba(6, 182, 212, 0.2);
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
-        }
-
-        .block-container {
-            flex: 1;
-            max-width: 500px;
-            min-width: 400px;
-        }
-
-        .block {
-            position: relative;
-            background: linear-gradient(135deg, #2d3047 0%, #1d1e2c 100%);
-            border-radius: 20px;
-            padding: 2.5rem;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            overflow: hidden;
-        }
-
-        .block::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at center, 
-                rgba(6, 182, 212, 0.1) 0%, 
-                transparent 70%);
-            z-index: 1;
-        }
-
-        .block-header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .block-icon {
-            font-size: 4.5rem;
-            color: var(--neon-blue);
-        }
-
-        .block-name {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.2rem;
-            color: white;
-        }
-
-        .block-health-info {
-            margin: 25px 0;
-            position: relative;
-            z-index: 2;
-        }
-
-        .health-text {
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-            color: var(--neon-blue);
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        .health-bar {
-            height: 25px;
-            background: rgba(255, 255, 255, 0.1);
+        .stat-card {
+            background: var(--light);
             border-radius: 12px;
-            overflow: hidden;
-            margin: 15px 0;
-            position: relative;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+            padding: 25px;
+            text-align: center;
+            border-left: 5px solid var(--primary);
+            transition: transform 0.3s;
         }
 
-        .health-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
-            border-radius: 12px;
-            transition: width 0.3s ease;
-            box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
-        }
-
-        .block-rewards {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin: 25px 0;
-            position: relative;
-            z-index: 2;
-        }
-
-        .reward-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 15px 25px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            font-size: 1.2rem;
-        }
-
-        .reward-item i {
-            color: var(--accent-gold);
-            font-size: 1.3rem;
-        }
-
-        .mine-button {
-            width: 100%;
-            font-size: 1.5rem;
-            padding: 20px;
-            margin-top: 20px;
-            background: linear-gradient(45deg, var(--neon-blue), #0077b6);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            position: relative;
-            z-index: 2;
-        }
-
-        .mine-button:hover {
-            background: linear-gradient(45deg, #0077b6, #005f99);
+        .stat-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 180, 216, 0.4);
         }
 
-        .block-counter {
-            margin-top: 20px;
-            color: var(--neon-blue);
-            font-size: 1.1rem;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* 游戏日志 */
-        .game-log {
-            height: 200px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .log-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            margin-top: 10px;
-        }
-
-        .log-entry {
-            padding: 10px 15px;
-            margin-bottom: 8px;
-            background: linear-gradient(90deg, rgba(6, 182, 212, 0.1), rgba(139, 92, 246, 0.05));
-            border-radius: 8px;
-            border-left: 4px solid var(--neon-blue);
-            animation: fadeIn 0.3s ease;
-        }
-
-        /* === 右侧面板 - 高级功能 === */
-        .right-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-
-        .right-panel::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .right-panel::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-        }
-
-        .right-panel::-webkit-scrollbar-thumb {
-            background: var(--neon-purple);
-            border-radius: 10px;
-        }
-
-        /* 声望系统卡片 */
-        .prestige-card {
-            padding: 1.5rem;
-        }
-
-        .prestige-info {
-            margin-top: 15px;
-        }
-
-        .prestige-value {
-            color: var(--accent-gold);
-            font-weight: bold;
-        }
-
-        .prestige-button {
-            width: 100%;
-            padding: 15px;
-            margin-top: 15px;
-            background: linear-gradient(135deg, var(--accent-gold), #f59e0b);
-            color: #0f172a;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .prestige-button:hover:not(:disabled) {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(251, 191, 36, 0.3);
-        }
-
-        .prestige-button:disabled {
-            background: linear-gradient(135deg, #6b7280, #374151);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        /* 晋升卡片 */
-        .ascension-card {
-            padding: 1.5rem;
-        }
-
-        .ascension-info {
-            padding: 10px 0;
-        }
-
-        .ascension-value {
-            font-weight: bold;
-            color: var(--neon-purple);
-        }
-
-        .ascension-requirement {
-            color: var(--text-dim);
-        }
-
-        .ascension-button {
-            width: 100%;
-            padding: 15px;
-            margin-top: 15px;
-            background: linear-gradient(135deg, var(--neon-purple), #7c3aed);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .ascension-button:hover:not(:disabled) {
-            background: linear-gradient(135deg, #7c3aed, #6d28d9);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
-        }
-
-        .ascension-button:disabled {
-            background: linear-gradient(135deg, #6b7280, #374151);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .ascension-status {
-            margin-top: 10px;
-            text-align: center;
-            font-size: 0.9rem;
-            color: var(--text-dim);
-        }
-
-        /* 升级功能卡片 */
-        .upgrades-card {
-            padding: 1.5rem;
-        }
-
-        .upgrade-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-        }
-
-        .upgrade-item {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 1.2rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .upgrade-item h3 {
-            font-size: 1.1rem;
-            color: #34d399;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .upgrade-info {
+        .stat-card i {
+            font-size: 2.5rem;
+            color: var(--primary);
             margin-bottom: 15px;
         }
 
-        .upgrade-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: space-between;
+        .stat-title {
+            font-size: 1.1rem;
+            color: var(--gray);
+            margin-bottom: 10px;
         }
 
-        .purchase-button,
-        .toggle-button {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem;
-            padding: 12px;
+        .stat-value {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .stat-unit {
+            font-size: 1rem;
+            color: var(--gray);
+        }
+
+        .output-section, .history-section {
+            grid-column: 1 / -1;
+            margin-top: 20px;
+        }
+
+        .output-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tab:hover {
+            color: var(--primary);
+        }
+
+        .tab.active {
+            color: var(--primary);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .output-area {
+            width: 100%;
+            height: 200px;
+            padding: 20px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 16px;
+            line-height: 1.6;
+            resize: vertical;
+            background: #f8f9fa;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+            overflow-y: auto;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .output-header h3 {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .copy-btn {
+            padding: 10px 20px;
+            background: var(--success);
+            color: white;
             border: none;
             border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            flex: 1;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .purchase-button {
-            background: linear-gradient(135deg, #34d399, #10b981);
+        .copy-btn:hover {
+            background: #3bb5d8;
+        }
+
+        .file-upload {
+            margin-top: 25px;
+            padding: 25px;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            text-align: center;
+            background: #f8f9fa;
+            transition: all 0.3s;
+        }
+
+        .file-upload.dragover {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .file-upload p {
+            margin-bottom: 15px;
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            display: inline-block;
+            padding: 12px 24px;
+            background: var(--primary);
             color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
         }
 
-        .purchase-button:hover:not(:disabled) {
-            background: linear-gradient(135deg, #10b981, #059669);
-            transform: translateY(-1px);
-            box-shadow: 0 5px 15px rgba(52, 211, 153, 0.3);
+        .file-label:hover {
+            background: var(--primary-dark);
         }
 
-        .purchase-button:disabled {
-            background: linear-gradient(135deg, #6b7280, #374151);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
+        .file-info {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: var(--gray);
         }
 
-        .toggle-button {
-            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--primary);
+        }
+
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .summary {
+            display: flex;
+            justify-content: space-between;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
+            padding: 25px;
+            border-radius: 16px;
+            margin-top: 30px;
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.3);
         }
 
-        .toggle-button:hover {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            transform: translateY(-1px);
-            box-shadow: 0 5px 15px rgba(96, 165, 250, 0.3);
+        .summary-item {
+            text-align: center;
         }
 
-        .toggle-button.active {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
+        .summary-value {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 5px;
         }
 
-        .toggle-button.active:hover {
-            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        .summary-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
         }
 
-        /* 游戏提示卡片 */
-        .game-tips {
-            padding: 1.5rem;
+        .settings {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
         }
 
-        .tips-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 12px;
+        .settings label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .settings input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .history-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .history-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: #f8f9fa;
+        }
+
+        .history-item {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .history-item:hover {
+            background: #e9ecef;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .history-date {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .history-stats {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .history-stat {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        .history-stat strong {
+            color: var(--primary);
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 10px;
             margin-top: 15px;
         }
 
-        .tips-content p {
-            padding: 12px;
-            background: rgba(6, 182, 212, 0.1);
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .load-btn {
+            background: var(--success);
+            color: white;
+        }
+
+        .load-btn:hover {
+            background: #3bb5d8;
+        }
+
+        .delete-btn {
+            background: var(--warning);
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #e01a72;
+        }
+
+        .view-btn {
+            background: var(--primary);
+            color: white;
+        }
+
+        .view-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .history-preview {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
             border-radius: 8px;
-            border-left: 4px solid var(--neon-blue);
+            border: 1px solid var(--border);
+            max-height: 150px;
+            overflow-y: auto;
             font-size: 0.9rem;
             line-height: 1.4;
         }
 
-        /* 重置游戏按钮 */
-        .reset-card {
-            display: flex;
-            justify-content: center;
-            padding: 1.5rem;
-        }
-
-        .reset-button {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .reset-button:hover {
-            background: linear-gradient(135deg, #ee5a24, #d9480f);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.3);
-        }
-
-        /* === 离线收益面板 === */
-        .offline-reward-card {
-            background: rgba(30, 30, 46, 0.95);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        .empty-history {
             text-align: center;
-            animation: fadeIn 0.5s ease;
-            border: 2px solid rgba(6, 182, 212, 0.3);
-            margin-bottom: 1.5rem;
+            padding: 40px;
+            color: var(--gray);
         }
 
-        .offline-reward-info {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin: 20px 0;
+        .empty-history i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--border);
         }
 
-        .offline-reward-info .reward-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            font-size: 1rem;
-            color: var(--text-dim);
-        }
-
-        .offline-reward-info .reward-item i {
-            color: var(--neon-blue);
-            font-size: 1.4rem;
-        }
-
-        .offline-time, .offline-coins, .offline-exp {
-            font-weight: bold;
-            color: var(--accent-gold);
-            font-size: 1.2rem;
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        .claim-button {
-            width: 100%;
-            font-size: 1.2rem;
-            padding: 15px;
-            background: linear-gradient(45deg, var(--neon-blue), #0077b6);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .history-details {
             margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+        }
+
+        .history-details.hidden {
+            display: none;
+        }
+
+        .history-details h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-weight: bold;
         }
 
-        .claim-button:hover {
-            background: linear-gradient(45deg, #0077b6, #005f99);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(6, 182, 212, 0.4);
-        }
-
-        /* === 动画效果 === */
-        @keyframes float {
-            0% { transform: translateY(0) translateX(0); opacity: 0.5; }
-            100% { transform: translateY(-100vh) translateX(100px); opacity: 0; }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-50px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        @keyframes mine-animation {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        @keyframes coin-bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        /* 伤害数字样式 */
-        .damage-number {
-            position: absolute;
-            color: #ff4d4d;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
-            font-weight: bold;
-            pointer-events: none;
-            z-index: 100;
-            text-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
-            transition: all 0.5s ease;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .mine-animation {
-            animation: mine-animation 0.2s ease;
-        }
-
-        .coin-animation {
-            animation: coin-bounce 0.5s ease;
-        }
-
-        .level-up-animation {
-            animation: pulse 0.5s ease;
-        }
-
-        /* 音效控制按钮 */
-        .audio-control {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 100;
-        }
-
-        .audio-button {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(30, 30, 46, 0.9);
-            border: 1px solid rgba(6, 182, 212, 0.3);
-            color: var(--neon-blue);
+        .close-details {
+            background: none;
+            border: none;
             font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            color: var(--gray);
             cursor: pointer;
-            transition: all 0.3s ease;
         }
 
-        .audio-button:hover {
-            background: rgba(6, 182, 212, 0.2);
-            transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+        .history-text {
+            white-space: pre-wrap;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
         }
 
-        /* === 响应式设计 === */
-        @media (max-width: 1400px) {
-            .game-main-area {
-                grid-template-columns: 280px 1fr 280px;
-            }
-            
-            .block-container {
-                min-width: 350px;
-            }
-            
-            .tips-content {
-                grid-template-columns: 1fr;
-            }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
         }
 
-        @media (max-width: 1200px) {
-            .game-main-area {
-                grid-template-columns: 250px 1fr;
-                height: auto;
-                min-height: calc(100vh - 180px);
-            }
-            
-            .right-panel {
-                grid-column: span 2;
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1.5rem;
-                margin-top: 1.5rem;
-            }
-            
-            .block-container {
-                min-width: 300px;
-            }
-            
-            .offline-reward-info {
-                grid-template-columns: 1fr;
-            }
+        .highlight {
+            background-color: rgba(247, 37, 133, 0.1);
+            padding: 2px 5px;
+            border-radius: 4px;
         }
 
-        @media (max-width: 992px) {
-            .game-header {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-                text-align: center;
-            }
-            
-            .logo-section {
-                justify-content: center;
-            }
-            
-            .stats-section {
-                justify-content: center;
-            }
-            
-            .game-main-area {
-                grid-template-columns: 1fr;
-            }
-            
-            .left-panel, .right-panel {
-                grid-column: 1;
-            }
-            
-            .right-panel {
-                grid-template-columns: 1fr;
-            }
-            
-            .block-switcher {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .block-container {
-                min-width: 100%;
-                max-width: 100%;
-            }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            font-weight: 600;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.info {
+            background: var(--primary);
+            color: white;
+        }
+
+        .notification.success {
+            background: var(--success);
+            color: white;
+        }
+
+        .notification.warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .notification.error {
+            background: #dc3545;
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
         }
 
         @media (max-width: 768px) {
-            .main-container {
-                padding: 1rem;
+            .main-content {
+                gap: 20px;
             }
             
-            .game-header {
-                padding: 1rem;
-            }
-            
-            .logo-icon {
-                width: 60px;
-                height: 60px;
-            }
-            
-            .logo-icon i {
-                font-size: 1.8rem;
-            }
-            
-            .logo-text h1 {
-                font-size: 2rem;
-            }
-            
-            .stat-card {
-                min-width: 180px;
+            .card {
+                padding: 20px;
             }
             
             .stats-grid {
                 grid-template-columns: 1fr;
             }
             
-            .block {
-                padding: 1.5rem;
+            .buttons {
+                flex-direction: column;
             }
             
-            .block-rewards {
+            .btn {
+                width: 100%;
+            }
+            
+            .summary {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .history-controls {
                 flex-direction: column;
                 gap: 15px;
+                align-items: flex-start;
             }
             
-            .upgrade-actions {
+            .history-stats {
                 flex-direction: column;
             }
-        }
-
-        @media (max-width: 480px) {
-            .main-container {
-                padding: 0.8rem;
+            
+            .output-tabs {
+                flex-direction: column;
             }
             
-            .game-header {
-                padding: 0.8rem;
-            }
-            
-            .logo-text h1 {
-                font-size: 1.7rem;
-            }
-            
-            .tagline {
-                font-size: 0.9rem;
-            }
-            
-            .card {
-                padding: 1rem;
-            }
-            
-            .mine-button {
-                font-size: 1.2rem;
-                padding: 15px;
-            }
-            
-            .block-icon {
-                font-size: 3.5rem;
-            }
-            
-            .block-name {
-                font-size: 1.8rem;
+            .tab {
+                justify-content: center;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 背景粒子效果 -->
-    <div class="particles-container">
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-    </div>
-
-    <!-- 炫光效果 -->
-    <div class="glow-effect"></div>
-
-    <!-- 主容器 -->
-    <div class="main-container">
-        <!-- 顶部游戏信息栏 -->
-        <header class="game-header glass-card">
-            <div class="logo-section">
-                <div class="logo-icon">
-                    <i class="fas fa-meteor"></i>
-                </div>
-                <div class="logo-text">
-                    <h1>星际矿工</h1>
-                    <p class="tagline">挖掘宇宙，成就传奇</p>
-                </div>
-            </div>
-            
-            <div class="game-title-center">
-                <h2>量子挖掘中心</h2>
-                <p>等级 <span id="level">1</span> | 声望 <span id="prestige-count">0</span></p>
-            </div>
-            
-            <div class="stats-section">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="stat-info">
-                        <div class="stat-label">在线时间</div>
-                        <div class="stat-value" id="play-time">00:00:00</div>
-                    </div>
-                </div>
-            </div>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-code"></i> 智能字数统计工具</h1>
+            <p>精确统计各类字符数量，支持三种输出模式、实时统计、文件上传和历史记录功能</p>
         </header>
 
-        <!-- 离线收益领取面板 -->
-        <div class="offline-reward-card" id="offline-reward" style="display: none;">
-            <h2><i class="fas fa-gift"></i> 离线收益</h2>
-            <div class="offline-reward-info">
-                <div class="reward-item">
-                    <i class="fas fa-clock"></i>
-                    <span>离线时间:</span>
-                    <span class="offline-time" id="offline-time">0</span>秒
-                </div>
-                <div class="reward-item">
-                    <i class="fas fa-coins"></i>
-                    <span>可获得金币:</span>
-                    <span class="offline-coins" id="offline-coins">0</span>
-                </div>
-                <div class="reward-item">
-                    <i class="fas fa-star"></i>
-                    <span>可获得经验:</span>
-                    <span class="offline-exp" id="offline-exp">0</span>
-                </div>
-            </div>
-            <button class="claim-button" id="claim-offline-reward">
-                <i class="fas fa-hand-holding-usd"></i>
-                领取离线收益
-            </button>
-        </div>
+        <div class="main-content">
+            <div class="card input-area">
+                <h2><i class="fas fa-edit"></i> 输入文本</h2>
+                <textarea id="textInput" placeholder="请在此输入或粘贴要统计的文本...">欢迎使用智能字数统计工具！
 
-        <!-- 主要游戏区域 -->
-        <div class="game-main-area">
-            <!-- 左侧面板：玩家状态和装备信息 -->
-            <div class="left-panel">
-                <!-- 玩家状态 -->
-                <div class="player-profile-card glass-card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-user-astronaut"></i> 矿工档案</h2>
-                    </div>
-                    <div class="stats-grid">
-                        <div class="status-item">
-                            <span class="status-label"><i class="fas fa-bolt"></i> 伤害:</span>
-                            <div class="damage-container">
-                                <span class="status-value" id="damage">1</span>
-                                <div class="damage-level" id="damage-level">(伤害水平: 0.00)</div>
-                            </div>
-                        </div>
-                        <div class="status-item">
-                            <span class="status-label"><i class="fas fa-coins"></i> 金币:</span>
-                            <span class="status-value" id="coins">0</span>
-                        </div>
-                        <div class="status-item">
-                            <span class="status-label"><i class="fas fa-crown"></i> 等级:</span>
-                            <span class="status-value" id="level">1</span>
-                        </div>
-                        <div class="status-item">
-                            <span class="status-label"><i class="fas fa-chart-line"></i> 等级增益:</span>
-                            <span class="status-value" id="level-bonus">1×</span>
-                        </div>
-                    </div>
-                </div>
+这是一个演示文本，包含：
+1. 中文字符：你好，世界！
+2. 数字：12345
+3. 外文字符：Hello World
+4. 标点符号：，。！？,.!?
+5. 其他符号：@#$%&*
+6. 空格：   这里有很多空格    
 
-                <!-- 经验值进度条 -->
-                <div class="experience-card glass-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-chart-line"></i> 经验进度</h3>
-                    </div>
-                    <div class="exp-text">
-                        <span id="current-exp">0</span> / <span id="exp-required">10</span>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="exp-progress"></div>
-                        </div>
-                    </div>
-                    <div class="exp-percentage" id="exp-percentage">0%</div>
-                </div>
-
-                <!-- 镐子信息 -->
-                <div class="pickaxe-card glass-card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-tools"></i> 装备信息</h2>
-                    </div>
-                    <div class="pickaxe-display">
-                        <div class="pickaxe-icon-wrapper">
-                            <div class="pickaxe-icon">
-                                <i class="fas fa-hammer"></i>
-                            </div>
-                            <div class="pickaxe-level-badge">Lv.<span id="pickaxe-level">1</span></div>
-                        </div>
-                        <div class="pickaxe-stats">
-                            <div class="stat-row">
-                                <span>当前等级:</span>
-                                <span id="pickaxe-level-display">1</span>
-                            </div>
-                            <div class="stat-row">
-                                <span>伤害加成:</span>
-                                <span class="bonus-value" id="pickaxe-bonus">1×</span>
-                            </div>
-                            <div class="stat-row">
-                                <span>金币倍率:</span>
-                                <span class="bonus-value" id="coin-multiplier">1.0×</span>
-                            </div>
-                            <div class="stat-row">
-                                <span>每镐经验:</span>
-                                <span class="exp-value" id="exp-per-mine">2</span>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <div class="stat-row">
-                                <span>升级费用:</span>
-                                <span class="cost-value" id="upgrade-cost">100</span>
-                                <i class="fas fa-coins"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="upgrade-button" id="upgrade-pickaxe">
-                        <i class="fas fa-arrow-up"></i>
-                        升级装备
+你可以尝试输入自己的文本，或上传文件进行统计。</textarea>
+                
+                <div class="buttons">
+                    <button class="btn btn-primary" onclick="countCharacters()">
+                        <i class="fas fa-calculator"></i> 开始统计
+                    </button>
+                    <button class="btn btn-success" onclick="generateAllOutputs()">
+                        <i class="fas fa-file-export"></i> 生成所有输出
+                    </button>
+                    <button class="btn btn-info" onclick="saveToHistory()">
+                        <i class="fas fa-save"></i> 保存记录
                     </button>
                 </div>
-            </div>
-
-            <!-- 中间面板：核心游戏区 -->
-            <div class="center-panel">
-                <!-- 挖矿区 -->
-                <div class="mining-area glass-card">
-                    <div class="mining-area-header">
-                        <h2><i class="fas fa-satellite"></i> 星际矿场</h2>
-                        <p>当前资源点: <span id="block-index">1</span>/<span id="total-blocks">3</span></p>
-                    </div>
-                    
-                    <!-- 资源块切换器 -->
-                    <div class="block-switcher">
-                        <button class="switch-button" id="prev-button">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        
-                        <div class="block-container">
-                            <div class="block" id="mining-block">
-                                <div class="block-header">
-                                    <i class="fas fa-cube block-icon"></i>
-                                    <h3 class="block-name" id="block-name">石头</h3>
-                                </div>
-                                
-                                <div class="block-health-info">
-                                    <div class="health-text">
-                                        <span id="current-block-health">10</span> / 
-                                        <span id="max-block-health">10</span>
-                                    </div>
-                                    <div class="health-bar">
-                                        <div class="health-fill" id="block-health-fill"></div>
-                                    </div>
-                                </div>
-                                
-                                <div class="block-rewards">
-                                    <div class="reward-item">
-                                        <i class="fas fa-coins"></i>
-                                        <span>金币: <span id="block-gold-reward">1</span></span>
-                                    </div>
-                                </div>
-                                
-                                <button class="mine-button" id="mine-button">
-                                    <i class="fas fa-hammer"></i>
-                                    量子挖掘
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <button class="switch-button" id="next-button">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 游戏日志 -->
-                <div class="game-log glass-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-terminal"></i> 系统日志</h3>
-                    </div>
-                    <div class="log-content" id="game-log">
-                        <div class="log-entry">欢迎来到星际矿工！</div>
-                        <div class="log-entry">点击挖掘按钮开始宇宙冒险！</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 右侧面板：高级功能 -->
-            <div class="right-panel">
-                <!-- 声望系统 -->
-                <div class="prestige-card glass-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-shield-alt"></i> 声望系统</h3>
-                    </div>
-                    <div class="prestige-info">
-                        <div class="stat-row">
-                            <span>声望次数:</span>
-                            <span class="prestige-value" id="prestige-count-display">0</span>
-                        </div>
-                        <div class="stat-row">
-                            <span>声望增益:</span>
-                            <span class="prestige-value" id="prestige-multiplier">1.0×</span>
-                        </div>
-                        <div class="stat-row">
-                            <span>需求等级:</span>
-                            <span id="prestige-required-level">20</span>
-                        </div>
-                        <button class="prestige-button" id="prestige-button">
-                            <i class="fas fa-recycle"></i>
-                            声望重生
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 晋升系统 -->
-                <div class="ascension-card glass-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-rocket"></i> 星际晋升</h3>
-                    </div>
-                    <div class="ascension-info">
-                        <div class="stat-row">
-                            <span>晋升等级:</span>
-                            <span class="ascension-value" id="ascension-level-display">0</span>
-                        </div>
-                        <div class="stat-row">
-                            <span>晋升增益:</span>
-                            <span class="ascension-value" id="ascension-bonus-display">1.0×</span>
-                        </div>
-                        <div class="stat-row">
-                            <span>等级上限:</span>
-                            <span class="ascension-value" id="pickaxe-level-cap-display">20</span>
-                        </div>
-                        <div class="stat-row">
-                            <span>晋升条件:</span>
-                            <span class="ascension-requirement" id="ascension-requirement">伤害水平 ≥ 100</span>
-                        </div>
-                        <button class="ascension-button" id="ascension-button" disabled>
-                            <i class="fas fa-arrow-up"></i>
-                            晋升维度
-                        </button>
-                        <div class="ascension-status" id="ascension-status"></div>
-                    </div>
-                </div>
-
-                <!-- 升级功能（晋升等级≥1时显示） -->
-                <div class="upgrades-card glass-card" id="upgrades-card" style="display: none;">
-                    <div class="card-header">
-                        <h3><i class="fas fa-microchip"></i> 科技升级</h3>
-                    </div>
-                    <div class="upgrade-list">
-                        <!-- 自动化升级 -->
-                        <div class="upgrade-item">
-                            <h3>自动化</h3>
-                            <div class="upgrade-info">
-                                <div class="stat-row">
-                                    <span>等级:</span>
-                                    <span id="automation-level">0</span>
-                                </div>
-                                <div class="stat-row">
-                                    <span>效果:</span>
-                                    <span id="automation-effect">自动挖掘：每秒 0 次</span>
-                                </div>
-                                <div class="stat-row">
-                                    <span>价格:</span>
-                                    <span id="automation-price">100</span> 金币
-                                </div>
-                            </div>
-                            <div class="upgrade-actions">
-                                <button class="purchase-button" id="purchase-automation">购买</button>
-                                <button class="toggle-button" id="toggle-automation" disabled>关闭</button>
-                            </div>
-                        </div>
-                        
-                        <!-- 多重声望升级 -->
-                        <div class="upgrade-item">
-                            <h3>多重声望</h3>
-                            <div class="upgrade-info">
-                                <div class="stat-row">
-                                    <span>等级:</span>
-                                    <span id="multi-prestige-level">0</span>
-                                </div>
-                                <div class="stat-row">
-                                    <span>效果:</span>
-                                    <span id="multi-prestige-effect">每次声望提升 +1</span>
-                                </div>
-                                <div class="stat-row">
-                                    <span>价格:</span>
-                                    <span id="multi-prestige-price">100000000</span> 金币
-                                </div>
-                            </div>
-                            <div class="upgrade-actions">
-                                <button class="purchase-button" id="purchase-multi-prestige">购买</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 游戏提示 -->
-                <div class="game-tips glass-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-lightbulb"></i> 游戏提示</h3>
-                    </div>
-                    <div class="tips-content">
-                        <p>1. 点击挖掘按钮破坏资源块，获得金币和经验</p>
-                        <p>2. 使用金币升级镐子，提高伤害</p>
-                        <p>3. 等级提升会增加基础伤害</p>
-                        <p>4. 切换不同资源块，获得更多收益</p>
-                        <p>5. 达到条件后可进行声望重生</p>
-                        <p>6. 伤害水平达到100可进行晋升</p>
-                        <p>7. 晋升后解锁自动化等高级功能</p>
-                        <p>8. 游戏进度会自动保存</p>
-                    </div>
-                </div>
-
-                <!-- 重置游戏按钮 -->
-                <div class="reset-card glass-card">
-                    <button class="reset-button" id="reset-game">
-                        <i class="fas fa-redo"></i>
-                        重置宇宙
+                
+                <div class="buttons">
+                    <button class="btn btn-secondary" onclick="clearText()">
+                        <i class="fas fa-trash-alt"></i> 清空文本
                     </button>
+                    <button class="btn btn-secondary" onclick="pasteText()">
+                        <i class="fas fa-paste"></i> 粘贴文本
+                    </button>
+                    <button class="btn btn-warning" onclick="clearHistory()">
+                        <i class="fas fa-trash"></i> 清空历史
+                    </button>
+                </div>
+                
+                <div class="settings">
+                    <label>
+                        <input type="checkbox" id="autoSave" checked>
+                        <i class="fas fa-sync-alt"></i> 自动保存统计记录
+                    </label>
+                    <label>
+                        <input type="checkbox" id="autoGenerate" checked>
+                        <i class="fas fa-bolt"></i> 输入时自动统计
+                    </label>
+                </div>
+                
+                <div class="file-upload" id="dropArea">
+                    <p><i class="fas fa-cloud-upload-alt"></i> 拖放文件到这里，或点击选择文件</p>
+                    <input type="file" id="fileInput" class="file-input" accept=".txt,.md,.html,.js,.css,.py,.java,.cpp,.csv,.json,.xml">
+                    <label for="fileInput" class="file-label">
+                        <i class="fas fa-folder-open"></i> 选择文件
+                    </label>
+                    <div class="file-info" id="fileInfo"></div>
+                </div>
+                
+                <div class="loading" id="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>正在处理文件...</p>
+                </div>
+            </div>
+
+            <div class="card stats-area">
+                <h2><i class="fas fa-chart-bar"></i> 统计结果</h2>
+                <div class="stats-grid" id="statsGrid">
+                    <!-- 统计结果将通过JavaScript动态生成 -->
+                </div>
+            </div>
+
+            <div class="card output-section">
+                <h2><i class="fas fa-file-export"></i> 输出模式</h2>
+                
+                <div class="output-tabs" id="outputTabs">
+                    <button class="tab active" onclick="switchOutputTab(1)">
+                        <i class="fas fa-minus"></i> 只去除空格
+                    </button>
+                    <button class="tab" onclick="switchOutputTab(2)">
+                        <i class="fas fa-compress-alt"></i> 只去除换行
+                    </button>
+                    <button class="tab" onclick="switchOutputTab(3)">
+                        <i class="fas fa-ban"></i> 去除空格和换行
+                    </button>
+                </div>
+                
+                <div class="output-header">
+                    <h3 id="outputTitle">输出文本（只去除空格）</h3>
+                    <button class="copy-btn" onclick="copyOutput()">
+                        <i class="fas fa-copy"></i> 复制到剪贴板
+                    </button>
+                </div>
+                
+                <div class="output-area" id="outputArea">
+                    <!-- 输出文本将在这里显示 -->
+                </div>
+                
+                <p><span class="highlight">提示：</span> 
+                    <strong>只去除空格</strong>：保留换行，只去除空格和制表符<br>
+                    <strong>只去除换行</strong>：保留空格，将多行合并为一行<br>
+                    <strong>去除空格和换行</strong>：去除所有空白字符，合并为一行
+                </p>
+            </div>
+
+            <div class="card history-section">
+                <h2><i class="fas fa-history"></i> 历史记录</h2>
+                <div class="history-controls">
+                    <div>
+                        <button class="btn btn-secondary" onclick="toggleHistoryDetails()">
+                            <i class="fas fa-eye"></i> 显示/隐藏详细记录
+                        </button>
+                    </div>
+                    <div>
+                        <span id="historyCount">0</span> 条记录
+                    </div>
+                </div>
+                
+                <div class="history-details hidden" id="historyDetails">
+                    <!-- 详细历史记录将通过JavaScript动态生成 -->
+                </div>
+                
+                <div class="history-list" id="historyList">
+                    <!-- 历史记录将通过JavaScript动态生成 -->
                 </div>
             </div>
         </div>
+
+        <div class="summary" id="summarySection">
+            <!-- 摘要信息将通过JavaScript动态生成 -->
+        </div>
+
+        <footer>
+            <p>© 2023 智能字数统计工具 | 支持三种输出模式：只去除空格、只去除换行、去除空格和换行</p>
+            <p>本工具完全在浏览器中运行，数据保存在本地，不会上传您的文本数据，请放心使用。</p>
+        </footer>
     </div>
 
-    <!-- 音效控制 -->
-    <div class="audio-control">
-        <button class="audio-button" id="toggle-audio">
-            <i class="fas fa-volume-up"></i>
-        </button>
-    </div>
-
-    <!-- JavaScript部分保持不变 -->
     <script>
-        // === 游戏常量定义 ===
-        const units = ['', '万', '亿', '万亿', '兆', '万兆', '亿兆', '万亿兆', '京', '万京', '亿京', '万亿京', '兆京', '万兆京', '亿兆京', '万亿兆京', '垓', '万垓', '亿垓', '万亿垓', '兆垓', '万兆垓', '亿兆垓', '万亿兆垓', '京垓', '万京垓', '亿京垓', '万亿京垓', '兆京垓', '万兆京垓', '亿兆京垓', '万亿兆京垓', '杼', '万杼', '亿杼', '万亿杼', '兆杼', '万兆杼', '亿兆杼', '万亿兆杼', '京杼', '万京杼', '亿京杼', '万亿京杼', '兆杼', '万兆杼', '亿兆杼', '万亿兆杼', '垓杼', '万垓杼', '亿垓杼', '万亿垓杼', '兆垓杼', '万兆垓杼', '亿兆垓杼', '万亿兆垓杼', '京垓杼', '万京垓杼', '亿京垓杼', '万亿京垓杼', '兆京垓杼', '万兆京垓杼', '亿兆京垓杼', '万亿兆京垓杼', '穰', '万穰', '亿穰', '万亿穰', '兆穰', '万兆穰', '亿兆穰', '万亿兆穰', '京穰', '万京穰', '亿京穰', '万亿京穰', '兆京穰'];
+        // 全局变量
+        let currentStats = {};
+        let history = [];
+        const HISTORY_KEY = 'characterCounterHistoryV3';
+        const MAX_HISTORY_ITEMS = 20;
+        let currentOutputTab = 1; // 1:只去除空格, 2:只去除换行, 3:去除空格和换行
+        let currentOutputText = "";
 
-        // 方块类型定义
-        const blockTypes = [
-            { name: "土块", health: 100, maxHealth: 100, coinReward: 1, icon: "fa-mountain" },
-            { name: "石块", health: 500, maxHealth: 500, coinReward: 2, icon: "fa-cube" },
-            { name: "铜矿", health: 2000, maxHealth: 2000, coinReward: 5, icon: "fa-cubes" },
-            { name: "铁矿", health: 6000, maxHealth: 6000, coinReward: 10, icon: "fa-industry" },
-            { name: "金矿", health: 20000, maxHealth: 20000, coinReward: 20, icon: "fa-coins" },
-            { name: "钻石矿", health: 100000, maxHealth: 100000, coinReward: 50, icon: "fa-gem" },
-            { name: "远古残骸", health: 400000, maxHealth: 400000, coinReward: 120, icon: "fa-meteor" },
-            { name: "黑曜石", health: 1000000, maxHealth: 1000000, coinReward: 200, icon: "fa-square" }
-        ];
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            countCharacters();
+            setupFileUpload();
+            setupDragAndDrop();
+            loadHistory();
+            generateAllOutputs();
+            
+            // 设置自动统计
+            document.getElementById('autoGenerate').addEventListener('change', function() {
+                if (this.checked) {
+                    document.getElementById('textInput').addEventListener('input', countCharacters);
+                } else {
+                    document.getElementById('textInput').removeEventListener('input', countCharacters);
+                }
+            });
+            
+            // 触发一次自动统计
+            if (document.getElementById('autoGenerate').checked) {
+                document.getElementById('textInput').addEventListener('input', countCharacters);
+            }
+        });
 
-        // === 游戏状态变量 ===
-        let gameState = {
-            level: 1,
-            experience: 0,
-            coins: 0,
-            pickaxeLevel: 1,
-            pickaxeBonus: 1,
-            blockHealth: 100,
-            blockMaxHealth: 100,
-            playTime: 0,
-            currentBlockIndex: 0,
-            lastSaveTime: Date.now(),
-            prestige: 0,
-            prestigeMultiplier: 1.0,
-            ascensionLevel: 0,
-            ascensionBonus: 1.0,
-            upgrades: {
-                automation: {
-                    level: 0,
-                    enabled: false,
-                    price: 100
+        // 字符统计函数
+        function countCharacters() {
+            const text = document.getElementById('textInput').value;
+            const stats = analyzeText(text);
+            currentStats = stats;
+            
+            displayStats(stats);
+            updateSummary(stats);
+            
+            // 自动保存记录
+            if (document.getElementById('autoSave').checked && text.trim().length > 0) {
+                saveToHistory();
+            }
+            
+            // 自动生成输出
+            generateAllOutputs();
+        }
+
+        // 文本分析函数
+        function analyzeText(text) {
+            // 初始化统计对象
+            const stats = {
+                chineseChars: 0,     // 中文字符
+                digits: 0,           // 数字
+                foreignChars: 0,     // 外文字符（英文字母）
+                punctuation: 0,      // 标点符号
+                symbols: 0,          // 其他符号
+                spaces: 0,           // 空格
+                newlines: 0,         // 换行符
+                totalWithSpaces: 0,  // 总字符数（含空格）
+                totalWithoutSpaces: 0 // 总字符数（不含空格）
+            };
+
+            // 定义字符分类的正则表达式
+            const chineseRegex = /[\u4e00-\u9fff]/g;  // 中文字符
+            const digitRegex = /[0-9]/g;              // 数字
+            const foreignRegex = /[a-zA-Z]/g;         // 英文字母
+            const spaceRegex = /[ \t]/g;              // 空格和制表符（不包含换行符）
+            const newlineRegex = /\n/g;               // 换行符
+            const punctuationRegex = /[，。！？；："'、,.!?;:"']/g; // 中英文标点
+            
+            // 计算各类字符数量
+            stats.chineseChars = (text.match(chineseRegex) || []).length;
+            stats.digits = (text.match(digitRegex) || []).length;
+            stats.foreignChars = (text.match(foreignRegex) || []).length;
+            stats.spaces = (text.match(spaceRegex) || []).length;
+            stats.newlines = (text.match(newlineRegex) || []).length;
+            stats.punctuation = (text.match(punctuationRegex) || []).length;
+            
+            // 计算总字符数（含空格）
+            stats.totalWithSpaces = text.length;
+            
+            // 计算总字符数（不含空格）
+            stats.totalWithoutSpaces = text.replace(/\s/g, '').length;
+            
+            // 计算其他符号（排除上述所有类别和空格、换行符）
+            // 先计算已知类别的字符总数
+            const knownChars = stats.chineseChars + stats.digits + stats.foreignChars + 
+                              stats.punctuation + stats.spaces + stats.newlines;
+            
+            // 将文本中的换行符也排除
+            const textWithoutNewlines = text.replace(/\n/g, '');
+            
+            // 其他符号 = 总字符数（不含换行符） - 已知字符数
+            stats.symbols = textWithoutNewlines.length - knownChars;
+            
+            // 确保符号数不为负数
+            stats.symbols = Math.max(0, stats.symbols);
+            
+            return stats;
+        }
+
+        // 显示统计结果
+        function displayStats(stats) {
+            const statsGrid = document.getElementById('statsGrid');
+            
+            const statsData = [
+                { 
+                    icon: 'fas fa-language', 
+                    title: '中文字符', 
+                    value: stats.chineseChars, 
+                    unit: '个',
+                    color: '#4361ee'
                 },
-                multiPrestige: {
-                    level: 0,
-                    price: 100000000
+                { 
+                    icon: 'fas fa-hashtag', 
+                    title: '数字', 
+                    value: stats.digits, 
+                    unit: '个',
+                    color: '#7209b7'
+                },
+                { 
+                    icon: 'fas fa-font', 
+                    title: '外文字符', 
+                    value: stats.foreignChars, 
+                    unit: '个',
+                    color: '#4cc9f0'
+                },
+                { 
+                    icon: 'fas fa-comma', 
+                    title: '标点符号', 
+                    value: stats.punctuation, 
+                    unit: '个',
+                    color: '#f72585'
+                },
+                { 
+                    icon: 'fas fa-asterisk', 
+                    title: '其他符号', 
+                    value: stats.symbols, 
+                    unit: '个',
+                    color: '#ff9e00'
+                },
+                { 
+                    icon: 'fas fa-space-awesome', 
+                    title: '空格', 
+                    value: stats.spaces, 
+                    unit: '个',
+                    color: '#38b000'
+                },
+                { 
+                    icon: 'fas fa-arrow-down', 
+                    title: '换行符', 
+                    value: stats.newlines, 
+                    unit: '个',
+                    color: '#9d4edd'
+                },
+                { 
+                    icon: 'fas fa-list-ol', 
+                    title: '总字符数（不含空格）', 
+                    value: stats.totalWithoutSpaces, 
+                    unit: '个',
+                    color: '#3a0ca3'
+                },
+                { 
+                    icon: 'fas fa-list-alt', 
+                    title: '总字符数（含空格）', 
+                    value: stats.totalWithSpaces, 
+                    unit: '个',
+                    color: '#3a0ca3'
                 }
-            },
-            automationInterval: null
-        };
-
-        // === 工具函数 ===
-        
-        // 获取当前方块
-        function getCurrentBlock() {
-            return blockTypes[gameState.currentBlockIndex];
-        }
-
-        // 格式化时间为 X日X时X分X秒
-        function formatTime(seconds) {
-            const days = Math.floor(seconds / 86400);
-            const hours = Math.floor((seconds % 86400) / 3600);
-            const minutes = Math.floor((seconds % 3600) / 60);
-            const secs = seconds % 60;
+            ];
             
-            let timeStr = '';
+            statsGrid.innerHTML = statsData.map(stat => `
+                <div class="stat-card" style="border-left-color: ${stat.color}">
+                    <i class="${stat.icon}" style="color: ${stat.color}"></i>
+                    <div class="stat-title">${stat.title}</div>
+                    <div class="stat-value">${formatNumber(stat.value)}</div>
+                    <div class="stat-unit">${stat.unit}</div>
+                </div>
+            `).join('');
+        }
+
+        // 更新摘要信息
+        function updateSummary(stats) {
+            const summarySection = document.getElementById('summarySection');
             
-            if (days > 0) {
-                timeStr += days + '日';
-            }
+            summarySection.innerHTML = `
+                <div class="summary-item">
+                    <div class="summary-value">${formatNumber(stats.totalWithSpaces)}</div>
+                    <div class="summary-label">总字符数（含空格）</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">${formatNumber(stats.totalWithoutSpaces)}</div>
+                    <div class="summary-label">总字符数（不含空格）</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">${formatNumber(stats.chineseChars + stats.foreignChars + stats.digits)}</div>
+                    <div class="summary-label">文字和数字总数</div>
+                </div>
+            `;
+        }
+
+        // 生成所有输出文本
+        function generateAllOutputs() {
+            const text = document.getElementById('textInput').value;
             
-            if (hours > 0 || days > 0) {
-                timeStr += hours + '时';
-            }
+            // 生成三种输出模式
+            const output1 = removeSpacesOnly(text);          // 只去除空格
+            const output2 = removeNewlinesOnly(text);        // 只去除换行
+            const output3 = removeSpacesAndNewlines(text);   // 去除空格和换行
             
-            if (minutes > 0 || hours > 0 || days > 0) {
-                timeStr += minutes + '分';
-            }
-            
-            timeStr += secs + '秒';
-            
-            return timeStr;
-        }
-
-        // 格式化数字，万进制
-        function formatNumber(num) {
-            // 当数字小于100万时，直接返回原数字
-            if (num < 1000000) {
-                return num.toString();
-            }
-            
-            // 计算单位索引
-            let index = 0;
-            let value = num;
-            
-            // 万进制计算
-            while (value >= 10000 && index < units.length - 1) {
-                value /= 10000;
-                index++;
-            }
-            
-            // 保留一位小数
-            return value.toFixed(1) + units[index];
-        }
-
-        // 计算下一级所需经验
-        function calculateNextLevelExp(currentLevel) {
-            return 10 * Math.pow(currentLevel, 3);
-        }
-
-        // 计算总伤害
-        function calculateDamage() {
-            const levelBonus = calculateLevelBonus();
-            return levelBonus * gameState.pickaxeBonus * gameState.ascensionBonus;
-        }
-
-        // 计算伤害水平
-        function calculateDamageLevel() {
-            const damage = calculateDamage();
-            if (damage <= 0) {
-                return 0;
-            }
-            return 10 * Math.log10(damage);
-        }
-
-        // 计算等级增益
-        function calculateLevelBonus() {
-            return Math.pow(gameState.level, 2);
-        }
-
-        // 计算升级费用
-        function calculateUpgradeCost() {
-            return Math.pow(2, gameState.pickaxeLevel) * 50;
-        }
-
-        // 计算镐子本身伤害加成
-        function calculatePickaxeBaseBonus() {
-            if (gameState.pickaxeLevel <= 1) {
-                return 1;
-            }
-            // 公式：(0.5*镐子等级+0.5)*2^(向下取整(镐子等级/5))
-            const base = (0.5 * gameState.pickaxeLevel) + 0.5;
-            const exponent = Math.floor(gameState.pickaxeLevel / 5);
-            const multiplier = Math.pow(2, exponent);
-            // 保留2位小数
-            return parseFloat((base * multiplier).toFixed(2));
-        }
-
-        // 计算声望增益
-        function calculatePrestigeMultiplier() {
-            const prestige = gameState.prestige;
-            // 声望增益 = 1 + (声望次数 * (声望次数 + 1)) ÷ 20
-            return parseFloat((1 + (prestige * (prestige + 1)) / 20).toFixed(2));
-        }
-
-        // 计算晋升增益
-        function calculateAscensionBonus() {
-            return Math.pow(10, gameState.ascensionLevel);
-        }
-
-        // 检查晋升条件
-        function checkAscensionRequirements() {
-            const damageLevel = calculateDamageLevel();
-            return damageLevel >= 100 && gameState.ascensionLevel < 1;
-        }
-
-        // 计算镐子等级上限
-        function getPickaxeLevelCap() {
-            return 20 + (gameState.ascensionLevel * 20);
-        }
-
-        // 计算声望所需镐子等级
-        function getPrestigeRequiredLevel() {
-            const requiredLevel = 20 + gameState.prestige;
-            const cap = getPickaxeLevelCap();
-            return Math.min(requiredLevel, cap);
-        }
-
-        // 计算自动化升级费用
-        function calculateAutomationCost() {
-            return 100 * Math.pow(8, gameState.upgrades.automation.level);
-        }
-
-        // 计算多重声望升级费用
-        function calculateMultiPrestigeCost() {
-            return Math.pow(10, 8) * Math.pow(100, gameState.upgrades.multiPrestige.level);
-        }
-
-        // 计算镐子伤害加成（包含声望增益）
-        function calculatePickaxeBonus() {
-            const baseBonus = calculatePickaxeBaseBonus();
-            return parseFloat((baseBonus * gameState.prestigeMultiplier).toFixed(2));
-        }
-
-        // 计算镐子本身每镐获得的经验
-        function calculateExperienceBasePerMine() {
-            // 公式：镐子等级*2^(向下取整(镐子等级/5))
-            const exponent = Math.floor(gameState.pickaxeLevel / 5);
-            const multiplier = Math.pow(2, exponent);
-            return gameState.pickaxeLevel * multiplier;
-        }
-
-        // 计算每镐获得的经验（包含声望增益和晋升增益）
-        function calculateExperiencePerMine() {
-            const baseExp = calculateExperienceBasePerMine();
-            return Math.floor(baseExp * gameState.prestigeMultiplier * gameState.ascensionBonus);
-        }
-
-        // 格式化数值显示：整数不保留小数，小数保留一位小数
-        function formatNumberDisplay(num) {
-            if (Number.isInteger(num)) {
-                return num.toString();
-            } else {
-                return num.toFixed(1);
-            }
-        }
-
-        // 计算镐子本身金币倍率
-        function calculateCoinBaseMultiplier() {
-            // 公式：向下保留一位小数(（0.8+镐子等级*0.2）*1.5^(向下取整(镐子等级/5)))
-            const levelFactor = 0.8 + gameState.pickaxeLevel * 0.2;
-            const exponent = Math.floor(gameState.pickaxeLevel / 5);
-            const multiplier = Math.pow(1.5, exponent);
-            // 使用Math.floor确保向下取整到一位小数
-            return Math.floor((levelFactor * multiplier) * 10) / 10;
-        }
-
-        // 计算金币倍率（包含声望增益）
-        function calculateCoinMultiplier() {
-            const baseMultiplier = calculateCoinBaseMultiplier();
-            return parseFloat((baseMultiplier * gameState.prestigeMultiplier).toFixed(1));
-        }
-
-        // 根据方块名称获取图标
-        function getBlockIcon(blockName) {
-            const block = blockTypes.find(b => b.name === blockName);
-            return block ? block.icon : "fa-cube";
-        }
-
-        // === 游戏核心功能 ===
-        
-        // 升级镐子函数
-        function upgradePickaxe() {
-            // 检查等级上限
-            const levelCap = getPickaxeLevelCap();
-            if (gameState.pickaxeLevel >= levelCap) {
-                showGameLog(`镐子已达到${levelCap}级满级！可以进行声望提升！`);
-                return false;
-            }
-            
-            const cost = calculateUpgradeCost();
-            
-            if (gameState.coins < cost) {
-                showGameLog("金币不足，无法升级！");
-                return false;
-            }
-            
-            gameState.coins -= cost;
-            gameState.pickaxeLevel++;
-            gameState.pickaxeBonus = calculatePickaxeBonus();
-            
-            showGameLog(`镐子升级到 ${gameState.pickaxeLevel} 级！伤害加成: ${gameState.pickaxeBonus}x`);
-            
-            saveGame('pickaxe_upgrade');
-            updateUI();
-            
-            return true;
-        }
-
-        // 声望提升函数
-        function prestige() {
-            // 检查镐子是否达到所需等级
-            const requiredLevel = getPrestigeRequiredLevel();
-            if (gameState.pickaxeLevel < requiredLevel) {
-                showGameLog(`镐子等级需要达到${requiredLevel}级才能进行声望提升！`);
-                return false;
-            }
-            
-            // 增加声望次数（包含多重声望加成）
-            gameState.prestige += (1 + gameState.upgrades.multiPrestige.level);
-            
-            // 重新计算声望增益
-            gameState.prestigeMultiplier = calculatePrestigeMultiplier();
-            
-            // 保存需要保留的数据
-            const playTime = gameState.playTime;
-            const prestige = gameState.prestige;
-            const prestigeMultiplier = gameState.prestigeMultiplier;
-            const lastSaveTime = Date.now();
-            
-            // 重置除了声望次数、在线时间和升级功能外的一切数据
-            gameState = {
-                level: 1,
-                experience: 0,
-                coins: 0,
-                pickaxeLevel: 1,
-                pickaxeBonus: 1,
-                blockHealth: 100,
-                blockMaxHealth: 100,
-                playTime: playTime,
-                currentBlockIndex: 0,
-                lastSaveTime: lastSaveTime,
-                prestige: prestige,
-                prestigeMultiplier: prestigeMultiplier,
-                ascensionLevel: gameState.ascensionLevel,
-                ascensionBonus: gameState.ascensionBonus,
-                upgrades: gameState.upgrades,
-                automationInterval: gameState.automationInterval
+            // 保存到全局变量
+            currentOutputs = {
+                output1: output1,
+                output2: output2,
+                output3: output3
             };
             
-            // 重新计算伤害加成
-            gameState.pickaxeBonus = calculatePickaxeBonus();
-            
-            // 根据当前方块重新设置生命值
-            const currentBlock = getCurrentBlock();
-            gameState.blockHealth = currentBlock.health;
-            gameState.blockMaxHealth = currentBlock.maxHealth;
-            
-            showGameLog(`声望提升！当前声望次数: ${gameState.prestige}，声望增益: ${gameState.prestigeMultiplier}x`);
-            
-            saveGame('prestige');
-            updateUI();
-            
-            return true;
+            // 显示当前选中的输出模式
+            showCurrentOutput();
         }
 
-        // 晋升函数
-        function ascension() {
-            if (!checkAscensionRequirements()) {
-                showGameLog("晋升条件未满足！伤害水平需要达到100且当前晋升等级小于1");
-                return false;
+        // 只去除空格（保留换行）
+        function removeSpacesOnly(text) {
+            return text.replace(/[ \t]/g, '');
+        }
+
+        // 只去除换行（保留空格，合并为一行）
+        function removeNewlinesOnly(text) {
+            return text.replace(/\n/g, '');
+        }
+
+        // 去除空格和换行（合并为一行且无空格）
+        function removeSpacesAndNewlines(text) {
+            return text.replace(/\s/g, '');
+        }
+
+        // 显示当前选中的输出
+        function showCurrentOutput() {
+            const outputArea = document.getElementById('outputArea');
+            const outputTitle = document.getElementById('outputTitle');
+            
+            // 根据当前选中的标签显示对应的输出
+            switch(currentOutputTab) {
+                case 1:
+                    outputTitle.textContent = "输出文本（只去除空格）";
+                    currentOutputText = currentOutputs.output1;
+                    break;
+                case 2:
+                    outputTitle.textContent = "输出文本（只去除换行）";
+                    currentOutputText = currentOutputs.output2;
+                    break;
+                case 3:
+                    outputTitle.textContent = "输出文本（去除空格和换行）";
+                    currentOutputText = currentOutputs.output3;
+                    break;
             }
             
-            // 提升晋升等级
-            gameState.ascensionLevel++;
-            gameState.ascensionBonus = calculateAscensionBonus();
-            
-            // 如果晋升到等级1，显示升级功能UI
-            if (gameState.ascensionLevel === 1) {
-                document.getElementById('upgrades-card').style.display = 'block';
-                document.getElementById('upgrades-card').classList.add('glass-card');
-            }
-            
-            showGameLog(`恭喜！晋升到第 ${gameState.ascensionLevel} 级！`);
-            
-            saveGame('ascension');
-            updateUI();
-            
-            return true;
+            outputArea.textContent = currentOutputText;
         }
 
-        // 购买自动化升级
-        function purchaseAutomation() {
-            const cost = calculateAutomationCost();
+        // 切换输出标签
+        function switchOutputTab(tabIndex) {
+            currentOutputTab = tabIndex;
             
-            if (gameState.coins < cost) {
-                showGameLog("金币不足，无法购买自动化升级！");
-                return false;
-            }
-            
-            gameState.coins -= cost;
-            gameState.upgrades.automation.level++;
-            gameState.upgrades.automation.price = cost;
-            
-            showGameLog(`购买自动化升级！当前等级: ${gameState.upgrades.automation.level}，自动挖矿: 每秒 ${gameState.upgrades.automation.level} 次`);
-            
-            saveGame('purchase_automation');
-            updateUI();
-            
-            return true;
-        }
-
-        // 购买多重声望升级
-        function purchaseMultiPrestige() {
-            const cost = calculateMultiPrestigeCost();
-            
-            if (gameState.coins < cost) {
-                showGameLog("金币不足，无法购买多重声望升级！");
-                return false;
-            }
-            
-            gameState.coins -= cost;
-            gameState.upgrades.multiPrestige.level++;
-            gameState.upgrades.multiPrestige.price = cost;
-            
-            showGameLog(`购买多重声望升级！当前等级: ${gameState.upgrades.multiPrestige.level}，每次声望提升 +${1 + gameState.upgrades.multiPrestige.level}`);
-            
-            saveGame('purchase_multi_prestige');
-            updateUI();
-            
-            return true;
-        }
-
-        // 切换自动化挖矿
-        function toggleAutomation() {
-            gameState.upgrades.automation.enabled = !gameState.upgrades.automation.enabled;
-            
-            if (gameState.upgrades.automation.enabled) {
-                // 开启自动挖矿
-                const interval = 1000 / gameState.upgrades.automation.level;
-                gameState.automationInterval = setInterval(mineBlock, interval);
-                showGameLog("自动挖矿已开启！");
-            } else {
-                // 关闭自动挖矿
-                clearInterval(gameState.automationInterval);
-                gameState.automationInterval = null;
-                showGameLog("自动挖矿已关闭！");
-            }
-            
-            saveGame('toggle_automation');
-            updateUI();
-            
-            return true;
-        }
-
-        // 添加经验值
-        function addExperience(amount) {
-            gameState.experience += amount;
-            
-            // 检查是否可以升级
-            while (gameState.experience >= calculateNextLevelExp(gameState.level)) {
-                levelUp();
-            }
-            
-            updateUI();
-        }
-
-        // 升级函数
-        function levelUp() {
-            const nextLevelExp = calculateNextLevelExp(gameState.level);
-            gameState.experience -= nextLevelExp;
-            gameState.level++;
-            
-            showGameLog(`恭喜升级到 ${gameState.level} 级！`);
-            
-            // 显示升级特效
-            document.getElementById('level').classList.add('level-up-animation');
-            setTimeout(() => {
-                document.getElementById('level').classList.remove('level-up-animation');
-            }, 600);
-            
-            saveGame('level_up');
-        }
-
-        // 挖掘方块
-        function mineBlock() {
-            const damage = calculateDamage();
-            gameState.blockHealth -= damage;
-            
-            // 显示点击特效
-            const miningBlock = document.getElementById('mining-block');
-            miningBlock.classList.add('mine-animation');
-            setTimeout(() => {
-                miningBlock.classList.remove('mine-animation');
-            }, 200);
-            
-            // 显示伤害数字
-            showDamageNumber(damage);
-            
-            // 获得经验
-            const expPerMine = calculateExperiencePerMine();
-            addExperience(expPerMine);
-            
-            // 检查方块是否被挖掉
-            if (gameState.blockHealth <= 0) {
-                blockDestroyed();
-            }
-            
-            updateUI();
-        }
-
-        // 方块被摧毁
-        function blockDestroyed() {
-            const currentBlock = getCurrentBlock();
-            
-            // 获得金币（基本金币*金币倍率）
-            const coinMultiplier = calculateCoinMultiplier();
-            const actualCoinReward = Math.floor(currentBlock.coinReward * coinMultiplier);
-            gameState.coins += actualCoinReward;
-            
-            // 显示金币特效
-            document.querySelector('.reward-item i.fa-coins').classList.add('coin-animation');
-            setTimeout(() => {
-                document.querySelector('.reward-item i.fa-coins').classList.remove('coin-animation');
-            }, 500);
-            
-            showGameLog(`挖掉了${currentBlock.name}，获得${formatNumber(actualCoinReward)}金币！`);
-            
-            // 重置方块生命值
-            gameState.blockHealth = gameState.blockMaxHealth;
-            
-            saveGame('block_destroyed');
-        }
-
-        // 切换到上一个方块
-        function prevBlock() {
-            gameState.currentBlockIndex = (gameState.currentBlockIndex - 1 + blockTypes.length) % blockTypes.length;
-            const currentBlock = getCurrentBlock();
-            gameState.blockHealth = currentBlock.health;
-            gameState.blockMaxHealth = currentBlock.maxHealth;
-            showGameLog(`切换到${currentBlock.name}`);
-            saveGame('block_switch');
-            updateUI();
-        }
-
-        // 切换到下一个方块
-        function nextBlock() {
-            gameState.currentBlockIndex = (gameState.currentBlockIndex + 1) % blockTypes.length;
-            const currentBlock = getCurrentBlock();
-            gameState.blockHealth = currentBlock.health;
-            gameState.blockMaxHealth = currentBlock.maxHealth;
-            showGameLog(`切换到${currentBlock.name}`);
-            saveGame('block_switch');
-            updateUI();
-        }
-
-        // 显示伤害数字
-        function showDamageNumber(damage) {
-            const damageNumber = document.createElement('div');
-            damageNumber.classList.add('damage-number');
-            damageNumber.textContent = '-' + formatNumber(damage);
-            
-            // 固定位置在方块中心
-            damageNumber.style.position = 'absolute';
-            damageNumber.style.left = '50%';
-            damageNumber.style.top = '50%';
-            damageNumber.style.transform = 'translate(-50%, -50%)';
-            
-            document.getElementById('mining-block').appendChild(damageNumber);
-            
-            setTimeout(() => {
-                damageNumber.style.opacity = '0';
-                damageNumber.style.transform = 'translate(-50%, -80%) scale(1.5)';
-            }, 10);
-            
-            setTimeout(() => {
-                if (damageNumber.parentNode) {
-                    document.getElementById('mining-block').removeChild(damageNumber);
+            // 更新标签样式
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach((tab, index) => {
+                if (index === tabIndex - 1) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
                 }
-            }, 1000);
+            });
+            
+            // 显示对应的输出
+            showCurrentOutput();
         }
 
-        // 显示游戏日志
-        function showGameLog(message) {
-            const logEntry = document.createElement('div');
-            logEntry.classList.add('log-entry');
-            logEntry.textContent = `[${new Date().toLocaleTimeString().slice(0,5)}] ${message}`;
-            
-            const logContent = document.getElementById('game-log');
-            logContent.appendChild(logEntry);
-            
-            // 限制日志数量
-            if (logContent.children.length > 20) {
-                logContent.removeChild(logContent.firstChild);
+        // 复制输出文本到剪贴板
+        function copyOutput() {
+            if (!currentOutputText || currentOutputText.trim() === '') {
+                showNotification('请先生成输出文本！', 'warning');
+                return;
             }
             
-            // 滚动到底部
-            logContent.scrollTop = logContent.scrollHeight;
+            navigator.clipboard.writeText(currentOutputText).then(() => {
+                showNotification('文本已复制到剪贴板！', 'success');
+            }).catch(err => {
+                console.error('复制失败:', err);
+                showNotification('复制失败，请手动选择文本复制', 'error');
+            });
         }
 
-        // 保存游戏状态
-        function saveGame(source = 'auto') {
-            try {
-                // 更新最后保存时间
-                gameState.lastSaveTime = Date.now();
-                localStorage.setItem('miningGameState', JSON.stringify(gameState));
-                console.log(`游戏保存成功 (来源: ${source})`);
-                return true;
-            } catch (error) {
-                console.error('保存游戏失败:', error);
-                return false;
-            }
-        }
-
-        // 加载游戏状态
-        function loadGame() {
-            try {
-                const savedState = localStorage.getItem('miningGameState');
-                if (savedState) {
-                    const loadedState = JSON.parse(savedState);
-                    console.log('加载的游戏状态:', loadedState);
-                    
-                    const safeProperties = ['level', 'experience', 'coins', 'pickaxeLevel', 'playTime', 'currentBlockIndex', 'lastSaveTime', 'prestige'];
-                    
-                    for (const prop of safeProperties) {
-                        if (loadedState.hasOwnProperty(prop)) {
-                            gameState[prop] = loadedState[prop];
-                        }
-                    }
-                    
-                    // 重新计算声望增益
-                    gameState.prestigeMultiplier = calculatePrestigeMultiplier();
-                    
-                    // 重新计算伤害加成
-                    gameState.pickaxeBonus = calculatePickaxeBonus();
-                    
-                    // 重新计算晋升增益
-                    gameState.ascensionBonus = calculateAscensionBonus();
-                    
-                    // 根据当前方块重新设置生命值
-                    const currentBlock = getCurrentBlock();
-                    gameState.blockHealth = currentBlock.health;
-                    gameState.blockMaxHealth = currentBlock.maxHealth;
-                    
-                    // 计算离线收益但不自动发放
-                    if (loadedState.hasOwnProperty('lastSaveTime')) {
-                        const offlineTime = Date.now() - loadedState.lastSaveTime;
-                        const offlineSeconds = Math.floor(offlineTime / 1000);
-                        
-                        if (offlineSeconds > 0) {
-                            // 计算离线金币收益：离线时间（秒）*2.5*（等级+金币倍率）
-                            const coinMultiplier = calculateCoinMultiplier();
-                            const offlineCoins = Math.floor(offlineSeconds * 2.5 * (gameState.level + coinMultiplier));
-                            
-                            // 计算离线经验收益：离线时间（秒）*（等级+每镐经验）*1.5
-                            const expPerMine = calculateExperiencePerMine();
-                            const offlineExp = Math.floor(offlineSeconds * (gameState.level + expPerMine) * 1.5);
-                            
-                            if (offlineCoins > 0 || offlineExp > 0) {
-                                // 显示离线收益领取面板
-                                showOfflineRewardPanel(offlineSeconds, offlineCoins, offlineExp);
-                            }
-                        }
-                    }
-                    
-                    showGameLog('成功加载游戏存档！');
-                    return true;
-                }
-                return false;
-            } catch (error) {
-                console.error('加载游戏失败:', error);
-                localStorage.removeItem('miningGameState');
-                return false;
-            }
-        }
-
-        // 显示离线收益领取面板
-        function showOfflineRewardPanel(offlineSeconds, offlineCoins, offlineExp) {
-            // 显示面板
-            const offlineRewardPanel = document.getElementById('offline-reward');
-            offlineRewardPanel.style.display = 'block';
+        // 保存到历史记录
+        function saveToHistory() {
+            const text = document.getElementById('textInput').value;
             
-            // 更新显示内容
-            document.getElementById('offline-time').textContent = formatNumber(offlineSeconds);
-            document.getElementById('offline-coins').textContent = formatNumber(offlineCoins);
-            document.getElementById('offline-exp').textContent = formatNumber(offlineExp);
+            if (!text.trim()) {
+                showNotification('请输入文本后再保存！', 'warning');
+                return;
+            }
             
-            // 保存离线收益信息到游戏状态
-            gameState.offlineReward = {
-                seconds: offlineSeconds,
-                coins: offlineCoins,
-                exp: offlineExp
+            // 生成三种输出模式的文本
+            const output1 = removeSpacesOnly(text);
+            const output2 = removeNewlinesOnly(text);
+            const output3 = removeSpacesAndNewlines(text);
+            
+            // 创建历史记录项
+            const historyItem = {
+                id: Date.now(),
+                date: new Date().toLocaleString('zh-CN'),
+                timestamp: Date.now(),
+                text: text,
+                output1: output1, // 只去除空格
+                output2: output2, // 只去除换行
+                output3: output3, // 去除空格和换行
+                stats: {...currentStats}
             };
+            
+            // 添加到历史记录数组开头
+            history.unshift(historyItem);
+            
+            // 限制历史记录数量
+            if (history.length > MAX_HISTORY_ITEMS) {
+                history = history.slice(0, MAX_HISTORY_ITEMS);
+            }
+            
+            // 保存到本地存储
+            saveHistoryToStorage();
+            
+            // 更新历史记录显示
+            renderHistory();
+            
+            showNotification('记录已保存！', 'success');
         }
 
-        // 领取离线收益
-        function claimOfflineReward() {
-            if (gameState.offlineReward) {
-                // 添加金币
-                gameState.coins += gameState.offlineReward.coins;
-                
-                // 添加经验
-                addExperience(gameState.offlineReward.exp);
-                
-                // 显示领取成功日志
-                showGameLog(`领取离线收益 ${formatNumber(gameState.offlineReward.coins)} 金币和 ${formatNumber(gameState.offlineReward.exp)} 经验！`);
-                
-                // 隐藏面板
-                document.getElementById('offline-reward').style.display = 'none';
-                
-                // 清除离线收益信息
-                delete gameState.offlineReward;
-                
-                // 更新UI
-                updateUI();
-                
-                // 保存游戏状态
-                saveGame('claim_offline_reward');
+        // 加载历史记录
+        function loadHistory() {
+            const storedHistory = localStorage.getItem(HISTORY_KEY);
+            
+            if (storedHistory) {
+                try {
+                    history = JSON.parse(storedHistory);
+                    
+                    // 按时间戳排序（最新的在前）
+                    history.sort((a, b) => b.timestamp - a.timestamp);
+                    
+                    renderHistory();
+                } catch (e) {
+                    console.error('解析历史记录失败:', e);
+                    history = [];
+                }
             }
         }
 
-        // 重置游戏
-        function resetGame() {
-            if (confirm('确定要重置游戏吗？所有进度都将丢失！')) {
-                gameState = {
-                    level: 1,
-                    experience: 0,
-                    coins: 0,
-                    pickaxeLevel: 1,
-                    pickaxeBonus: 1,
-                    blockHealth: 100,
-                    blockMaxHealth: 100,
-                    playTime: 0,
-                    currentBlockIndex: 0,
-                    lastSaveTime: Date.now(),
-                    prestige: 0,
-                    prestigeMultiplier: 1.0,
-                    ascensionLevel: 0,
-                    ascensionBonus: 1.0,
-                    upgrades: {
-                        automation: {
-                            level: 0,
-                            enabled: false,
-                            price: 100
-                        },
-                        multiPrestige: {
-                            level: 0,
-                            price: 100000000
-                        }
-                    },
-                    automationInterval: null
+        // 保存历史记录到本地存储
+        function saveHistoryToStorage() {
+            try {
+                localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+            } catch (e) {
+                console.error('保存历史记录失败:', e);
+                showNotification('保存历史记录失败，可能已超出存储限制', 'error');
+            }
+        }
+
+        // 渲染历史记录
+        function renderHistory() {
+            const historyList = document.getElementById('historyList');
+            const historyDetails = document.getElementById('historyDetails');
+            const historyCount = document.getElementById('historyCount');
+            
+            historyCount.textContent = history.length;
+            
+            if (history.length === 0) {
+                historyList.innerHTML = `
+                    <div class="empty-history">
+                        <i class="fas fa-history"></i>
+                        <p>暂无历史记录</p>
+                        <p>开始统计文本并保存记录吧！</p>
+                    </div>
+                `;
+                
+                historyDetails.innerHTML = '';
+                return;
+            }
+            
+            // 渲染历史记录列表
+            historyList.innerHTML = history.map((item, index) => `
+                <div class="history-item" data-id="${item.id}">
+                    <div class="history-header">
+                        <div class="history-date">
+                            <i class="far fa-calendar-alt"></i> ${item.date}
+                        </div>
+                        <div>
+                            <span class="highlight">#${index + 1}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="history-stats">
+                        <div class="history-stat">
+                            <strong>总字符:</strong> ${formatNumber(item.stats.totalWithSpaces)}
+                        </div>
+                        <div class="history-stat">
+                            <strong>中文:</strong> ${formatNumber(item.stats.chineseChars)}
+                        </div>
+                        <div class="history-stat">
+                            <strong>外文:</strong> ${formatNumber(item.stats.foreignChars)}
+                        </div>
+                        <div class="history-stat">
+                            <strong>数字:</strong> ${formatNumber(item.stats.digits)}
+                        </div>
+                    </div>
+                    
+                    <div class="history-actions">
+                        <button class="action-btn load-btn" onclick="loadHistoryItem('${item.id}')">
+                            <i class="fas fa-redo"></i> 加载
+                        </button>
+                        <button class="action-btn view-btn" onclick="viewHistoryItem('${item.id}')">
+                            <i class="fas fa-eye"></i> 查看详情
+                        </button>
+                        <button class="action-btn delete-btn" onclick="deleteHistoryItem('${item.id}')">
+                            <i class="fas fa-trash"></i> 删除
+                        </button>
+                    </div>
+                    
+                    <div class="history-preview">
+                        ${item.text.substring(0, 150)}${item.text.length > 150 ? '...' : ''}
+                    </div>
+                </div>
+            `).join('');
+            
+            // 渲染详细历史记录
+            renderHistoryDetails();
+        }
+
+        // 渲染详细历史记录
+        function renderHistoryDetails() {
+            const historyDetails = document.getElementById('historyDetails');
+            
+            historyDetails.innerHTML = history.map((item, index) => `
+                <div class="history-item-details" data-id="${item.id}">
+                    <h4>
+                        <span><i class="far fa-calendar-alt"></i> ${item.date} - 记录 #${index + 1}</span>
+                        <button class="close-details" onclick="closeHistoryDetails('${item.id}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </h4>
+                    
+                    <div class="history-stats">
+                        <div class="history-stat">
+                            <strong>总字符（含空格）:</strong> ${formatNumber(item.stats.totalWithSpaces)}
+                        </div>
+                        <div class="history-stat">
+                            <strong>总字符（不含空格）:</strong> ${formatNumber(item.stats.totalWithoutSpaces)}
+                        </div>
+                        <div class="history-stat">
+                            <strong>中文字符:</strong> ${formatNumber(item.stats.chineseChars)}
+                        </div>
+                        <div class="history-stat">
+                            <strong>数字:</strong> ${formatNumber(item.stats.digits)}
+                        </div>
+                        <div class="history-stat">
+                            <strong>外文字符:</strong> ${formatNumber(item.stats.foreignChars)}
+                        </div>
+                        <div class="history-stat">
+                            <strong>标点符号:</strong> ${formatNumber(item.stats.punctuation)}
+                        </div>
+                        <div class="history-stat">
+                            <strong>其他符号:</strong> ${formatNumber(item.stats.symbols)}
+                        </div>
+                        <div class="history-stat">
+                            <strong>空格:</strong> ${formatNumber(item.stats.spaces)}
+                        </div>
+                        <div class="history-stat">
+                            <strong>换行符:</strong> ${formatNumber(item.stats.newlines)}
+                        </div>
+                    </div>
+                    
+                    <h5><i class="fas fa-align-left"></i> 原始文本</h5>
+                    <div class="history-text">${item.text}</div>
+                    
+                    <h5><i class="fas fa-minus"></i> 输出1：只去除空格</h5>
+                    <div class="history-text">${item.output1}</div>
+                    
+                    <h5><i class="fas fa-compress-alt"></i> 输出2：只去除换行</h5>
+                    <div class="history-text">${item.output2}</div>
+                    
+                    <h5><i class="fas fa-ban"></i> 输出3：去除空格和换行</h5>
+                    <div class="history-text">${item.output3}</div>
+                    
+                    <div class="history-actions">
+                        <button class="action-btn load-btn" onclick="loadHistoryItem('${item.id}')">
+                            <i class="fas fa-redo"></i> 加载此记录
+                        </button>
+                        <button class="action-btn delete-btn" onclick="deleteHistoryItem('${item.id}')">
+                            <i class="fas fa-trash"></i> 删除此记录
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 加载历史记录项
+        function loadHistoryItem(id) {
+            const item = history.find(item => item.id == id);
+            
+            if (item) {
+                document.getElementById('textInput').value = item.text;
+                
+                // 更新统计
+                currentStats = item.stats;
+                displayStats(item.stats);
+                updateSummary(item.stats);
+                
+                // 更新输出
+                currentOutputs = {
+                    output1: item.output1,
+                    output2: item.output2,
+                    output3: item.output3
                 };
-                localStorage.removeItem('miningGameState');
-                showGameLog('游戏已重置');
-                updateUI();
+                
+                showCurrentOutput();
+                
+                showNotification('记录已加载！', 'success');
             }
         }
 
-        // === UI更新函数 ===
-        function updateUI() {
+        // 查看历史记录项详情
+        function viewHistoryItem(id) {
+            const details = document.getElementById('historyDetails');
+            details.classList.remove('hidden');
+            
+            // 滚动到详情区域
+            details.scrollIntoView({ behavior: 'smooth' });
+            
+            // 高亮对应的记录
+            const itemElement = details.querySelector(`[data-id="${id}"]`);
+            if (itemElement) {
+                // 移除之前的高亮
+                details.querySelectorAll('.history-item-details').forEach(el => {
+                    el.style.backgroundColor = '';
+                });
+                
+                // 高亮当前项
+                itemElement.style.backgroundColor = 'rgba(67, 97, 238, 0.1)';
+                itemElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        // 关闭历史记录详情
+        function closeHistoryDetails(id) {
+            const itemElement = document.querySelector(`.history-item-details[data-id="${id}"]`);
+            if (itemElement) {
+                itemElement.style.display = 'none';
+            }
+        }
+
+        // 切换历史记录详情显示/隐藏
+        function toggleHistoryDetails() {
+            const details = document.getElementById('historyDetails');
+            details.classList.toggle('hidden');
+        }
+
+        // 删除历史记录项
+        function deleteHistoryItem(id) {
+            if (confirm('确定要删除这条记录吗？')) {
+                history = history.filter(item => item.id != id);
+                saveHistoryToStorage();
+                renderHistory();
+                showNotification('记录已删除！', 'success');
+            }
+        }
+
+        // 清空历史记录
+        function clearHistory() {
+            if (history.length === 0) {
+                showNotification('历史记录已经是空的！', 'info');
+                return;
+            }
+            
+            if (confirm(`确定要清空所有 ${history.length} 条历史记录吗？此操作不可撤销。`)) {
+                history = [];
+                saveHistoryToStorage();
+                renderHistory();
+                showNotification('历史记录已清空！', 'success');
+            }
+        }
+
+        // 清空文本
+        function clearText() {
+            document.getElementById('textInput').value = '';
+            document.getElementById('outputArea').textContent = '';
+            document.getElementById('fileInfo').textContent = '';
+            
+            // 重置统计
+            const emptyStats = {
+                chineseChars: 0, digits: 0, foreignChars: 0, punctuation: 0,
+                symbols: 0, spaces: 0, newlines: 0, totalWithSpaces: 0, totalWithoutSpaces: 0
+            };
+            
+            currentStats = emptyStats;
+            displayStats(emptyStats);
+            updateSummary(emptyStats);
+            
+            // 重置输出
+            currentOutputText = "";
+            
+            showNotification('文本已清空！', 'success');
+        }
+
+        // 粘贴文本
+        async function pasteText() {
             try {
-                // 更新玩家状态
-                const damage = calculateDamage();
-                document.getElementById('damage').textContent = formatNumber(formatNumberDisplay(damage));
-                // 更新伤害水平
-                const damageLevel = calculateDamageLevel();
-                document.getElementById('damage-level').textContent = `(伤害水平: ${damageLevel.toFixed(2)})`;
-                document.getElementById('coins').textContent = formatNumber(gameState.coins);
-                document.getElementById('level').textContent = formatNumber(gameState.level);
-                document.getElementById('level-bonus').textContent = formatNumber(calculateLevelBonus()) + '×';
+                const text = await navigator.clipboard.readText();
+                document.getElementById('textInput').value = text;
+                countCharacters();
+                showNotification('文本已粘贴！', 'success');
+            } catch (err) {
+                console.error('粘贴失败:', err);
+                showNotification('无法访问剪贴板，请使用Ctrl+V手动粘贴', 'error');
+            }
+        }
 
-                // 更新晋升UI中的信息
-                document.getElementById('ascension-level-display').textContent = gameState.ascensionLevel;
-                document.getElementById('ascension-bonus-display').textContent = formatNumberDisplay(gameState.ascensionBonus) + '×';
-                document.getElementById('pickaxe-level-cap-display').textContent = getPickaxeLevelCap();
-                
-                // 更新经验值
-                document.getElementById('current-exp').textContent = formatNumber(gameState.experience);
-                const nextLevelExp = calculateNextLevelExp(gameState.level);
-                document.getElementById('exp-required').textContent = formatNumber(nextLevelExp);
-                
-                const expPercent = (gameState.experience / nextLevelExp) * 100;
-                document.getElementById('exp-progress').style.width = `${Math.min(expPercent, 100)}%`;
-                document.getElementById('exp-percentage').textContent = `${Math.min(expPercent, 100).toFixed(1)}%`;
-                
-                // 更新镐子信息
-                document.getElementById('pickaxe-level').textContent = formatNumber(gameState.pickaxeLevel);
-                document.getElementById('pickaxe-level-display').textContent = formatNumber(gameState.pickaxeLevel);
-                
-                // 更新伤害加成显示
-                const basePickaxeBonus = calculatePickaxeBaseBonus();
-                const pickaxeBonus = calculatePickaxeBonus();
-                document.getElementById('pickaxe-bonus').textContent = `${formatNumberDisplay(basePickaxeBonus)}*${formatNumberDisplay(gameState.prestigeMultiplier)}×`;
-                
-                // 更新金币倍率显示
-                const baseCoinMultiplier = calculateCoinBaseMultiplier();
-                const coinMultiplier = calculateCoinMultiplier();
-                document.getElementById('coin-multiplier').textContent = `${baseCoinMultiplier}*${formatNumberDisplay(gameState.prestigeMultiplier)}*${formatNumberDisplay(gameState.ascensionBonus)}×`;
-                
-                // 更新每镐经验显示
-                const baseExpPerMine = calculateExperienceBasePerMine();
-                const expPerMine = calculateExperiencePerMine();
-                document.getElementById('exp-per-mine').textContent = `${baseExpPerMine}*${formatNumberDisplay(gameState.prestigeMultiplier)}*${formatNumberDisplay(gameState.ascensionBonus)}`;
-                
-                document.getElementById('upgrade-cost').textContent = formatNumber(calculateUpgradeCost());
-                
-                // 更新声望信息
-                document.getElementById('prestige-count-display').textContent = gameState.prestige;
-                document.getElementById('prestige-multiplier').textContent = formatNumberDisplay(gameState.prestigeMultiplier) + '×';
-                
-                // 更新声望按钮状态
-                const prestigeButton = document.getElementById('prestige-button');
-                const prestigeRequiredLevel = getPrestigeRequiredLevel();
-                prestigeButton.disabled = gameState.pickaxeLevel < prestigeRequiredLevel;
-                
-                // 更新声望所需等级显示
-                document.getElementById('prestige-required-level').textContent = prestigeRequiredLevel;
-                
-                // 更新升级按钮状态
-                const upgradeButton = document.getElementById('upgrade-pickaxe');
-                const levelCap = getPickaxeLevelCap();
-                if (gameState.pickaxeLevel >= levelCap) {
-                    upgradeButton.disabled = true;
-                    upgradeButton.innerHTML = '<i class="fas fa-trophy"></i> 已满级';
-                    upgradeButton.classList.add('max-level-button');
-                } else {
-                    upgradeButton.disabled = gameState.coins < calculateUpgradeCost();
-                    upgradeButton.innerHTML = '<i class="fas fa-arrow-up"></i> 升级镐子';
-                    upgradeButton.classList.remove('max-level-button');
-                }
-                
-                // 更新晋升按钮状态
-                const ascensionButton = document.getElementById('ascension-button');
-                const canAscend = checkAscensionRequirements();
-                ascensionButton.disabled = !canAscend;
-                
-                // 更新晋升状态显示
-                const ascensionStatus = document.getElementById('ascension-status');
-                const currentDamageLevel = calculateDamageLevel();
-                if (gameState.ascensionLevel >= 1) {
-                    ascensionStatus.textContent = "已达到最高晋升等级";
-                    ascensionStatus.style.color = "#34d399";
-                } else if (canAscend) {
-                    ascensionStatus.textContent = "可以晋升";
-                    ascensionStatus.style.color = "#34d399";
-                } else {
-                    ascensionStatus.textContent = `伤害水平还需要 ${(100 - currentDamageLevel).toFixed(2)} 点`;
-                    ascensionStatus.style.color = "#f87171";
-                }
-                
-                // 更新升级功能UI
-                if (gameState.ascensionLevel >= 1) {
-                    // 更新自动化升级UI
-                    document.getElementById('automation-level').textContent = gameState.upgrades.automation.level;
-                    const automationPrice = calculateAutomationCost();
-                    document.getElementById('automation-price').textContent = formatNumber(automationPrice);
-                    document.getElementById('automation-effect').textContent = `自动挖掘：每秒 ${gameState.upgrades.automation.level} 次`;
-                    
-                    const automationPurchaseButton = document.getElementById('purchase-automation');
-                    automationPurchaseButton.disabled = gameState.coins < automationPrice;
-                    
-                    const automationToggleButton = document.getElementById('toggle-automation');
-                    automationToggleButton.disabled = gameState.upgrades.automation.level === 0;
-                    automationToggleButton.innerHTML = gameState.upgrades.automation.enabled ? "关闭" : "开启";
-                    automationToggleButton.classList.toggle('active', gameState.upgrades.automation.enabled);
-                    
-                    // 更新多重声望升级UI
-                    document.getElementById('multi-prestige-level').textContent = gameState.upgrades.multiPrestige.level;
-                    const multiPrestigePrice = calculateMultiPrestigeCost();
-                    document.getElementById('multi-prestige-price').textContent = formatNumber(multiPrestigePrice);
-                    document.getElementById('multi-prestige-effect').textContent = `每次声望提升 +${1 + gameState.upgrades.multiPrestige.level}`;
-                    
-                    const multiPrestigePurchaseButton = document.getElementById('purchase-multi-prestige');
-                    multiPrestigePurchaseButton.disabled = gameState.coins < multiPrestigePrice;
-                }
-                
-                // 更新方块信息
-                const currentBlock = getCurrentBlock();
-                document.getElementById('block-name').textContent = currentBlock.name;
-                const blockIcon = document.querySelector('.block-icon');
-                blockIcon.className = `fas ${getBlockIcon(currentBlock.name)} block-icon`;
-                
-                // 更新方块血量和进度条
-                document.getElementById('current-block-health').textContent = formatNumber(gameState.blockHealth);
-                document.getElementById('max-block-health').textContent = formatNumber(gameState.blockMaxHealth);
-                const healthPercent = (gameState.blockHealth / gameState.blockMaxHealth) * 100;
-                document.getElementById('block-health-fill').style.width = `${healthPercent}%`;
-                
-                // 更新金币奖励显示
-                const coinMultiplierForReward = calculateCoinMultiplier();
-                const actualCoinReward = currentBlock.coinReward * coinMultiplierForReward * gameState.ascensionBonus;
-                document.getElementById('block-gold-reward').textContent = formatNumber(formatNumberDisplay(actualCoinReward));
-                
-                // 更新方块计数器
-                document.getElementById('block-index').textContent = gameState.currentBlockIndex + 1;
-                document.getElementById('total-blocks').textContent = blockTypes.length;
-                
-                // 更新在线时间
-                document.getElementById('play-time').textContent = formatTime(gameState.playTime);
-                
+        // 格式化数字（添加千位分隔符）
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        // 显示通知
+        function showNotification(message, type = 'info') {
+            // 移除现有的通知
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(notification => {
+                notification.remove();
+            });
+            
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // 3秒后移除通知
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // 设置文件上传
+        function setupFileUpload() {
+            const fileInput = document.getElementById('fileInput');
+            fileInput.addEventListener('change', handleFileSelect);
+        }
+
+        // 处理文件选择
+        async function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('fileInfo').innerHTML = `
+                <i class="fas fa-file"></i> ${file.name} (${formatBytes(file.size)})
+            `;
+            
+            try {
+                const text = await readFile(file);
+                document.getElementById('textInput').value = text;
+                countCharacters();
+                showNotification(`文件 "${file.name}" 已加载！`, 'success');
             } catch (error) {
-                console.error('UI更新出错:', error);
+                console.error('读取文件失败:', error);
+                showNotification('读取文件时出错: ' + error.message, 'error');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
             }
         }
 
-        // === 游戏初始化 ===
-        function initGame() {
-            console.log('🚀 启动星际矿工游戏...');
-            
-            // 尝试加载保存的游戏状态
-            const hasLoaded = loadGame();
-            if (!hasLoaded) {
-                // 使用第一个方块的状态初始化
-                const currentBlock = getCurrentBlock();
-                gameState.blockHealth = currentBlock.health;
-                gameState.blockMaxHealth = currentBlock.maxHealth;
-                showGameLog('🌌 欢迎来到星际矿工！开始你的宇宙挖掘之旅！');
-            }
-            
-            // 更新UI并检查是否显示升级功能
-            updateUI();
-            
-            // 如果晋升等级≥1，显示升级功能
-            if (gameState.ascensionLevel >= 1) {
-                document.getElementById('upgrades-card').style.display = 'block';
-                document.getElementById('upgrades-card').classList.add('glass-card');
-            }
-            
-            // 绑定事件监听器
-            document.getElementById('mine-button').addEventListener('click', mineBlock);
-            document.getElementById('prev-button').addEventListener('click', prevBlock);
-            document.getElementById('next-button').addEventListener('click', nextBlock);
-            document.getElementById('upgrade-pickaxe').addEventListener('click', upgradePickaxe);
-            document.getElementById('reset-game').addEventListener('click', resetGame);
-            document.getElementById('prestige-button').addEventListener('click', prestige);
-            document.getElementById('ascension-button').addEventListener('click', ascension);
-            document.getElementById('purchase-automation').addEventListener('click', purchaseAutomation);
-            document.getElementById('toggle-automation').addEventListener('click', toggleAutomation);
-            document.getElementById('purchase-multi-prestige').addEventListener('click', purchaseMultiPrestige);
-            
-            // 绑定离线收益领取事件
-            document.getElementById('claim-offline-reward').addEventListener('click', claimOfflineReward);
-            
-            // 添加键盘快捷键
-            document.addEventListener('keydown', (e) => {
-                if (e.key === ' ' || e.key === 'Enter') {
-                    e.preventDefault();
-                    mineBlock();
-                } else if (e.key === 'ArrowLeft') {
-                    prevBlock();
-                } else if (e.key === 'ArrowRight') {
-                    nextBlock();
-                } else if (e.key === 'u' || e.key === 'U') {
-                    upgradePickaxe();
+        // 读取文件内容
+        function readFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = () => reject(new Error('无法读取文件'));
+                
+                // 根据文件类型选择读取方式
+                if (file.type.startsWith('text/') || 
+                    file.name.endsWith('.txt') || 
+                    file.name.endsWith('.md') ||
+                    file.name.endsWith('.html') ||
+                    file.name.endsWith('.js') ||
+                    file.name.endsWith('.css') ||
+                    file.name.endsWith('.py') ||
+                    file.name.endsWith('.java') ||
+                    file.name.endsWith('.cpp') ||
+                    file.name.endsWith('.csv') ||
+                    file.name.endsWith('.json') ||
+                    file.name.endsWith('.xml')) {
+                    reader.readAsText(file, 'UTF-8');
+                } else {
+                    alert('文件格式可能不受支持，尝试以文本格式读取');
+                    reader.readAsText(file);
                 }
             });
-            
-            // 设置每5秒自动保存
-            setInterval(() => {
-                saveGame('auto_interval');
-            }, 5000);
-
-            // 设置每秒更新在线时间
-            setInterval(() => {
-                gameState.playTime++;
-                updateUI();
-            }, 1000);
-            
-            // 页面关闭前保存
-            window.addEventListener('beforeunload', () => {
-                saveGame('page_close');
-            });
-            
-            // 音效控制
-            document.getElementById('toggle-audio').addEventListener('click', function() {
-                this.classList.toggle('muted');
-                this.innerHTML = this.classList.contains('muted') ? 
-                    '<i class="fas fa-volume-mute"></i>' : 
-                    '<i class="fas fa-volume-up"></i>';
-            });
-            
-            console.log('✅ 游戏初始化完成！');
-            console.log('🎮 操作提示：空格/回车键挖矿，左右箭头切换方块，U键升级镐子');
         }
 
-        // 启动游戏
-        window.addEventListener('DOMContentLoaded', initGame);
+        // 格式化文件大小
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // 设置拖放功能
+        function setupDragAndDrop() {
+            const dropArea = document.getElementById('dropArea');
+            
+            // 防止默认拖放行为
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            // 高亮拖放区域
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+            
+            // 处理文件拖放
+            dropArea.addEventListener('drop', handleDrop, false);
+        }
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function highlight() {
+            document.getElementById('dropArea').classList.add('dragover');
+        }
+
+        function unhighlight() {
+            document.getElementById('dropArea').classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length) {
+                const file = files[0];
+                const event = { target: { files: [file] } };
+                handleFileSelect(event);
+            }
+        }
     </script>
 </body>
 </html>
