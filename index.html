@@ -129,16 +129,19 @@
                         
                         <!-- 浇树功能 -->
                         <div class="tree-watering" style="margin-top: 20px;">
-                            <h4>浇树功能</h4>
-                            <div style="margin: 10px 0;">
-                                <p>树等级: <span id="tree-level">1</span></p>
-                                <div class="tree-progress-container" style="width: 100%; height: 20px; background: rgba(0, 0, 0, 0.1); border-radius: 10px; margin: 10px 0;">
-                                    <div class="tree-progress-bar" id="tree-progress-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #4ecdc4, #45b7d1); border-radius: 10px; transition: width 0.3s ease;"></div>
-                                </div>
-                                <p>浇树经验: <span id="tree-experience">0</span> / <span id="tree-experience-required">10</span></p>
-                            </div>
-                            <button id="water-tree-btn" style="background: #4ecdc4; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-weight: bold;">浇树 (消耗1水立方)</button>
-                        </div>
+                <h4>浇树功能</h4>
+                <div style="margin: 10px 0;">
+                    <p>树等级: <span id="tree-level">1</span></p>
+                    <div class="tree-progress-container" style="width: 100%; height: 20px; background: rgba(0, 0, 0, 0.1); border-radius: 10px; margin: 10px 0;">
+                        <div class="tree-progress-bar" id="tree-progress-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #4ecdc4, #45b7d1); border-radius: 10px; transition: width 0.3s ease;"></div>
+                    </div>
+                    <p>浇树经验: <span id="tree-experience">0</span> / <span id="tree-experience-required">10</span></p>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button id="water-tree-btn" style="background: #4ecdc4; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-weight: bold;">浇树 (消耗1水立方)</button>
+                    <button id="auto-water-tree-btn" style="background: #45b7d1; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-weight: bold;">一键浇树 (消耗所有可用水立方)</button>
+                </div>
+            </div>
                     </div>
                 </div>
             </div>

@@ -38,7 +38,10 @@ const gameData = {
         { name: '火立方', hp: 5e10, coins: 3e7, drop: 'fireCube', sqrtZone: 3 },
         { name: '水立方', hp: 8e10, coins: 5e7, drop: 'waterCube', sqrtZone: 3 },
         { name: '金立方', hp: 2e11, coins: 1e8, drop: 'goldCube', sqrtZone: 3 },
-        { name: '五行结晶', hp: 4e12, coins: 2e8, drop: 'fiveElementCrystal', sqrtZone: 3 }
+        { name: '五行结晶', hp: 4e12, coins: 2e8, drop: 'fiveElementCrystal', sqrtZone: 3 },
+        // 新增三次开方区方块
+        { name: '方立水', hp: 1e13, coins: 4.5e8, drop: 'waterCube', dropAmount: 64, sqrtZone: 3 },
+        { name: '水沝㴇淼㵘', hp: 5e14, coins: 1e9, drop: 'waterCube', dropAmount: 256, sqrtZone: 3 }
     ],
     
     // 镐子属性
@@ -176,6 +179,7 @@ const elements = {
     treeExperience: document.getElementById('tree-experience'),
     treeExperienceRequired: document.getElementById('tree-experience-required'),
     waterTreeBtn: document.getElementById('water-tree-btn'),
+    autoWaterTreeBtn: document.getElementById('auto-water-tree-btn'),
     treeBonus: document.getElementById('tree-bonus'),
 
     sqrtPower: document.getElementById('sqrt-power'),
@@ -290,7 +294,9 @@ function updateBlockDisplay() {
             default:
                 dropName = block.drop;
         }
-        elements.dropInfo.textContent = `${dropChance}%概率掉落${dropName}`;
+        // 获取掉落数量，默认1个
+        const dropAmount = block.dropAmount || 1;
+        elements.dropInfo.textContent = `${dropChance}%概率掉落${dropName} x ${dropAmount}`;
         elements.dropInfo.style.display = 'block';
     } else {
         elements.dropInfo.textContent = '';
@@ -404,7 +410,7 @@ function waterTree() {
     
     // 检查是否需要升级
     const requiredExp = 10 * gameData.treeLevel;
-    if (gameData.treeExperience >= requiredExp) {
+    while (gameData.treeExperience >= requiredExp) {
         // 升级树
         gameData.treeLevel++;
         // 重置经验
@@ -414,6 +420,39 @@ function waterTree() {
     // 更新UI
     updateStats();
     updateShopButtons();
+}
+
+// 一键浇树功能
+function autoWaterTree() {
+    // 检查是否有水立方
+    if (gameData.waterCube < 1) {
+        console.log('水立方不足，无法浇树');
+        return;
+    }
+    
+    // 获取当前水立方数量
+    const availableWater = gameData.waterCube;
+    
+    // 消耗所有水立方
+    gameData.waterCube = 0;
+    
+    // 增加浇树经验
+    gameData.treeExperience += availableWater;
+    
+    // 检查是否需要升级
+    const requiredExp = 10 * gameData.treeLevel;
+    while (gameData.treeExperience >= requiredExp) {
+        // 升级树
+        gameData.treeLevel++;
+        // 重置经验
+        gameData.treeExperience -= requiredExp;
+    }
+    
+    // 更新UI
+    updateStats();
+    updateShopButtons();
+    
+    console.log(`一键浇树完成，消耗了${availableWater}个水立方`);
 }
 
 // 执行挖掘
@@ -452,11 +491,13 @@ function dig() {
             if (block.dropChance) {
                 // 有掉落概率的方块
                 if (Math.random() * 100 <= block.dropChance) {
-                    gameData[block.drop]++;
+                    const dropAmount = block.dropAmount || 1;
+                    gameData[block.drop] += dropAmount;
                 }
             } else {
                 // 100%掉落的方块
-                gameData[block.drop]++;
+                const dropAmount = block.dropAmount || 1;
+                gameData[block.drop] += dropAmount;
             }
         }
         
@@ -827,9 +868,9 @@ function loadGame() {
         // 新增镐子
         { name: '土核心镐', damage: 2e8, usage: 6, coins: 2.5, count: 0, isCraftable: true, recipe: { '坤坤镐': 1, '土核心': 10 } },
         { name: '木核心镐', damage: 3e8, usage: 7, coins: 2.5, count: 0, isCraftable: true, recipe: { '土核心镐': 1, '木核心': 10 } },
-        { name: '火立方镐', damage: 1e9, usage: 8, coins: 2.5, count: 0, isCraftable: true, recipe: { '火立方': 10, 'usageBonus': 2.5e5 } },
-        { name: '水立方镐', damage: 2e9, usage: 9, coins: 2.5, count: 0, isCraftable: true, recipe: { '水立方': 10, 'usageBonus': 2.5e5 } },
-        { name: '金立方镐', damage: 5e9, usage: 10, coins: 3.5, count: 0, isCraftable: true, recipe: { '金立方': 10, 'coins': 1e11 } },
+        { name: '火立方镐', damage: 1e9, usage: 8, coins: 2.5, count: 0, isCraftable: true, recipe: { '火立方': 10, '使用增益': 2.5e5 } },
+        { name: '水立方镐', damage: 2e9, usage: 9, coins: 2.5, count: 0, isCraftable: true, recipe: { '水立方': 10, '使用增益': 2.5e5 } },
+        { name: '金立方镐', damage: 5e9, usage: 10, coins: 3.5, count: 0, isCraftable: true, recipe: { '金立方': 10, '金币': 1e11 } },
         { name: '五行镐', damage: 1e10, usage: 15, coins: 5, count: 0, isCraftable: true, recipe: { '土核心镐': 1, '木核心镐': 1, '火立方镐': 1, '水立方镐': 1, '金立方镐': 1, '五行结晶': 10 } },
         // 新增物品
         { name: '信标', type: 'item', count: 0, isCraftable: true, recipe: { '黑曜石': 3, '玻璃': 5, '下界之星': 1 } }
@@ -1123,12 +1164,12 @@ function updateShopButtons() {
                         }
                         break;
                     case '基岩镐':
-                        if (gameData.pickaxes[25].count < required) {
+                        if (gameData.pickaxes[26].count < required) {
                             canCraft = false;
                         }
                         break;
                     case '坤坤镐':
-                        if (gameData.pickaxes[26].count < required) {
+                        if (gameData.pickaxes[27].count < required) {
                             canCraft = false;
                         }
                         break;
@@ -1138,7 +1179,7 @@ function updateShopButtons() {
                         }
                         break;
                     case '土核心镐':
-                        if (gameData.pickaxes[27].count < required) {
+                        if (gameData.pickaxes[28].count < required) {
                             canCraft = false;
                         }
                         break;
@@ -1148,7 +1189,17 @@ function updateShopButtons() {
                         }
                         break;
                     case '木核心镐':
-                        if (gameData.pickaxes[28].count < required) {
+                        if (gameData.pickaxes[29].count < required) {
+                            canCraft = false;
+                        }
+                        break;
+                    case '火立方镐':
+                        if (gameData.pickaxes[30].count < required) {
+                            canCraft = false;
+                        }
+                        break;
+                    case '水立方镐':
+                        if (gameData.pickaxes[31].count < required) {
                             canCraft = false;
                         }
                         break;
@@ -1178,7 +1229,7 @@ function updateShopButtons() {
                         }
                         break;
                     case '金立方镐':
-                        if (gameData.pickaxes[31].count < required) {
+                        if (gameData.pickaxes[32].count < required) {
                             canCraft = false;
                         }
                         break;
@@ -1290,12 +1341,12 @@ function buyPickaxe(e) {
                     }
                     break;
                 case '基岩镐':
-                    if (gameData.pickaxes[25].count < required) {
+                    if (gameData.pickaxes[26].count < required) {
                         canCraft = false;
                     }
                     break;
                 case '坤坤镐':
-                    if (gameData.pickaxes[26].count < required) {
+                    if (gameData.pickaxes[27].count < required) {
                         canCraft = false;
                     }
                     break;
@@ -1305,7 +1356,7 @@ function buyPickaxe(e) {
                     }
                     break;
                 case '土核心镐':
-                    if (gameData.pickaxes[27].count < required) {
+                    if (gameData.pickaxes[28].count < required) {
                         canCraft = false;
                     }
                     break;
@@ -1315,7 +1366,17 @@ function buyPickaxe(e) {
                     }
                     break;
                 case '木核心镐':
-                    if (gameData.pickaxes[28].count < required) {
+                    if (gameData.pickaxes[29].count < required) {
+                        canCraft = false;
+                    }
+                    break;
+                case '火立方镐':
+                    if (gameData.pickaxes[30].count < required) {
+                        canCraft = false;
+                    }
+                    break;
+                case '水立方镐':
+                    if (gameData.pickaxes[31].count < required) {
                         canCraft = false;
                     }
                     break;
@@ -1345,7 +1406,7 @@ function buyPickaxe(e) {
                     }
                     break;
                 case '金立方镐':
-                    if (gameData.pickaxes[31].count < required) {
+                    if (gameData.pickaxes[32].count < required) {
                         canCraft = false;
                     }
                     break;
@@ -1408,22 +1469,28 @@ function buyPickaxe(e) {
                         gameData.kunKun -= required;
                         break;
                     case '基岩镐':
-                        gameData.pickaxes[25].count -= required;
+                        gameData.pickaxes[26].count -= required;
                         break;
                     case '坤坤镐':
-                        gameData.pickaxes[26].count -= required;
+                        gameData.pickaxes[27].count -= required;
                         break;
                     case '土核心':
                         gameData.earthCore -= required;
                         break;
                     case '土核心镐':
-                        gameData.pickaxes[27].count -= required;
+                        gameData.pickaxes[28].count -= required;
                         break;
                     case '木核心':
                         gameData.woodCore -= required;
                         break;
                     case '木核心镐':
-                        gameData.pickaxes[28].count -= required;
+                        gameData.pickaxes[29].count -= required;
+                        break;
+                    case '火立方镐':
+                        gameData.pickaxes[30].count -= required;
+                        break;
+                    case '水立方镐':
+                        gameData.pickaxes[31].count -= required;
                         break;
                     case '火立方':
                         gameData.fireCube -= required;
@@ -1441,7 +1508,7 @@ function buyPickaxe(e) {
                         gameData.coins -= required;
                         break;
                     case '金立方镐':
-                        gameData.pickaxes[31].count -= required;
+                        gameData.pickaxes[32].count -= required;
                         break;
                     case '五行结晶':
                         gameData.fiveElementCrystal -= required;
@@ -1549,6 +1616,8 @@ function initGame() {
     
     // 浇树按钮事件监听器
     elements.waterTreeBtn.addEventListener('click', waterTree);
+    // 一键浇树按钮事件监听器
+    elements.autoWaterTreeBtn.addEventListener('click', autoWaterTree);
     
     // 初始化显示
     updateBlockDisplay();
