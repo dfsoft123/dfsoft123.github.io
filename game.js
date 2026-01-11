@@ -239,6 +239,12 @@ function updateBlockDisplay() {
         // 将掉落物品ID转换为中文名称
         let dropName = '';
         switch (block.drop) {
+            case 'amethyst':
+                dropName = '紫水晶';
+                break;
+            case 'copperIngot':
+                dropName = '铜锭';
+                break;
             case 'blueObsidianFragment':
                 dropName = '蓝曜石碎片';
                 break;
@@ -261,28 +267,28 @@ function updateBlockDisplay() {
                 dropName = '玻璃';
                 break;
             case 'kunKun':
-                    dropName = '坤坤';
-                    break;
-                case 'earthCore':
-                    dropName = '土核心';
-                    break;
-                case 'woodCore':
-                    dropName = '木核心';
-                    break;
-                case 'fireCube':
-                    dropName = '火立方';
-                    break;
-                case 'waterCube':
-                    dropName = '水立方';
-                    break;
-                case 'goldCube':
-                    dropName = '金立方';
-                    break;
-                case 'fiveElementCrystal':
-                    dropName = '五行结晶';
-                    break;
-                default:
-                    dropName = block.drop;
+                dropName = '坤坤';
+                break;
+            case 'earthCore':
+                dropName = '土核心';
+                break;
+            case 'woodCore':
+                dropName = '木核心';
+                break;
+            case 'fireCube':
+                dropName = '火立方';
+                break;
+            case 'waterCube':
+                dropName = '水立方';
+                break;
+            case 'goldCube':
+                dropName = '金立方';
+                break;
+            case 'fiveElementCrystal':
+                dropName = '五行结晶';
+                break;
+            default:
+                dropName = block.drop;
         }
         elements.dropInfo.textContent = `${dropChance}%概率掉落${dropName}`;
         elements.dropInfo.style.display = 'block';
@@ -944,6 +950,14 @@ function initShop() {
     if (!elements.shopItems) {
         console.error('shopItems元素不存在！');
         return;
+    }
+    
+    // 同步信标数量到pickaxes数组
+    for (let i = 0; i < gameData.pickaxes.length; i++) {
+        if (gameData.pickaxes[i].name === '信标') {
+            gameData.pickaxes[i].count = gameData.beacon;
+            break;
+        }
     }
     
     // 简化商店物品创建
