@@ -671,35 +671,35 @@ function updateStats() {
     elements.level.textContent = gameData.level;
     elements.experience.textContent = formatNumber(gameData.experience);
     elements.coins.textContent = formatNumber(gameData.coins);
-    elements.trophies.textContent = gameData.trophies;
-    elements.amethyst.textContent = gameData.amethyst;
-    elements.copperIngot.textContent = gameData.copperIngot;
-    elements.blueObsidianFragment.textContent = gameData.blueObsidianFragment;
-    elements.redObsidianFragment.textContent = gameData.redObsidianFragment;
-    elements.redBlueCrystal.textContent = gameData.redBlueCrystal;
-    elements.bedrockFragment.textContent = gameData.bedrockFragment;
-    elements.obsidian.textContent = gameData.obsidian;
-    elements.netherStar.textContent = gameData.netherStar;
-    elements.glass.textContent = gameData.glass;
-    elements.kunKun.textContent = gameData.kunKun;
-    elements.earthCore.textContent = gameData.earthCore;
-    elements.woodCore.textContent = gameData.woodCore;
-    elements.fireCube.textContent = gameData.fireCube;
-    elements.waterCube.textContent = gameData.waterCube;
-    elements.goldCube.textContent = gameData.goldCube;
-    elements.fiveElementCrystal.textContent = gameData.fiveElementCrystal;
+    elements.trophies.textContent = formatNumber(gameData.trophies);
+    elements.amethyst.textContent = formatNumber(gameData.amethyst);
+    elements.copperIngot.textContent = formatNumber(gameData.copperIngot);
+    elements.blueObsidianFragment.textContent = formatNumber(gameData.blueObsidianFragment);
+    elements.redObsidianFragment.textContent = formatNumber(gameData.redObsidianFragment);
+    elements.redBlueCrystal.textContent = formatNumber(gameData.redBlueCrystal);
+    elements.bedrockFragment.textContent = formatNumber(gameData.bedrockFragment);
+    elements.obsidian.textContent = formatNumber(gameData.obsidian);
+    elements.netherStar.textContent = formatNumber(gameData.netherStar);
+    elements.glass.textContent = formatNumber(gameData.glass);
+    elements.kunKun.textContent = formatNumber(gameData.kunKun);
+    elements.earthCore.textContent = formatNumber(gameData.earthCore);
+    elements.woodCore.textContent = formatNumber(gameData.woodCore);
+    elements.fireCube.textContent = formatNumber(gameData.fireCube);
+    elements.waterCube.textContent = formatNumber(gameData.waterCube);
+    elements.goldCube.textContent = formatNumber(gameData.goldCube);
+    elements.fiveElementCrystal.textContent = formatNumber(gameData.fiveElementCrystal);
 
     // 更新浇树相关UI
     const treeRequiredExp = 10 * gameData.treeLevel;
     const treeExpPercent = (gameData.treeExperience / treeRequiredExp) * 100;
     elements.treeLevel.textContent = gameData.treeLevel;
     elements.treeProgressBar.style.width = treeExpPercent + '%';
-    elements.treeExperience.textContent = gameData.treeExperience;
-    elements.treeExperienceRequired.textContent = treeRequiredExp;
+    elements.treeExperience.textContent = formatNumber(gameData.treeExperience);
+    elements.treeExperienceRequired.textContent = formatNumber(treeRequiredExp);
 
     
-    elements.digCount.textContent = gameData.digCount;
-    elements.blocksMined.textContent = gameData.blocksMined;
+    elements.digCount.textContent = formatNumber(gameData.digCount);
+    elements.blocksMined.textContent = formatNumber(gameData.blocksMined);
 }
 
 // 保存游戏数据
