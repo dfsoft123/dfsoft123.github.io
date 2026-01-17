@@ -558,6 +558,9 @@ function updateAutoExchangeThreshold() {
     const threshold = parseInt(elements.autoExchangeThreshold.value);
     if (threshold >= 100) {
         gameData.autoExchangeThreshold = threshold;
+    } else {
+        // 阈值小于100，重置输入框为当前阈值
+        elements.autoExchangeThreshold.value = gameData.autoExchangeThreshold;
     }
 }
 
@@ -920,6 +923,35 @@ function processOfflineMining() {
     const lastOnline = gameData.lastOnlineTime || now;
     const offlineTime = now - lastOnline;
     
+    // 记录离线前的资源数量，用于计算离线收益
+    const beforeOffline = {
+        coins: gameData.coins,
+        experience: gameData.experience,
+        usageBonus: gameData.usageBonus,
+        trophies: gameData.trophies,
+        level: gameData.level,
+        digCount: gameData.digCount,
+        blocksMined: gameData.blocksMined,
+        // 记录所有可能的掉落物品数量
+        amethyst: gameData.amethyst,
+        copperIngot: gameData.copperIngot,
+        blueObsidianFragment: gameData.blueObsidianFragment,
+        redObsidianFragment: gameData.redObsidianFragment,
+        redBlueCrystal: gameData.redBlueCrystal,
+        bedrockFragment: gameData.bedrockFragment,
+        obsidian: gameData.obsidian,
+        netherStar: gameData.netherStar,
+        glass: gameData.glass,
+        kunKun: gameData.kunKun,
+        earthCore: gameData.earthCore,
+        woodCore: gameData.woodCore,
+        fireCube: gameData.fireCube,
+        waterCube: gameData.waterCube,
+        goldCube: gameData.goldCube,
+        fiveElementCrystal: gameData.fiveElementCrystal,
+        jingCore: gameData.jingCore
+    };
+    
     // 计算离线期间可以进行的挖矿次数（每次300ms）
     const miningActions = Math.floor(offlineTime / 300);
     
@@ -987,11 +1019,203 @@ function processOfflineMining() {
         
         // 检查是否需要自动兑换
         checkAutoExchange();
+        
+        // 计算离线收益
+        const offlineGains = {
+            coins: gameData.coins - beforeOffline.coins,
+            experience: gameData.experience - beforeOffline.experience,
+            usageBonus: gameData.usageBonus - beforeOffline.usageBonus,
+            trophies: gameData.trophies - beforeOffline.trophies,
+            level: gameData.level - beforeOffline.level,
+            digCount: gameData.digCount - beforeOffline.digCount,
+            blocksMined: gameData.blocksMined - beforeOffline.blocksMined,
+            // 计算所有掉落物品的收益
+            drops: {}
+        };
+        
+        // 计算掉落物品收益
+        Object.keys(beforeOffline).forEach(key => {
+            if (key !== 'coins' && key !== 'experience' && key !== 'usageBonus' && 
+                key !== 'trophies' && key !== 'level' && key !== 'digCount' && key !== 'blocksMined') {
+                const gain = gameData[key] - beforeOffline[key];
+                if (gain > 0) {
+                    offlineGains.drops[key] = gain;
+                }
+            }
+        });
+        
+        // 显示离线收益弹窗
+        showOfflineGainsPopup(offlineGains, offlineTime);
     }
     
     // 更新最后在线时间
     gameData.lastOnlineTime = now;
+    // 注意：这里不更新originalStartTime，确保离线时间不计入总在线时间
     gameData.startTime = now;
+}
+
+// 显示离线收益弹窗
+function showOfflineGainsPopup(gains, offlineTime) {
+    // 创建弹窗元素
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        z-index: 1000;
+        max-width: 400px;
+        max-height: 80vh;
+        overflow-y: auto;
+        font-family: Arial, sans-serif;
+    `;
+    
+    // 格式化离线时间
+    const hours = Math.floor(offlineTime / (1000 * 60 * 60));
+    const minutes = Math.floor((offlineTime % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((offlineTime % (1000 * 60)) / 1000);
+    
+    let offlineTimeStr = '';
+    if (hours > 0) offlineTimeStr += `${hours}小时`;
+    if (minutes > 0) offlineTimeStr += `${minutes}分钟`;
+    if (seconds > 0) offlineTimeStr += `${seconds}秒`;
+    if (offlineTimeStr === '') offlineTimeStr = '0秒';
+    
+    // 标题
+    popup.innerHTML = `
+        <h2 style="margin-top: 0; text-align: center;">离线收益</h2>
+        <p style="text-align: center; color: #aaa; margin-bottom: 20px;">离线时间: ${offlineTimeStr}</p>
+        
+        <div style="display: grid; gap: 10px;">
+    `;
+    
+    // 添加各项收益
+    if (gains.coins > 0) {
+        popup.innerHTML += `
+            <div style="display: flex; justify-content: space-between;">
+                <span>金币:</span>
+                <span style="color: gold;">+${formatNumber(gains.coins)}</span>
+            </div>
+        `;
+    }
+    
+    if (gains.experience > 0) {
+        popup.innerHTML += `
+            <div style="display: flex; justify-content: space-between;">
+                <span>经验:</span>
+                <span style="color: #5cdb95;">+${formatNumber(gains.experience)}</span>
+            </div>
+        `;
+    }
+    
+    if (gains.usageBonus > 0) {
+        popup.innerHTML += `
+            <div style="display: flex; justify-content: space-between;">
+                <span>使用增益:</span>
+                <span style="color: #379683;">+${formatNumber(gains.usageBonus)}</span>
+            </div>
+        `;
+    }
+    
+    if (gains.trophies > 0) {
+        popup.innerHTML += `
+            <div style="display: flex; justify-content: space-between;">
+                <span>奖杯:</span>
+                <span style="color: #edf5e1;">+${formatNumber(gains.trophies)}</span>
+            </div>
+        `;
+    }
+    
+    if (gains.level > 0) {
+        popup.innerHTML += `
+            <div style="display: flex; justify-content: space-between;">
+                <span>等级提升:</span>
+                <span style="color: #8ee4af;">+${gains.level}</span>
+            </div>
+        `;
+    }
+    
+    if (gains.digCount > 0) {
+        popup.innerHTML += `
+            <div style="display: flex; justify-content: space-between;">
+                <span>挖掘次数:</span>
+                <span style="color: #659dbd;">+${formatNumber(gains.digCount)}</span>
+            </div>
+        `;
+    }
+    
+    if (gains.blocksMined > 0) {
+        popup.innerHTML += `
+            <div style="display: flex; justify-content: space-between;">
+                <span>挖掉方块:</span>
+                <span style="color: #daad86;">+${formatNumber(gains.blocksMined)}</span>
+            </div>
+        `;
+    }
+    
+    // 添加掉落物品收益
+    if (Object.keys(gains.drops).length > 0) {
+        popup.innerHTML += `
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #333;">
+                <h3 style="margin-top: 0; margin-bottom: 10px;">掉落物品:</h3>
+        `;
+        
+        Object.entries(gains.drops).forEach(([drop, amount]) => {
+            // 转换掉落物品ID为中文名称
+            let dropName = drop;
+            switch (drop) {
+                case 'amethyst': dropName = '紫水晶'; break;
+                case 'copperIngot': dropName = '铜锭'; break;
+                case 'blueObsidianFragment': dropName = '蓝曜石碎片'; break;
+                case 'redObsidianFragment': dropName = '红曜石碎片'; break;
+                case 'redBlueCrystal': dropName = '红蓝结晶'; break;
+                case 'bedrockFragment': dropName = '基岩碎片'; break;
+                case 'obsidian': dropName = '黑曜石'; break;
+                case 'netherStar': dropName = '下界之星'; break;
+                case 'glass': dropName = '玻璃'; break;
+                case 'kunKun': dropName = '坤坤'; break;
+                case 'earthCore': dropName = '土核心'; break;
+                case 'woodCore': dropName = '木核心'; break;
+                case 'fireCube': dropName = '火立方'; break;
+                case 'waterCube': dropName = '水立方'; break;
+                case 'goldCube': dropName = '金立方'; break;
+                case 'fiveElementCrystal': dropName = '五行结晶'; break;
+                case 'jingCore': dropName = '京核'; break;
+            }
+            
+            popup.innerHTML += `
+                <div style="display: flex; justify-content: space-between; margin-left: 10px;">
+                    <span>${dropName}:</span>
+                    <span style="color: #fbeec1;">+${amount}</span>
+                </div>
+            `;
+        });
+        
+        popup.innerHTML += `</div>`;
+    }
+    
+    // 关闭按钮
+    popup.innerHTML += `
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button onclick="this.parentElement.parentElement.remove()" style="
+                padding: 10px 20px;
+                background: #444;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+            ">确定</button>
+        </div>
+    `;
+    
+    // 添加到页面
+    document.body.appendChild(popup);
 }
 
 // 更新在线时间
