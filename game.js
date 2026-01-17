@@ -22,6 +22,7 @@ const gameData = {
         { name: '下界合金块III', hp: 1e12, coins: 3000, sqrtZone: 1 },
         { name: '紫水晶块', hp: 1e13, coins: 5000, drop: 'amethyst', sqrtZone: 1 },
         { name: '铜块', hp: 2e14, coins: 10000, drop: 'copperIngot', sqrtZone: 1 },
+        { name: '京核', hp: 1e32, coins: 6.4e8, drop: 'jingCore', dropChance: 32, sqrtZone: 1 },
         // 二次开方区方块
         { name: '蓝曜石碎片', hp: 3.2e9, coins: 50000, drop: 'blueObsidianFragment', sqrtZone: 2 },
         { name: '红曜石碎片', hp: 9.6e9, coins: 100000, drop: 'redObsidianFragment', sqrtZone: 2 },
@@ -41,7 +42,8 @@ const gameData = {
         { name: '五行结晶', hp: 4e12, coins: 2e8, drop: 'fiveElementCrystal', sqrtZone: 3 },
         // 新增三次开方区方块
         { name: '方立水', hp: 1e13, coins: 4.5e8, drop: 'waterCube', dropAmount: 64, sqrtZone: 3 },
-        { name: '水沝㴇淼㵘', hp: 5e14, coins: 1e9, drop: 'waterCube', dropAmount: 256, sqrtZone: 3 }
+        { name: '水沝㴇淼㵘', hp: 5e14, coins: 1e9, drop: 'waterCube', dropAmount: 256, sqrtZone: 3 },
+        { name: '纯金', hp: 2e15, coins: 1e10, sqrtZone: 3 }
     ],
     
     // 镐子属性
@@ -82,6 +84,7 @@ const gameData = {
         { name: '水立方镐', damage: 2e9, usage: 9, coins: 2.5, count: 0, isCraftable: true, recipe: { '水立方': 10, '使用增益': 2.5e5 } },
         { name: '金立方镐', damage: 5e9, usage: 10, coins: 3.5, count: 0, isCraftable: true, recipe: { '金立方': 10, '金币': 1e11 } },
         { name: '五行镐', damage: 1e10, usage: 15, coins: 5, count: 0, isCraftable: true, recipe: { '土核心镐': 1, '木核心镐': 1, '火立方镐': 1, '水立方镐': 1, '金立方镐': 1, '五行结晶': 10 } },
+        { name: '京镐', damage: 2e10, usage: 16, coins: 5.4, count: 0, isCraftable: true, recipe: { '五行镐': 1, '京核': 32 } },
         // 新增物品
         { name: '信标', type: 'item', count: 0, isCraftable: true, recipe: { '黑曜石': 3, '玻璃': 5, '下界之星': 1 } }
     ],
@@ -107,6 +110,7 @@ const gameData = {
     waterCube: 0,
     goldCube: 0,
     fiveElementCrystal: 0,
+    jingCore: 0,
     beacon: 0,
     level: 1,
     experience: 0,
@@ -173,6 +177,7 @@ const elements = {
     waterCube: document.getElementById('water-cube'),
     goldCube: document.getElementById('gold-cube'),
     fiveElementCrystal: document.getElementById('five-element-crystal'),
+    jingCore: document.getElementById('jing-core'),
     // 浇树相关元素
     treeLevel: document.getElementById('tree-level'),
     treeProgressBar: document.getElementById('tree-progress-bar'),
@@ -290,6 +295,9 @@ function updateBlockDisplay() {
                 break;
             case 'fiveElementCrystal':
                 dropName = '五行结晶';
+                break;
+            case 'jingCore':
+                dropName = '京核';
                 break;
             default:
                 dropName = block.drop;
@@ -688,6 +696,7 @@ function updateStats() {
     elements.waterCube.textContent = formatNumber(gameData.waterCube);
     elements.goldCube.textContent = formatNumber(gameData.goldCube);
     elements.fiveElementCrystal.textContent = formatNumber(gameData.fiveElementCrystal);
+    elements.jingCore.textContent = formatNumber(gameData.jingCore);
 
     // 更新浇树相关UI
     const treeRequiredExp = 10 * gameData.treeLevel;
@@ -726,6 +735,7 @@ function saveGame() {
         waterCube: gameData.waterCube,
         goldCube: gameData.goldCube,
         fiveElementCrystal: gameData.fiveElementCrystal,
+        jingCore: gameData.jingCore,
         beacon: gameData.beacon,
         sqrtPower: gameData.sqrtPower,
         level: gameData.level,
@@ -787,6 +797,7 @@ function loadGame() {
         waterCube: gameState.waterCube || 0,
         goldCube: gameState.goldCube || 0,
         fiveElementCrystal: gameState.fiveElementCrystal || 0,
+        jingCore: gameState.jingCore || 0,
         beacon: gameState.beacon || 0,
         sqrtPower: gameState.sqrtPower || 1,
         level: gameState.level,
@@ -872,6 +883,7 @@ function loadGame() {
         { name: '水立方镐', damage: 2e9, usage: 9, coins: 2.5, count: 0, isCraftable: true, recipe: { '水立方': 10, '使用增益': 2.5e5 } },
         { name: '金立方镐', damage: 5e9, usage: 10, coins: 3.5, count: 0, isCraftable: true, recipe: { '金立方': 10, '金币': 1e11 } },
         { name: '五行镐', damage: 1e10, usage: 15, coins: 5, count: 0, isCraftable: true, recipe: { '土核心镐': 1, '木核心镐': 1, '火立方镐': 1, '水立方镐': 1, '金立方镐': 1, '五行结晶': 10 } },
+        { name: '京镐', damage: 2e10, usage: 16, coins: 5.4, count: 0, isCraftable: true, recipe: { '五行镐': 1, '京核': 32 } },
         // 新增物品
         { name: '信标', type: 'item', count: 0, isCraftable: true, recipe: { '黑曜石': 3, '玻璃': 5, '下界之星': 1 } }
     ];
@@ -881,8 +893,8 @@ function loadGame() {
         console.log('pickaxes数组不存在，创建新数组');
         gameData.pickaxes = defaultPickaxes;
     } else {
-        // 确保pickaxes数组长度正确
-        while (gameData.pickaxes.length < 28) {
+        // 确保pickaxes数组长度正确（当前应该是35个元素，包括京镐和信标）
+        while (gameData.pickaxes.length < defaultPickaxes.length) {
             // 添加缺失的镐子或物品，保留count为0
             const missingIndex = gameData.pickaxes.length;
             gameData.pickaxes.push({ ...defaultPickaxes[missingIndex], count: 0 });
@@ -942,6 +954,21 @@ function processOfflineMining() {
                 // 统计挖掉的方块
                 gameData.blocksMined++;
                 
+                // 处理方块掉落
+                if (block.drop) {
+                    if (block.dropChance) {
+                        // 有掉落概率的方块
+                        if (Math.random() * 100 <= block.dropChance) {
+                            const dropAmount = block.dropAmount || 1;
+                            gameData[block.drop] += dropAmount;
+                        }
+                    } else {
+                        // 100%掉落的方块
+                        const dropAmount = block.dropAmount || 1;
+                        gameData[block.drop] += dropAmount;
+                    }
+                }
+                
                 // 重置方块血量
                 remainingHp = block.hp;
                 
@@ -994,12 +1021,7 @@ function initShop() {
     }
     
     // 同步信标数量到pickaxes数组
-    for (let i = 0; i < gameData.pickaxes.length; i++) {
-        if (gameData.pickaxes[i].name === '信标') {
-            gameData.pickaxes[i].count = gameData.beacon;
-            break;
-        }
-    }
+    // 移除信标数量同步逻辑，信标应与其他物品一样由buyPickaxe函数直接管理
     
     // 简化商店物品创建
     gameData.pickaxes.forEach((pickaxe, index) => {
@@ -1235,6 +1257,17 @@ function updateShopButtons() {
                         break;
                     case '五行结晶':
                         if (gameData.fiveElementCrystal < required) {
+                            canCraft = false;
+                        }
+                        break;
+                    case '京核':
+                        if (gameData.jingCore < required) {
+                            canCraft = false;
+                        }
+                        break;
+                    case '五行镐':
+                        // 五行镐的正确索引是34
+                        if (gameData.pickaxes[34] && gameData.pickaxes[34].count < required) {
                             canCraft = false;
                         }
                         break;
@@ -1513,16 +1546,22 @@ function buyPickaxe(e) {
                     case '五行结晶':
                         gameData.fiveElementCrystal -= required;
                         break;
+                    case '京核':
+                        gameData.jingCore -= required;
+                        break;
+                    case '五行镐':
+                        // 五行镐的正确索引是33
+                        if (gameData.pickaxes[33] && gameData.pickaxes[33].count >= required) {
+                            gameData.pickaxes[33].count -= required;
+                        }
+                        break;
                 }
             }
             
             // 增加合成物品的数量
             pickaxe.count++;
             
-            // 如果是信标物品，更新信标数量
-            if (pickaxe.name === '信标') {
-                gameData.beacon = pickaxe.count;
-            }
+            // 移除信标数量更新逻辑，信标数量应只通过pickaxe.count管理
             
             initShop();
             updateStats();
