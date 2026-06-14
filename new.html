@@ -696,32 +696,40 @@
           const row = document.createElement('div');
           row.className = 'shop-row';
           let actionHtml = '';
-          if(p.costTrophy!==null) actionHtml = `<button class="btn btn-gold btn-xs buy-btn" data-id="${p.id}">🏆${formatNum(p.costTrophy)}</button>`;
-          else if(p.craft) actionHtml = `<button class="btn btn-accent btn-xs craft-btn" data-id="${p.id}">🔧合成</button>`;
+          if(p.costTrophy!==null) {
+            actionHtml = `<button class="btn btn-gold btn-xs buy-btn" data-id="${p.id}">🏆${formatNum(p.costTrophy)}</button>`;
+          } else if(p.craft) {
+            actionHtml = `<button class="btn btn-accent btn-xs craft-btn" data-id="${p.id}">🔧合成</button>`;
+          }
           const useBtn = `<button class="btn btn-outline btn-xs use-btn" data-id="${p.id}" ${qty<1?'disabled':''}>${isCur?'✅使用中':'使用'}</button>`;
           row.innerHTML = `<span class="shop-emoji">${p.emoji}</span><span class="shop-name">${p.name}</span><span class="shop-info">${p.craft?'合成':'🏆'+formatNum(p.costTrophy||0)}</span><span class="shop-count">x${qty}</span><div class="shop-actions">${actionHtml}${useBtn}</div>`;
           list.appendChild(row);
         });
-      }
 
-      // 使用事件委托处理所有商店按钮点击
-      document.getElementById('shopList').addEventListener('click', function(e) {
-        const target = e.target.closest('button');
-        if (!target) return;
-        const id = target.dataset.id;
-        if (!id) return;
-        if (target.classList.contains('buy-btn')) {
-          if (buyPick(id)) updateUI();
-          else showToast('奖杯不足');
-        } else if (target.classList.contains('craft-btn')) {
-          const res = craftPick(id);
-          if (res.ok) updateUI();
-          else showToast(res.msg);
-        } else if (target.classList.contains('use-btn')) {
-          if (switchPick(id)) updateUI();
-          else showToast('数量不足');
-        }
-      });
+        // 动态绑定所有按钮事件
+        list.querySelectorAll('.buy-btn').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            const id = this.dataset.id;
+            if (buyPick(id)) updateUI();
+            else showToast('奖杯不足');
+          });
+        });
+        list.querySelectorAll('.craft-btn').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            const id = this.dataset.id;
+            const res = craftPick(id);
+            if (res.ok) updateUI();
+            else showToast(res.msg);
+          });
+        });
+        list.querySelectorAll('.use-btn').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            const id = this.dataset.id;
+            if (switchPick(id)) updateUI();
+            else showToast('数量不足');
+          });
+        });
+      }
 
       function showToast(msg) {
         let t = document.getElementById('toastMsg');
