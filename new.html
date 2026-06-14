@@ -409,7 +409,7 @@
       <div class="pick-icon">⛏️</div>
       <div>
         <div class="pick-name" id="cpName">木镐</div>
-        <div class="pick-desc" id="cpStats">间隔2.5s | 增益1</div>
+        <div class="pick-desc" id="cpStats">间隔1s | 增益1</div>
       </div>
     </div>
 
@@ -640,7 +640,7 @@
         document.getElementById('expBar').style.width = Math.min(100,(game.exp/need)*100)+'%';
         document.getElementById('expText').textContent = formatNumFull(game.exp)+' / '+formatNumFull(need);
         document.getElementById('cpName').textContent = (pick?.emoji||'')+' '+(pick?.name||'木镐');
-        document.getElementById('cpStats').textContent = `间隔${pick?.interval||2.5}s | 增益${formatNum(pick?.pickGain||1)} | 使用+${pick?.usageGain||0}`;
+        document.getElementById('cpStats').textContent = `间隔${pick?.interval||1}s | 增益${formatNum(pick?.pickGain||1)} | 使用+${pick?.usageGain||0}`;
         document.title = '伤害：'+formatNum(dmg);
         const autoWrap = document.getElementById('autoExchangeWrap');
         if(game.trophies>=10000){ autoWrap.style.opacity='1'; autoWrap.style.pointerEvents='auto'; }
@@ -649,7 +649,6 @@
         document.getElementById('autoExchangeThreshold').value = game.autoExchangeThreshold;
         document.getElementById('autoMineToggle').checked = game.autoMine;
 
-        // 更新兑换预览
         const manualPreview = calcExchangePreview(game.gold);
         document.getElementById('manualExchangePreview').textContent = '+' + formatNum(manualPreview) + ' 🏆';
         const autoPreview = calcExchangePreview(game.gold);
@@ -703,10 +702,26 @@
           row.innerHTML = `<span class="shop-emoji">${p.emoji}</span><span class="shop-name">${p.name}</span><span class="shop-info">${p.craft?'合成':'🏆'+formatNum(p.costTrophy||0)}</span><span class="shop-count">x${qty}</span><div class="shop-actions">${actionHtml}${useBtn}</div>`;
           list.appendChild(row);
         });
-        list.querySelectorAll('.buy-btn').forEach(b=>b.addEventListener('click',(e)=>{ if(buyPick(e.target.dataset.id)) updateUI(); else showToast('奖杯不足'); }));
-        list.querySelectorAll('.craft-btn').forEach(b=>b.addEventListener('click',(e)=>{ const res=craftPick(e.target.dataset.id); if(res.ok) updateUI(); else showToast(res.msg); }));
-        list.querySelectorAll('.use-btn').forEach(b=>b.addEventListener('click',(e)=>{ if(switchPick(e.target.dataset.id)) updateUI(); else showToast('数量不足'); }));
       }
+
+      // 使用事件委托处理所有商店按钮点击
+      document.getElementById('shopList').addEventListener('click', function(e) {
+        const target = e.target.closest('button');
+        if (!target) return;
+        const id = target.dataset.id;
+        if (!id) return;
+        if (target.classList.contains('buy-btn')) {
+          if (buyPick(id)) updateUI();
+          else showToast('奖杯不足');
+        } else if (target.classList.contains('craft-btn')) {
+          const res = craftPick(id);
+          if (res.ok) updateUI();
+          else showToast(res.msg);
+        } else if (target.classList.contains('use-btn')) {
+          if (switchPick(id)) updateUI();
+          else showToast('数量不足');
+        }
+      });
 
       function showToast(msg) {
         let t = document.getElementById('toastMsg');
@@ -731,7 +746,7 @@
         lastTick = now;
         if(dt>0 && dt<3600) game.onlineSeconds += dt;
         const pick = getPick(game.currentPickId);
-        const interval = pick?pick.interval:2.5;
+        const interval = pick?pick.interval:1;
         if((game.autoMine||game.isHolding) && (now-lastMine)>=interval*1000){
           const res = mine(game);
           if(res && res.dmg>0){
