@@ -16,711 +16,612 @@
       --red: #f87171;
       --text: #e2e8f0;
       --text2: #94a3b8;
-      --border: rgba(255, 255, 255, 0.08);
-      --glow: 0 0 20px rgba(192, 132, 252, 0.3);
-      --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      --border: rgba(255,255,255,0.08);
     }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-touch-callout: none;
-    }
-
-    body {
-      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Inter', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 16px;
-      background-image: 
-        radial-gradient(ellipse at 20% 50%, rgba(120, 50, 200, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(251, 191, 36, 0.05) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 80%, rgba(96, 165, 250, 0.04) 0%, transparent 50%);
-      background-attachment: fixed;
-    }
-
-    #app {
-      width: 100%;
-      max-width: 920px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      backdrop-filter: blur(2px);
-    }
-
-    .status-bar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 12px;
-      background: var(--surface);
-      backdrop-filter: blur(25px);
-      border-radius: 60px;
-      padding: 14px 24px;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-lg), var(--glow);
-    }
-
-    .chip {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 8px 20px;
-      border-radius: 40px;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text2);
-      letter-spacing: 0.3px;
-      transition: all 0.2s;
-    }
-    .chip.gold { background: rgba(251, 191, 36, 0.12); border: 1px solid rgba(251, 191, 36, 0.3); color: #fcd34d; }
-    .chip.trophy { background: rgba(192, 132, 252, 0.12); border: 1px solid rgba(192, 132, 252, 0.3); color: #d8b4fe; }
-    .chip span { font-weight: 700; color: #fff; margin-left: 4px; }
-
-    .main-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-    }
-    @media (max-width: 750px) {
-      .main-grid { grid-template-columns: 1fr; }
-    }
-
-    .card {
-      background: var(--surface);
-      backdrop-filter: blur(25px);
-      border-radius: 32px;
-      padding: 22px;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-lg);
-      transition: all 0.3s ease;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .card-header {
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      color: #cbd5e1;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      padding-bottom: 12px;
-    }
-
-    .mining-zone {
-      background: var(--surface2);
-      backdrop-filter: blur(25px);
-      border-radius: 32px;
-      padding: 28px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 18px;
-      cursor: pointer;
-      transition: all 0.1s ease;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,0.05);
-      position: relative;
-      overflow: hidden;
-    }
-    .mining-zone:active { transform: scale(0.97); background: rgba(32, 34, 55, 0.9); }
-
-    .block-icon {
-      font-size: 5.5rem;
-      filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6));
-      transition: transform 0.2s;
-    }
-    .block-name {
-      font-weight: 800;
-      font-size: 1.4rem;
-      color: #fff;
-      letter-spacing: 0.3px;
-    }
-
-    .hp-bar-wrap { width: 100%; display: flex; flex-direction: column; gap: 5px; }
-    .hp-outer { height: 10px; background: rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; }
-    .hp-inner { height: 100%; background: linear-gradient(90deg, #f87171, #fbbf24, #4ade80); border-radius: 12px; transition: width 0.2s; }
-    .hp-text { font-size: 0.75rem; color: #94a3b8; text-align: center; }
-
-    .zone-controls {
-      display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center;
-    }
-    select, .input-modern {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
-      color: #fff;
-      padding: 10px 18px;
-      border-radius: 40px;
-      font-size: 0.8rem;
-      outline: none;
-      backdrop-filter: blur(15px);
-      cursor: pointer;
-    }
-
-    .btn {
-      padding: 11px 22px;
-      border: none;
-      border-radius: 40px;
-      font-weight: 600;
-      font-size: 0.8rem;
-      cursor: pointer;
-      background: rgba(255,255,255,0.08);
-      color: #fff;
-      backdrop-filter: blur(15px);
-      transition: all 0.2s;
-      border: 1px solid rgba(255,255,255,0.1);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      white-space: nowrap;
-    }
-    .btn:active { transform: scale(0.95); }
-    .btn-accent { background: linear-gradient(135deg, #c084fc, #a855f7); color: #fff; border-color: transparent; font-weight: 700; }
-    .btn-gold { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #0f0f1a; border-color: transparent; font-weight: 700; }
-    .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.25); }
-    .btn-sm { padding: 8px 18px; font-size: 0.75rem; }
-    .btn-xs { padding: 6px 14px; font-size: 0.7rem; border-radius: 30px; }
-    .btn-icon { padding: 8px 12px; font-size: 1.2rem; font-weight: 700; }
-
-    .resource-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-      gap: 8px;
-      min-height: 50px;
-    }
-    .res-item {
-      background: rgba(255,255,255,0.04);
-      border-radius: 14px;
-      padding: 10px 6px;
-      text-align: center;
-      font-size: 0.7rem;
-      color: #cbd5e1;
-      border: 1px solid rgba(255,255,255,0.05);
-      backdrop-filter: blur(10px);
-    }
-    .res-icon { font-size: 1.3rem; display: block; margin-bottom: 4px; }
-    .res-val { font-weight: 700; color: #fff; font-size: 0.8rem; }
-
-    .current-pick-card {
-      background: rgba(192,132,252,0.08);
-      border: 1px solid rgba(192,132,252,0.3);
-      border-radius: 24px;
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    .pick-icon { font-size: 2.2rem; }
-    .pick-name { font-weight: 700; font-size: 1.2rem; color: #fff; }
-    .pick-desc { font-size: 0.8rem; color: #94a3b8; }
-
-    .shop-list { display: flex; flex-direction: column; gap: 8px; max-height: 380px; overflow-y: auto; }
-    .shop-row {
-      display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03);
-      border-radius: 18px; padding: 12px 16px;
-    }
-    .shop-emoji { font-size: 1.8rem; width: 40px; }
-    .shop-name { font-weight: 700; color: #fff; width: 90px; }
-    .shop-info { font-size: 0.7rem; color: #94a3b8; flex: 1; }
-    .shop-count { font-weight: 700; color: #fbbf24; }
-
-    .switch-wrap { display: flex; align-items: center; gap: 12px; font-size: 0.8rem; }
-    .switch-slider {
-      width: 48px; height: 26px; background: #475569; border-radius: 13px; position: relative;
-    }
-    .switch-slider::after {
-      content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px;
-      border-radius: 50%; background: #fff; transition: left 0.3s;
-    }
-    input:checked + .switch-slider { background: #4ade80; }
-    input:checked + .switch-slider::after { left: 25px; }
-
-    .exchange-preview {
-      font-size: 0.7rem; color: #fbbf24; background: rgba(251,191,36,0.1);
-      padding: 4px 10px; border-radius: 20px;
-    }
-
-    .damage-float {
-      position: absolute; pointer-events: none; color: #f87171; font-weight: 800;
-      font-size: 1.2rem; text-shadow: 0 0 16px rgba(248,113,113,0.9);
-      animation: floatUp 1s ease-out forwards; z-index: 200;
-    }
-    @keyframes floatUp {
-      0% { opacity:1; transform: translateY(0) scale(1); }
-      100% { opacity:0; transform: translateY(-80px) scale(0.6); }
-    }
-
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
-      z-index: 300; display: flex; align-items: center; justify-content: center;
-    }
-    .modal {
-      background: var(--surface); border-radius: 28px; padding: 24px;
-      max-width: 480px; width: 92%; max-height: 80vh; overflow-y: auto;
-    }
-    .close-btn {
-      position: sticky; top: 0; float: right; background: #ef4444; border: none;
-      color: #fff; width: 34px; height: 34px; border-radius: 50%; font-size: 18px; cursor: pointer;
-    }
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+    body{font-family:'Segoe UI','PingFang SC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;padding:16px;background-image:radial-gradient(ellipse at 20% 50%,rgba(120,50,200,0.08) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(251,191,36,0.05) 0%,transparent 50%),radial-gradient(ellipse at 50% 80%,rgba(96,165,250,0.04) 0%,transparent 50%)}
+    #app{width:100%;max-width:960px;display:flex;flex-direction:column;gap:18px}
+    .status-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:var(--surface);border-radius:60px;padding:14px 24px;border:1px solid var(--border);box-shadow:0 25px 50px -12px rgba(0,0,0,0.6)}
+    .chip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);padding:8px 20px;border-radius:40px;font-size:14px;font-weight:500;color:var(--text2)}.chip.gold{background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#fcd34d}.chip.trophy{background:rgba(192,132,252,0.12);border:1px solid rgba(192,132,252,0.3)}.chip span{font-weight:700;color:#fff;margin-left:4px}
+    .main-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media(max-width:750px){.main-grid{grid-template-columns:1fr}}
+    .card{background:var(--surface);border-radius:32px;padding:22px;border:1px solid var(--border);box-shadow:0 25px 50px -12px rgba(0,0,0,0.6);display:flex;flex-direction:column;gap:16px}
+    .card-header{font-size:16px;font-weight:700;color:#cbd5e1;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:12px}
+    .mining-zone{background:var(--surface2);border-radius:32px;padding:28px 20px;display:flex;flex-direction:column;align-items:center;gap:18px;cursor:pointer;border:1px solid var(--border);box-shadow:0 25px 50px -12px rgba(0,0,0,0.6);position:relative}.mining-zone:active{transform:scale(0.97)}
+    .block-icon{font-size:5rem;filter:drop-shadow(0 15px 25px rgba(0,0,0,0.6))}.block-name{font-weight:800;font-size:1.4rem;color:#fff}
+    .hp-bar-wrap{width:100%}.hp-outer{height:10px;background:rgba(255,255,255,0.1);border-radius:12px;overflow:hidden}.hp-inner{height:100%;background:linear-gradient(90deg,#f87171,#fbbf24,#4ade80);border-radius:12px;transition:width 0.2s}.hp-text{font-size:0.75rem;color:#94a3b8;text-align:center}
+    .zone-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
+    select,.input-modern{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#fff;padding:10px 18px;border-radius:40px;font-size:0.8rem;outline:none;backdrop-filter:blur(15px);cursor:pointer}
+    .btn{padding:11px 22px;border:none;border-radius:40px;font-weight:600;font-size:0.8rem;cursor:pointer;background:rgba(255,255,255,0.08);color:#fff;backdrop-filter:blur(15px);border:1px solid rgba(255,255,255,0.1);display:inline-flex;align-items:center;gap:8px;white-space:nowrap}.btn:active{transform:scale(0.95)}.btn-accent{background:linear-gradient(135deg,#c084fc,#a855f7);color:#fff;border-color:transparent;font-weight:700}.btn-gold{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#0f0f1a;border-color:transparent;font-weight:700}.btn-outline{background:transparent;border:1px solid rgba(255,255,255,0.25)}.btn-sm{padding:8px 18px;font-size:0.75rem}.btn-xs{padding:6px 14px;font-size:0.7rem;border-radius:30px}.btn-icon{padding:8px 12px;font-size:1.2rem;font-weight:700}
+    .resource-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(85px,1fr));gap:8px}.res-item{background:rgba(255,255,255,0.04);border-radius:14px;padding:10px 6px;text-align:center;font-size:0.7rem;color:#cbd5e1;border:1px solid rgba(255,255,255,0.05)}.res-icon{font-size:1.3rem;display:block;margin-bottom:4px}.res-val{font-weight:700;color:#fff;font-size:0.8rem}
+    .current-pick-card{background:rgba(192,132,252,0.08);border:1px solid rgba(192,132,252,0.3);border-radius:24px;padding:16px 20px;display:flex;align-items:center;gap:16px}.pick-icon{font-size:2.2rem}.pick-name{font-weight:700;font-size:1.2rem;color:#fff}.pick-desc{font-size:0.8rem;color:#94a3b8}
+    .shop-list{display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto}.shop-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.03);border-radius:18px;padding:12px 16px}.shop-emoji{font-size:1.8rem;width:40px}.shop-name{font-weight:700;color:#fff;width:90px}.shop-info{font-size:0.7rem;color:#94a3b8;flex:1}.shop-count{font-weight:700;color:#fbbf24}
+    .switch-wrap{display:flex;align-items:center;gap:12px;font-size:0.8rem}.switch-slider{width:48px;height:26px;background:#475569;border-radius:13px;position:relative}.switch-slider::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left 0.3s}input:checked+.switch-slider{background:#4ade80}input:checked+.switch-slider::after{left:25px}
+    .damage-float{position:absolute;pointer-events:none;color:#f87171;font-weight:800;font-size:1.2rem;text-shadow:0 0 16px rgba(248,113,113,0.9);animation:floatUp 1s ease-out forwards;z-index:200}@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-80px) scale(0.6)}}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:300;display:flex;align-items:center;justify-content:center}.modal{background:var(--surface);border-radius:28px;padding:24px;max-width:480px;width:92%;max-height:80vh;overflow-y:auto}.close-btn{position:sticky;top:0;float:right;background:#ef4444;border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer}
   </style>
 </head>
 <body>
-  <div id="app">
-    <div class="status-bar">
-      <div class="chip gold">💰 <span id="goldDisplay">0</span></div>
-      <div class="chip trophy">🏆 <span id="trophyDisplay">0</span></div>
-      <div class="chip">⭐ Lv <span id="levelDisplay">0</span></div>
-      <div class="chip">⚡ <span id="dmgDisplay">0</span></div>
-      <div class="chip">⏱ <span id="onlineDisplay">0s</span></div>
+<div id="app">
+  <div class="status-bar">
+    <div class="chip gold">💰 <span id="goldDisplay">0</span></div>
+    <div class="chip trophy">🏆 <span id="trophyDisplay">0</span></div>
+    <div class="chip">⭐ Lv <span id="levelDisplay">0</span></div>
+    <div class="chip">⚡ <span id="dmgDisplay">0</span></div>
+    <div class="chip">⏱ <span id="onlineDisplay">0s</span></div>
+  </div>
+  <div class="main-grid">
+    <div class="mining-zone" id="blockArea">
+      <div style="font-size:0.75rem;color:#94a3b8;">📍 区域 <span id="zoneLabel">1</span></div>
+      <div class="block-icon" id="blockVisual">🌿</div>
+      <div class="block-name" id="blockName">草</div>
+      <div class="hp-bar-wrap"><div class="hp-outer"><div class="hp-inner" id="hpBar" style="width:100%"></div></div><div class="hp-text" id="hpText">100/100</div></div>
+      <div class="zone-controls">
+        <button class="btn btn-sm btn-icon" id="prevBlockBtn">◀</button>
+        <select id="blockSelect" class="input-modern"></select>
+        <button class="btn btn-sm btn-icon" id="nextBlockBtn">▶</button>
+        <button class="btn btn-sm" id="zoneSwitchBtn">🌍 切换区域</button>
+      </div>
+      <div class="switch-wrap"><label style="display:flex;align-items:center;gap:12px;cursor:pointer;"><input type="checkbox" id="autoMineToggle" hidden><span class="switch-slider"></span> 🤖 自动挖矿</label></div>
     </div>
-
-    <div class="main-grid">
-      <div class="mining-zone" id="blockArea">
-        <div style="font-size:0.75rem;color:#94a3b8;">📍 区域 <span id="zoneLabel">1</span></div>
-        <div class="block-icon" id="blockVisual">🌿</div>
-        <div class="block-name" id="blockName">草</div>
-        <div class="hp-bar-wrap">
-          <div class="hp-outer"><div class="hp-inner" id="hpBar" style="width:100%"></div></div>
-          <div class="hp-text" id="hpText">100/100</div>
+    <div style="display:flex;flex-direction:column;gap:18px;">
+      <div class="card">
+        <div class="card-header">📊 实时增益</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.8rem;">
+          <div>镐子 <span id="statPick">1</span></div><div>奖杯 <span id="statTrophy">1</span></div>
+          <div>等级 <span id="statLevel">1</span></div><div>使用 <span id="statUsage">1</span></div>
+          <div>比特币 <span id="statBitcoinGain">1</span></div><div>时间 <span id="statTime">1</span></div>
         </div>
-        <div class="zone-controls">
-          <button class="btn btn-sm btn-icon" id="prevBlockBtn">◀</button>
-          <select id="blockSelect" class="input-modern"></select>
-          <button class="btn btn-sm btn-icon" id="nextBlockBtn">▶</button>
-          <button class="btn btn-sm" id="zoneSwitchBtn">🌍 切换区域</button>
-        </div>
-        <div class="switch-wrap">
-          <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
-            <input type="checkbox" id="autoMineToggle" hidden>
-            <span class="switch-slider"></span> 🤖 自动挖矿
-          </label>
+        <div><span id="expText">0/1</span><div class="hp-outer"><div class="hp-inner" id="expBar" style="width:0%"></div></div></div>
+        <button class="btn btn-accent btn-sm" id="manualExchangeBtn">🔄 手动兑换奖杯</button>
+        <span id="manualExchangePreview">+0 🏆</span>
+        <div class="switch-wrap" id="autoExchangeWrap" style="opacity:0.4;pointer-events:none;">
+          <label><input type="checkbox" id="autoExchangeToggle"> 🏅 自动兑换</label>
+          <input type="number" id="autoExchangeThreshold" value="10000" class="input-modern" style="width:70px;">
+          <span id="autoExchangePreview">+0 🏆</span>
         </div>
       </div>
-
-      <div style="display:flex;flex-direction:column;gap:18px;">
-        <div class="card">
-          <div class="card-header">📊 实时增益</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-            <div><span>镐子</span> <span id="statPick">1</span></div>
-            <div><span>奖杯</span> <span id="statTrophy">1</span></div>
-            <div><span>等级</span> <span id="statLevel">1</span></div>
-            <div><span>使用</span> <span id="statUsage">1</span></div>
-            <div><span>物品</span> <span id="statItem">1</span></div>
-            <div><span>时间</span> <span id="statTime">1</span></div>
-          </div>
-          <div>
-            <span id="expText">0/1</span>
-            <div class="hp-outer"><div class="hp-inner" id="expBar" style="width:0%"></div></div>
-          </div>
-          <button class="btn btn-accent btn-sm" id="manualExchangeBtn">🔄 手动兑换奖杯</button>
-          <span class="exchange-preview" id="manualExchangePreview">+0 🏆</span>
-          <div class="switch-wrap" id="autoExchangeWrap" style="opacity:0.4;pointer-events:none;">
-            <label><input type="checkbox" id="autoExchangeToggle"> 🏅 自动兑换</label>
-            <input type="number" id="autoExchangeThreshold" value="10000" class="input-modern" style="width:70px;">
-            <span class="exchange-preview" id="autoExchangePreview">+0 🏆</span>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">💎 资源碎片</div>
-          <div class="resource-grid" id="resourceGrid"></div>
-        </div>
+      <div class="card">
+        <div class="card-header">💎 资源碎片</div>
+        <div class="resource-grid" id="resourceGrid"></div>
       </div>
-    </div>
-
-    <div class="current-pick-card">
-      <div class="pick-icon">⛏️</div>
-      <div>
-        <div class="pick-name" id="cpName">木镐</div>
-        <div class="pick-desc" id="cpStats">间隔1s | 增益1</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">🏪 镐具商店 / 合成台</div>
-      <div class="shop-list" id="shopList"></div>
-    </div>
-
-    <div style="display:flex;gap:12px;justify-content:center;">
-      <button class="btn btn-sm" id="attrBtn">📋 详细属性</button>
-      <button class="btn btn-sm" id="saveBtn">💾 存档管理</button>
-      <button class="btn btn-sm" id="resetBtn">⚠️ 重置游戏</button>
     </div>
   </div>
-
-  <div class="modal-overlay" id="modalOverlay" style="display:none;">
-    <div class="modal" id="modalContent"></div>
+  <div class="current-pick-card">
+    <div class="pick-icon">⛏️</div>
+    <div><div class="pick-name" id="cpName">木镐</div><div class="pick-desc" id="cpStats">间隔1s | 增益1</div></div>
   </div>
+  <!-- 比特币商店 -->
+  <div class="card">
+    <div class="card-header">₿ 比特币商店</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:0.8rem;">比特币增益 <span id="bitcoinGainVal">1.0</span></span>
+        <input type="number" id="bitcoinInput1" placeholder="数量" class="input-modern" style="width:80px;" min="1" value="1">
+        <button class="btn btn-gold btn-xs" id="bitcoinUpgrade1">升级 (1₿+0.1)</button>
+        <button class="btn btn-xs" id="bitcoinMax1">一键最大</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:0.8rem;">使用增益 <span id="bitcoinUsageMultVal">1.0</span></span>
+        <input type="number" id="bitcoinInput2" placeholder="数量" class="input-modern" style="width:80px;" min="10" value="10">
+        <button class="btn btn-gold btn-xs" id="bitcoinUpgrade2">升级 (10₿+0.1)</button>
+        <button class="btn btn-xs" id="bitcoinMax2">一键最大</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:0.8rem;">金币增益 <span id="bitcoinGoldMultVal">1.0</span></span>
+        <input type="number" id="bitcoinInput3" placeholder="数量" class="input-modern" style="width:80px;" min="100" value="100">
+        <button class="btn btn-gold btn-xs" id="bitcoinUpgrade3">升级 (100₿+0.1)</button>
+        <button class="btn btn-xs" id="bitcoinMax3">一键最大</button>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">🏪 镐具商店 / 合成台</div>
+    <div class="shop-list" id="shopList"></div>
+  </div>
+  <div style="display:flex;gap:12px;justify-content:center;">
+    <button class="btn btn-sm" id="attrBtn">📋 详细属性</button>
+    <button class="btn btn-sm" id="saveBtn">💾 存档管理</button>
+    <button class="btn btn-sm" style="color:#f87171;border-color:#f87171;" id="resetBtn">⚠️ 重置游戏</button>
+  </div>
+</div>
+<div class="modal-overlay" id="modalOverlay" style="display:none;"><div class="modal" id="modalContent"></div></div>
 
-  <script>
-    (function() {
-      const UNITS = ['', '万', '亿', '万亿', '兆', '万兆', '亿兆', '万亿兆', '京', '万京', '亿京', '万亿京', '兆京', '万兆京', '亿兆京', '万亿兆京', '垓'];
-      function formatNum(n) {
-        if (n == null || isNaN(n)) return '0';
-        if (n < 0) return '-' + formatNum(-n);
-        if (n < 10000) return Number.isInteger(n) ? n.toLocaleString() : n.toFixed(2);
-        let idx = 0, v = n;
-        while (v >= 10000 && idx < UNITS.length - 1) { v /= 10000; idx++; }
-        return v.toFixed(2) + UNITS[idx];
+<script>
+(function() {
+  const UNITS = ['', '万', '亿', '万亿', '兆', '万兆', '亿兆', '万亿兆', '京', '万京', '亿京', '万亿京', '兆京', '万兆京', '亿兆京', '万亿兆京', '垓'];
+  function formatNum(n) {
+    if (n == null || isNaN(n)) return '0';
+    if (n < 0) return '-' + formatNum(-n);
+    if (n < 10000) return Number.isInteger(n) ? n.toLocaleString() : n.toFixed(2);
+    let idx = 0, v = n;
+    while (v >= 10000 && idx < UNITS.length - 1) { v /= 10000; idx++; }
+    return v.toFixed(2) + UNITS[idx];
+  }
+  function formatNumFull(n) {
+    if (n == null || isNaN(n)) return '0';
+    if (n < 0) return '-' + formatNumFull(-n);
+    if (n < 10000) return n.toLocaleString();
+    let idx = 0, v = n;
+    while (v >= 10000 && idx < UNITS.length - 1) { v /= 10000; idx++; }
+    return v.toFixed(4) + ' ' + UNITS[idx];
+  }
+
+  // 碎片图标与名称
+  const FRAG_ICONS = {
+    redObsidian:'❤️', blueObsidian:'💙', greenObsidian:'💚', yellowObsidian:'💛', cyanObsidian:'🩵', bedrockFragment:'🪨', fragment220:'⚡',
+    kun:'🐔', qiba:'7️⃣8️⃣', jiuyi:'9️⃣1️⃣', shisan:'1️⃣3️⃣', yiliujiu:'1️⃣6️⃣9️⃣', superIngot:'🪙', extremeIngot:'🔩',
+    superBlock:'🧱', extremeBlock:'🏗️', eternityStone:'💠', bitcoin:'₿', nebula:'🌌', starCore:'⭐', planet:'🪐',
+    star:'🌟', galaxy:'🌌', galaxyGroup:'🌌🌌', galaxyCluster:'🌌🌌🌌', supercluster:'🌀', universeFragment:'🌠',
+    timeFragment:'⏳', spaceFragment:'🌐', creationCrystal:'💎', universeCore:'🌌💫', causality:'🔗', infinite:'∞', transcend:'✨'
+  };
+  const FRAG_NAMES = {
+    redObsidian:'红曜石', blueObsidian:'蓝曜石', greenObsidian:'绿曜石', yellowObsidian:'黄曜石', cyanObsidian:'青曜石', bedrockFragment:'基岩', fragment220:'220碎片',
+    kun:'坤坤', qiba:'七八', jiuyi:'九一', shisan:'十三', yiliujiu:'一六九', superIngot:'超级锭', extremeIngot:'极限锭',
+    superBlock:'超级块', extremeBlock:'极限块', eternityStone:'永恒石', bitcoin:'比特币', nebula:'星云', starCore:'星核', planet:'行星',
+    star:'恒星', galaxy:'星系', galaxyGroup:'星系群', galaxyCluster:'星系团', supercluster:'超星系团', universeFragment:'宇宙碎片',
+    timeFragment:'时间碎片', spaceFragment:'空间碎片', creationCrystal:'创造晶体', universeCore:'宇宙核心', causality:'因果', infinite:'无限', transcend:'超脱'
+  };
+
+  // 物品增益系数（每个碎片提供的物品增益值）
+  const ITEM_GAIN_COEFF = {
+    redObsidian:0.1, blueObsidian:0.2, greenObsidian:0.3, yellowObsidian:0.4, cyanObsidian:0.5, bedrockFragment:0.8, fragment220:220,
+    kun:2.5, qiba:7.8, jiuyi:9.1, shisan:13, yiliujiu:16.9, superIngot:8, extremeIngot:15, superBlock:30, extremeBlock:70, eternityStone:150,
+    bitcoin:0, nebula:1000, starCore:10000, planet:100000, star:1000000, galaxy:10000000, galaxyGroup:100000000, galaxyCluster:1000000000,
+    supercluster:10000000000, universeFragment:100000000000, timeFragment:1000000000000, spaceFragment:10000000000000,
+    creationCrystal:100000000000000, universeCore:1000000000000000, causality:10000000000000000, infinite:100000000000000000, transcend:1000000000000000000
+  };
+
+  // 所有镐子数据
+  const PICKS = [
+    {id:'wood',name:'木镐',interval:1,pickGain:1,usageGain:0.01,goldMult:1,costTrophy:1,emoji:'🪵'},
+    {id:'stone',name:'石镐',interval:0.9,pickGain:2,usageGain:0.02,goldMult:1,costTrophy:2,emoji:'🪨'},
+    {id:'iron',name:'铁镐',interval:0.8,pickGain:5,usageGain:0.03,goldMult:1,costTrophy:6,emoji:'⛏️'},
+    {id:'gold',name:'金镐',interval:0.7,pickGain:15,usageGain:0.05,goldMult:1,costTrophy:24,emoji:'🥇'},
+    {id:'diamond',name:'钻石镐',interval:0.65,pickGain:50,usageGain:0.08,goldMult:1,costTrophy:120,emoji:'💎'},
+    {id:'netherite',name:'下界合金镐',interval:0.6,pickGain:150,usageGain:0.1,goldMult:1,costTrophy:600,emoji:'🔥'},
+    {id:'reinforced_gold',name:'强化金镐',interval:0.55,pickGain:400,usageGain:0.12,goldMult:1,costTrophy:3000,emoji:'⚡'},
+    {id:'reinforced_diamond',name:'强化钻石镐',interval:0.5,pickGain:1000,usageGain:0.15,goldMult:1,costTrophy:15000,emoji:'💠'},
+    {id:'reinforced_netherite',name:'强化下界合金镐',interval:0.45,pickGain:2500,usageGain:0.2,goldMult:1,costTrophy:75000,emoji:'🌋'},
+    {id:'obsidian',name:'黑曜石镐',interval:0.4,pickGain:5000,usageGain:0.25,goldMult:1,costTrophy:375000,emoji:'🖤'},
+    {id:'red_obsidian',name:'红曜石镐',interval:0.35,pickGain:8000,usageGain:0.3,goldMult:1,craft:{reqPick:'obsidian',fragments:{redObsidian:10}},emoji:'❤️'},
+    {id:'blue_obsidian',name:'蓝曜石镐',interval:0.3,pickGain:12000,usageGain:0.4,goldMult:1,craft:{reqPick:'red_obsidian',fragments:{blueObsidian:10}},emoji:'💙'},
+    {id:'red_blue',name:'红蓝镐',interval:0.25,pickGain:20000,usageGain:0.5,goldMult:1.5,craft:{reqPick:'red_obsidian',reqPick2:'blue_obsidian',fragments:{redObsidian:50,blueObsidian:50}},emoji:'💜'},
+    {id:'green_obsidian',name:'绿曜石镐',interval:0.25,pickGain:25000,usageGain:0.5,goldMult:1.5,craft:{reqPick:'blue_obsidian',fragments:{greenObsidian:10}},emoji:'💚'},
+    {id:'yellow_obsidian',name:'黄曜石镐',interval:0.25,pickGain:35000,usageGain:0.6,goldMult:1.5,craft:{reqPick:'green_obsidian',fragments:{yellowObsidian:10}},emoji:'💛'},
+    {id:'yellow_green',name:'黄绿镐',interval:0.2,pickGain:50000,usageGain:0.8,goldMult:2,craft:{reqPick:'yellow_obsidian',reqPick2:'green_obsidian',fragments:{greenObsidian:50,yellowObsidian:50}},emoji:'💚💛'},
+    {id:'cyan_obsidian',name:'青曜石镐',interval:0.2,pickGain:60000,usageGain:0.8,goldMult:2,craft:{reqPick:'yellow_obsidian',fragments:{cyanObsidian:10}},emoji:'🩵'},
+    {id:'rainbow_obsidian',name:'彩曜石镐',interval:0.15,pickGain:100000,usageGain:1,goldMult:2.5,craft:{reqPick:'red_blue',reqPick2:'yellow_green',reqPick3:'cyan_obsidian',fragments:{redObsidian:100,blueObsidian:100,greenObsidian:100,yellowObsidian:100,cyanObsidian:100}},emoji:'🌈'},
+    {id:'bedrock',name:'基岩镐',interval:0.15,pickGain:150000,usageGain:1.5,goldMult:3,craft:{reqPick:'rainbow_obsidian',fragments:{bedrockFragment:100}},emoji:'🪨⚡'},
+    {id:'pick220',name:'220镐',interval:0.1,pickGain:220220,usageGain:2.2,goldMult:4.84,craft:{fragments:{fragment220:100}},emoji:'⚡220'},
+    // 新增镐子
+    {id:'kun_pick',name:'坤坤镐',interval:0.1,pickGain:250000,usageGain:2.5,goldMult:3,craft:{reqPick:'bedrock',fragments:{kun:25}},emoji:'🐔'},
+    {id:'qiba_pick',name:'七八镐',interval:0.1,pickGain:780000,usageGain:7.8,goldMult:7.8,craft:{fragments:{qiba:78}},emoji:'7️⃣8️⃣'},
+    {id:'jiuyi_pick',name:'九一镐',interval:0.1,pickGain:910000,usageGain:9.1,goldMult:9.1,craft:{fragments:{jiuyi:91}},emoji:'9️⃣1️⃣'},
+    {id:'shisan_pick',name:'十三镐',interval:0.1,pickGain:1300000,usageGain:13,goldMult:13,craft:{fragments:{shisan:13}},emoji:'1️⃣3️⃣'},
+    {id:'yiliujiu_pick',name:'一六九镐',interval:0.1,pickGain:1690000,usageGain:16.9,goldMult:16.9,craft:{fragments:{yiliujiu:169}},emoji:'1️⃣6️⃣9️⃣'},
+    {id:'super_pick',name:'超级镐',interval:0.1,pickGain:10000000,usageGain:5,goldMult:5,craft:{reqPick:'kun_pick',fragments:{superIngot:10,superBlock:1}},emoji:'🪙'},
+    {id:'extreme_pick',name:'极限镐',interval:0.1,pickGain:50000000,usageGain:10,goldMult:10,craft:{reqPick:'super_pick',fragments:{extremeIngot:10,extremeBlock:1}},emoji:'🔩'},
+    {id:'eternity_pick',name:'永恒镐',interval:0.1,pickGain:1000000000,usageGain:25,goldMult:25,craft:{reqPick:'extreme_pick',fragments:{eternityStone:100}},emoji:'💠'},
+    {id:'bitcoin_pick',name:'比特币镐',interval:0.1,pickGain:10000000000,usageGain:60,goldMult:60,craft:{fragments:{bitcoin:1}},emoji:'₿'},
+    {id:'220_advanced_pick',name:'220进阶镐',interval:0.1,pickGain:22000000000,usageGain:220,goldMult:220,craft:{fragments:{fragment220:2200}},emoji:'⚡220'},
+    {id:'nebula_pick',name:'星云镐',interval:0.1,pickGain:200000000000,usageGain:125,goldMult:125,craft:{fragments:{nebula:10}},emoji:'🌌'},
+    {id:'starCore_pick',name:'星核镐',interval:0.1,pickGain:10000000000000,usageGain:325,goldMult:325,craft:{fragments:{starCore:10}},emoji:'⭐'},
+    {id:'planet_pick',name:'行星镐',interval:0.1,pickGain:40000000000,usageGain:625,goldMult:625,craft:{fragments:{planet:10}},emoji:'🪐'},
+    {id:'star_pick',name:'恒星镐',interval:0.1,pickGain:2000000000000,usageGain:1225,goldMult:1225,craft:{fragments:{star:10}},emoji:'🌟'},
+    {id:'galaxy_pick',name:'星系镐',interval:0.1,pickGain:100000000000000,usageGain:1825,goldMult:1825,craft:{fragments:{galaxy:10}},emoji:'🌌'},
+    {id:'galaxyGroup_pick',name:'星系群镐',interval:0.1,pickGain:2500000000000000,usageGain:3125,goldMult:3125,craft:{fragments:{galaxyGroup:10}},emoji:'🌌🌌'},
+    {id:'galaxyCluster_pick',name:'星系团镐',interval:0.1,pickGain:5000000000000000,usageGain:6250,goldMult:6250,craft:{fragments:{galaxyCluster:10}},emoji:'🌌🌌🌌'},
+    {id:'supercluster_pick',name:'超星系团镐',interval:0.1,pickGain:150000000000000000,usageGain:12500,goldMult:12500,craft:{fragments:{supercluster:10}},emoji:'🌀'},
+    {id:'220_super_advanced',name:'220超级进阶镐',interval:0.1,pickGain:220000000000000000,usageGain:22000,goldMult:22000,craft:{fragments:{fragment220:22000}},emoji:'⚡220'},
+    {id:'universe_pick',name:'宇宙镐',interval:0.1,pickGain:8000000000000000000,usageGain:22500,goldMult:22500,craft:{fragments:{universeFragment:10}},emoji:'🌠'},
+    {id:'time_pick',name:'时间镐',interval:0.1,pickGain:50000000000000000000,usageGain:47500,goldMult:47500,craft:{fragments:{timeFragment:10}},emoji:'⏳'},
+    {id:'space_pick',name:'空间镐',interval:0.1,pickGain:1000000000000000000000,usageGain:82500,goldMult:82500,craft:{fragments:{spaceFragment:10}},emoji:'🌐'},
+    {id:'creation_pick',name:'创造镐',interval:0.1,pickGain:300000000000000000000000,usageGain:152500,goldMult:152500,craft:{fragments:{creationCrystal:10}},emoji:'💎'},
+    {id:'macro_pick',name:'宏观镐',interval:0.1,pickGain:220000000000000000000000000,usageGain:272500,goldMult:272500,craft:{fragments:{universeCore:10}},emoji:'🌌💫'},
+    {id:'causality_pick',name:'因果镐',interval:0.1,pickGain:1000000000000000000000000000,usageGain:562500,goldMult:562500,craft:{fragments:{causality:10}},emoji:'🔗'},
+    {id:'infinite_pick',name:'无限镐',interval:0.05,pickGain:1000000000000000000000000000,usageGain:10000000,goldMult:10000000,craft:{fragments:{infinite:1},reqPick:'causality_pick',reqPickQty:100},emoji:'∞'},
+    {id:'transcend_pick',name:'超脱镐',interval:0.01,pickGain:100000000000000000000000000000000,usageGain:1000000000,goldMult:1000000000,craft:{fragments:{transcend:1},reqPick:'infinite_pick',reqPickQty:10},emoji:'✨'}
+  ];
+
+  const ZONE1 = [
+    {id:'grass',name:'草',hp:100,gold:1,emoji:'🌿'},{id:'dirt',name:'土',hp:200,gold:2,emoji:'🟫'},
+    {id:'stone',name:'石',hp:500,gold:4,emoji:'🪨'},{id:'reinforced_grass',name:'加强草',hp:1200,gold:8,emoji:'🌱'},
+    {id:'reinforced_dirt',name:'加强土',hp:2500,gold:15,emoji:'🏾'},{id:'reinforced_stone',name:'加强石',hp:10000,gold:50,emoji:'⛰️'},
+    {id:'super_stone',name:'超强石',hp:100000,gold:384,emoji:'🏔️'},{id:'220_primary',name:'220初级',hp:220220,gold:660,drop:'fragment220',rate:0.0001,emoji:'2️⃣2️⃣0️⃣'},
+    {id:'coal',name:'煤',hp:1000000,gold:2000,emoji:'🪨⚫'},{id:'iron_ore',name:'铁',hp:20000000,gold:10000,emoji:'🪨🔩'},
+    {id:'gold_ore',name:'金',hp:500000000,gold:80000,emoji:'🪨🌟'},{id:'diamond_ore',name:'钻',hp:10000000000,gold:500000,emoji:'💎⛏️'},
+  ];
+  const ZONE2 = [
+    {id:'coal_block',name:'煤块',hp:4000000,gold:1200000,emoji:'⬛'},{id:'iron_block',name:'铁块',hp:10000000,gold:2000000,emoji:'🔩⬛'},
+    {id:'gold_block',name:'金块',hp:50000000,gold:5000000,emoji:'🌟⬛'},{id:'diamond_block',name:'钻石块',hp:200000000,gold:25000000,emoji:'💎⬛'},
+    {id:'ancient_debris',name:'远古残骸',hp:500000000,gold:80000000,emoji:'🦴⬛'},{id:'netherite_block',name:'下界合金块',hp:1500000000,gold:200000000,emoji:'🔥⬛'},
+    {id:'red_obsidian_frag',name:'红曜石碎片',hp:5000000000,gold:500000000,drop:'redObsidian',rate:0.1,emoji:'❤️💎'},
+    {id:'blue_obsidian_frag',name:'蓝曜石碎片',hp:6000000000,gold:600000000,drop:'blueObsidian',rate:0.1,emoji:'💙💎'},
+    {id:'green_obsidian_frag',name:'绿曜石碎片',hp:15000000000,gold:1500000000,drop:'greenObsidian',rate:0.1,emoji:'💚💎'},
+    {id:'yellow_obsidian_frag',name:'黄曜石碎片',hp:20000000000,gold:2000000000,drop:'yellowObsidian',rate:0.1,emoji:'💛💎'},
+    {id:'cyan_obsidian_frag',name:'青曜石碎片',hp:60000000000,gold:6000000000,drop:'cyanObsidian',rate:0.1,emoji:'🩵💎'},
+    {id:'bedrock_frag',name:'基岩碎片',hp:220000000000,gold:22000000000,drop:'bedrockFragment',rate:0.1,emoji:'🪨💎'},
+    {id:'220_mid',name:'220中级',hp:220220000000,gold:22022000000,drop:'fragment220',rate:0.001,emoji:'2️⃣2️⃣0️⃣⭐'},
+  ];
+  const ZONE3 = [
+    {id:'kun',name:'坤坤',hp:25000000,gold:25000000000,drop:'kun',rate:0.025,emoji:'🐔'},
+    {id:'qiba',name:'七八',hp:78000000,gold:78000000000,drop:'qiba',rate:0.078,emoji:'7️⃣8️⃣'},
+    {id:'jiuyi',name:'九一',hp:91000000,gold:91000000000,drop:'jiuyi',rate:0.091,emoji:'9️⃣1️⃣'},
+    {id:'shisan',name:'十三',hp:130000000,gold:130000000000,drop:'shisan',rate:0.013,emoji:'1️⃣3️⃣'},
+    {id:'yiliujiu',name:'一六九',hp:1690000000,gold:1690000000000,drop:'yiliujiu',rate:0.169,emoji:'1️⃣6️⃣9️⃣'},
+    {id:'220_high',name:'220高级',hp:22000000000,gold:22000000000000,drop:'fragment220',rate:0.01,emoji:'2️⃣2️⃣0️⃣'},
+    {id:'super_ore',name:'超级矿石',hp:50000000000,gold:50000000000000,drop:'superIngot',rate:0.05,emoji:'🪙'},
+    {id:'extreme_ore',name:'极限矿石',hp:200000000000,gold:200000000000000,drop:'extremeIngot',rate:0.05,emoji:'🔩'},
+    {id:'super_block',name:'超级块',hp:1000000000000,gold:1000000000000000,drop:'superBlock',rate:0.05,emoji:'🧱'},
+    {id:'extreme_block',name:'极限块',hp:10000000000000,gold:1000000000000000,drop:'extremeBlock',rate:0.05,emoji:'🏗️'},
+    {id:'eternity_stone',name:'永恒石',hp:100000000000000,gold:10000000000000000,drop:'eternityStone',rate:0.01,emoji:'💠'},
+  ];
+  const ZONE4 = [
+    {id:'bitcoin_primary',name:'比特币初级',hp:1000000000000,gold:100000000000000,drop:'bitcoin',rate:0.01,emoji:'₿'},
+    {id:'220_advanced',name:'220进阶',hp:2200000000000,gold:220000000000000,drop:'fragment220',rate:0.1,emoji:'⚡220'},
+    {id:'bitcoin_mid',name:'比特币中级',hp:100000000000000,gold:10000000000000000,drop:'bitcoin',rate:0.1,emoji:'₿'},
+    {id:'bitcoin_high',name:'比特币高级',hp:1000000000000000,gold:100000000000000000,drop:'bitcoin',rate:1,emoji:'₿'},
+    {id:'bitcoin_adv',name:'比特币进阶',hp:100000000000000000,gold:1000000000000000000,drop:'bitcoin',rate:10,emoji:'₿'},
+    {id:'220_super',name:'220超级',hp:220000000000000000,gold:2200000000000000000,drop:'fragment220',rate:1,emoji:'⚡220'},
+    {id:'bitcoin_super',name:'比特币超级',hp:1000000000000000000,gold:100000000000000000000,drop:'bitcoin',rate:100,emoji:'₿'},
+    {id:'bitcoin_ultimate',name:'比特币终极',hp:1000000000000000000000,gold:1000000000000000000000,drop:'bitcoin',rate:1000,emoji:'₿'},
+    {id:'220_ultimate',name:'220终极',hp:2200000000000000000000,gold:2200000000000000000000,drop:'fragment220',rate:10,emoji:'⚡220'},
+    {id:'nebula',name:'星云',hp:1000000000000000000000000,gold:10000000000000000000000,drop:'nebula',rate:0.01,emoji:'🌌'},
+    {id:'starCore',name:'星核',hp:100000000000000000000000000,gold:100000000000000000000000,drop:'starCore',rate:0.01,emoji:'⭐'},
+    {id:'planet',name:'行星',hp:1000000000000000000000000000,gold:1000000000000000000000000,drop:'planet',rate:0.01,emoji:'🪐'},
+    {id:'star',name:'恒星',hp:10000000000000000000000000000,gold:10000000000000000000000000,drop:'star',rate:0.01,emoji:'🌟'},
+    {id:'galaxy',name:'星系',hp:100000000000000000000000000000,gold:100000000000000000000000000,drop:'galaxy',rate:0.01,emoji:'🌌'},
+    {id:'galaxyGroup',name:'星系群',hp:1000000000000000000000000000000,gold:1000000000000000000000000000,drop:'galaxyGroup',rate:0.01,emoji:'🌌🌌'},
+    {id:'galaxyCluster',name:'星系团',hp:10000000000000000000000000000000,gold:10000000000000000000000000000,drop:'galaxyCluster',rate:0.01,emoji:'🌌🌌🌌'},
+    {id:'supercluster',name:'超星系团',hp:100000000000000000000000000000000,gold:100000000000000000000000000000,drop:'supercluster',rate:0.01,emoji:'🌀'},
+    {id:'universe_frag',name:'宇宙（雏形）',hp:1000000000000000000000000000000000,gold:1000000000000000000000000000000,drop:'universeFragment',rate:0.01,emoji:'🌠'},
+    {id:'time_pillar',name:'时间支柱',hp:100000000000000000000000000000000000,gold:100000000000000000000000000000000,drop:'timeFragment',rate:0.01,emoji:'⏳'},
+    {id:'space_origin',name:'空间本源',hp:1000000000000000000000000000000000000,gold:1000000000000000000000000000000000,drop:'spaceFragment',rate:0.01,emoji:'🌐'},
+    {id:'creation_crystal',name:'创造晶体',hp:10000000000000000000000000000000000000,gold:10000000000000000000000000000000000,drop:'creationCrystal',rate:0.01,emoji:'💎'},
+    {id:'universe',name:'宇宙',hp:100000000000000000000000000000000000000,gold:100000000000000000000000000000000000,drop:'universeCore',rate:0.01,emoji:'🌌💫'},
+    {id:'causality',name:'因果',hp:1000000000000000000000000000000000000000,gold:100000000000000000000000000000000000000,drop:'causality',rate:0.01,emoji:'🔗'},
+    {id:'infinite',name:'无限',hp:Infinity,gold:0,drop:'infinite',rate:0.0001,emoji:'∞'},
+    {id:'transcend',name:'超脱',hp:Infinity,gold:0,drop:'transcend',rate:0.000001,emoji:'✨'}
+  ];
+
+  function createState() {
+    return {
+      gold:0, trophies:0, level:0, exp:0, usageGain:1, onlineSeconds:0,
+      currentPickId:'wood', pickCounts:{wood:1},
+      fragmentCounts:{},
+      bitcoinGain:1, bitcoinUsageMult:1, bitcoinGoldMult:1,
+      currentZone:1, currentBlockId:'grass', blockHpRemaining:{},
+      autoMine:false, autoExchangeEnabled:false, autoExchangeThreshold:10000,
+    };
+  }
+
+  function initFragments(state) {
+    const allKeys = Object.keys(FRAG_ICONS);
+    allKeys.forEach(k => { if(!(k in state.fragmentCounts)) state.fragmentCounts[k] = 0; });
+  }
+
+  function getBlock(state) {
+    const zone = [ZONE1,ZONE2,ZONE3,ZONE4][state.currentZone-1];
+    return zone.find(b=>b.id===state.currentBlockId) || zone[0];
+  }
+
+  function getPick(id) { return PICKS.find(p=>p.id===id); }
+
+  function itemGain(state) {
+    let total = 1;
+    for(const [key, val] of Object.entries(state.fragmentCounts)) {
+      if(ITEM_GAIN_COEFF[key]) total += val * ITEM_GAIN_COEFF[key];
+    }
+    return total;
+  }
+
+  function calcDmg(state) {
+    const pick = getPick(state.currentPickId); if(!pick) return 0;
+    const trophyG = 1 + Math.pow(Math.max(0, state.trophies), 3/5);
+    const levelG = 1 + Math.pow(Math.max(0, state.level), 0.5);
+    const timeG = state.onlineSeconds > 100 ? 1 + Math.log(state.onlineSeconds/100) : 1;
+    const base = pick.pickGain * trophyG * levelG * Math.max(1, state.usageGain) * state.bitcoinGain;
+    return Math.pow(Math.max(1, base), 1/state.currentZone) * timeG;
+  }
+
+  function expNeed(lv) { return Math.pow(lv+1, 2); }
+
+  function mine(state) {
+    const block = getBlock(state); if(!block) return;
+    const pick = getPick(state.currentPickId); if(!pick) return;
+    const dmg = calcDmg(state);
+    let hp = state.blockHpRemaining[block.id];
+    if(hp === undefined) hp = block.hp;
+    hp -= dmg;
+    if(hp <= 0) {
+      hp = block.hp || 0;
+      const goldEarned = (block.gold || 0) * (pick.goldMult || 1) * state.bitcoinGoldMult;
+      state.gold += goldEarned;
+      state.exp += Math.pow(goldEarned, 1.2);
+      if(block.drop && Math.random() < (block.rate || 0)) {
+        const qty = typeof block.rate === 'number' && block.rate >= 1 ? block.rate : 1;
+        state.fragmentCounts[block.drop] = (state.fragmentCounts[block.drop] || 0) + qty;
       }
-      function formatNumFull(n) {
-        if (n == null || isNaN(n)) return '0';
-        if (n < 0) return '-' + formatNumFull(-n);
-        if (n < 10000) return n.toLocaleString();
-        let idx = 0, v = n;
-        while (v >= 10000 && idx < UNITS.length - 1) { v /= 10000; idx++; }
-        return v.toFixed(4) + ' ' + UNITS[idx];
+      while(state.exp >= expNeed(state.level)) {
+        state.exp -= expNeed(state.level);
+        state.level++;
       }
+    }
+    state.blockHpRemaining[block.id] = Math.max(0, hp);
+    state.usageGain += (pick.usageGain || 0) * state.bitcoinUsageMult;
+    return dmg;
+  }
 
-      const PICKS = [
-        {id:'wood',name:'木镐',interval:1,pickGain:1,usageGain:0.01,goldMult:1,costTrophy:1,emoji:'🪵'},
-        {id:'stone',name:'石镐',interval:0.9,pickGain:2,usageGain:0.02,goldMult:1,costTrophy:2,emoji:'🪨'},
-        {id:'iron',name:'铁镐',interval:0.8,pickGain:5,usageGain:0.03,goldMult:1,costTrophy:6,emoji:'⛏️'},
-        {id:'gold',name:'金镐',interval:0.7,pickGain:15,usageGain:0.05,goldMult:1,costTrophy:24,emoji:'🥇'},
-        {id:'diamond',name:'钻石镐',interval:0.65,pickGain:50,usageGain:0.08,goldMult:1,costTrophy:120,emoji:'💎'},
-        {id:'netherite',name:'下界合金镐',interval:0.6,pickGain:150,usageGain:0.1,goldMult:1,costTrophy:600,emoji:'🔥'},
-        {id:'reinforced_gold',name:'强化金镐',interval:0.55,pickGain:400,usageGain:0.12,goldMult:1,costTrophy:3000,emoji:'⚡'},
-        {id:'reinforced_diamond',name:'强化钻石镐',interval:0.5,pickGain:1000,usageGain:0.15,goldMult:1,costTrophy:15000,emoji:'💠'},
-        {id:'reinforced_netherite',name:'强化下界合金镐',interval:0.45,pickGain:2500,usageGain:0.2,goldMult:1,costTrophy:75000,emoji:'🌋'},
-        {id:'obsidian',name:'黑曜石镐',interval:0.4,pickGain:5000,usageGain:0.25,goldMult:1,costTrophy:375000,emoji:'🖤'},
-        {id:'red_obsidian',name:'红曜石镐',interval:0.35,pickGain:8000,usageGain:0.3,craft:{reqPick:'obsidian',reqPickName:'黑曜石镐',fragments:{redObsidian:10}},emoji:'❤️'},
-        {id:'blue_obsidian',name:'蓝曜石镐',interval:0.3,pickGain:12000,usageGain:0.4,craft:{reqPick:'red_obsidian',reqPickName:'红曜石镐',fragments:{blueObsidian:10}},emoji:'💙'},
-        {id:'red_blue',name:'红蓝镐',interval:0.25,pickGain:20000,usageGain:0.5,goldMult:1.5,craft:{reqPick:'red_obsidian',reqPickName:'红曜石镐',reqPick2:'blue_obsidian',reqPick2Name:'蓝曜石镐',fragments:{redObsidian:50,blueObsidian:50}},emoji:'💜'},
-        {id:'green_obsidian',name:'绿曜石镐',interval:0.25,pickGain:25000,usageGain:0.5,goldMult:1.5,craft:{reqPick:'blue_obsidian',reqPickName:'蓝曜石镐',fragments:{greenObsidian:10}},emoji:'💚'},
-        {id:'yellow_obsidian',name:'黄曜石镐',interval:0.25,pickGain:35000,usageGain:0.6,goldMult:1.5,craft:{reqPick:'green_obsidian',reqPickName:'绿曜石镐',fragments:{yellowObsidian:10}},emoji:'💛'},
-        {id:'yellow_green',name:'黄绿镐',interval:0.2,pickGain:50000,usageGain:0.8,goldMult:2,craft:{reqPick:'yellow_obsidian',reqPickName:'黄曜石镐',reqPick2:'green_obsidian',reqPick2Name:'绿曜石镐',fragments:{greenObsidian:50,yellowObsidian:50}},emoji:'💚💛'},
-        {id:'cyan_obsidian',name:'青曜石镐',interval:0.2,pickGain:60000,usageGain:0.8,goldMult:2,craft:{reqPick:'yellow_obsidian',reqPickName:'黄曜石镐',fragments:{cyanObsidian:10}},emoji:'🩵'},
-        {id:'rainbow_obsidian',name:'彩曜石镐',interval:0.15,pickGain:100000,usageGain:1,goldMult:2.5,craft:{reqPick:'red_blue',reqPickName:'红蓝镐',reqPick2:'yellow_green',reqPick2Name:'黄绿镐',reqPick3:'cyan_obsidian',reqPick3Name:'青曜石镐',fragments:{redObsidian:100,blueObsidian:100,greenObsidian:100,yellowObsidian:100,cyanObsidian:100}},emoji:'🌈'},
-        {id:'bedrock',name:'基岩镐',interval:0.15,pickGain:150000,usageGain:1.5,goldMult:3,craft:{reqPick:'rainbow_obsidian',reqPickName:'彩曜石镐',fragments:{bedrockFragment:100}},emoji:'🪨⚡'},
-        {id:'pick220',name:'220镐',interval:0.1,pickGain:220220,usageGain:2.2,goldMult:4.84,craft:{fragments:{fragment220:100}},emoji:'⚡220'},
-      ];
+  function switchPick(state, id) {
+    if(!state.pickCounts[id]) state.pickCounts[id] = 0;
+    if(state.pickCounts[id] >= 1) { state.currentPickId = id; return true; }
+    return false;
+  }
 
-      const ZONE1 = [
-        {id:'grass',name:'草',hp:100,gold:1,emoji:'🌿'},{id:'dirt',name:'土',hp:200,gold:2,emoji:'🟫'},
-        {id:'stone',name:'石',hp:500,gold:4,emoji:'🪨'},{id:'reinforced_grass',name:'加强草',hp:1200,gold:8,emoji:'🌱'},
-        {id:'reinforced_dirt',name:'加强土',hp:2500,gold:15,emoji:'🏾'},{id:'reinforced_stone',name:'加强石',hp:10000,gold:50,emoji:'⛰️'},
-        {id:'super_stone',name:'超强石',hp:100000,gold:384,emoji:'🏔️'},{id:'220_primary',name:'220初级',hp:220220,gold:660,dropFrag:'fragment220',dropRate:0.0001,emoji:'2️⃣2️⃣0️⃣'},
-        {id:'coal',name:'煤',hp:1000000,gold:2000,emoji:'🪨⚫'},{id:'iron_ore',name:'铁',hp:20000000,gold:10000,emoji:'🪨🔩'},
-        {id:'gold_ore',name:'金',hp:500000000,gold:80000,emoji:'🪨🌟'},{id:'diamond_ore',name:'钻',hp:10000000000,gold:500000,emoji:'💎⛏️'},
-      ];
-      const ZONE2 = [
-        {id:'coal_block',name:'煤块',hp:4000000,gold:1200000,emoji:'⬛'},{id:'iron_block',name:'铁块',hp:10000000,gold:2000000,emoji:'🔩⬛'},
-        {id:'gold_block',name:'金块',hp:50000000,gold:5000000,emoji:'🌟⬛'},{id:'diamond_block',name:'钻石块',hp:200000000,gold:25000000,emoji:'💎⬛'},
-        {id:'ancient_debris',name:'远古残骸',hp:500000000,gold:80000000,emoji:'🦴⬛'},{id:'netherite_block',name:'下界合金块',hp:1500000000,gold:200000000,emoji:'🔥⬛'},
-        {id:'red_obsidian_frag',name:'红曜石碎片',hp:5000000000,gold:500000000,dropFrag:'redObsidian',dropRate:0.1,emoji:'❤️💎'},
-        {id:'blue_obsidian_frag',name:'蓝曜石碎片',hp:6000000000,gold:600000000,dropFrag:'blueObsidian',dropRate:0.1,emoji:'💙💎'},
-        {id:'green_obsidian_frag',name:'绿曜石碎片',hp:15000000000,gold:1500000000,dropFrag:'greenObsidian',dropRate:0.1,emoji:'💚💎'},
-        {id:'yellow_obsidian_frag',name:'黄曜石碎片',hp:20000000000,gold:2000000000,dropFrag:'yellowObsidian',dropRate:0.1,emoji:'💛💎'},
-        {id:'cyan_obsidian_frag',name:'青曜石碎片',hp:60000000000,gold:6000000000,dropFrag:'cyanObsidian',dropRate:0.1,emoji:'🩵💎'},
-        {id:'bedrock_frag',name:'基岩碎片',hp:220000000000,gold:22000000000,dropFrag:'bedrockFragment',dropRate:0.1,emoji:'🪨💎'},
-        {id:'220_mid',name:'220中级',hp:220220000000,gold:22022000000,dropFrag:'fragment220',dropRate:0.001,emoji:'2️⃣2️⃣0️⃣⭐'},
-      ];
+  function buyPick(state, id) {
+    const p = getPick(id);
+    if(!p || p.costTrophy == null || state.trophies < p.costTrophy) return false;
+    state.trophies -= p.costTrophy;
+    state.pickCounts[id] = (state.pickCounts[id]||0) + 1;
+    return true;
+  }
 
-      const FRAG_ICONS = { redObsidian:'❤️', blueObsidian:'💙', greenObsidian:'💚', yellowObsidian:'💛', cyanObsidian:'🩵', bedrockFragment:'🪨', fragment220:'⚡' };
-      const FRAG_NAMES = { redObsidian:'红曜石', blueObsidian:'蓝曜石', greenObsidian:'绿曜石', yellowObsidian:'黄曜石', cyanObsidian:'青曜石', bedrockFragment:'基岩', fragment220:'220' };
+  function craftPick(state, id) {
+    const p = getPick(id); if(!p || !p.craft) return {ok:false, msg:'不可合成'};
+    const c = p.craft;
+    if(c.reqPick && (state.pickCounts[c.reqPick]||0) < (c.reqPickQty||1)) return {ok:false, msg:'缺少镐子'};
+    if(c.reqPick2 && (state.pickCounts[c.reqPick2]||0) < (c.reqPick2Qty||1)) return {ok:false, msg:'缺少镐子'};
+    if(c.reqPick3 && (state.pickCounts[c.reqPick3]||0) < (c.reqPick3Qty||1)) return {ok:false, msg:'缺少镐子'};
+    for(const [k, v] of Object.entries(c.fragments||{})) {
+      if((state.fragmentCounts[k]||0) < v) return {ok:false, msg:'碎片不足'};
+    }
+    if(c.reqPick) state.pickCounts[c.reqPick] -= (c.reqPickQty||1);
+    if(c.reqPick2) state.pickCounts[c.reqPick2] -= (c.reqPick2Qty||1);
+    if(c.reqPick3) state.pickCounts[c.reqPick3] -= (c.reqPick3Qty||1);
+    for(const [k, v] of Object.entries(c.fragments||{})) state.fragmentCounts[k] -= v;
+    state.pickCounts[id] = (state.pickCounts[id]||0) + 1;
+    return {ok:true};
+  }
 
-      let game = {
-        gold:0, trophies:0, level:0, exp:0, usageGain:1, onlineSeconds:0,
-        currentPickId:'wood', pickCounts:{wood:1},
-        fragmentCounts:{redObsidian:0,blueObsidian:0,greenObsidian:0,yellowObsidian:0,cyanObsidian:0,bedrockFragment:0,fragment220:0},
-        currentZone:1, currentBlockId:'grass', blockHpRemaining:{},
-        autoMine:false, autoExchangeEnabled:false, autoExchangeThreshold:10000,
-      };
-      [...ZONE1,...ZONE2].forEach(b=>{ game.blockHpRemaining[b.id] = b.hp; });
+  function updateUI(state) {
+    const pick = getPick(state.currentPickId);
+    const block = getBlock(state);
+    const dmg = calcDmg(state);
+    document.getElementById('goldDisplay').textContent = formatNum(state.gold);
+    document.getElementById('trophyDisplay').textContent = formatNum(state.trophies);
+    document.getElementById('levelDisplay').textContent = state.level;
+    document.getElementById('dmgDisplay').textContent = formatNum(dmg);
+    document.getElementById('onlineDisplay').textContent = Math.floor(state.onlineSeconds)+'s';
+    document.getElementById('zoneLabel').textContent = state.currentZone;
+    document.getElementById('blockVisual').textContent = block?.emoji||'?';
+    document.getElementById('blockName').textContent = block?.name||'?';
+    const hp = state.blockHpRemaining[block?.id] || 0;
+    document.getElementById('hpBar').style.width = (hp/(block?.hp||1)*100)+'%';
+    document.getElementById('hpText').textContent = formatNumFull(hp)+' / '+formatNumFull(block?.hp||0);
+    document.getElementById('statPick').textContent = formatNum(pick?.pickGain||1);
+    document.getElementById('statTrophy').textContent = formatNum(1+Math.pow(Math.max(0,state.trophies),3/5));
+    document.getElementById('statLevel').textContent = formatNum(1+Math.pow(Math.max(0,state.level),0.5));
+    document.getElementById('statUsage').textContent = formatNum(state.usageGain);
+    document.getElementById('statBitcoinGain').textContent = formatNum(state.bitcoinGain);
+    document.getElementById('statTime').textContent = formatNum(state.onlineSeconds>100?1+Math.log(state.onlineSeconds/100):1);
+    document.getElementById('expText').textContent = formatNumFull(state.exp)+' / '+formatNumFull(expNeed(state.level));
+    document.getElementById('expBar').style.width = Math.min(100, state.exp/expNeed(state.level)*100)+'%';
+    document.getElementById('cpName').textContent = (pick?.emoji||'')+' '+(pick?.name||'木镐');
+    document.getElementById('cpStats').textContent = `间隔${pick?.interval||1}s | 增益${formatNum(pick?.pickGain||1)}`;
+    document.title = '伤害：'+formatNum(dmg);
+    const autoWrap = document.getElementById('autoExchangeWrap');
+    if(state.trophies>=10000){ autoWrap.style.opacity='1'; autoWrap.style.pointerEvents='auto'; }
+    else { autoWrap.style.opacity='0.4'; autoWrap.style.pointerEvents='none'; }
+    document.getElementById('autoExchangeToggle').checked = state.autoExchangeEnabled;
+    document.getElementById('autoExchangeThreshold').value = state.autoExchangeThreshold;
+    document.getElementById('autoMineToggle').checked = state.autoMine;
+    const preview = state.gold>=100 ? Math.floor(Math.pow(Math.floor(state.gold/100),2/3)) : 0;
+    document.getElementById('manualExchangePreview').textContent = '+'+formatNum(preview)+' 🏆';
+    document.getElementById('autoExchangePreview').textContent = '+'+formatNum(preview)+' 🏆';
+    document.getElementById('bitcoinGainVal').textContent = state.bitcoinGain.toFixed(1);
+    document.getElementById('bitcoinUsageMultVal').textContent = state.bitcoinUsageMult.toFixed(1);
+    document.getElementById('bitcoinGoldMultVal').textContent = state.bitcoinGoldMult.toFixed(1);
+    renderResources(state);
+    renderShop(state);
+    renderBlockSelect(state);
+  }
 
-      function getBlock() { return (game.currentZone===1?ZONE1:ZONE2).find(b=>b.id===game.currentBlockId); }
-      function getPick(id) { return PICKS.find(p=>p.id===id); }
-      function itemGain() {
-        const f = game.fragmentCounts;
-        return 1 + (f.redObsidian||0)*0.1 + (f.blueObsidian||0)*0.2 + (f.greenObsidian||0)*0.3 + (f.yellowObsidian||0)*0.4 + (f.cyanObsidian||0)*0.5 + (f.bedrockFragment||0)*0.8 + (f.fragment220||0)*220;
+  function renderResources(state) {
+    const grid = document.getElementById('resourceGrid');
+    grid.innerHTML = '';
+    const entries = Object.entries(state.fragmentCounts).filter(([,v])=> v > 0);
+    if(!entries.length) { grid.innerHTML = '<div style="color:#64748b;text-align:center;grid-column:1/-1;">尚未获得碎片</div>'; return; }
+    entries.forEach(([k,v])=>{
+      const div = document.createElement('div'); div.className='res-item';
+      div.innerHTML = `<span class="res-icon">${FRAG_ICONS[k]||'?'}</span>${FRAG_NAMES[k]||k}<br><span class="res-val">${formatNum(v)}</span>`;
+      grid.appendChild(div);
+    });
+  }
+
+  function renderBlockSelect(state) {
+    const sel = document.getElementById('blockSelect');
+    sel.innerHTML = '';
+    const zone = [ZONE1,ZONE2,ZONE3,ZONE4][state.currentZone-1];
+    zone.forEach(b=>{
+      const opt = document.createElement('option'); opt.value=b.id;
+      opt.textContent = b.emoji+' '+b.name+(b.rate?` ${(b.rate*100).toFixed(2)}%`:'');
+      if(b.id===state.currentBlockId) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+
+  function renderShop(state) {
+    const list = document.getElementById('shopList');
+    list.innerHTML = '';
+    PICKS.forEach(p=>{
+      const qty = state.pickCounts[p.id]||0;
+      const isCur = state.currentPickId===p.id;
+      const row = document.createElement('div'); row.className='shop-row';
+      let act = '';
+      if(p.costTrophy != null) act = `<button class="btn btn-gold btn-xs buy-btn" data-id="${p.id}">🏆${formatNum(p.costTrophy)}</button>`;
+      else if(p.craft) act = `<button class="btn btn-accent btn-xs craft-btn" data-id="${p.id}">🔧合成</button>`;
+      const use = `<button class="btn btn-outline btn-xs use-btn" data-id="${p.id}" ${qty<1?'disabled':''}>${isCur?'✅使用中':'使用'}</button>`;
+      row.innerHTML = `<span class="shop-emoji">${p.emoji}</span><span class="shop-name">${p.name}</span><span class="shop-info">${p.craft?'合成':'🏆'+formatNum(p.costTrophy||0)}</span><span class="shop-count">x${qty}</span>${act}${use}`;
+      list.appendChild(row);
+    });
+    list.querySelectorAll('.buy-btn').forEach(b=>b.onclick = (e) => {
+      if(buyPick(state, e.target.dataset.id)) updateUI(state); else showToast('奖杯不足');
+    });
+    list.querySelectorAll('.craft-btn').forEach(b=>b.onclick = (e) => {
+      const res = craftPick(state, e.target.dataset.id);
+      if(res.ok) updateUI(state); else showToast(res.msg);
+    });
+    list.querySelectorAll('.use-btn').forEach(b=>b.onclick = (e) => {
+      if(switchPick(state, e.target.dataset.id)) updateUI(state); else showToast('数量不足');
+    });
+  }
+
+  function showToast(msg) {
+    let t = document.getElementById('toastMsg');
+    if(!t){ t=document.createElement('div'); t.id='toastMsg'; t.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1e1e2f;color:#fff;padding:10px 24px;border-radius:40px;z-index:400;'; document.body.appendChild(t); }
+    t.textContent=msg; t.style.opacity='1'; clearTimeout(t._to); t._to=setTimeout(()=>t.style.opacity='0',2000);
+  }
+
+  let state = createState();
+  initFragments(state);
+  [ZONE1,ZONE2,ZONE3,ZONE4].flat().forEach(b=>{ if(!(b.id in state.blockHpRemaining)) state.blockHpRemaining[b.id] = b.hp; });
+  let lastTick = Date.now(), lastMine = Date.now();
+
+  function tick() {
+    const now = Date.now();
+    state.onlineSeconds += (now - lastTick)/1000;
+    lastTick = now;
+    const pick = getPick(state.currentPickId);
+    if((state.autoMine || window.isHolding) && (now-lastMine) >= (pick?.interval||1)*1000) {
+      const dmg = mine(state);
+      if(dmg) {
+        const area = document.getElementById('blockArea');
+        const rect = area.getBoundingClientRect();
+        const el = document.createElement('div'); el.className='damage-float';
+        el.textContent = formatNum(dmg);
+        el.style.left = (rect.width/2 + (Math.random()-0.5)*80)+'px';
+        el.style.top = (rect.height/3 + (Math.random()-0.5)*30)+'px';
+        area.appendChild(el);
+        setTimeout(()=>el.remove(), 1000);
       }
-      function calcDmg() {
-        const p = getPick(game.currentPickId); if(!p) return 0;
-        const trophyG = 1+Math.pow(Math.max(0,game.trophies),3/5);
-        const levelG = 1+Math.pow(Math.max(0,game.level),0.5);
-        const timeG = game.onlineSeconds>100 ? 1+Math.log(game.onlineSeconds/100) : 1;
-        const base = p.pickGain * trophyG * levelG * Math.max(1,game.usageGain) * itemGain();
-        return Math.pow(Math.max(1,base), 1/game.currentZone) * timeG;
-      }
-      function expNeed(lv) { return Math.pow(lv+1,2); }
+      lastMine = now;
+    }
+    if(state.autoExchangeEnabled && state.trophies>=10000 && state.gold>=Math.max(100, state.autoExchangeThreshold)) {
+      const base = Math.floor(state.gold/100);
+      state.trophies += Math.floor(Math.pow(base,2/3));
+      state.gold -= base*100;
+    }
+    updateUI(state);
+  }
+  setInterval(tick, 80);
+  setInterval(() => localStorage.setItem('pick_save', JSON.stringify(state)), 1000);
 
-      function mine() {
-        const block = getBlock(); if(!block) return;
-        const p = getPick(game.currentPickId); if(!p) return;
-        const dmg = calcDmg();
-        let hp = game.blockHpRemaining[block.id];
-        hp -= dmg;
-        if(hp <= 0) {
-          hp = block.hp;
-          const goldEarned = block.gold * (p.goldMult||1);
-          game.gold += goldEarned;
-          game.exp += Math.pow(goldEarned, 1.2);
-          if(block.dropFrag && Math.random() < (block.dropRate||0)) {
-            game.fragmentCounts[block.dropFrag] = (game.fragmentCounts[block.dropFrag]||0)+1;
-          }
-          while(game.exp >= expNeed(game.level)) { game.exp -= expNeed(game.level); game.level++; }
-        }
-        game.blockHpRemaining[block.id] = hp;
-        game.usageGain += p.usageGain;
-        return dmg;
-      }
+  const area = document.getElementById('blockArea');
+  window.isHolding = false;
+  area.addEventListener('mousedown', e => {
+    if (e.target.closest('button, select, input, label')) return;
+    e.preventDefault(); window.isHolding = true; lastMine = Date.now();
+  });
+  area.addEventListener('mouseup', () => window.isHolding = false);
+  area.addEventListener('mouseleave', () => window.isHolding = false);
+  area.addEventListener('touchstart', e => {
+    if (e.target.closest('button, select, input, label')) return;
+    e.preventDefault(); window.isHolding = true; lastMine = Date.now();
+  });
+  area.addEventListener('touchend', () => window.isHolding = false);
+  area.addEventListener('touchcancel', () => window.isHolding = false);
 
-      function switchPick(id) {
-        if(!game.pickCounts[id]) game.pickCounts[id]=0;
-        if(game.pickCounts[id] >= 1) { game.currentPickId = id; return true; }
-        return false;
-      }
-      function buyPick(id) {
-        const p = getPick(id); if(!p || p.costTrophy == null || game.trophies < p.costTrophy) return false;
-        game.trophies -= p.costTrophy;
-        game.pickCounts[id] = (game.pickCounts[id]||0)+1;
-        return true;
-      }
-      function craftPick(id) {
-        const p = getPick(id); if(!p || !p.craft) return {ok:false,msg:'不可合成'};
-        const c = p.craft;
-        if(c.reqPick && (game.pickCounts[c.reqPick]||0) < 1) return {ok:false,msg:'缺少'+c.reqPickName};
-        if(c.reqPick2 && (game.pickCounts[c.reqPick2]||0) < 1) return {ok:false,msg:'缺少'+c.reqPick2Name};
-        if(c.reqPick3 && (game.pickCounts[c.reqPick3]||0) < 1) return {ok:false,msg:'缺少'+c.reqPick3Name};
-        for(const [k,v] of Object.entries(c.fragments||{})) {
-          if((game.fragmentCounts[k]||0) < v) return {ok:false,msg:'碎片不足'};
-        }
-        if(c.reqPick) game.pickCounts[c.reqPick]--;
-        if(c.reqPick2) game.pickCounts[c.reqPick2]--;
-        if(c.reqPick3) game.pickCounts[c.reqPick3]--;
-        for(const [k,v] of Object.entries(c.fragments||{})) game.fragmentCounts[k] -= v;
-        game.pickCounts[id] = (game.pickCounts[id]||0)+1;
-        return {ok:true};
-      }
+  document.getElementById('prevBlockBtn').addEventListener('click', ()=>{
+    const zone = [ZONE1,ZONE2,ZONE3,ZONE4][state.currentZone-1];
+    const idx = zone.findIndex(b=>b.id===state.currentBlockId);
+    state.currentBlockId = zone[(idx-1+zone.length)%zone.length].id;
+  });
+  document.getElementById('nextBlockBtn').addEventListener('click', ()=>{
+    const zone = [ZONE1,ZONE2,ZONE3,ZONE4][state.currentZone-1];
+    const idx = zone.findIndex(b=>b.id===state.currentBlockId);
+    state.currentBlockId = zone[(idx+1)%zone.length].id;
+  });
+  document.getElementById('blockSelect').addEventListener('change', e => state.currentBlockId = e.target.value);
+  document.getElementById('zoneSwitchBtn').addEventListener('click', ()=>{
+    state.currentZone = (state.currentZone % 4) + 1;
+    state.currentBlockId = [ZONE1,ZONE2,ZONE3,ZONE4][state.currentZone-1][0].id;
+  });
+  document.getElementById('autoMineToggle').addEventListener('change', e => state.autoMine = e.target.checked);
+  document.getElementById('manualExchangeBtn').addEventListener('click', ()=>{
+    if(state.gold>=100){
+      const base = Math.floor(state.gold/100);
+      const gained = Math.floor(Math.pow(base,2/3));
+      state.gold -= base*100; state.trophies += gained; state.usageGain = 1;
+      showToast('获得 '+formatNum(gained)+' 奖杯');
+    } else showToast('金币不足100');
+  });
+  document.getElementById('autoExchangeToggle').addEventListener('change', e => {
+    if(state.trophies>=10000) state.autoExchangeEnabled = e.target.checked;
+    else e.target.checked = false;
+  });
+  document.getElementById('autoExchangeThreshold').addEventListener('change', e => {
+    state.autoExchangeThreshold = Math.max(100, parseInt(e.target.value)||100);
+  });
 
-      function updateUI() {
-        const p = getPick(game.currentPickId);
-        const block = getBlock();
-        const dmg = calcDmg();
-        document.getElementById('goldDisplay').textContent = formatNum(game.gold);
-        document.getElementById('trophyDisplay').textContent = formatNum(game.trophies);
-        document.getElementById('levelDisplay').textContent = game.level;
-        document.getElementById('dmgDisplay').textContent = formatNum(dmg);
-        document.getElementById('onlineDisplay').textContent = Math.floor(game.onlineSeconds)+'s';
-        document.getElementById('zoneLabel').textContent = game.currentZone;
-        document.getElementById('blockVisual').textContent = block?.emoji||'?';
-        document.getElementById('blockName').textContent = block?.name||'?';
-        const hp = game.blockHpRemaining[block?.id] || 0;
-        document.getElementById('hpBar').style.width = (hp/block.hp*100)+'%';
-        document.getElementById('hpText').textContent = formatNumFull(hp)+' / '+formatNumFull(block.hp);
-        document.getElementById('statPick').textContent = formatNum(p?.pickGain||1);
-        document.getElementById('statTrophy').textContent = formatNum(1+Math.pow(Math.max(0,game.trophies),3/5));
-        document.getElementById('statLevel').textContent = formatNum(1+Math.pow(Math.max(0,game.level),0.5));
-        document.getElementById('statUsage').textContent = formatNum(game.usageGain);
-        document.getElementById('statItem').textContent = formatNum(itemGain());
-        document.getElementById('statTime').textContent = formatNum(game.onlineSeconds>100?1+Math.log(game.onlineSeconds/100):1);
-        const need = expNeed(game.level);
-        document.getElementById('expBar').style.width = Math.min(100,(game.exp/need)*100)+'%';
-        document.getElementById('expText').textContent = formatNumFull(game.exp)+' / '+formatNumFull(need);
-        document.getElementById('cpName').textContent = (p?.emoji||'')+' '+(p?.name||'木镐');
-        document.getElementById('cpStats').textContent = `间隔${p?.interval||1}s | 增益${formatNum(p?.pickGain||1)}`;
-        document.title = '伤害：'+formatNum(dmg);
-        const autoWrap = document.getElementById('autoExchangeWrap');
-        if(game.trophies>=10000){ autoWrap.style.opacity='1'; autoWrap.style.pointerEvents='auto'; }
-        else { autoWrap.style.opacity='0.4'; autoWrap.style.pointerEvents='none'; }
-        document.getElementById('autoExchangeToggle').checked = game.autoExchangeEnabled;
-        document.getElementById('autoExchangeThreshold').value = game.autoExchangeThreshold;
-        document.getElementById('autoMineToggle').checked = game.autoMine;
-        const preview = game.gold>=100 ? Math.floor(Math.pow(Math.floor(game.gold/100),2/3)) : 0;
-        document.getElementById('manualExchangePreview').textContent = '+' + formatNum(preview) + ' 🏆';
-        document.getElementById('autoExchangePreview').textContent = '+' + formatNum(preview) + ' 🏆';
-        renderShop();
-        renderBlockSelect();
-        renderResources();
-      }
+  // 比特币商店逻辑
+  function bitcoinUpgrade(type) {
+    const input = document.getElementById('bitcoinInput'+type);
+    let amount = parseInt(input.value) || 0;
+    if(amount <= 0) return;
+    const cost = type===1 ? amount : (type===2 ? amount*10 : amount*100);
+    if(state.fragmentCounts.bitcoin < cost) { showToast('比特币不足'); return; }
+    state.fragmentCounts.bitcoin -= cost;
+    if(type===1) state.bitcoinGain += amount * 0.1;
+    else if(type===2) state.bitcoinUsageMult += amount * 0.1;
+    else if(type===3) state.bitcoinGoldMult += amount * 0.1;
+    updateUI(state);
+  }
+  function bitcoinMax(type) {
+    const bitcoin = state.fragmentCounts.bitcoin;
+    if(bitcoin <= 0) return;
+    let amount = 0;
+    if(type===1) amount = Math.floor(bitcoin);
+    else if(type===2) amount = Math.floor(bitcoin/10);
+    else if(type===3) amount = Math.floor(bitcoin/100);
+    if(amount <= 0) return;
+    document.getElementById('bitcoinInput'+type).value = amount;
+    bitcoinUpgrade(type);
+  }
+  document.getElementById('bitcoinUpgrade1').addEventListener('click', ()=> bitcoinUpgrade(1));
+  document.getElementById('bitcoinUpgrade2').addEventListener('click', ()=> bitcoinUpgrade(2));
+  document.getElementById('bitcoinUpgrade3').addEventListener('click', ()=> bitcoinUpgrade(3));
+  document.getElementById('bitcoinMax1').addEventListener('click', ()=> bitcoinMax(1));
+  document.getElementById('bitcoinMax2').addEventListener('click', ()=> bitcoinMax(2));
+  document.getElementById('bitcoinMax3').addEventListener('click', ()=> bitcoinMax(3));
 
-      function renderResources() {
-        const grid = document.getElementById('resourceGrid');
-        grid.innerHTML = '';
-        const frags = Object.entries(game.fragmentCounts).filter(([,v])=>v>0);
-        if(!frags.length) grid.innerHTML = '<div style="color:#64748b;">尚未获得碎片</div>';
-        else frags.forEach(([k,v])=>{
-          const d = document.createElement('div'); d.className='res-item';
-          d.innerHTML = `<span class="res-icon">${FRAG_ICONS[k]}</span>${FRAG_NAMES[k]}<br><span class="res-val">${formatNum(v)}</span>`;
-          grid.appendChild(d);
-        });
-      }
+  document.getElementById('attrBtn').addEventListener('click', ()=>{
+    const dmg = calcDmg(state);
+    let html = `<button class="close-btn" id="modalClose">✕</button><h3>详细属性</h3>
+    <p>💰${formatNumFull(state.gold)} 🏆${formatNumFull(state.trophies)}</p>
+    <p>Lv${state.level} 经验${formatNumFull(state.exp)}/${formatNumFull(expNeed(state.level))}</p>
+    <p>伤害/次 ${formatNumFull(dmg)}</p><hr>
+    <p>镐子 ${formatNumFull(getPick(state.currentPickId)?.pickGain||1)}</p>
+    <p>奖杯 ${formatNumFull(1+Math.pow(Math.max(0,state.trophies),3/5))}</p>
+    <p>等级 ${formatNumFull(1+Math.pow(Math.max(0,state.level),0.5))}</p>
+    <p>使用 ${formatNumFull(state.usageGain)}</p>
+    <p>比特币增益 ${formatNumFull(state.bitcoinGain)}</p>
+    <p>比特币使用 ${formatNumFull(state.bitcoinUsageMult)}</p>
+    <p>比特币金币 ${formatNumFull(state.bitcoinGoldMult)}</p>
+    <p>在线 ${Math.floor(state.onlineSeconds)}s</p>`;
+    document.getElementById('modalContent').innerHTML = html;
+    document.getElementById('modalOverlay').style.display='flex';
+    document.getElementById('modalClose').onclick = ()=> document.getElementById('modalOverlay').style.display='none';
+  });
+  document.getElementById('modalOverlay').addEventListener('click', e => { if(e.target === e.currentTarget) e.currentTarget.style.display='none'; });
 
-      function renderBlockSelect() {
-        const sel = document.getElementById('blockSelect');
-        sel.innerHTML = '';
-        (game.currentZone===1?ZONE1:ZONE2).forEach(b=>{
-          const o = document.createElement('option'); o.value=b.id; o.textContent=b.emoji+' '+b.name;
-          if(b.id===game.currentBlockId) o.selected=true;
-          sel.appendChild(o);
-        });
-      }
-
-      function renderShop() {
-        const list = document.getElementById('shopList');
-        list.innerHTML = '';
-        PICKS.forEach(p=>{
-          const qty = game.pickCounts[p.id]||0;
-          const isCur = game.currentPickId===p.id;
-          const row = document.createElement('div'); row.className='shop-row';
-          let act = '';
-          if(p.costTrophy != null) act = `<button class="btn btn-gold btn-xs buy-btn" data-id="${p.id}">🏆${formatNum(p.costTrophy)}</button>`;
-          else if(p.craft) act = `<button class="btn btn-accent btn-xs craft-btn" data-id="${p.id}">🔧合成</button>`;
-          const use = `<button class="btn btn-outline btn-xs use-btn" data-id="${p.id}" ${qty<1?'disabled':''}>${isCur?'✅使用中':'使用'}</button>`;
-          row.innerHTML = `<span class="shop-emoji">${p.emoji}</span><span class="shop-name">${p.name}</span><span class="shop-info">${p.craft?'合成':'🏆'+formatNum(p.costTrophy||0)}</span><span class="shop-count">x${qty}</span>${act}${use}`;
-          list.appendChild(row);
-        });
-        // 绑定事件
-        list.querySelectorAll('.buy-btn').forEach(b=>b.onclick = (e) => {
-          if(buyPick(e.target.dataset.id)) updateUI(); else showToast('奖杯不足');
-        });
-        list.querySelectorAll('.craft-btn').forEach(b=>b.onclick = (e) => {
-          const res = craftPick(e.target.dataset.id);
-          if(res.ok) updateUI(); else showToast(res.msg);
-        });
-        list.querySelectorAll('.use-btn').forEach(b=>b.onclick = (e) => {
-          if(switchPick(e.target.dataset.id)) updateUI(); else showToast('数量不足');
-        });
-      }
-
-      function showToast(msg) {
-        let t = document.getElementById('toastMsg');
-        if(!t){ t=document.createElement('div'); t.id='toastMsg'; t.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1e1e2f;color:#fff;padding:10px 24px;border-radius:40px;z-index:400;'; document.body.appendChild(t); }
-        t.textContent=msg; t.style.opacity='1'; clearTimeout(t._to); t._to=setTimeout(()=>t.style.opacity='0',2000);
-      }
-
-      let lastTick = Date.now(), lastMine = Date.now();
-      function tick() {
-        const now = Date.now();
-        game.onlineSeconds += (now-lastTick)/1000;
-        lastTick = now;
-        const p = getPick(game.currentPickId);
-        if((game.autoMine || window.isHolding) && (now-lastMine) >= (p?.interval||1)*1000) {
-          const dmg = mine();
-          if(dmg) {
-            const area = document.getElementById('blockArea');
-            const rect = area.getBoundingClientRect();
-            const el = document.createElement('div'); el.className='damage-float';
-            el.textContent = formatNum(dmg);
-            el.style.left = (rect.width/2 + (Math.random()-0.5)*80)+'px';
-            el.style.top = (rect.height/3 + (Math.random()-0.5)*30)+'px';
-            area.appendChild(el);
-            setTimeout(()=>el.remove(), 1000);
-          }
-          lastMine = now;
-        }
-        if(game.autoExchangeEnabled && game.trophies>=10000 && game.gold>=Math.max(100,game.autoExchangeThreshold)) {
-          const base = Math.floor(game.gold/100);
-          game.trophies += Math.floor(Math.pow(base,2/3));
-          game.gold -= base*100;
-        }
-        updateUI();
-      }
-      setInterval(tick, 80);
-      setInterval(() => localStorage.setItem('pick_save', JSON.stringify(game)), 1000);
-
-      // 修复按钮点击：只在方块区域本身按下时阻止默认，避免影响内部按钮
-      const area = document.getElementById('blockArea');
-      window.isHolding = false;
-      area.addEventListener('mousedown', e => {
-        if (e.target.closest('button, select, input, label')) return;
-        e.preventDefault();
-        window.isHolding = true;
-        lastMine = Date.now();
-      });
-      area.addEventListener('mouseup', e => { window.isHolding = false; });
-      area.addEventListener('mouseleave', () => { window.isHolding = false; });
-      area.addEventListener('touchstart', e => {
-        if (e.target.closest('button, select, input, label')) return;
-        e.preventDefault();
-        window.isHolding = true;
-        lastMine = Date.now();
-      });
-      area.addEventListener('touchend', e => { window.isHolding = false; });
-      area.addEventListener('touchcancel', () => { window.isHolding = false; });
-
-      document.getElementById('prevBlockBtn').addEventListener('click', () => {
-        const zone = game.currentZone===1?ZONE1:ZONE2;
-        const idx = zone.findIndex(b=>b.id===game.currentBlockId);
-        game.currentBlockId = zone[(idx-1+zone.length)%zone.length].id;
-        game.blockHpRemaining[game.currentBlockId] = zone.find(b=>b.id===game.currentBlockId).hp;
-      });
-      document.getElementById('nextBlockBtn').addEventListener('click', () => {
-        const zone = game.currentZone===1?ZONE1:ZONE2;
-        const idx = zone.findIndex(b=>b.id===game.currentBlockId);
-        game.currentBlockId = zone[(idx+1)%zone.length].id;
-        game.blockHpRemaining[game.currentBlockId] = zone.find(b=>b.id===game.currentBlockId).hp;
-      });
-      document.getElementById('blockSelect').addEventListener('change', e => game.currentBlockId = e.target.value);
-      document.getElementById('zoneSwitchBtn').addEventListener('click', () => {
-        game.currentZone = game.currentZone===1?2:1;
-        game.currentBlockId = (game.currentZone===1?ZONE1:ZONE2)[0].id;
-        game.blockHpRemaining[game.currentBlockId] = (game.currentZone===1?ZONE1:ZONE2)[0].hp;
-      });
-      document.getElementById('autoMineToggle').addEventListener('change', e => game.autoMine = e.target.checked);
-      document.getElementById('manualExchangeBtn').addEventListener('click', () => {
-        if(game.gold>=100) {
-          const base = Math.floor(game.gold/100);
-          const gained = Math.floor(Math.pow(base,2/3));
-          game.gold -= base*100;
-          game.trophies += gained;
-          game.usageGain = 1;
-          showToast('获得 '+formatNum(gained)+' 奖杯，使用增益重置');
-        } else showToast('金币不足100');
-      });
-      document.getElementById('autoExchangeToggle').addEventListener('change', e => {
-        if(game.trophies>=10000) game.autoExchangeEnabled = e.target.checked;
-        else e.target.checked = false;
-      });
-      document.getElementById('autoExchangeThreshold').addEventListener('change', e => {
-        game.autoExchangeThreshold = Math.max(100, parseInt(e.target.value)||100);
-        e.target.value = game.autoExchangeThreshold;
-      });
-
-      // 存档与重置
-      document.getElementById('saveBtn').addEventListener('click', ()=>{
-        const saves = [];
-        for(let i=0;i<10;i++) { const d=localStorage.getItem('pick_save_'+i); saves.push(d?JSON.parse(d):null); }
-        let html = '<button class="close-btn" id="modalClose2">✕</button><h3>存档管理</h3>';
-        saves.forEach((s,i)=>{
-          html += `<div>槽${i}: ${s?`💰${formatNum(s.gold)} Lv${s.level}`:'空'} <button class="btn btn-xs load-save" data-slot="${i}">加载</button><button class="btn btn-xs del-save" data-slot="${i}">删除</button></div>`;
-        });
-        document.getElementById('modalContent').innerHTML = html;
-        document.getElementById('modalOverlay').style.display='flex';
-        document.getElementById('modalClose2').onclick = ()=> document.getElementById('modalOverlay').style.display='none';
-        document.querySelectorAll('.load-save').forEach(b=>b.onclick = (e)=>{
-          const data = JSON.parse(localStorage.getItem('pick_save_'+e.target.dataset.slot));
-          if(data) { game = data; lastTick=Date.now(); lastMine=Date.now(); }
-          document.getElementById('modalOverlay').style.display='none';
-        });
-        document.querySelectorAll('.del-save').forEach(b=>b.onclick = (e)=>{
-          localStorage.removeItem('pick_save_'+e.target.dataset.slot);
-          document.getElementById('modalOverlay').style.display='none';
-        });
-      });
-      document.getElementById('resetBtn').addEventListener('click', ()=>{
-        if(confirm('重置？')) {
-          game = { gold:0, trophies:0, level:0, exp:0, usageGain:1, onlineSeconds:0, currentPickId:'wood', pickCounts:{wood:1}, fragmentCounts:{redObsidian:0,blueObsidian:0,greenObsidian:0,yellowObsidian:0,cyanObsidian:0,bedrockFragment:0,fragment220:0}, currentZone:1, currentBlockId:'grass', blockHpRemaining:{}, autoMine:false, autoExchangeEnabled:false, autoExchangeThreshold:10000 };
-          [...ZONE1,...ZONE2].forEach(b=> game.blockHpRemaining[b.id]=b.hp);
-        }
-      });
-
-      const saved = JSON.parse(localStorage.getItem('pick_save'));
-      if(saved) game = saved;
-      updateUI();
-    })();
-  </script>
+  const saved = JSON.parse(localStorage.getItem('pick_save'));
+  if(saved) {
+    state = saved;
+    initFragments(state);
+    [ZONE1,ZONE2,ZONE3,ZONE4].flat().forEach(b=>{ if(!(b.id in state.blockHpRemaining)) state.blockHpRemaining[b.id] = b.hp; });
+  }
+  updateUI(state);
+})();
+</script>
 </body>
 </html>
