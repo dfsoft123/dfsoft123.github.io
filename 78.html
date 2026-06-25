@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>发动机增量游戏 | 多阶声望版</title>
+    <title>发动机增量游戏 | 优化版</title>
     <script src="OmegaNum.js"></script>
     <style>
         body {
@@ -91,9 +91,6 @@
             text-align: center;
             margin: 10px 0;
         }
-        .prestige-section {
-            margin: 10px 0;
-        }
         .engine-list {
             max-height: 300px;
             overflow-y: auto;
@@ -165,7 +162,7 @@
     </div>
 
     <div class="card">
-        <h3 style="margin-top:0; color:#f7b731;">⚡ 发动机列表</h3>
+        <h3 style="margin-top:0; color:#f7b731;">⚡ 发动机列表（仅显示前20代）</h3>
         <div class="engine-list" id="engineList">
             <div>暂无发动机</div>
         </div>
@@ -174,113 +171,120 @@
     <script>
     (function() {
         if (typeof OmegaNum === 'undefined') {
-            document.getElementById('status').innerText = '❌ OmegaNum 未加载，请检查本地文件路径。';
+            document.getElementById('status').innerText = '❌ OmegaNum 未加载';
             return;
         }
 
         function O(val) { return new OmegaNum(val); }
 
         let state = {
-            // 声望次数
-            prestigeCount: 0,           // 一阶
-            secondPrestigeCount: 0,     // 二阶
-            thirdPrestigeCount: 0,      // 三阶
-            fourthPrestigeCount: 0,     // 四阶
+            prestigeCount: 0,
+            secondPrestigeCount: 0,
+            thirdPrestigeCount: 0,
+            fourthPrestigeCount: 0,
             
-            // 发动机数据
-            engines: {1: O(1)},         // 代数 -> 数量
-            maxTier: O(1),              // 当前最高代数
-            points: O(0),               // 点数
-            gameTime: 0                 // 游戏时间（秒）
+            // 优化：使用紧凑数组存储发动机（索引0=最高代，索引n-1=1代）
+            engines: [O(1)],
+            startTier: O(1),        // 起始代数（声望后会变）
+            ticks: O(0),            // 已进行的tick数
+            points: O(0),
+            gameTime: 0
         };
         
         let lastTickTime = Date.now();
         let pendingTicks = 0;
+        let updateCounter = 0;
 
-        // 计算总倍率：每阶声望都提供加成
         function getTotalMultiplier() {
             let mult = O(1);
-            mult = mult.add(state.secondPrestigeCount);      // 二阶：每级+1倍
-            mult = mult.mul(O(2).pow(state.thirdPrestigeCount)); // 三阶：每级×2
-            mult = mult.pow(O(1).add(O(0.5).mul(state.fourthPrestigeCount))); // 四阶：指数加成
+            mult = mult.add(state.secondPrestigeCount);
+            mult = mult.mul(O(2).pow(state.thirdPrestigeCount));
+            mult = mult.pow(O(1).add(O(0.5).mul(state.fourthPrestigeCount)));
             return mult;
         }
 
+        function getMaxTier() {
+            return state.startTier.add(state.ticks);
+        }
+
         function save() {
-            const data = {
-                p: state.prestigeCount,
-                sp: state.secondPrestigeCount,
-                tp: state.thirdPrestigeCount,
-                fp: state.fourthPrestigeCount,
-                eng: {},
-                mt: state.maxTier.toString(),
-                pts: state.points.toString(),
-                gt: state.gameTime
-            };
-            for (let tier in state.engines) {
-                data.eng[tier] = state.engines[tier].toString();
-            }
-            localStorage.setItem('engine_v4', JSON.stringify(data));
+            try {
+                const data = {
+                    p: state.prestigeCount,
+                    sp: state.secondPrestigeCount,
+                    tp: state.thirdPrestigeCount,
+                    fp: state.fourthPrestigeCount,
+                    eng: state.engines.map(e => e.toString()),
+                    st: state.startTier.toString(),
+                    tk: state.ticks.toString(),
+                    pts: state.points.toString(),
+                    gt: state.gameTime
+                };
+                localStorage.setItem('engine_opt', JSON.stringify(data));
+            } catch(e) {}
         }
 
         function load() {
-            const raw = localStorage.getItem('engine_v4');
-            if (!raw) return false;
             try {
+                const raw = localStorage.getItem('engine_opt');
+                if (!raw) return false;
                 const data = JSON.parse(raw);
                 state.prestigeCount = data.p || 0;
                 state.secondPrestigeCount = data.sp || 0;
                 state.thirdPrestigeCount = data.tp || 0;
                 state.fourthPrestigeCount = data.fp || 0;
-                state.engines = {};
-                for (let tier in data.eng) {
-                    state.engines[tier] = O(data.eng[tier]);
-                }
-                state.maxTier = O(data.mt);
+                state.engines = data.eng.map(e => O(e));
+                state.startTier = O(data.st);
+                state.ticks = O(data.tk);
                 state.points = O(data.pts);
                 state.gameTime = data.gt || 0;
                 lastTickTime = Date.now();
                 return true;
-            } catch (e) {
+            } catch(e) {
                 return false;
             }
         }
 
+        // 优化后的tick：使用数组循环，避免Object遍历
         function doTick() {
             const mult = getTotalMultiplier();
+            const oldEngines = state.engines;
             
-            // 解锁新代数
-            state.maxTier = state.maxTier.add(1);
-            const newTier = state.maxTier.toString();
-            state.engines[newTier] = (state.engines[newTier] || O(0)).add(1);
+            // 新数组长度+1（新解锁一代）
+            const newLen = oldEngines.length + 1;
+            const newEngines = new Array(newLen);
             
-            // 从高到低生产
-            const tiers = Object.keys(state.engines).sort((a, b) => Number(b) - Number(a));
-            const produced = {};
+            // 新最高代（索引0）初始为1
+            newEngines[0] = O(1);
             
-            for (let i = 0; i < tiers.length; i++) {
-                const tier = tiers[i];
-                const tierNum = Number(tier);
-                const count = state.engines[tier] || O(0);
+            // 批量计算生产（只遍历一次数组）
+            for (let i = 1; i < newLen; i++) {
+                // 由高一代（i-1）生产本代
+                const producers = (i-1 < oldEngines.length) ? oldEngines[i-1] : O(0);
+                const produced = producers.mul(mult);
                 
-                if (count.gt(0) && tierNum > 1) {
-                    const lowerTier = String(tierNum - 1);
-                    produced[lowerTier] = (produced[lowerTier] || O(0)).add(count.mul(mult));
-                }
+                // 加上本代原有的（如果有）
+                const existing = (i < oldEngines.length) ? oldEngines[i] : O(0);
+                newEngines[i] = existing.add(produced);
             }
             
-            // 应用生产
-            for (let tier in produced) {
-                state.engines[tier] = (state.engines[tier] || O(0)).add(produced[tier]);
-            }
+            state.engines = newEngines;
+            state.ticks = state.ticks.add(1);
             
-            // 1代发动机生产点数
-            const oneTierEngines = state.engines['1'] || O(0);
-            if (oneTierEngines.gt(0)) {
+            // 1代发动机生产点数（数组最后一个元素）
+            const oneTierEngines = newEngines[newEngines.length - 1];
+            if (oneTierEngines && oneTierEngines.gt(0)) {
                 state.points = state.points.add(oneTierEngines.mul(mult));
             }
             
             state.gameTime += 0.1;
+        }
+
+        // 优化：批量处理tick，减少函数调用开销
+        function doTicks(count) {
+            for (let i = 0; i < count; i++) {
+                doTick();
+            }
         }
 
         function processPending() {
@@ -288,12 +292,19 @@
                 document.getElementById('status').innerText = '';
                 return;
             }
+            
             document.getElementById('status').innerText = '⏳ 追赶离线进度...';
-            const steps = Math.min(pendingTicks, 500);
-            for (let i = 0; i < steps; i++) doTick();
+            
+            // 动态调整每批处理量，平衡性能和响应
+            const batchSize = pendingTicks > 1000 ? 200 : 100;
+            const steps = Math.min(pendingTicks, batchSize);
+            
+            doTicks(steps);
             pendingTicks -= steps;
+            
             if (pendingTicks > 0) {
-                setTimeout(processPending, 10);
+                // 使用requestAnimationFrame或setTimeout避免阻塞
+                setTimeout(() => processPending(), 0);
             } else {
                 document.getElementById('status').innerText = '';
                 lastTickTime = Date.now();
@@ -304,36 +315,52 @@
             const now = Date.now();
             const elapsed = now - lastTickTime;
             if (elapsed < 100) return;
+            
             const ticks = Math.floor(elapsed / 100);
             if (ticks <= 0) return;
-            const addTicks = Math.min(ticks, 30000);
+            
+            // 限制最大追赶量，避免长时间离线导致大量计算
+            const maxCatchUp = 50000;
+            const addTicks = Math.min(ticks, maxCatchUp);
+            
             lastTickTime += addTicks * 100;
             pendingTicks += addTicks;
-            if (pendingTicks === addTicks) processPending();
+            
+            if (pendingTicks === addTicks) {
+                processPending();
+            }
         }
 
-        // 各阶声望条件
         function canPrestige() {
             const req = O(1000).mul(O(1 + state.prestigeCount * state.prestigeCount));
-            return req.lte(state.maxTier);
+            return req.lte(getMaxTier());
         }
 
         function canSecondPrestige() {
             const req = O(100000).mul(O(1 + state.secondPrestigeCount * state.secondPrestigeCount));
-            return req.lte(state.maxTier);
+            return req.lte(getMaxTier());
         }
 
         function canThirdPrestige() {
             const req = O(1e7).mul(O(10).pow(state.thirdPrestigeCount));
-            return req.lte(state.maxTier);
+            return req.lte(getMaxTier());
         }
 
         function canFourthPrestige() {
             const req = O(1e10).mul(O(100).pow(state.fourthPrestigeCount));
-            return req.lte(state.maxTier);
+            return req.lte(getMaxTier());
         }
 
-        // 执行声望
+        function resetEngineState(newStartTier) {
+            state.engines = [O(1)];
+            state.startTier = newStartTier;
+            state.ticks = O(0);
+            state.points = O(0);
+            state.gameTime = Math.floor(state.gameTime);
+            lastTickTime = Date.now();
+            pendingTicks = 0;
+        }
+
         function doPrestige() {
             if (!canPrestige()) return;
             state.prestigeCount++;
@@ -368,21 +395,13 @@
             save();
         }
 
-        function resetEngineState(startTier) {
-            state.engines = {};
-            state.maxTier = startTier;
-            state.engines[startTier.toString()] = O(1);
-            state.points = O(0);
-            state.gameTime = Math.floor(state.gameTime);
-            lastTickTime = Date.now();
-            pendingTicks = 0;
-        }
-
+        // 优化UI更新：降低更新频率
         function updateUI() {
+            const mt = getMaxTier();
             const mult = getTotalMultiplier();
             
             document.getElementById('points').innerText = state.points.toString();
-            document.getElementById('maxTier').innerText = state.maxTier.toString();
+            document.getElementById('maxTier').innerText = mt.toString();
             document.getElementById('time').innerText = state.gameTime.toFixed(1) + ' 秒';
             document.getElementById('multiplier').innerText = mult.toString() + 'x';
             
@@ -391,42 +410,46 @@
             document.getElementById('thirdPrestigeCount').innerText = state.thirdPrestigeCount;
             document.getElementById('fourthPrestigeCount').innerText = state.fourthPrestigeCount;
 
-            // 更新按钮状态
-            updateButton('prestigeBtn', canPrestige, '一阶声望', 1000, state.prestigeCount, '平方');
-            updateButton('secondPrestigeBtn', canSecondPrestige, '二阶声望', 100000, state.secondPrestigeCount, '平方');
-            updateButton('thirdPrestigeBtn', canThirdPrestige, '三阶声望', 1e7, state.thirdPrestigeCount, '指数');
-            updateButton('fourthPrestigeBtn', canFourthPrestige, '四阶声望', 1e10, state.fourthPrestigeCount, '指数');
+            // 按钮更新
+            updatePrestigeButton('prestigeBtn', canPrestige, '🔄 一阶声望', 1000, state.prestigeCount, true);
+            updatePrestigeButton('secondPrestigeBtn', canSecondPrestige, '🔥 二阶声望', 100000, state.secondPrestigeCount, true);
+            updatePrestigeButton('thirdPrestigeBtn', canThirdPrestige, '💜 三阶声望', 1e7, state.thirdPrestigeCount, false);
+            updatePrestigeButton('fourthPrestigeBtn', canFourthPrestige, '💚 四阶声望', 1e10, state.fourthPrestigeCount, false);
 
-            // 发动机列表
+            // 发动机列表（只显示前20代，减少DOM操作）
             const listDiv = document.getElementById('engineList');
-            const tiers = Object.keys(state.engines)
-                .filter(tier => state.engines[tier].gt(0))
-                .sort((a, b) => Number(a) - Number(b));
-            
+            const maxShow = 20;
             let html = '';
-            if (tiers.length === 0) {
-                html = '<div>暂无发动机</div>';
-            } else {
-                const maxShow = 20;
-                for (let i = 0; i < Math.min(tiers.length, maxShow); i++) {
-                    const tier = tiers[i];
+            
+            const totalGens = state.engines.length;
+            const showCount = Math.min(totalGens, maxShow);
+            
+            // 计算起始代数
+            const mtNum = Number(mt.toString());
+            
+            for (let i = 0; i < showCount; i++) {
+                const tier = mtNum - i;
+                const count = state.engines[i];
+                if (count && count.gt(0)) {
                     html += '<div style="padding:3px 0;">代数 ' + tier + ' : ' + 
-                            state.engines[tier].toString() + '</div>';
-                }
-                if (tiers.length > maxShow) {
-                    html += '<div>... 还有 ' + (tiers.length - maxShow) + ' 代</div>';
+                            count.toString() + '</div>';
                 }
             }
+            
+            if (totalGens > maxShow) {
+                html += '<div>... 还有 ' + (totalGens - maxShow) + ' 代</div>';
+            }
+            
             listDiv.innerHTML = html;
         }
 
-        function updateButton(btnId, canFunc, name, base, count, type) {
+        function updatePrestigeButton(btnId, canFunc, name, base, count, isSquare) {
             const btn = document.getElementById(btnId);
             let req;
-            if (type === '平方') {
+            if (isSquare) {
                 req = O(base).mul(O(1 + count * count));
             } else {
-                req = O(base).mul(O(type === '指数' ? (base === 1e7 ? 10 : 100) : 2).pow(count));
+                req = O(base).mul(O(base === 1e7 ? 10 : 100).pow(count));
             }
             
             btn.innerText = name + ' (需代数 ' + req.toString() + ')';
@@ -440,8 +463,16 @@
 
         function mainLoop() {
             catchUp();
-            updateUI();
-            if (Date.now() - (state._lastSave || 0) > 2000) {
+            
+            // 降低UI更新频率：每2次循环更新一次
+            updateCounter++;
+            if (updateCounter >= 2) {
+                updateUI();
+                updateCounter = 0;
+            }
+            
+            // 自动保存
+            if (Date.now() - (state._lastSave || 0) > 5000) {
                 save();
                 state._lastSave = Date.now();
             }
