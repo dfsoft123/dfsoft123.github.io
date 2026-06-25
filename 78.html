@@ -212,6 +212,7 @@
 
     <script>
     (function() {
+        window.state = state; 
         if (typeof OmegaNum === 'undefined') {
             document.getElementById('status').innerText = '❌ OmegaNum 未加载';
             return;
