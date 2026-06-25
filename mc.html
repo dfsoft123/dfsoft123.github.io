@@ -3,59 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>我的世界 豪华联机版</title>
+    <title>我的世界 联机版 (修复版)</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; touch-action: none; }
         body { overflow: hidden; font-family: 'Segoe UI', sans-serif; background: #1a1a1a; color: #fff; }
         canvas { display: block; position: absolute; top: 0; left: 0; }
 
-        /* 大厅 UI */
-        #lobby { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .panel { background: #222; padding: 20px; border-radius: 8px; width: 90%; max-width: 400px; box-shadow: 0 0 20px #000; text-align: center; }
-        h1 { color: #5d9b41; margin-bottom: 5px; font-size: 24px; }
-        .sub { color: #888; font-size: 12px; margin-bottom: 20px; }
+        /* 菜单界面 */
+        #lobby { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
+        .panel { background: #222; padding: 20px; border-radius: 8px; width: 90%; max-width: 400px; box-shadow: 0 0 20px #000; text-align: center; margin-bottom: 10px; }
+        h1 { color: #5d9b41; margin-bottom: 5px; font-size: 20px; }
+        .sub { color: #888; font-size: 12px; margin-bottom: 15px; }
         
-        input { width: 100%; padding: 10px; margin: 5px 0; background: #333; border: 1px solid #444; color: #fff; border-radius: 4px; }
-        button { width: 100%; padding: 12px; margin-top: 10px; background: #4a9a4a; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; }
+        input, textarea { width: 100%; padding: 10px; margin: 5px 0; background: #333; border: 1px solid #444; color: #fff; border-radius: 4px; font-size: 14px; }
+        textarea { height: 80px; resize: none; font-family: monospace; font-size: 10px; word-break: break-all; }
+        button { width: 100%; padding: 12px; margin-top: 10px; background: #4a9a4a; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; }
         button:active { background: #3a8a3a; }
         button.secondary { background: #555; }
+        button.warning { background: #994411; }
         
         #status-msg { margin-top: 10px; color: #ffa; font-size: 12px; min-height: 20px; }
-
-        /* 游戏 UI */
-        #game-ui { position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 10; display: none; }
         
-        /* 准星 */
+        /* 游戏界面 */
+        #game-ui { position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 10; display: none; }
         #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 24px; height: 24px; opacity: 0.8; }
         #crosshair::before, #crosshair::after { content: ''; position: absolute; background: #fff; }
         #crosshair::before { width: 2px; height: 100%; left: 11px; }
         #crosshair::after { width: 100%; height: 2px; top: 11px; }
 
-        /* 聊天框 */
-        #chat-container { position: absolute; bottom: 60px; left: 10px; width: 40%; height: 200px; pointer-events: none; display: flex; flex-direction: column-reverse; }
-        #chat-messages { overflow: hidden; }
-        .chat-msg { background: rgba(0,0,0,0.5); color: #fff; padding: 4px 8px; margin-bottom: 2px; border-radius: 4px; font-size: 12px; line-height: 1.4; }
-        .chat-name { color: #ffa; font-weight: bold; }
+        #chat-container { position: absolute; bottom: 60px; left: 10px; width: 40%; height: 200px; display: flex; flex-direction: column-reverse; }
+        .chat-msg { background: rgba(0,0,0,0.5); color: #fff; padding: 4px 8px; margin-bottom: 2px; border-radius: 4px; font-size: 12px; }
         #chat-input-box { position: absolute; bottom: 0; left: 0; width: 100%; display: none; pointer-events: auto; }
-        #chat-input { width: 100%; background: rgba(0,0,0,0.8); border: none; padding: 10px; color: #fff; font-size: 14px; outline: none; }
+        #chat-input { width: 100%; background: rgba(0,0,0,0.8); border: none; padding: 10px; color: #fff; outline: none; }
 
-        /* 调试/状态信息 */
         #info-board { position: absolute; top: 10px; left: 10px; font-size: 12px; color: #fff; text-shadow: 1px 1px 2px #000; }
 
-        /* 手机虚拟按键 */
         .touch-zone { position: absolute; z-index: 20; }
         #joystick-zone { bottom: 0; left: 0; width: 35%; height: 40%; }
         #joystick-base { position: absolute; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); display: none; transform: translate(-50%, -50%); pointer-events: none; }
         #joystick-thumb { position: absolute; width: 40px; height: 40px; background: rgba(255,255,255,0.4); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; }
         
         #action-zone { bottom: 0; right: 0; width: 40%; height: 40%; pointer-events: auto; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: flex-end; padding: 20px; }
-        .v-btn { width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; margin: 5px; border: 2px solid rgba(255,255,255,0.3); color: #fff; }
+        .v-btn { width: 55px; height: 55px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; margin: 5px; border: 2px solid rgba(255,255,255,0.3); color: #fff; font-size: 12px; }
         
         #look-zone { position: absolute; top: 0; right: 0; width: 60%; height: 70%; z-index: 5; }
 
-        /* 物品栏 */
-        #hotbar { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; background: rgba(0,0,0,0.4); border-radius: 4px; }
-        .slot { width: 40px; height: 40px; border: 2px solid #555; margin: 2px; background: rgba(0,0,0,0.2); display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        #hotbar { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; background: rgba(0,0,0,0.4); border-radius: 4px; pointer-events: auto; }
+        .slot { width: 40px; height: 40px; border: 2px solid #555; margin: 2px; background: rgba(0,0,0,0.2); display: flex; justify-content: center; align-items: center; }
         .slot.active { border-color: #fff; }
     </style>
 </head>
@@ -65,23 +59,36 @@
 <div id="lobby">
     <div class="panel">
         <h1>我的世界 联机版</h1>
-        <div class="sub">支持多人联机 / 聊天 / 碰撞</div>
+        <div class="sub">若点击无反应，请使用手动模式</div>
         
         <input type="text" id="input-name" placeholder="输入你的昵称" maxlength="10">
-        <button id="btn-create">创建房间</button>
-        <div id="room-info" style="display:none; margin-top:10px;">
-            <div style="font-size:12px; color:#888;">房间号 (发给好友):</div>
-            <div id="room-id" style="font-size:18px; color:#4a4; font-weight:bold; padding:10px; background:#000; border-radius:4px; margin-top:5px; user-select: all;">...</div>
+        
+        <!-- 自动模式 -->
+        <button id="btn-auto-create">自动创建房间 (需网络良好)</button>
+        <div id="auto-room-info" style="display:none; margin-top:10px;">
+            <div style="font-size:12px; color:#888;">房间号:</div>
+            <div id="room-id" style="font-size:18px; color:#4a4; font-weight:bold; padding:10px; background:#000; border-radius:4px;">...</div>
             <button class="secondary" style="margin-top:5px;" onclick="navigator.clipboard.writeText($('room-id').innerText).then(()=>alert('已复制'))">复制房间号</button>
         </div>
+        <input type="text" id="input-join-auto" placeholder="输入房间号 (自动模式)">
+        <button id="btn-auto-join">自动加入房间</button>
         
-        <div style="margin: 10px 0; border-top: 1px solid #444;"></div>
+        <div style="margin: 15px 0; border-bottom: 1px solid #444;"></div>
+
+        <!-- 手动模式 (保底) -->
+        <div class="sub" style="color:#ffa">手动模式 (适合网络受限环境)</div>
+        <button class="warning" id="btn-manual-start">开启手动模式 (主机点此)</button>
         
-        <input type="text" id="input-join" placeholder="输入房间号加入">
-        <button id="btn-join">加入房间</button>
-        
-        <div id="status-msg"></div>
+        <div id="manual-ui" style="display:none; width:100%;">
+            <textarea id="manual-code-out" readonly placeholder="生成的交换码..."></textarea>
+            <button class="secondary" onclick="navigator.clipboard.writeText($('manual-code-out').value).then(()=>alert('已复制'))">复制并告诉好友</button>
+            
+            <div style="margin:5px 0;"></div>
+            <textarea id="manual-code-in" placeholder="在此粘贴好友的交换码"></textarea>
+            <button id="btn-manual-connect">确认连接</button>
+        </div>
     </div>
+    <div id="status-msg"></div>
 </div>
 
 <!-- 游戏界面 -->
@@ -89,13 +96,11 @@
     <div id="crosshair"></div>
     <div id="info-board"></div>
     
-    <!-- 聊天 -->
     <div id="chat-container">
         <div id="chat-messages"></div>
         <div id="chat-input-box"><input type="text" id="chat-input" placeholder="按回车发送..."></div>
     </div>
 
-    <!-- 手机控制区 -->
     <div id="look-zone" class="touch-zone"></div>
     <div id="joystick-zone" class="touch-zone">
         <div id="joystick-base"></div>
@@ -111,124 +116,82 @@
     <div id="hotbar"></div>
 </div>
 
-<!-- 引入 PeerJS 用于多人联机 -->
+<!-- 引入必要的库 -->
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <script src="https://unpkg.com/three@0.160.0/build/three.module.js" type="module"></script>
 
 <script type="module">
 import * as THREE from 'three';
 
-// ================= 全局变量 =================
 const $ = id => document.getElementById(id);
 const isMobile = /Mobile|Android|iPhone/i.test(navigator.userAgent);
-const CHUNK_SIZE = 16;
 
-let scene, camera, renderer, clock;
-let world = {}; // "x,y,z": type
-let chunks = {}; // 网格缓存
+// ================= 核心变量 =================
+let scene, camera, renderer;
+let world = {};
 let player = {
     name: "玩家",
     pos: new THREE.Vector3(0, 40, 0),
     vel: new THREE.Vector3(),
     yaw: 0, pitch: 0,
     onGround: false,
-    flying: false,
     selected: 1
 };
 let keys = {};
 let net = {
     peer: null,
-    connections: [], // 存储所有连接（如果是主机）
-    conn: null,      // 如果是客机
+    cons: [], // 连接列表
     isHost: false,
     id: null,
-    players: {}      // 其他玩家数据 { id: { mesh, name } }
+    players: {} // 其他玩家模型
 };
 
-// 纹理
+// 纹理生成
 function makeTex(col) { const c=document.createElement('canvas');c.width=16;c.height=16;const x=c.getContext('2d');x.fillStyle=col;x.fillRect(0,0,16,16);x.fillStyle='rgba(0,0,0,0.2)';for(let i=0;i<20;i++)x.fillRect(Math.random()*16,Math.random()*16,2,2); return new THREE.CanvasTexture(c); }
 const TEX = { 1: makeTex('#5d9b41'), 2: makeTex('#8b5a2b'), 3: makeTex('#888'), 8: makeTex('#333') };
 const MAT = { 1: new THREE.MeshLambertMaterial({map: TEX[1]}), 2: new THREE.MeshLambertMaterial({map: TEX[2]}), 3: new THREE.MeshLambertMaterial({map: TEX[3]}) };
 
 // ================= 联机逻辑 =================
-window.btn_create = async () => {
-    const name = $('input-name').value || "主机";
-    player.name = name;
-    log("正在创建房间...");
-    
-    net.peer = new Peer();
-    net.peer.on('open', id => {
-        net.id = id;
-        net.isHost = true;
-        log("房间创建成功！");
-        $('room-info').style.display = 'block';
-        $('room-id').innerText = id;
-    });
-    
-    net.peer.on('connection', conn => {
-        setupConnection(conn);
-    });
-    
-    net.peer.on('error', err => log("网络错误: "+err.type));
-};
 
-window.btn_join = async () => {
-    const name = $('input-name').value || "客机";
-    const rid = $('input-join').value.trim();
-    if(!rid) return log("请输入房间号");
-    
-    player.name = name;
-    log("正在连接...");
-    
-    net.peer = new Peer();
-    net.peer.on('open', () => {
-        const conn = net.peer.connect(rid, { reliable: true });
-        setupConnection(conn);
-    });
-    net.peer.on('error', err => log("连接失败: "+err.type));
-};
-
-function setupConnection(conn) {
+// 通用连接处理
+function setupConn(conn) {
     conn.on('open', () => {
-        log("连接成功！");
+        log("有玩家加入！");
         // 发送自己的信息
-        conn.send({ t: 'init', id: net.peer.id, name: player.name });
+        conn.send({ t: 'init', id: net.id || 'host', name: player.name });
         
+        // 如果是主机，把新人的信息广播给其他人，并把其他人的信息发给新人
         if(net.isHost) {
-            net.connections.push(conn);
-            // 主机把当前所有玩家信息发给新人
-            const list = Object.keys(net.players).map(k => ({id: k, name: net.players[k].name}));
-            conn.send({ t: 'sync', list: list });
-        } else {
-            net.conn = conn;
+            net.cons.forEach(c => {
+                if(c !== conn && c.open) {
+                    c.send({ t: 'new_player', id: conn.peer, name: conn.metadata ? conn.metadata.name : 'player' });
+                    conn.send({ t: 'new_player', id: c.peer, name: c.metadata ? c.metadata.name : 'player' });
+                }
+            });
         }
-        startGame(); // 进入游戏
     });
-
-    conn.on('data', data => handleData(data, conn));
     
+    conn.on('data', data => handleData(data, conn));
     conn.on('close', () => {
-        if(net.isHost) {
-            net.connections = net.connections.filter(c => c !== conn);
-            broadcast({ t: 'leave', id: conn.peer }); // 通知大家他走了
+        if(net.players[conn.peer]) {
+            scene.remove(net.players[conn.peer].mesh);
+            delete net.players[conn.peer];
         }
+        net.cons = net.cons.filter(c => c !== conn);
     });
 }
 
-// 处理网络消息
 function handleData(data, conn) {
-    // 如果是主机收到消息，转发给其他人
-    if(net.isHost && data.t !== 'init') {
-        broadcast(data, conn); // 转发但不发回给发送者
+    // 主机收到消息，转发给其他人
+    if(net.isHost) {
+        net.cons.forEach(c => { if(c !== conn && c.open) c.send(data); });
     }
 
     if(data.t === 'init') {
-        // 有新人加入
         createRemotePlayer(data.id, data.name);
-        // 如果我是主机，通知大家有新人
-        if(net.isHost) {
-            broadcast({ t: 'init', id: data.id, name: data.name });
-        }
+    }
+    else if(data.t === 'new_player') {
+        createRemotePlayer(data.id, data.name);
     }
     else if(data.t === 'pos') {
         updateRemotePlayer(data.id, data);
@@ -239,67 +202,173 @@ function handleData(data, conn) {
     else if(data.t === 'block') {
         updateBlock(data.x, data.y, data.z, data.type, false);
     }
-    else if(data.t === 'sync') {
-        // 收到玩家列表（仅客机）
-        data.list.forEach(p => createRemotePlayer(p.id, p.name));
-    }
-    else if(data.t === 'leave') {
-        removeRemotePlayer(data.id);
-    }
 }
 
-// 广播消息 (主机专用)
-function broadcast(msg, excludeConn = null) {
-    net.connections.forEach(c => {
-        if(c !== excludeConn && c.open) c.send(msg);
-    });
-}
-
-// 发送消息
-function sendMsg(msg) {
+function broadcast(msg) {
     if(net.isHost) {
-        broadcast(msg);
-    } else if(net.conn) {
-        net.conn.send(msg);
+        net.cons.forEach(c => { if(c.open) c.send(msg); });
+    } else if(net.cons[0] && net.cons[0].open) {
+        net.cons[0].send(msg);
     }
 }
 
-function log(msg) { $('status-msg').innerText = msg; }
+function log(msg) { $('status-msg').innerText = msg; console.log(msg); }
+
+// --- 自动模式 ---
+$('btn-auto-create').onclick = () => {
+    player.name = $('input-name').value || "主机";
+    log("正在连接公共服务器...");
+    if(!window.Peer) return log("错误：网络库加载失败，请刷新或检查网络");
+
+    net.peer = new Peer();
+    net.peer.on('open', id => {
+        net.isHost = true;
+        net.id = id;
+        $('auto-room-info').style.display = 'block';
+        $('room-id').innerText = id;
+        log("房间创建成功！");
+    });
+    net.peer.on('connection', c => setupConn(c));
+    net.peer.on('error', err => {
+        log("自动模式失败: "+err.type+"。请尝试手动模式！");
+        alert("连接失败，请使用界面下方的【手动模式】");
+    });
+};
+
+$('btn-auto-join').onclick = () => {
+    player.name = $('input-name').value || "客机";
+    const rid = $('input-join-auto').value.trim();
+    if(!rid) return log("请输入房间号");
+    log("正在连接...");
+    if(!window.Peer) return log("错误：网络库加载失败");
+
+    net.peer = new Peer();
+    net.peer.on('open', () => {
+        const conn = net.peer.connect(rid, { reliable: true, metadata: { name: player.name } });
+        setupConn(conn);
+        net.cons = [conn];
+    });
+    net.peer.on('error', err => {
+        log("连接失败: "+err.type+"。请尝试手动模式！");
+        alert("连接失败，请使用界面下方的【手动模式】");
+    });
+};
+
+// --- 手动模式 (支持多人，星型拓扑) ---
+let manualPC = null;
+let manualChannel = null;
+let manualStep = 0; // 0:idle, 1:offer created, 2:answer created
+
+$('btn-manual-start').onclick = async () => {
+    player.name = $('input-name').value || "主机";
+    net.isHost = true;
+    log("手动模式：正在生成邀请码...");
+    
+    manualPC = new RTCPeerConnection({ iceServers: [{urls: 'stun:stun.l.google.com:19302'}] });
+    manualChannel = manualPC.createDataChannel('game');
+    
+    // 监听连接
+    manualChannel.onopen = () => {
+        log("连接成功！");
+        startGame();
+        // 把这个连接加入管理
+        net.cons.push({ send: msg => manualChannel.send(JSON.stringify(msg)), open: true, peer: 'manual_1' });
+        // 发送初始化信息
+        manualChannel.send(JSON.stringify({ t: 'init', id: 'host', name: player.name }));
+    };
+    manualChannel.onmessage = e => handleData(JSON.parse(e.data), {peer: 'manual_1'});
+
+    manualPC.onicecandidate = () => {};
+    const offer = await manualPC.createOffer();
+    await manualPC.setLocalDescription(offer);
+    
+    // 等待5秒收集ICE
+    await new Promise(r => setTimeout(r, 5000));
+    
+    $('manual-ui').style.display = 'block';
+    $('manual-code-out').value = btoa(JSON.stringify(manualPC.localDescription));
+    log("邀请码已生成，请复制发给好友。");
+};
+
+// 客机处理
+$('btn-manual-connect').onclick = async () => {
+    const code = $('manual-code-in').value.trim();
+    if(!code) return alert("请粘贴交换码");
+    
+    // 如果是客机，还没有创建PC
+    if(!manualPC) {
+        player.name = $('input-name').value || "客机";
+        net.isHost = false;
+        manualPC = new RTCPeerConnection({ iceServers: [{urls: 'stun:stun.l.google.com:19302'}] });
+        manualPC.ondatachannel = e => {
+            manualChannel = e.channel;
+            manualChannel.onopen = () => {
+                log("连接成功！");
+                startGame();
+                net.cons.push({ send: msg => manualChannel.send(JSON.stringify(msg)), open: true, peer: 'host' });
+                manualChannel.send(JSON.stringify({ t: 'init', id: 'client', name: player.name }));
+            };
+            manualChannel.onmessage = ev => handleData(JSON.parse(ev.data), {peer: 'host'});
+        };
+    }
+
+    try {
+        const sd = JSON.parse(atob(code));
+        await manualPC.setRemoteDescription(sd);
+        
+        // 如果收到的是offer，就创建answer
+        if(sd.type === 'offer') {
+            const answer = await manualPC.createAnswer();
+            await manualPC.setLocalDescription(answer);
+            await new Promise(r => setTimeout(r, 5000));
+            $('manual-code-out').value = btoa(JSON.stringify(manualPC.localDescription));
+            log("回执已生成，请复制发回给主机。");
+            $('manual-ui').style.display = 'block';
+        } 
+        // 如果收到的是answer，就连接
+        else if(sd.type === 'answer') {
+            await manualPC.setRemoteDescription(sd);
+            log("正在建立连接...");
+        }
+    } catch(e) {
+        log("解析失败，请检查代码");
+    }
+};
 
 // ================= 玩家模型管理 =================
 function createRemotePlayer(id, name) {
     if(net.players[id]) return;
     
     const group = new THREE.Group();
-    
-    // 身体 (简化版 Steve)
     const mat = new THREE.MeshLambertMaterial({color: new THREE.Color().setHSL(Math.random(), 0.6, 0.6)});
+    
+    // 头
     const head = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, 0.6), mat);
     head.position.y = 1.4;
     group.add(head);
     
+    // 身体
     const body = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.8, 0.3), mat);
     body.position.y = 0.9;
     group.add(body);
     
-    // 腿部动画对象
+    // 腿
     const legL = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.7, 0.25), mat);
     legL.position.set(-0.15, 0.35, 0);
     const legR = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.7, 0.25), mat);
     legR.position.set(0.15, 0.35, 0);
     group.add(legL, legR);
     
-    // 名字标签
+    // 名字
     const canvas = document.createElement('canvas');
-    canvas.width = 512; canvas.height = 128;
+    canvas.width = 256; canvas.height = 128;
     const ctx = canvas.getContext('2d');
     ctx.fillStyle = 'white';
-    ctx.font = 'bold 60px Arial';
+    ctx.font = 'bold 50px Arial';
     ctx.textAlign = 'center';
-    ctx.fillText(name, 256, 80);
-    const tex = new THREE.CanvasTexture(canvas);
-    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true }));
-    sprite.scale.set(2, 0.5, 1);
+    ctx.fillText(name, 128, 80);
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true }));
+    sprite.scale.set(1.5, 0.5, 1);
     sprite.position.y = 2.0;
     group.add(sprite);
     
@@ -311,10 +380,9 @@ function updateRemotePlayer(id, data) {
     if(!net.players[id]) createRemotePlayer(id, data.name || "Player");
     const p = net.players[id];
     if(p && p.mesh) {
-        p.mesh.position.set(data.x, data.y - 1.0, data.z); // 修正偏移
+        p.mesh.position.set(data.x, data.y - 1.0, data.z);
         p.mesh.rotation.y = data.yaw;
         
-        // 简单的行走动画
         if(data.moving) {
             const time = Date.now() * 0.01;
             p.legs[0].rotation.x = Math.sin(time) * 0.5;
@@ -326,27 +394,14 @@ function updateRemotePlayer(id, data) {
     }
 }
 
-function removeRemotePlayer(id) {
-    if(net.players[id] && net.players[id].mesh) {
-        scene.remove(net.players[id].mesh);
-        delete net.players[id];
-    }
-}
-
 // ================= 游戏核心 =================
 function startGame() {
     $('lobby').style.display = 'none';
     $('game-ui').style.display = 'block';
-    
     initScene();
     genWorld();
-    
-    if(isMobile) setupMobileControls();
-    else setupPCControls();
-    
-    // 聊天逻辑
+    if(isMobile) setupMobileControls(); else setupPCControls();
     setupChat();
-    
     animate();
 }
 
@@ -367,11 +422,9 @@ function initScene() {
 }
 
 function genWorld() {
-    // 生成地形数据
     for(let cx=-2; cx<=2; cx++) for(let cz=-2; cz<=2; cz++) {
-        for(let x=0; x<CHUNK_SIZE; x++) for(let z=0; z<CHUNK_SIZE; z++) {
-            const wx = cx*CHUNK_SIZE+x;
-            const wz = cz*CHUNK_SIZE+z;
+        for(let x=0; x<16; x++) for(let z=0; z<16; z++) {
+            const wx = cx*16+x, wz = cz*16+z;
             const h = Math.floor(Math.sin(wx*0.1) * Math.cos(wz*0.1) * 8 + 15);
             for(let y=0; y<=h; y++) {
                 let id = 3;
@@ -385,7 +438,6 @@ function genWorld() {
 }
 
 function buildMesh() {
-    // 性能优化：实例化渲染
     const geo = new THREE.BoxGeometry(1,1,1);
     const counting = {};
     for(let k in world) counting[world[k]] = (counting[world[k]] || 0) + 1;
@@ -408,14 +460,10 @@ function buildMesh() {
 
 function updateBlock(x,y,z,type, sync=true) {
     const key = `${x},${y},${z}`;
-    if(type===0) delete world[key];
-    else world[key] = type;
-    
-    // 简单暴力重绘 (实际项目应优化为只更新区块)
+    if(type===0) delete world[key]; else world[key] = type;
     scene.children = scene.children.filter(c => !(c.isInstancedMesh));
     buildMesh();
-    
-    if(sync) sendMsg({ t: 'block', x, y, z, type });
+    if(sync) broadcast({ t: 'block', x, y, z, type });
 }
 
 // ================= 控制与物理 =================
@@ -428,9 +476,7 @@ function setupPCControls() {
             player.pitch = Math.max(-1.5, Math.min(1.5, player.pitch));
         }
     });
-    document.addEventListener('mousedown', e => {
-        if(document.pointerLockElement) interact(e.button===2);
-    });
+    document.addEventListener('mousedown', e => { if(document.pointerLockElement) interact(e.button===2); });
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('keydown', e => keys[e.code] = true);
     document.addEventListener('keyup', e => keys[e.code] = false);
@@ -464,7 +510,6 @@ function setupMobileControls() {
     };
     $('joystick-zone').ontouchend = e => { joy.active = false; joy.x=0; joy.y=0; joy.base.style.display='none'; };
 
-    // 视角控制
     let lastLook = null;
     $('look-zone').ontouchstart = e => lastLook = e.touches[0];
     $('look-zone').ontouchmove = e => {
@@ -477,13 +522,11 @@ function setupMobileControls() {
     };
     $('look-zone').ontouchend = () => lastLook = null;
 
-    // 按钮
     $('btn-jump').ontouchstart = () => { if(player.onGround) player.vel.y = 0.3; };
     $('btn-break').ontouchstart = () => interact(false);
     $('btn-place').ontouchstart = () => interact(true);
     $('btn-chat').ontouchstart = () => toggleChat();
     
-    // 移动逻辑在 animate里用 joy.x/y
     window.joyState = joy;
 }
 
@@ -491,7 +534,6 @@ function interact(place) {
     const dir = new THREE.Vector3(0,0,-1).applyEuler(new THREE.Euler(player.pitch, player.yaw, 0, 'YXZ'));
     raycaster.set(camera.position, dir);
     
-    // 手动遍历方块检测 (简化版)
     let closest = null, minDist = 6;
     for(let key in world) {
         const [x,y,z] = key.split(',').map(Number);
@@ -499,9 +541,7 @@ function interact(place) {
         const hit = raycaster.ray.intersectBox(box, new THREE.Vector3());
         if(hit) {
             const d = camera.position.distanceTo(hit);
-            if(d < minDist) {
-                minDist = d; closest = { x, y, z, hit };
-            }
+            if(d < minDist) { minDist = d; closest = { x, y, z, hit }; }
         }
     }
     
@@ -528,39 +568,30 @@ setInterval(() => {
         if(keys['KeyD']) { player.vel.x += Math.cos(player.yaw) * speed; player.vel.z -= Math.sin(player.yaw) * speed; }
         if(keys['Space'] && player.onGround) player.vel.y = 0.3;
     } else {
-        // 手机摇杆输入
         if(window.joyState && window.joyState.active) {
             player.vel.x -= window.joyState.x * 0.1;
             player.vel.z -= window.joyState.y * 0.1;
         }
     }
     
-    // 物理
-    player.vel.y -= 0.015; // 重力
+    player.vel.y -= 0.015;
     player.pos.add(player.vel);
     
-    // 碰撞
-    let collided = false;
-    // 水平碰撞
+    // 简单碰撞
     player.onGround = false;
     const hw = 0.3, hh = 1.6;
     for(let key in world) {
         const [bx,by,bz] = key.split(',').map(Number);
-        // 简单AABB检测
         if( player.pos.x + hw > bx && player.pos.x - hw < bx+1 &&
-            player.pos.y + 0.2 > by && player.pos.y - hh < by+1 && // 头顶和脚底
+            player.pos.y + 0.2 > by && player.pos.y - hh < by+1 &&
             player.pos.z + hw > bz && player.pos.z - hw < bz+1) {
             
-            // 判断碰撞方向
             const prevY = player.pos.y - player.vel.y;
             if(prevY + 0.2 < by || prevY - hh > by+1) {
-                // Y轴碰撞
                 if(player.vel.y < 0) { player.onGround = true; player.pos.y = by+1+hh; }
                 else { player.pos.y = by-0.2; }
                 player.vel.y = 0;
             } else {
-                // 水平碰撞
-                // 简单推出
                 const dx = player.pos.x - (bx+0.5);
                 const dz = player.pos.z - (bz+0.5);
                 if(Math.abs(dx) > Math.abs(dz)) player.pos.x += dx > 0 ? 0.1 : -0.1;
@@ -572,33 +603,28 @@ setInterval(() => {
     player.vel.x *= 0.8; player.vel.z *= 0.8;
     if(player.pos.y < -10) { player.pos.set(0,40,0); player.vel.set(0,0,0); }
     
-    // 同步位置
+    // 同步
     if(Math.random() < 0.2) {
-        sendMsg({ t: 'pos', id: net.peer.id, name: player.name, x: player.pos.x, y: player.pos.y, z: player.pos.z, yaw: player.yaw, moving: (Math.abs(player.vel.x) > 0.05 || Math.abs(player.vel.z) > 0.05) });
+        broadcast({ t: 'pos', id: net.id || 'local', name: player.name, x: player.pos.x, y: player.pos.y, z: player.pos.z, yaw: player.yaw, moving: (Math.abs(player.vel.x) > 0.05 || Math.abs(player.vel.z) > 0.05) });
     }
 }, 16);
 
-// ================= 聊天系统 =================
+// ================= 聊天 =================
 function setupChat() {
-    const input = $('chat-input');
-    const box = $('chat-input-box');
-    
-    if(isMobile) {
-        // 手机端通过按钮触发
-    } else {
+    if(!isMobile) {
         window.addEventListener('keydown', e => {
             if(e.code === 'Enter') {
+                const box = $('chat-input-box');
+                const input = $('chat-input');
                 if(box.style.display === 'block') {
-                    // 发送
                     if(input.value.trim()) {
-                        sendMsg({ t: 'chat', name: player.name, text: input.value });
-                        addChatMsg(player.name, input.value); // 自己也要看到
+                        broadcast({ t: 'chat', name: player.name, text: input.value });
+                        addChatMsg(player.name, input.value);
                         input.value = '';
                     }
                     box.style.display = 'none';
-                    if(!isMobile) document.body.requestPointerLock(); // 重新锁定鼠标
+                    document.body.requestPointerLock();
                 } else {
-                    // 打开
                     box.style.display = 'block';
                     input.focus();
                     if(document.pointerLockElement) document.exitPointerLock();
@@ -613,7 +639,7 @@ function toggleChat() {
     const input = $('chat-input');
     if(box.style.display === 'block') {
         if(input.value.trim()) {
-            sendMsg({ t: 'chat', name: player.name, text: input.value });
+            broadcast({ t: 'chat', name: player.name, text: input.value });
             addChatMsg(player.name, input.value);
             input.value = '';
         }
@@ -627,32 +653,22 @@ function toggleChat() {
 function addChatMsg(name, text) {
     const div = document.createElement('div');
     div.className = 'chat-msg';
-    div.innerHTML = `<span class="chat-name">${name}:</span> ${text}`;
+    div.innerHTML = `<b style="color:#ffa">${name}:</b> ${text}`;
     $('chat-messages').appendChild(div);
-    setTimeout(() => div.remove(), 10000); // 10秒后消失
+    setTimeout(() => div.remove(), 10000);
 }
 
-// ================= 渲染循环 =================
 function animate() {
     requestAnimationFrame(animate);
     if(!camera) return;
     
-    // 相机跟随
     camera.position.set(player.pos.x, player.pos.y + 0.7, player.pos.z);
     camera.rotation.order = 'YXZ';
     camera.rotation.y = player.yaw;
     camera.rotation.x = player.pitch;
     
-    // 更新调试信息
-    const p = player.pos;
-    $('info-board').innerText = `位置: ${p.x.toFixed(1)}, ${p.y.toFixed(1)}, ${p.z.toFixed(1)}`;
-    
     renderer.render(scene, camera);
 }
-
-// 绑定按钮事件
-$('btn-create').onclick = btn_create;
-$('btn-join').onclick = btn_join;
 
 </script>
 </body>
