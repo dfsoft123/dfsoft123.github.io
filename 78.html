@@ -3,34 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>发动机增量游戏</title>
-    <!-- 双 CDN 容错加载 OmegaNum -->
-    <script>
-        // 第一个源
-        var omegaScript = document.createElement('script');
-        omegaScript.src = 'https://cdn.jsdelivr.net/npm/omega_num@1.3.0/omega_num.min.js';
-        omegaScript.onerror = function() {
-            // 如果第一个源失败，尝试备用源
-            var fallback = document.createElement('script');
-            fallback.src = 'https://unpkg.com/omega_num@1.3.0/omega_num.min.js';
-            fallback.onerror = function() {
-                document.getElementById('status').innerText = '❌ 库加载失败，请检查网络后刷新页面。';
-            };
-            document.head.appendChild(fallback);
-        };
-        document.head.appendChild(omegaScript);
-    </script>
+    <title>发动机增量游戏 | 彻底修复版</title>
+    <script src="OmegaNum.js"></script>
     <style>
-        body { background: #1a1a2e; color: #eee; font-family: sans-serif; padding: 20px; }
-        .card { background: #16213e; padding: 20px; margin: 10px 0; border-radius: 10px; }
-        button { padding: 10px 20px; margin: 5px; font-weight: bold; }
-        .disabled { opacity: 0.4; pointer-events: none; }
+        body {
+            background: #1a1a2e;
+            color: #eee;
+            font-family: sans-serif;
+            padding: 20px;
+            max-width: 700px;
+            margin: auto;
+        }
+        .card {
+            background: #16213e;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
         #status { color: orange; min-height: 20px; }
     </style>
 </head>
 <body>
     <h1>⚙️ 发动机增量</h1>
-    <div id="status">正在加载核心库...</div>
+    <div id="status"></div>
     <div class="card">
         <div>💎 点数: <span id="points">0</span></div>
         <div>🔝 最高代数: <span id="maxTier">1</span></div>
@@ -43,55 +48,54 @@
     <div class="card" id="engineList"></div>
 
     <script>
-    // 等待 OmegaNum 加载完成后再启动游戏
-    var checkInterval = setInterval(function() {
-        if (typeof OmegaNum !== 'undefined') {
-            clearInterval(checkInterval);
-            document.getElementById('status').innerText = '';
-            startGame();
+    (function() {
+        if (typeof OmegaNum === 'undefined') {
+            document.getElementById('status').innerText = '❌ OmegaNum 未加载，请检查本地文件路径。';
+            return;
         }
-    }, 100);
 
-    function startGame() {
-        // 辅助函数
         function O(val) { return new OmegaNum(val); }
 
-        // 游戏状态
-        var state = {
+        let state = {
             secondPrestige: 0,
             prestige: 0,
-            startTier: O(1),
-            ticks: O(0),
-            engines: [O(1)],
-            points: O(0),
-            gameTime: 0
+            // 直接用映射表存储：键=代数，值=发动机数量
+            engines: {1: O(1)},
+            maxTier: O(1),      // 当前最高代数
+            points: O(0),       // 累计点数
+            gameTime: 0         // 游戏总时间（秒）
         };
-        var lastTickTime = Date.now();
-        var pendingTicks = 0;
+        let lastTickTime = Date.now();
+        let pendingTicks = 0;
 
         function save() {
-            var data = {
+            const data = {
                 sp: state.secondPrestige,
                 p: state.prestige,
-                st: state.startTier.toString(),
-                tk: state.ticks.toString(),
-                eng: state.engines.map(function(e) { return e.toString(); }),
+                eng: {},
+                mt: state.maxTier.toString(),
                 pts: state.points.toString(),
                 gt: state.gameTime
             };
-            localStorage.setItem('engine_final2', JSON.stringify(data));
+            // 序列化发动机映射表
+            for (let tier in state.engines) {
+                data.eng[tier] = state.engines[tier].toString();
+            }
+            localStorage.setItem('engine_v3', JSON.stringify(data));
         }
 
         function load() {
-            var raw = localStorage.getItem('engine_final2');
+            const raw = localStorage.getItem('engine_v3');
             if (!raw) return false;
             try {
-                var data = JSON.parse(raw);
+                const data = JSON.parse(raw);
                 state.secondPrestige = data.sp;
                 state.prestige = data.p;
-                state.startTier = O(data.st);
-                state.ticks = O(data.tk);
-                state.engines = data.eng.map(function(e) { return O(e); });
+                state.engines = {};
+                for (let tier in data.eng) {
+                    state.engines[tier] = O(data.eng[tier]);
+                }
+                state.maxTier = O(data.mt);
                 state.points = O(data.pts);
                 state.gameTime = data.gt;
                 lastTickTime = Date.now();
@@ -102,21 +106,44 @@
         }
 
         function doTick() {
-            var mult = O(state.secondPrestige + 1);
-            var old = state.engines;
-            var newLen = old.length + 1;
-            var arr = new Array(newLen);
-            arr[0] = O(1);
-            for (var d = 1; d < newLen; d++) {
-                var producers = old[d-1] || O(0);
-                var produced = producers.mul(mult);
-                var existing = (d < old.length) ? (old[d] || O(0)) : O(0);
-                arr[d] = existing.add(produced);
+            const mult = O(state.secondPrestige + 1);
+            
+            // 解锁新代数
+            state.maxTier = state.maxTier.add(1);
+            const newTier = state.maxTier.toString();
+            
+            // 新代数的发动机初始为1个（由系统赠送）
+            state.engines[newTier] = (state.engines[newTier] || O(0)).add(1);
+            
+            // 从高到低生产：高一代发动机生产低一代发动机
+            const tiers = Object.keys(state.engines).sort((a, b) => Number(b) - Number(a));
+            
+            // 记录本轮生产量（避免重复计算）
+            const produced = {};
+            
+            for (let i = 0; i < tiers.length; i++) {
+                const tier = tiers[i];
+                const tierNum = Number(tier);
+                const count = state.engines[tier] || O(0);
+                
+                if (count.gt(0) && tierNum > 1) {
+                    // 生产下一代（tier-1）发动机
+                    const lowerTier = String(tierNum - 1);
+                    produced[lowerTier] = (produced[lowerTier] || O(0)).add(count.mul(mult));
+                }
             }
-            state.engines = arr;
-            state.ticks = state.ticks.add(1);
-            var oneTier = arr[newLen-1] || O(0);
-            state.points = state.points.add(oneTier.mul(mult));
+            
+            // 应用生产
+            for (let tier in produced) {
+                state.engines[tier] = (state.engines[tier] || O(0)).add(produced[tier]);
+            }
+            
+            // 点数生产：1代发动机生产点数
+            const oneTierEngines = state.engines['1'] || O(0);
+            if (oneTierEngines.gt(0)) {
+                state.points = state.points.add(oneTierEngines.mul(mult));
+            }
+            
             state.gameTime += 0.1;
         }
 
@@ -126,8 +153,8 @@
                 return;
             }
             document.getElementById('status').innerText = '⏳ 追赶离线进度...';
-            var steps = Math.min(pendingTicks, 500);
-            for (var i = 0; i < steps; i++) doTick();
+            const steps = Math.min(pendingTicks, 500);
+            for (let i = 0; i < steps; i++) doTick();
             pendingTicks -= steps;
             if (pendingTicks > 0) {
                 setTimeout(processPending, 10);
@@ -138,34 +165,33 @@
         }
 
         function catchUp() {
-            var now = Date.now();
-            var elapsed = now - lastTickTime;
+            const now = Date.now();
+            const elapsed = now - lastTickTime;
             if (elapsed < 100) return;
-            var ticks = Math.floor(elapsed / 100);
+            const ticks = Math.floor(elapsed / 100);
             if (ticks <= 0) return;
-            var addTicks = Math.min(ticks, 30000);
+            const addTicks = Math.min(ticks, 30000);
             lastTickTime += addTicks * 100;
             pendingTicks += addTicks;
             if (pendingTicks === addTicks) processPending();
         }
 
-        function maxTier() { return state.startTier.add(state.ticks); }
-
         function canPrestige() {
-            var req = O(1000).mul(O(1 + state.prestige * state.prestige));
-            return req.lte(maxTier());
+            const req = O(1000).mul(O(1 + state.prestige * state.prestige));
+            return req.lte(state.maxTier);
         }
+
         function canSecondPrestige() {
-            var req = O(100000).mul(O(1 + state.secondPrestige * state.secondPrestige));
-            return req.lte(maxTier());
+            const req = O(100000).mul(O(1 + state.secondPrestige * state.secondPrestige));
+            return req.lte(state.maxTier);
         }
 
         function doPrestige() {
             if (!canPrestige()) return;
             state.prestige++;
-            state.startTier = O(state.prestige + 1);
-            state.ticks = O(0);
-            state.engines = [O(1)];
+            state.engines = {};
+            state.maxTier = O(state.prestige + 1);
+            state.engines[state.maxTier.toString()] = O(1);
             state.points = O(0);
             state.gameTime = Math.floor(state.gameTime);
             lastTickTime = Date.now();
@@ -177,9 +203,8 @@
             if (!canSecondPrestige()) return;
             state.secondPrestige++;
             state.prestige = 0;
-            state.startTier = O(1);
-            state.ticks = O(0);
-            state.engines = [O(1)];
+            state.engines = {1: O(1)};
+            state.maxTier = O(1);
             state.points = O(0);
             state.gameTime = Math.floor(state.gameTime);
             lastTickTime = Date.now();
@@ -188,17 +213,16 @@
         }
 
         function updateUI() {
-            var mt = maxTier();
             document.getElementById('points').innerText = state.points.toString();
-            document.getElementById('maxTier').innerText = mt.toString();
+            document.getElementById('maxTier').innerText = state.maxTier.toString();
             document.getElementById('time').innerText = state.gameTime.toFixed(1) + ' 秒';
             document.getElementById('prestigeCount').innerText = state.prestige;
             document.getElementById('secondPrestigeCount').innerText = state.secondPrestige;
 
-            var pBtn = document.getElementById('prestigeBtn');
-            var spBtn = document.getElementById('secondPrestigeBtn');
-            var reqP = O(1000).mul(O(1 + state.prestige * state.prestige));
-            var reqSP = O(100000).mul(O(1 + state.secondPrestige * state.secondPrestige));
+            const pBtn = document.getElementById('prestigeBtn');
+            const spBtn = document.getElementById('secondPrestigeBtn');
+            const reqP = O(1000).mul(O(1 + state.prestige * state.prestige));
+            const reqSP = O(100000).mul(O(1 + state.secondPrestige * state.secondPrestige));
             pBtn.innerText = '🔁 声望 (需代数 ' + reqP.toString() + ')';
             spBtn.innerText = '✨ 二阶声望 (需代数 ' + reqSP.toString() + ')';
 
@@ -207,29 +231,24 @@
             if (canSecondPrestige()) spBtn.classList.remove('disabled');
             else spBtn.classList.add('disabled');
 
-            var listDiv = document.getElementById('engineList');
-            var entries = [];
-            var mtNum = Number(mt.toString());
-            if (isFinite(mtNum) && mtNum >= 1) {
-                for (var d = 0; d < state.engines.length; d++) {
-                    var count = state.engines[d];
-                    if (count.gt(0)) {
-                        var tier = Math.floor(mtNum) - d;
-                        if (tier >= 1) entries.push({ tier: tier, count: count });
-                    }
-                }
-            }
-            entries.sort(function(a,b) { return a.tier - b.tier; });
-            var html = '';
-            if (entries.length === 0) {
+            // 发动机列表显示
+            const listDiv = document.getElementById('engineList');
+            const tiers = Object.keys(state.engines)
+                .filter(tier => state.engines[tier].gt(0))
+                .sort((a, b) => Number(a) - Number(b));
+            
+            let html = '';
+            if (tiers.length === 0) {
                 html = '<div>暂无发动机</div>';
             } else {
-                var maxShow = 15;
-                for (var i = 0; i < Math.min(entries.length, maxShow); i++) {
-                    var e = entries[i];
-                    html += '<div>代数 ' + e.tier + ' : ' + e.count.toString() + '</div>';
+                const maxShow = 15;
+                for (let i = 0; i < Math.min(tiers.length, maxShow); i++) {
+                    const tier = tiers[i];
+                    html += '<div>代数 ' + tier + ' : ' + state.engines[tier].toString() + '</div>';
                 }
-                if (entries.length > maxShow) html += '<div>... 还有 ' + (entries.length - maxShow) + ' 代</div>';
+                if (tiers.length > maxShow) {
+                    html += '<div>... 还有 ' + (tiers.length - maxShow) + ' 代</div>';
+                }
             }
             listDiv.innerHTML = html;
         }
@@ -243,11 +262,10 @@
             }
         }
 
-        // 启动
+        // 初始化
         if (!load()) {
-            state.startTier = O(1);
-            state.ticks = O(0);
-            state.engines = [O(1)];
+            state.engines = {1: O(1)};
+            state.maxTier = O(1);
             state.points = O(0);
             state.gameTime = 0;
             lastTickTime = Date.now();
@@ -259,7 +277,7 @@
         window.addEventListener('beforeunload', save);
         setInterval(mainLoop, 100);
         updateUI();
-    }
+    })();
     </script>
 </body>
 </html>
