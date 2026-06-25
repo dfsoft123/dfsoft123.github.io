@@ -9,314 +9,351 @@
         body { overflow: hidden; font-family: 'Segoe UI', sans-serif; background: #1a1a1a; color: #fff; }
         canvas { display: block; position: absolute; top: 0; left: 0; }
 
-        /* 联机大厅 */
-        #lobby { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
-        #lobby h1 { font-size: 24px; margin-bottom: 10px; color: #4a4; text-shadow: 2px 2px 0 #000; }
-        .hint { font-size: 12px; color: #888; margin-bottom: 20px; }
+        /* 大厅 UI */
+        #lobby { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .panel { background: #222; padding: 20px; border-radius: 8px; width: 90%; max-width: 400px; box-shadow: 0 0 20px #000; text-align: center; }
+        h1 { color: #5d9b41; margin-bottom: 5px; font-size: 24px; }
+        .sub { color: #888; font-size: 12px; margin-bottom: 20px; }
         
-        .panel { width: 90%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
+        input { width: 100%; padding: 10px; margin: 5px 0; background: #333; border: 1px solid #444; color: #fff; border-radius: 4px; }
+        button { width: 100%; padding: 12px; margin-top: 10px; background: #4a9a4a; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; }
+        button:active { background: #3a8a3a; }
+        button.secondary { background: #555; }
         
-        input, textarea { width: 100%; padding: 10px; margin: 5px 0; background: #333; border: 1px solid #555; color: #fff; border-radius: 4px; font-size: 14px; }
-        textarea { height: 80px; resize: none; font-family: monospace; font-size: 10px; word-break: break-all; }
-        
-        button { width: 100%; padding: 12px; margin-top: 10px; background: #4a9a4a; border: none; color: #fff; font-size: 16px; border-radius: 4px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 0 #2d5a2d; }
-        button:active { transform: translateY(2px); box-shadow: none; }
-        button.secondary { background: #444; box-shadow: 0 4px 0 #222; }
-
-        #status-msg { margin-top: 15px; font-size: 14px; color: #ffa; min-height: 20px; }
+        #status-msg { margin-top: 10px; color: #ffa; font-size: 12px; min-height: 20px; }
 
         /* 游戏 UI */
-        #ui-layer { position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 10; display: none; }
-        #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 24px; height: 24px; mix-blend-mode: difference; }
-        #crosshair::before, #crosshair::after { content: ''; position: absolute; background: rgba(255,255,255,0.8); }
+        #game-ui { position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 10; display: none; }
+        
+        /* 准星 */
+        #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 24px; height: 24px; opacity: 0.8; }
+        #crosshair::before, #crosshair::after { content: ''; position: absolute; background: #fff; }
         #crosshair::before { width: 2px; height: 100%; left: 11px; }
         #crosshair::after { width: 100%; height: 2px; top: 11px; }
-        
-        .joystick-zone { position: absolute; bottom: 0; left: 0; width: 35%; height: 40%; }
-        .joystick-base { position: absolute; width: 110px; height: 110px; background: rgba(255,255,255,0.1); border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); display: none; transform: translate(-50%, -50%); }
-        .joystick-thumb { position: absolute; width: 50px; height: 50px; background: rgba(255,255,255,0.4); border-radius: 50%; transform: translate(-50%, -50%); }
-        
-        .look-zone { position: absolute; top: 0; right: 0; width: 65%; height: 60%; z-index: 5; }
 
-        #action-btns { position: absolute; bottom: 20px; right: 20px; width: 140px; height: 140px; pointer-events: auto; }
-        .act-btn { position: absolute; width: 60px; height: 60px; background: rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.2); border-radius: 50%; color: #fff; display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: bold; }
-        #btn-jump { right: 0; bottom: 60px; }
-        #btn-break { left: 0; bottom: 0; background: rgba(200,50,50,0.4); }
-        #btn-place { right: 0; bottom: 0; background: rgba(50,100,200,0.4); }
+        /* 聊天框 */
+        #chat-container { position: absolute; bottom: 60px; left: 10px; width: 40%; height: 200px; pointer-events: none; display: flex; flex-direction: column-reverse; }
+        #chat-messages { overflow: hidden; }
+        .chat-msg { background: rgba(0,0,0,0.5); color: #fff; padding: 4px 8px; margin-bottom: 2px; border-radius: 4px; font-size: 12px; line-height: 1.4; }
+        .chat-name { color: #ffa; font-weight: bold; }
+        #chat-input-box { position: absolute; bottom: 0; left: 0; width: 100%; display: none; pointer-events: auto; }
+        #chat-input { width: 100%; background: rgba(0,0,0,0.8); border: none; padding: 10px; color: #fff; font-size: 14px; outline: none; }
 
-        #hotbar { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; background: rgba(0,0,0,0.4); padding: 2px; border-radius: 4px; pointer-events: auto; }
-        .slot { width: 40px; height: 40px; border: 2px solid #555; margin: 1px; background: rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        .slot.active { border-color: #fff; background: rgba(255,255,255,0.2); }
+        /* 调试/状态信息 */
+        #info-board { position: absolute; top: 10px; left: 10px; font-size: 12px; color: #fff; text-shadow: 1px 1px 2px #000; }
+
+        /* 手机虚拟按键 */
+        .touch-zone { position: absolute; z-index: 20; }
+        #joystick-zone { bottom: 0; left: 0; width: 35%; height: 40%; }
+        #joystick-base { position: absolute; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); display: none; transform: translate(-50%, -50%); pointer-events: none; }
+        #joystick-thumb { position: absolute; width: 40px; height: 40px; background: rgba(255,255,255,0.4); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; }
         
-        #debug-info { position: absolute; top: 10px; left: 10px; color: #fff; font-size: 12px; text-shadow: 1px 1px 2px #000; pointer-events: none; }
+        #action-zone { bottom: 0; right: 0; width: 40%; height: 40%; pointer-events: auto; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: flex-end; padding: 20px; }
+        .v-btn { width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; margin: 5px; border: 2px solid rgba(255,255,255,0.3); color: #fff; }
+        
+        #look-zone { position: absolute; top: 0; right: 0; width: 60%; height: 70%; z-index: 5; }
+
+        /* 物品栏 */
+        #hotbar { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; background: rgba(0,0,0,0.4); border-radius: 4px; }
+        .slot { width: 40px; height: 40px; border: 2px solid #555; margin: 2px; background: rgba(0,0,0,0.2); display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .slot.active { border-color: #fff; }
     </style>
 </head>
 <body>
+
+<!-- 大厅 -->
 <div id="lobby">
-    <h1>我的世界 豪华版</h1>
-    <div class="hint">性能优化 / 碰撞修复 / 玩家模型</div>
-
     <div class="panel">
-        <input type="text" id="username" placeholder="输入你的昵称" maxlength="8">
+        <h1>我的世界 联机版</h1>
+        <div class="sub">支持多人联机 / 聊天 / 碰撞</div>
         
-        <div style="width:100%; height:10px;"></div>
-        <button id="btn-host">创建房间 (主机)</button>
-        
-        <div id="room-ui" style="display:none; width:100%;">
-            <textarea id="offer-code" readonly placeholder="生成的邀请码..."></textarea>
-            <button class="secondary" onclick="copyCode('offer-code')">复制邀请码</button>
+        <input type="text" id="input-name" placeholder="输入你的昵称" maxlength="10">
+        <button id="btn-create">创建房间</button>
+        <div id="room-info" style="display:none; margin-top:10px;">
+            <div style="font-size:12px; color:#888;">房间号 (发给好友):</div>
+            <div id="room-id" style="font-size:18px; color:#4a4; font-weight:bold; padding:10px; background:#000; border-radius:4px; margin-top:5px; user-select: all;">...</div>
+            <button class="secondary" style="margin-top:5px;" onclick="navigator.clipboard.writeText($('room-id').innerText).then(()=>alert('已复制'))">复制房间号</button>
         </div>
-
-        <div style="width:100%; height:20px;"></div>
-        <textarea id="join-input" placeholder="在此粘贴好友的邀请码"></textarea>
+        
+        <div style="margin: 10px 0; border-top: 1px solid #444;"></div>
+        
+        <input type="text" id="input-join" placeholder="输入房间号加入">
         <button id="btn-join">加入房间</button>
         
-        <div id="ans-ui" style="display:none; width:100%;">
-            <textarea id="answer-code" readonly placeholder="生成的回执码..."></textarea>
-            <button class="secondary" onclick="copyCode('answer-code')">复制回执码</button>
-        </div>
-
-        <div style="width:100%; height:20px;"></div>
-        <textarea id="final-input" placeholder="在此粘贴好友的回执码"></textarea>
-        <button id="btn-final">最终确认 (主机)</button>
-
-        <div id="status-msg">准备就绪</div>
+        <div id="status-msg"></div>
     </div>
 </div>
 
-<div id="ui-layer">
+<!-- 游戏界面 -->
+<div id="game-ui">
     <div id="crosshair"></div>
-    <div id="debug-info"></div>
-    <div class="joystick-zone">
-        <div class="joystick-base" id="joy-base"></div>
-        <div class="joystick-thumb" id="joy-thumb"></div>
+    <div id="info-board"></div>
+    
+    <!-- 聊天 -->
+    <div id="chat-container">
+        <div id="chat-messages"></div>
+        <div id="chat-input-box"><input type="text" id="chat-input" placeholder="按回车发送..."></div>
     </div>
-    <div class="look-zone"></div>
+
+    <!-- 手机控制区 -->
+    <div id="look-zone" class="touch-zone"></div>
+    <div id="joystick-zone" class="touch-zone">
+        <div id="joystick-base"></div>
+        <div id="joystick-thumb"></div>
+    </div>
+    <div id="action-zone" class="touch-zone">
+        <div class="v-btn" id="btn-chat">聊天</div>
+        <div class="v-btn" id="btn-jump">跳跃</div>
+        <div class="v-btn" id="btn-break">挖</div>
+        <div class="v-btn" id="btn-place">放</div>
+    </div>
+
     <div id="hotbar"></div>
-    <div id="action-btns">
-        <div id="btn-jump" class="act-btn">跳跃</div>
-        <div id="btn-break" class="act-btn">破坏</div>
-        <div id="btn-place" class="act-btn">放置</div>
-    </div>
 </div>
 
-<script type="importmap">
-{
-    "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-    }
-}
-</script>
+<!-- 引入 PeerJS 用于多人联机 -->
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<script src="https://unpkg.com/three@0.160.0/build/three.module.js" type="module"></script>
 
 <script type="module">
 import * as THREE from 'three';
 
-// =============== 核心配置 ===============
-const CHUNK_SIZE = 16;
-const WORLD_HEIGHT = 32;
-const RENDER_DIST = 2; // 渲染半径
-const SEED = 12345;
-
-// =============== 全局变量 ===============
-const isMobile = /Mobile|Android|iPhone/i.test(navigator.userAgent);
-let scene, camera, renderer, clock;
-let world = {}; // 储存方块数据 { "x,y,z": type }
-let chunks = {}; // 储存区块网格
-let playerBody = { x:0, y:30, z:0, vx:0, vy:0, vz:0, yaw:0, pitch:0, onGround:false };
-let keys = {};
-let raycaster = new THREE.Raycaster();
-let net = { conn: null, pc: null };
-let myName = "玩家";
-let remotePlayers = {}; // 其他玩家模型
-
-// =============== 纹理生成器 ===============
-function createTexture(colors) {
-    const canvas = document.createElement('canvas');
-    canvas.width = 16; canvas.height = 16;
-    const ctx = canvas.getContext('2d');
-    // 基础颜色
-    ctx.fillStyle = colors[0];
-    ctx.fillRect(0,0,16,16);
-    // 噪点
-    for(let i=0; i<20; i++) {
-        ctx.fillStyle = colors[1] || 'rgba(0,0,0,0.1)';
-        ctx.fillRect(Math.random()*16, Math.random()*16, 2, 2);
-    }
-    const tex = new THREE.CanvasTexture(canvas);
-    tex.magFilter = THREE.NearestFilter;
-    return tex;
-}
-
-const TEXTURES = {
-    1: createTexture(['#5d9b41', '#4a8033']), // 草地顶
-    2: createTexture(['#8b5a2b', '#6b4226']), // 泥土
-    3: createTexture(['#888888', '#666666']), // 石头
-    4: createTexture(['#664422', '#553311']), // 木头
-    8: createTexture(['#333333', '#222222']), // 基岩
-};
-// 草地方块侧面特殊处理
-const GRASS_SIDE_TEX = createTexture(['#8b5a2b', '#5d9b41']);
-
-const MATERIALS = {
-    1: [ // 草地方块
-        new THREE.MeshLambertMaterial({map: TEXTURES[1]}), // top
-        new THREE.MeshLambertMaterial({map: TEXTURES[2]}), // bottom
-        new THREE.MeshLambertMaterial({map: GRASS_SIDE_TEX}),
-        new THREE.MeshLambertMaterial({map: GRASS_SIDE_TEX}),
-        new THREE.MeshLambertMaterial({map: GRASS_SIDE_TEX}),
-        new THREE.MeshLambertMaterial({map: GRASS_SIDE_TEX}),
-    ],
-    2: new THREE.MeshLambertMaterial({map: TEXTURES[2]}),
-    3: new THREE.MeshLambertMaterial({map: TEXTURES[3]}),
-    4: new THREE.MeshLambertMaterial({map: TEXTURES[4]}),
-    8: new THREE.MeshLambertMaterial({map: TEXTURES[8]}),
-};
-
-// =============== 界面逻辑 ===============
+// ================= 全局变量 =================
 const $ = id => document.getElementById(id);
-window.copyCode = id => {
-    const t = $(id); navigator.clipboard.writeText(t.value).then(() => alert("已复制"));
+const isMobile = /Mobile|Android|iPhone/i.test(navigator.userAgent);
+const CHUNK_SIZE = 16;
+
+let scene, camera, renderer, clock;
+let world = {}; // "x,y,z": type
+let chunks = {}; // 网格缓存
+let player = {
+    name: "玩家",
+    pos: new THREE.Vector3(0, 40, 0),
+    vel: new THREE.Vector3(),
+    yaw: 0, pitch: 0,
+    onGround: false,
+    flying: false,
+    selected: 1
+};
+let keys = {};
+let net = {
+    peer: null,
+    connections: [], // 存储所有连接（如果是主机）
+    conn: null,      // 如果是客机
+    isHost: false,
+    id: null,
+    players: {}      // 其他玩家数据 { id: { mesh, name } }
 };
 
-// 主机创建
-$('btn-host').onclick = async () => {
-    myName = $('username').value || "主机";
-    log("正在生成邀请码...");
-    net.pc = new RTCPeerConnection({ iceServers: [{urls: 'stun:stun.l.google.com:19302'}] });
-    net.channel = net.pc.createDataChannel("game");
-    setupNetEvents();
+// 纹理
+function makeTex(col) { const c=document.createElement('canvas');c.width=16;c.height=16;const x=c.getContext('2d');x.fillStyle=col;x.fillRect(0,0,16,16);x.fillStyle='rgba(0,0,0,0.2)';for(let i=0;i<20;i++)x.fillRect(Math.random()*16,Math.random()*16,2,2); return new THREE.CanvasTexture(c); }
+const TEX = { 1: makeTex('#5d9b41'), 2: makeTex('#8b5a2b'), 3: makeTex('#888'), 8: makeTex('#333') };
+const MAT = { 1: new THREE.MeshLambertMaterial({map: TEX[1]}), 2: new THREE.MeshLambertMaterial({map: TEX[2]}), 3: new THREE.MeshLambertMaterial({map: TEX[3]}) };
+
+// ================= 联机逻辑 =================
+window.btn_create = async () => {
+    const name = $('input-name').value || "主机";
+    player.name = name;
+    log("正在创建房间...");
     
-    const offer = await net.pc.createOffer();
-    await net.pc.setLocalDescription(offer);
+    net.peer = new Peer();
+    net.peer.on('open', id => {
+        net.id = id;
+        net.isHost = true;
+        log("房间创建成功！");
+        $('room-info').style.display = 'block';
+        $('room-id').innerText = id;
+    });
     
-    // 等待 ICE 收集 (5秒超时)
-    await new Promise(r => setTimeout(r, 5000));
+    net.peer.on('connection', conn => {
+        setupConnection(conn);
+    });
     
-    $('offer-code').value = btoa(JSON.stringify(net.pc.localDescription));
-    $('room-ui').style.display = 'block';
-    log("邀请码已生成，请复制发给客机");
+    net.peer.on('error', err => log("网络错误: "+err.type));
 };
 
-// 客机加入
-$('btn-join').onclick = async () => {
-    myName = $('username').value || "客机";
-    const code = $('join-input').value.trim();
-    if(!code) return alert("请粘贴邀请码");
-    log("正在解析邀请码...");
-    try {
-        const offer = JSON.parse(atob(code));
-        net.pc = new RTCPeerConnection({ iceServers: [{urls: 'stun:stun.l.google.com:19302'}] });
-        net.pc.ondatachannel = e => { net.channel = e.channel; setupNetEvents(); };
-        
-        await net.pc.setRemoteDescription(offer);
-        const answer = await net.pc.createAnswer();
-        await net.pc.setLocalDescription(answer);
-        
-        await new Promise(r => setTimeout(r, 5000));
-        
-        $('answer-code').value = btoa(JSON.stringify(net.pc.localDescription));
-        $('ans-ui').style.display = 'block';
-        log("回执码已生成，请复制发给主机");
-    } catch(e) { log("解析失败: "+e.message); }
+window.btn_join = async () => {
+    const name = $('input-name').value || "客机";
+    const rid = $('input-join').value.trim();
+    if(!rid) return log("请输入房间号");
+    
+    player.name = name;
+    log("正在连接...");
+    
+    net.peer = new Peer();
+    net.peer.on('open', () => {
+        const conn = net.peer.connect(rid, { reliable: true });
+        setupConnection(conn);
+    });
+    net.peer.on('error', err => log("连接失败: "+err.type));
 };
 
-// 主机最终连接
-$('btn-final').onclick = async () => {
-    const code = $('final-input').value.trim();
-    if(!code) return alert("请粘贴回执码");
-    try {
-        const answer = JSON.parse(atob(code));
-        await net.pc.setRemoteDescription(answer);
-        log("正在建立连接...");
-    } catch(e) { log("连接失败"); }
-};
-
-function log(msg) { $('status-msg').innerText = msg; console.log(msg); }
-
-// =============== 网络事件 ===============
-function setupNetEvents() {
-    net.channel.onopen = () => {
+function setupConnection(conn) {
+    conn.on('open', () => {
         log("连接成功！");
-        startGame();
-        // 发送自己的初始化信息
-        sendNet({ t: 'init', name: myName });
-    };
-    net.channel.onmessage = e => {
-        const d = JSON.parse(e.data);
-        if(d.t === 'pos') updateRemotePlayer(d);
-        if(d.t === 'block') updateBlock(d.x, d.y, d.z, d.type, false);
-        if(d.t === 'init') {
-            // 收到对方信息，创建其模型
-            createRemotePlayerModel(d.id, d.name);
+        // 发送自己的信息
+        conn.send({ t: 'init', id: net.peer.id, name: player.name });
+        
+        if(net.isHost) {
+            net.connections.push(conn);
+            // 主机把当前所有玩家信息发给新人
+            const list = Object.keys(net.players).map(k => ({id: k, name: net.players[k].name}));
+            conn.send({ t: 'sync', list: list });
+        } else {
+            net.conn = conn;
         }
-    };
+        startGame(); // 进入游戏
+    });
+
+    conn.on('data', data => handleData(data, conn));
+    
+    conn.on('close', () => {
+        if(net.isHost) {
+            net.connections = net.connections.filter(c => c !== conn);
+            broadcast({ t: 'leave', id: conn.peer }); // 通知大家他走了
+        }
+    });
 }
 
-function sendNet(obj) {
-    if(net.channel && net.channel.readyState === 'open') {
-        net.channel.send(JSON.stringify(obj));
+// 处理网络消息
+function handleData(data, conn) {
+    // 如果是主机收到消息，转发给其他人
+    if(net.isHost && data.t !== 'init') {
+        broadcast(data, conn); // 转发但不发回给发送者
+    }
+
+    if(data.t === 'init') {
+        // 有新人加入
+        createRemotePlayer(data.id, data.name);
+        // 如果我是主机，通知大家有新人
+        if(net.isHost) {
+            broadcast({ t: 'init', id: data.id, name: data.name });
+        }
+    }
+    else if(data.t === 'pos') {
+        updateRemotePlayer(data.id, data);
+    }
+    else if(data.t === 'chat') {
+        addChatMsg(data.name, data.text);
+    }
+    else if(data.t === 'block') {
+        updateBlock(data.x, data.y, data.z, data.type, false);
+    }
+    else if(data.t === 'sync') {
+        // 收到玩家列表（仅客机）
+        data.list.forEach(p => createRemotePlayer(p.id, p.name));
+    }
+    else if(data.t === 'leave') {
+        removeRemotePlayer(data.id);
     }
 }
 
-// =============== 玩家模型 (远程) ===============
-function createRemotePlayerModel(id, name) {
-    if(remotePlayers[id]) return;
+// 广播消息 (主机专用)
+function broadcast(msg, excludeConn = null) {
+    net.connections.forEach(c => {
+        if(c !== excludeConn && c.open) c.send(msg);
+    });
+}
+
+// 发送消息
+function sendMsg(msg) {
+    if(net.isHost) {
+        broadcast(msg);
+    } else if(net.conn) {
+        net.conn.send(msg);
+    }
+}
+
+function log(msg) { $('status-msg').innerText = msg; }
+
+// ================= 玩家模型管理 =================
+function createRemotePlayer(id, name) {
+    if(net.players[id]) return;
     
-    // 创建身体
     const group = new THREE.Group();
     
-    // 头
-    const headGeo = new THREE.BoxGeometry(0.6, 0.6, 0.6);
-    const headMat = new THREE.MeshLambertMaterial({color: 0xffcc99});
-    const head = new THREE.Mesh(headGeo, headMat);
-    head.position.y = 0.3;
+    // 身体 (简化版 Steve)
+    const mat = new THREE.MeshLambertMaterial({color: new THREE.Color().setHSL(Math.random(), 0.6, 0.6)});
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, 0.6), mat);
+    head.position.y = 1.4;
     group.add(head);
     
-    // 身体
-    const bodyGeo = new THREE.BoxGeometry(0.6, 0.8, 0.3);
-    const bodyMat = new THREE.MeshLambertMaterial({color: 0x00aa00});
-    const body = new THREE.Mesh(bodyGeo, bodyMat);
-    body.position.y = -0.2;
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.8, 0.3), mat);
+    body.position.y = 0.9;
     group.add(body);
+    
+    // 腿部动画对象
+    const legL = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.7, 0.25), mat);
+    legL.position.set(-0.15, 0.35, 0);
+    const legR = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.7, 0.25), mat);
+    legR.position.set(0.15, 0.35, 0);
+    group.add(legL, legR);
     
     // 名字标签
     const canvas = document.createElement('canvas');
-    canvas.width = 256; canvas.height = 64;
+    canvas.width = 512; canvas.height = 128;
     const ctx = canvas.getContext('2d');
     ctx.fillStyle = 'white';
-    ctx.font = 'bold 32px Arial';
+    ctx.font = 'bold 60px Arial';
     ctx.textAlign = 'center';
-    ctx.fillText(name, 128, 40);
-    const labelTex = new THREE.CanvasTexture(canvas);
-    const labelMat = new THREE.SpriteMaterial({ map: labelTex, transparent: true });
-    const sprite = new THREE.Sprite(labelMat);
+    ctx.fillText(name, 256, 80);
+    const tex = new THREE.CanvasTexture(canvas);
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true }));
     sprite.scale.set(2, 0.5, 1);
-    sprite.position.y = 0.8;
+    sprite.position.y = 2.0;
     group.add(sprite);
     
     scene.add(group);
-    remotePlayers[id] = group;
+    net.players[id] = { mesh: group, name: name, legs: [legL, legR] };
 }
 
-function updateRemotePlayer(d) {
-    // 如果模型不存在，创建它
-    if(!remotePlayers[d.id]) createRemotePlayerModel(d.id, "玩家");
-    const p = remotePlayers[d.id];
-    if(p) {
-        p.position.set(d.x, d.y, d.z);
-        p.rotation.y = d.yaw;
+function updateRemotePlayer(id, data) {
+    if(!net.players[id]) createRemotePlayer(id, data.name || "Player");
+    const p = net.players[id];
+    if(p && p.mesh) {
+        p.mesh.position.set(data.x, data.y - 1.0, data.z); // 修正偏移
+        p.mesh.rotation.y = data.yaw;
+        
+        // 简单的行走动画
+        if(data.moving) {
+            const time = Date.now() * 0.01;
+            p.legs[0].rotation.x = Math.sin(time) * 0.5;
+            p.legs[1].rotation.x = -Math.sin(time) * 0.5;
+        } else {
+            p.legs[0].rotation.x = 0;
+            p.legs[1].rotation.x = 0;
+        }
     }
 }
 
-// =============== 游戏核心 ===============
+function removeRemotePlayer(id) {
+    if(net.players[id] && net.players[id].mesh) {
+        scene.remove(net.players[id].mesh);
+        delete net.players[id];
+    }
+}
+
+// ================= 游戏核心 =================
 function startGame() {
     $('lobby').style.display = 'none';
-    $('ui-layer').style.display = 'block';
+    $('game-ui').style.display = 'block';
     
+    initScene();
+    genWorld();
+    
+    if(isMobile) setupMobileControls();
+    else setupPCControls();
+    
+    // 聊天逻辑
+    setupChat();
+    
+    animate();
+}
+
+function initScene() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87CEEB);
-    scene.fog = new THREE.Fog(0x87CEEB, 30, 80);
+    scene.fog = new THREE.Fog(0x87CEEB, 40, 100);
     
     camera = new THREE.PerspectiveCamera(70, innerWidth/innerHeight, 0.1, 200);
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -324,327 +361,298 @@ function startGame() {
     document.body.appendChild(renderer.domElement);
     
     scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-    const sun = new THREE.DirectionalLight(0xffffff, 0.6);
+    const sun = new THREE.DirectionalLight(0xffffff, 0.8);
     sun.position.set(50, 100, 50);
     scene.add(sun);
-    
-    clock = new THREE.Clock();
-    
-    // 生成世界数据
-    for(let cx=-RENDER_DIST; cx<=RENDER_DIST; cx++) {
-        for(let cz=-RENDER_DIST; cz<=RENDER_DIST; cz++) {
-            generateChunkData(cx, cz);
-        }
-    }
-    // 构建网格
-    rebuildAllMeshes();
-    
-    setupControls();
-    animate();
 }
 
-// =============== 世界生成与网格优化 ===============
-function generateChunkData(cx, cz) {
-    const baseX = cx * CHUNK_SIZE;
-    const baseZ = cz * CHUNK_SIZE;
-    
-    for(let x=0; x<CHUNK_SIZE; x++) {
-        for(let z=0; z<CHUNK_SIZE; z++) {
-            const wx = baseX + x;
-            const wz = baseZ + z;
-            // 简单的高度图
-            const h = Math.floor(Math.sin(wx*0.1) * Math.cos(wz*0.1) * 5 + 10);
-            
+function genWorld() {
+    // 生成地形数据
+    for(let cx=-2; cx<=2; cx++) for(let cz=-2; cz<=2; cz++) {
+        for(let x=0; x<CHUNK_SIZE; x++) for(let z=0; z<CHUNK_SIZE; z++) {
+            const wx = cx*CHUNK_SIZE+x;
+            const wz = cz*CHUNK_SIZE+z;
+            const h = Math.floor(Math.sin(wx*0.1) * Math.cos(wz*0.1) * 8 + 15);
             for(let y=0; y<=h; y++) {
-                let type = 3; // 石头
-                if(y==0) type = 8; // 基岩
-                else if(y==h) type = 1; // 草地
-                else if(y>h-3) type = 2; // 泥土
-                
-                world[`${wx},${y},${wz}`] = type;
+                let id = 3;
+                if(y==h) id = 1;
+                else if(y>h-3) id = 2;
+                world[`${wx},${y},${wz}`] = id;
             }
         }
     }
+    buildMesh();
 }
 
-function rebuildAllMeshes() {
-    // 简单起见，这里一次性构建所有网格，实际游戏中应该分帧加载
-    // 将世界按类型分组合并
-    const geometries = {}; // { type: [] }
-    
-    // 遍历所有方块，提取表面
-    for(let key in world) {
-        const [x, y, z] = key.split(',').map(Number);
-        const type = world[key];
-        
-        // 检查6个方向是否有遮挡，如果没有则添加面
-        const faces = [
-            { dir: [0, 1, 0], uv: 0 }, // top
-            { dir: [0, -1, 0], uv: 0 }, // bot
-            { dir: [1, 0, 0], uv: 0 },
-            { dir: [-1, 0, 0], uv: 0 },
-            { dir: [0, 0, 1], uv: 0 },
-            { dir: [0, 0, -1], uv: 0 },
-        ];
-        
-        // 这里简化处理：直接使用 BoxGeometry，但在生产环境应该使用自定义面片
-        // 为了保持代码简洁，我们使用 InstancedMesh 或者分组
-        // 这里为了纹理正确，我们还是使用合并几何体
-    }
-    
-    // 使用 Three.js 的合并几何体功能 (性能关键)
-    // 由于代码量限制，这里采用一种混合方案：
-    // 将世界划分为小块，每块使用 BufferGeometryUtils.mergeBufferGeometries
-    // 这里我们简化：直接使用简单的添加方式，但开启 frustumCulling
-    // 实际上，对于几千个方块，现代手机GPU完全可以承受，主要是Draw Call问题。
-    
-    // 优化版：使用 InstancedMesh (最推荐)
-    const matrix = new THREE.Matrix4();
+function buildMesh() {
+    // 性能优化：实例化渲染
+    const geo = new THREE.BoxGeometry(1,1,1);
     const counting = {};
+    for(let k in world) counting[world[k]] = (counting[world[k]] || 0) + 1;
     
-    // 1. 统计每种方块数量
-    for(let key in world) counting[world[key]] = (counting[world[key]] || 0) + 1;
-    
-    // 2. 创建 InstancedMesh
     for(let type in counting) {
-        const count = counting[type];
-        const geo = new THREE.BoxGeometry(1,1,1);
-        const mat = MATERIALS[type];
-        
-        // 如果是草地，需要特殊处理材质数组，InstancedMesh不支持材质数组，回退到普通Mesh合并或简化为统一材质
-        // 为了解决草地侧面问题，这里简化：草地全部使用草顶纹理，或使用实色材质数组
-        // 为确保稳定，我们使用单一材质
-        
-        let useMat = Array.isArray(mat) ? mat[0] : mat; // 暂时简化处理，取第一个材质
-        
-        const mesh = new THREE.InstancedMesh(geo, useMat, count);
-        mesh.name = `blocks_${type}`;
+        const mesh = new THREE.InstancedMesh(geo, MAT[type], counting[type]);
         scene.add(mesh);
-        
-        let idx = 0;
-        for(let key in world) {
-            if(world[key] == Number(type)) {
-                const [x, y, z] = key.split(',').map(Number);
-                matrix.setPosition(x, y, z);
-                mesh.setMatrixAt(idx++, matrix);
+        const matrix = new THREE.Matrix4();
+        let i=0;
+        for(let k in world) {
+            if(world[k] == Number(type)) {
+                const [x,y,z] = k.split(',');
+                matrix.setPosition(Number(x), Number(y), Number(z));
+                mesh.setMatrixAt(i++, matrix);
             }
         }
         mesh.instanceMatrix.needsUpdate = true;
-        mesh.frustumCulled = true;
     }
 }
 
-function updateBlock(x, y, z, type, broadcast=true) {
+function updateBlock(x,y,z,type, sync=true) {
     const key = `${x},${y},${z}`;
-    const oldType = world[key];
-    
-    if(oldType === type) return;
-    
-    if(type === 0) delete world[key];
+    if(type===0) delete world[key];
     else world[key] = type;
     
-    // 简单暴力更新：清除旧网格，重新生成
-    // 实际项目中应该只更新变动的区块
-    scene.children = scene.children.filter(c => !(c.isInstancedMesh && c.name.startsWith('blocks_')));
-    rebuildAllMeshes();
+    // 简单暴力重绘 (实际项目应优化为只更新区块)
+    scene.children = scene.children.filter(c => !(c.isInstancedMesh));
+    buildMesh();
     
-    if(broadcast) sendNet({ t: 'block', x, y, z, type });
+    if(sync) sendMsg({ t: 'block', x, y, z, type });
 }
 
-// =============== 物理与控制 ===============
-function setupControls() {
-    // 手机控制
-    if(isMobile) {
-        const joyZone = document.querySelector('.joystick-zone');
-        const joyBase = $('joy-base');
-        const joyThumb = $('joy-thumb');
-        
-        joyZone.ontouchstart = e => {
-            e.preventDefault();
-            joyBase.style.display = 'block';
-            joyBase.style.left = e.touches[0].clientX + 'px';
-            joyBase.style.top = e.touches[0].clientY + 'px';
-            joyThumb.style.left = e.touches[0].clientX + 'px';
-            joyThumb.style.top = e.touches[0].clientY + 'px';
-            joyBase.startX = e.touches[0].clientX;
-            joyBase.startY = e.touches[0].clientY;
-        };
-        joyZone.ontouchmove = e => {
-            if(!joyBase.style.display || joyBase.style.display === 'none') return;
-            const t = e.touches[0];
-            const dx = t.clientX - joyBase.startX;
-            const dy = t.clientY - joyBase.startY;
-            const dist = Math.min(40, Math.hypot(dx, dy));
-            const ang = Math.atan2(dy, dx);
-            
-            // 更新摇杆位置
-            joyThumb.style.left = (joyBase.startX + Math.cos(ang)*dist) + 'px';
-            joyThumb.style.top = (joyBase.startY + Math.sin(ang)*dist) + 'px';
-            
-            // 计算移动方向
-            playerBody.vx = -Math.cos(ang) * (dist/40) * 0.15;
-            playerBody.vz = -Math.sin(ang) * (dist/40) * 0.15;
-        };
-        joyZone.ontouchend = () => {
-            joyBase.style.display = 'none';
-            playerBody.vx = 0; playerBody.vz = 0;
-        };
-        
-        document.querySelector('.look-zone').ontouchmove = e => {
-            if(e.touches.length === 0) return;
-            const t = e.touches[0];
-            if(!look.last) look.last = {x: t.clientX, y: t.clientY};
-            playerBody.yaw -= (t.clientX - look.last.x) * 0.005;
-            playerBody.pitch -= (t.clientY - look.last.y) * 0.005;
-            look.last = {x: t.clientX, y: t.clientY};
-        };
-        document.querySelector('.look-zone').ontouchend = () => look.last = null;
-
-        $('btn-jump').ontouchstart = () => { if(playerBody.onGround) playerBody.vy = 0.25; };
-        $('btn-break').ontouchstart = () => interact(0);
-        $('btn-place').ontouchstart = () => interact(1);
-    } else {
-        document.addEventListener('click', () => document.body.requestPointerLock());
-        document.addEventListener('mousemove', e => {
-            if(document.pointerLockElement) {
-                playerBody.yaw -= e.movementX * 0.002;
-                playerBody.pitch -= e.movementY * 0.002;
-            }
-        });
-        document.addEventListener('keydown', e => keys[e.code] = true);
-        document.addEventListener('keyup', e => keys[e.code] = false);
-        document.addEventListener('mousedown', e => {
-            if(document.pointerLockElement) interact(e.button === 2 ? 1 : 0);
-        });
-        document.addEventListener('contextmenu', e => e.preventDefault());
-    }
-    
-    // 物理循环
-    setInterval(physicsStep, 16);
+// ================= 控制与物理 =================
+function setupPCControls() {
+    document.addEventListener('click', () => renderer.domElement.requestPointerLock());
+    document.addEventListener('mousemove', e => {
+        if(document.pointerLockElement) {
+            player.yaw -= e.movementX * 0.002;
+            player.pitch -= e.movementY * 0.002;
+            player.pitch = Math.max(-1.5, Math.min(1.5, player.pitch));
+        }
+    });
+    document.addEventListener('mousedown', e => {
+        if(document.pointerLockElement) interact(e.button===2);
+    });
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => keys[e.code] = true);
+    document.addEventListener('keyup', e => keys[e.code] = false);
 }
 
-function physicsStep() {
-    if(!scene) return;
+function setupMobileControls() {
+    const joy = { base: $('joystick-base'), thumb: $('joystick-thumb'), active: false, x:0, y:0 };
     
-    // 电脑键盘输入
-    if(!isMobile) {
-        const speed = 0.12;
-        if(keys['KeyW']) { playerBody.vx -= Math.sin(playerBody.yaw) * speed; playerBody.vz -= Math.cos(playerBody.yaw) * speed; }
-        if(keys['KeyS']) { playerBody.vx += Math.sin(playerBody.yaw) * speed; playerBody.vz += Math.cos(playerBody.yaw) * speed; }
-        if(keys['KeyA']) { playerBody.vx -= Math.cos(playerBody.yaw) * speed; playerBody.vz += Math.sin(playerBody.yaw) * speed; }
-        if(keys['KeyD']) { playerBody.vx += Math.cos(playerBody.yaw) * speed; playerBody.vz -= Math.sin(playerBody.yaw) * speed; }
-        if(keys['Space'] && playerBody.onGround) playerBody.vy = 0.25;
-    }
+    $('joystick-zone').ontouchstart = e => {
+        e.preventDefault();
+        joy.active = true;
+        joy.base.style.display = 'block';
+        joy.base.style.left = e.touches[0].clientX + 'px';
+        joy.base.style.top = e.touches[0].clientY + 'px';
+        joy.thumb.style.left = e.touches[0].clientX + 'px';
+        joy.thumb.style.top = e.touches[0].clientY + 'px';
+        joy.sx = e.touches[0].clientX;
+        joy.sy = e.touches[0].clientY;
+    };
+    $('joystick-zone').ontouchmove = e => {
+        if(!joy.active) return;
+        const t = e.touches[0];
+        const dx = t.clientX - joy.sx;
+        const dy = t.clientY - joy.sy;
+        const dist = Math.min(40, Math.hypot(dx, dy));
+        const ang = Math.atan2(dy, dx);
+        joy.thumb.style.left = (joy.sx + Math.cos(ang)*dist) + 'px';
+        joy.thumb.style.top = (joy.sy + Math.sin(ang)*dist) + 'px';
+        joy.x = Math.cos(ang) * (dist/40);
+        joy.y = Math.sin(ang) * (dist/40);
+    };
+    $('joystick-zone').ontouchend = e => { joy.active = false; joy.x=0; joy.y=0; joy.base.style.display='none'; };
+
+    // 视角控制
+    let lastLook = null;
+    $('look-zone').ontouchstart = e => lastLook = e.touches[0];
+    $('look-zone').ontouchmove = e => {
+        if(!lastLook) return;
+        const t = e.touches[0];
+        player.yaw -= (t.clientX - lastLook.clientX) * 0.005;
+        player.pitch -= (t.clientY - lastLook.clientY) * 0.005;
+        player.pitch = Math.max(-1.5, Math.min(1.5, player.pitch));
+        lastLook = t;
+    };
+    $('look-zone').ontouchend = () => lastLook = null;
+
+    // 按钮
+    $('btn-jump').ontouchstart = () => { if(player.onGround) player.vel.y = 0.3; };
+    $('btn-break').ontouchstart = () => interact(false);
+    $('btn-place').ontouchstart = () => interact(true);
+    $('btn-chat').ontouchstart = () => toggleChat();
     
-    // 重力
-    playerBody.vy -= 0.015;
-    
-    // 碰撞检测 (AABB)
-    // 检测 X 轴
-    playerBody.x += playerBody.vx;
-    if(checkCollision()) playerBody.x -= playerBody.vx;
-    
-    // 检测 Z 轴
-    playerBody.z += playerBody.vz;
-    if(checkCollision()) playerBody.z -= playerBody.vz;
-    
-    // 检测 Y 轴
-    playerBody.y += playerBody.vy;
-    if(checkCollision()) {
-        if(playerBody.vy < 0) playerBody.onGround = true; // 落地
-        playerBody.y -= playerBody.vy;
-        playerBody.vy = 0;
-    } else {
-        playerBody.onGround = false;
-    }
-    
-    // 阻尼
-    playerBody.vx *= 0.8; playerBody.vz *= 0.8;
-    
-    // 掉出世界重置
-    if(playerBody.y < -10) { playerBody.y = 30; playerBody.x = 0; playerBody.z = 0; }
-    
-    // 同步位置
-    if(Math.random() < 0.2) {
-        sendNet({ t: 'pos', id: 'me', name: myName, x: playerBody.x, y: playerBody.y, z: playerBody.z, yaw: playerBody.yaw });
-    }
+    // 移动逻辑在 animate里用 joy.x/y
+    window.joyState = joy;
 }
 
-// 简单的AABB碰撞检测
-function checkCollision() {
-    // 玩家盒子: 宽0.6, 高1.8, 眼睛在中间
-    const hw = 0.3; // half width
-    const he = 0.9; // half height (eyes in middle)
+function interact(place) {
+    const dir = new THREE.Vector3(0,0,-1).applyEuler(new THREE.Euler(player.pitch, player.yaw, 0, 'YXZ'));
+    raycaster.set(camera.position, dir);
     
-    // 检测玩家盒子内的所有方块
-    for(let y = Math.floor(playerBody.y - he); y <= Math.ceil(playerBody.y + he); y++)
-    for(let x = Math.floor(playerBody.x - hw); x <= Math.ceil(playerBody.x + hw); x++)
-    for(let z = Math.floor(playerBody.z - hw); z <= Math.ceil(playerBody.z + hw); z++) {
-        if(world[`${x},${y},${z}`]) return true; // 有方块
-    }
-    return false;
-}
-
-function interact(mode) {
-    raycaster.setFromCamera({x:0, y:0}, camera);
-    // 更新射线检测对象
-    const meshes = scene.children.filter(c => c.isInstancedMesh);
-    // InstancedMesh 需要特殊处理 raycast，这里简化：使用数组遍历
-    // 性能警告：如果方块很多，这里会卡。在正式版中应该使用 BVH 加速结构。
-    // 这里为了演示，暂时只检测前 100 个最近的方块，或者降低射线距离
-    
-    // 临时方案：直接遍历周围方块进行射线检测
-    const dir = raycaster.ray.direction;
-    const origin = raycaster.ray.origin;
-    
-    // 检测射线与方块的交点
-    let closest = null;
-    let minDist = 6;
-    
+    // 手动遍历方块检测 (简化版)
+    let closest = null, minDist = 6;
     for(let key in world) {
-        const [bx, by, bz] = key.split(',').map(Number);
-        // 简单的范围检测优化
-        if(Math.abs(bx - origin.x) > 6 || Math.abs(by - origin.y) > 6 || Math.abs(bz - origin.z) > 6) continue;
-        
-        const box = new THREE.Box3(new THREE.Vector3(bx, by, bz), new THREE.Vector3(bx+1, by+1, bz+1));
+        const [x,y,z] = key.split(',').map(Number);
+        const box = new THREE.Box3(new THREE.Vector3(x,y,z), new THREE.Vector3(x+1,y+1,z+1));
         const hit = raycaster.ray.intersectBox(box, new THREE.Vector3());
-        
         if(hit) {
-            const dist = origin.distanceTo(hit);
-            if(dist < minDist) {
-                minDist = dist;
-                closest = { x:bx, y:by, z:bz, hit: hit };
+            const d = camera.position.distanceTo(hit);
+            if(d < minDist) {
+                minDist = d; closest = { x, y, z, hit };
             }
         }
     }
     
     if(closest) {
-        if(mode === 0) updateBlock(closest.x, closest.y, closest.z, 0);
+        if(!place) updateBlock(closest.x, closest.y, closest.z, 0);
         else {
-            // 计算放置位置
             const n = closest.hit.clone().sub(new THREE.Vector3(closest.x+0.5, closest.y+0.5, closest.z+0.5)).normalize();
             const nx = Math.round(n.x), ny = Math.round(n.y), nz = Math.round(n.z);
-            updateBlock(closest.x+nx, closest.y+ny, closest.z+nz, 1);
+            updateBlock(closest.x+nx, closest.y+ny, closest.z+nz, player.selected);
         }
     }
 }
 
-// =============== 渲染循环 ===============
+// 物理循环
+setInterval(() => {
+    if(!scene) return;
+    
+    // PC 输入
+    if(!isMobile) {
+        const speed = 0.15;
+        if(keys['KeyW']) { player.vel.x -= Math.sin(player.yaw) * speed; player.vel.z -= Math.cos(player.yaw) * speed; }
+        if(keys['KeyS']) { player.vel.x += Math.sin(player.yaw) * speed; player.vel.z += Math.cos(player.yaw) * speed; }
+        if(keys['KeyA']) { player.vel.x -= Math.cos(player.yaw) * speed; player.vel.z += Math.sin(player.yaw) * speed; }
+        if(keys['KeyD']) { player.vel.x += Math.cos(player.yaw) * speed; player.vel.z -= Math.sin(player.yaw) * speed; }
+        if(keys['Space'] && player.onGround) player.vel.y = 0.3;
+    } else {
+        // 手机摇杆输入
+        if(window.joyState && window.joyState.active) {
+            player.vel.x -= window.joyState.x * 0.1;
+            player.vel.z -= window.joyState.y * 0.1;
+        }
+    }
+    
+    // 物理
+    player.vel.y -= 0.015; // 重力
+    player.pos.add(player.vel);
+    
+    // 碰撞
+    let collided = false;
+    // 水平碰撞
+    player.onGround = false;
+    const hw = 0.3, hh = 1.6;
+    for(let key in world) {
+        const [bx,by,bz] = key.split(',').map(Number);
+        // 简单AABB检测
+        if( player.pos.x + hw > bx && player.pos.x - hw < bx+1 &&
+            player.pos.y + 0.2 > by && player.pos.y - hh < by+1 && // 头顶和脚底
+            player.pos.z + hw > bz && player.pos.z - hw < bz+1) {
+            
+            // 判断碰撞方向
+            const prevY = player.pos.y - player.vel.y;
+            if(prevY + 0.2 < by || prevY - hh > by+1) {
+                // Y轴碰撞
+                if(player.vel.y < 0) { player.onGround = true; player.pos.y = by+1+hh; }
+                else { player.pos.y = by-0.2; }
+                player.vel.y = 0;
+            } else {
+                // 水平碰撞
+                // 简单推出
+                const dx = player.pos.x - (bx+0.5);
+                const dz = player.pos.z - (bz+0.5);
+                if(Math.abs(dx) > Math.abs(dz)) player.pos.x += dx > 0 ? 0.1 : -0.1;
+                else player.pos.z += dz > 0 ? 0.1 : -0.1;
+            }
+        }
+    }
+    
+    player.vel.x *= 0.8; player.vel.z *= 0.8;
+    if(player.pos.y < -10) { player.pos.set(0,40,0); player.vel.set(0,0,0); }
+    
+    // 同步位置
+    if(Math.random() < 0.2) {
+        sendMsg({ t: 'pos', id: net.peer.id, name: player.name, x: player.pos.x, y: player.pos.y, z: player.pos.z, yaw: player.yaw, moving: (Math.abs(player.vel.x) > 0.05 || Math.abs(player.vel.z) > 0.05) });
+    }
+}, 16);
+
+// ================= 聊天系统 =================
+function setupChat() {
+    const input = $('chat-input');
+    const box = $('chat-input-box');
+    
+    if(isMobile) {
+        // 手机端通过按钮触发
+    } else {
+        window.addEventListener('keydown', e => {
+            if(e.code === 'Enter') {
+                if(box.style.display === 'block') {
+                    // 发送
+                    if(input.value.trim()) {
+                        sendMsg({ t: 'chat', name: player.name, text: input.value });
+                        addChatMsg(player.name, input.value); // 自己也要看到
+                        input.value = '';
+                    }
+                    box.style.display = 'none';
+                    if(!isMobile) document.body.requestPointerLock(); // 重新锁定鼠标
+                } else {
+                    // 打开
+                    box.style.display = 'block';
+                    input.focus();
+                    if(document.pointerLockElement) document.exitPointerLock();
+                }
+            }
+        });
+    }
+}
+
+function toggleChat() {
+    const box = $('chat-input-box');
+    const input = $('chat-input');
+    if(box.style.display === 'block') {
+        if(input.value.trim()) {
+            sendMsg({ t: 'chat', name: player.name, text: input.value });
+            addChatMsg(player.name, input.value);
+            input.value = '';
+        }
+        box.style.display = 'none';
+    } else {
+        box.style.display = 'block';
+        input.focus();
+    }
+}
+
+function addChatMsg(name, text) {
+    const div = document.createElement('div');
+    div.className = 'chat-msg';
+    div.innerHTML = `<span class="chat-name">${name}:</span> ${text}`;
+    $('chat-messages').appendChild(div);
+    setTimeout(() => div.remove(), 10000); // 10秒后消失
+}
+
+// ================= 渲染循环 =================
 function animate() {
     requestAnimationFrame(animate);
-    if(!renderer) return;
+    if(!camera) return;
     
-    // 相机跟随玩家
-    camera.position.set(playerBody.x, playerBody.y + 0.7, playerBody.z); // 眼睛位置稍高
+    // 相机跟随
+    camera.position.set(player.pos.x, player.pos.y + 0.7, player.pos.z);
     camera.rotation.order = 'YXZ';
-    camera.rotation.y = playerBody.yaw;
-    camera.rotation.x = playerBody.pitch;
+    camera.rotation.y = player.yaw;
+    camera.rotation.x = player.pitch;
     
-    // 调试信息
-    $('debug-info').innerText = `XYZ: ${playerBody.x.toFixed(1)}, ${playerBody.y.toFixed(1)}, ${playerBody.z.toFixed(1)}`;
+    // 更新调试信息
+    const p = player.pos;
+    $('info-board').innerText = `位置: ${p.x.toFixed(1)}, ${p.y.toFixed(1)}, ${p.z.toFixed(1)}`;
     
     renderer.render(scene, camera);
 }
+
+// 绑定按钮事件
+$('btn-create').onclick = btn_create;
+$('btn-join').onclick = btn_join;
 
 </script>
 </body>
