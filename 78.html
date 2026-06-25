@@ -3,49 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>发动机增量游戏 | 彻底修复版</title>
+    <title>发动机增量游戏 | 多阶声望版</title>
     <script src="OmegaNum.js"></script>
     <style>
         body {
-            background: #1a1a2e;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
             color: #eee;
-            font-family: sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding: 20px;
-            max-width: 700px;
+            max-width: 800px;
             margin: auto;
+            min-height: 100vh;
+        }
+        h1 {
+            text-align: center;
+            color: #f7b731;
+            margin-bottom: 20px;
         }
         .card {
-            background: #16213e;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
             padding: 20px;
-            margin: 10px 0;
+            margin: 15px 0;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .stat-item {
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
             border-radius: 10px;
+            border-left: 3px solid #f7b731;
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: #aaa;
+            text-transform: uppercase;
+        }
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+            word-break: break-word;
         }
         button {
-            padding: 10px 20px;
+            padding: 12px 20px;
             margin: 5px;
             font-weight: bold;
             cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+        button:hover:not(.disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
         .disabled {
             opacity: 0.4;
             pointer-events: none;
+            cursor: not-allowed;
         }
-        #status { color: orange; min-height: 20px; }
+        .prestige-btn {
+            background: linear-gradient(135deg, #f7b731, #f39c12);
+            color: #1a1a2e;
+        }
+        .second-prestige-btn {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+        .third-prestige-btn {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+        }
+        .fourth-prestige-btn {
+            background: linear-gradient(135deg, #1abc9c, #16a085);
+            color: white;
+        }
+        #status { 
+            color: orange; 
+            min-height: 20px; 
+            text-align: center;
+            margin: 10px 0;
+        }
+        .prestige-section {
+            margin: 10px 0;
+        }
+        .engine-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
     <h1>⚙️ 发动机增量</h1>
     <div id="status"></div>
+    
     <div class="card">
-        <div>💎 点数: <span id="points">0</span></div>
-        <div>🔝 最高代数: <span id="maxTier">1</span></div>
-        <div>⏱️ 时间: <span id="time">0 秒</span></div>
-        <div>🔄 声望次数: <span id="prestigeCount">0</span></div>
-        <div>🌟 二阶声望次数: <span id="secondPrestigeCount">0</span></div>
+        <h3 style="margin-top:0; color:#f7b731;">📊 状态</h3>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-label">💎 点数</div>
+                <div class="stat-value" id="points">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">🔝 最高代数</div>
+                <div class="stat-value" id="maxTier">1</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">⏱️ 时间</div>
+                <div class="stat-value" id="time">0 秒</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">📈 倍率</div>
+                <div class="stat-value" id="multiplier">1x</div>
+            </div>
+        </div>
     </div>
-    <button id="prestigeBtn" class="disabled">🔁 声望 (需代数 1000)</button>
-    <button id="secondPrestigeBtn" class="disabled">✨ 二阶声望 (需代数 10万)</button>
-    <div class="card" id="engineList"></div>
+
+    <div class="card">
+        <h3 style="margin-top:0; color:#f7b731;">🌟 声望等级</h3>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-label">🔄 一阶声望</div>
+                <div class="stat-value" id="prestigeCount">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">🔥 二阶声望</div>
+                <div class="stat-value" id="secondPrestigeCount">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">💜 三阶声望</div>
+                <div class="stat-value" id="thirdPrestigeCount">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">💚 四阶声望</div>
+                <div class="stat-value" id="fourthPrestigeCount">0</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top:0; color:#f7b731;">🎮 操作</h3>
+        <div class="prestige-section">
+            <button id="prestigeBtn" class="prestige-btn disabled">🔄 一阶声望</button>
+        </div>
+        <div class="prestige-section">
+            <button id="secondPrestigeBtn" class="second-prestige-btn disabled">🔥 二阶声望</button>
+        </div>
+        <div class="prestige-section">
+            <button id="thirdPrestigeBtn" class="third-prestige-btn disabled">💜 三阶声望</button>
+        </div>
+        <div class="prestige-section">
+            <button id="fourthPrestigeBtn" class="fourth-prestige-btn disabled">💚 四阶声望</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top:0; color:#f7b731;">⚡ 发动机列表</h3>
+        <div class="engine-list" id="engineList">
+            <div>暂无发动机</div>
+        </div>
+    </div>
 
     <script>
     (function() {
@@ -57,47 +181,64 @@
         function O(val) { return new OmegaNum(val); }
 
         let state = {
-            secondPrestige: 0,
-            prestige: 0,
-            // 直接用映射表存储：键=代数，值=发动机数量
-            engines: {1: O(1)},
-            maxTier: O(1),      // 当前最高代数
-            points: O(0),       // 累计点数
-            gameTime: 0         // 游戏总时间（秒）
+            // 声望次数
+            prestigeCount: 0,           // 一阶
+            secondPrestigeCount: 0,     // 二阶
+            thirdPrestigeCount: 0,      // 三阶
+            fourthPrestigeCount: 0,     // 四阶
+            
+            // 发动机数据
+            engines: {1: O(1)},         // 代数 -> 数量
+            maxTier: O(1),              // 当前最高代数
+            points: O(0),               // 点数
+            gameTime: 0                 // 游戏时间（秒）
         };
+        
         let lastTickTime = Date.now();
         let pendingTicks = 0;
 
+        // 计算总倍率：每阶声望都提供加成
+        function getTotalMultiplier() {
+            let mult = O(1);
+            mult = mult.add(state.secondPrestigeCount);      // 二阶：每级+1倍
+            mult = mult.mul(O(2).pow(state.thirdPrestigeCount)); // 三阶：每级×2
+            mult = mult.pow(O(1).add(O(0.5).mul(state.fourthPrestigeCount))); // 四阶：指数加成
+            return mult;
+        }
+
         function save() {
             const data = {
-                sp: state.secondPrestige,
-                p: state.prestige,
+                p: state.prestigeCount,
+                sp: state.secondPrestigeCount,
+                tp: state.thirdPrestigeCount,
+                fp: state.fourthPrestigeCount,
                 eng: {},
                 mt: state.maxTier.toString(),
                 pts: state.points.toString(),
                 gt: state.gameTime
             };
-            // 序列化发动机映射表
             for (let tier in state.engines) {
                 data.eng[tier] = state.engines[tier].toString();
             }
-            localStorage.setItem('engine_v3', JSON.stringify(data));
+            localStorage.setItem('engine_v4', JSON.stringify(data));
         }
 
         function load() {
-            const raw = localStorage.getItem('engine_v3');
+            const raw = localStorage.getItem('engine_v4');
             if (!raw) return false;
             try {
                 const data = JSON.parse(raw);
-                state.secondPrestige = data.sp;
-                state.prestige = data.p;
+                state.prestigeCount = data.p || 0;
+                state.secondPrestigeCount = data.sp || 0;
+                state.thirdPrestigeCount = data.tp || 0;
+                state.fourthPrestigeCount = data.fp || 0;
                 state.engines = {};
                 for (let tier in data.eng) {
                     state.engines[tier] = O(data.eng[tier]);
                 }
                 state.maxTier = O(data.mt);
                 state.points = O(data.pts);
-                state.gameTime = data.gt;
+                state.gameTime = data.gt || 0;
                 lastTickTime = Date.now();
                 return true;
             } catch (e) {
@@ -106,19 +247,15 @@
         }
 
         function doTick() {
-            const mult = O(state.secondPrestige + 1);
+            const mult = getTotalMultiplier();
             
             // 解锁新代数
             state.maxTier = state.maxTier.add(1);
             const newTier = state.maxTier.toString();
-            
-            // 新代数的发动机初始为1个（由系统赠送）
             state.engines[newTier] = (state.engines[newTier] || O(0)).add(1);
             
-            // 从高到低生产：高一代发动机生产低一代发动机
+            // 从高到低生产
             const tiers = Object.keys(state.engines).sort((a, b) => Number(b) - Number(a));
-            
-            // 记录本轮生产量（避免重复计算）
             const produced = {};
             
             for (let i = 0; i < tiers.length; i++) {
@@ -127,7 +264,6 @@
                 const count = state.engines[tier] || O(0);
                 
                 if (count.gt(0) && tierNum > 1) {
-                    // 生产下一代（tier-1）发动机
                     const lowerTier = String(tierNum - 1);
                     produced[lowerTier] = (produced[lowerTier] || O(0)).add(count.mul(mult));
                 }
@@ -138,7 +274,7 @@
                 state.engines[tier] = (state.engines[tier] || O(0)).add(produced[tier]);
             }
             
-            // 点数生产：1代发动机生产点数
+            // 1代发动机生产点数
             const oneTierEngines = state.engines['1'] || O(0);
             if (oneTierEngines.gt(0)) {
                 state.points = state.points.add(oneTierEngines.mul(mult));
@@ -176,62 +312,92 @@
             if (pendingTicks === addTicks) processPending();
         }
 
+        // 各阶声望条件
         function canPrestige() {
-            const req = O(1000).mul(O(1 + state.prestige * state.prestige));
+            const req = O(1000).mul(O(1 + state.prestigeCount * state.prestigeCount));
             return req.lte(state.maxTier);
         }
 
         function canSecondPrestige() {
-            const req = O(100000).mul(O(1 + state.secondPrestige * state.secondPrestige));
+            const req = O(100000).mul(O(1 + state.secondPrestigeCount * state.secondPrestigeCount));
             return req.lte(state.maxTier);
         }
 
+        function canThirdPrestige() {
+            const req = O(1e7).mul(O(10).pow(state.thirdPrestigeCount));
+            return req.lte(state.maxTier);
+        }
+
+        function canFourthPrestige() {
+            const req = O(1e10).mul(O(100).pow(state.fourthPrestigeCount));
+            return req.lte(state.maxTier);
+        }
+
+        // 执行声望
         function doPrestige() {
             if (!canPrestige()) return;
-            state.prestige++;
-            state.engines = {};
-            state.maxTier = O(state.prestige + 1);
-            state.engines[state.maxTier.toString()] = O(1);
-            state.points = O(0);
-            state.gameTime = Math.floor(state.gameTime);
-            lastTickTime = Date.now();
-            pendingTicks = 0;
+            state.prestigeCount++;
+            resetEngineState(O(state.prestigeCount + 1));
             save();
         }
 
         function doSecondPrestige() {
             if (!canSecondPrestige()) return;
-            state.secondPrestige++;
-            state.prestige = 0;
-            state.engines = {1: O(1)};
-            state.maxTier = O(1);
+            state.secondPrestigeCount++;
+            state.prestigeCount = 0;
+            resetEngineState(O(1));
+            save();
+        }
+
+        function doThirdPrestige() {
+            if (!canThirdPrestige()) return;
+            state.thirdPrestigeCount++;
+            state.secondPrestigeCount = 0;
+            state.prestigeCount = 0;
+            resetEngineState(O(1));
+            save();
+        }
+
+        function doFourthPrestige() {
+            if (!canFourthPrestige()) return;
+            state.fourthPrestigeCount++;
+            state.thirdPrestigeCount = 0;
+            state.secondPrestigeCount = 0;
+            state.prestigeCount = 0;
+            resetEngineState(O(1));
+            save();
+        }
+
+        function resetEngineState(startTier) {
+            state.engines = {};
+            state.maxTier = startTier;
+            state.engines[startTier.toString()] = O(1);
             state.points = O(0);
             state.gameTime = Math.floor(state.gameTime);
             lastTickTime = Date.now();
             pendingTicks = 0;
-            save();
         }
 
         function updateUI() {
+            const mult = getTotalMultiplier();
+            
             document.getElementById('points').innerText = state.points.toString();
             document.getElementById('maxTier').innerText = state.maxTier.toString();
             document.getElementById('time').innerText = state.gameTime.toFixed(1) + ' 秒';
-            document.getElementById('prestigeCount').innerText = state.prestige;
-            document.getElementById('secondPrestigeCount').innerText = state.secondPrestige;
+            document.getElementById('multiplier').innerText = mult.toString() + 'x';
+            
+            document.getElementById('prestigeCount').innerText = state.prestigeCount;
+            document.getElementById('secondPrestigeCount').innerText = state.secondPrestigeCount;
+            document.getElementById('thirdPrestigeCount').innerText = state.thirdPrestigeCount;
+            document.getElementById('fourthPrestigeCount').innerText = state.fourthPrestigeCount;
 
-            const pBtn = document.getElementById('prestigeBtn');
-            const spBtn = document.getElementById('secondPrestigeBtn');
-            const reqP = O(1000).mul(O(1 + state.prestige * state.prestige));
-            const reqSP = O(100000).mul(O(1 + state.secondPrestige * state.secondPrestige));
-            pBtn.innerText = '🔁 声望 (需代数 ' + reqP.toString() + ')';
-            spBtn.innerText = '✨ 二阶声望 (需代数 ' + reqSP.toString() + ')';
+            // 更新按钮状态
+            updateButton('prestigeBtn', canPrestige, '一阶声望', 1000, state.prestigeCount, '平方');
+            updateButton('secondPrestigeBtn', canSecondPrestige, '二阶声望', 100000, state.secondPrestigeCount, '平方');
+            updateButton('thirdPrestigeBtn', canThirdPrestige, '三阶声望', 1e7, state.thirdPrestigeCount, '指数');
+            updateButton('fourthPrestigeBtn', canFourthPrestige, '四阶声望', 1e10, state.fourthPrestigeCount, '指数');
 
-            if (canPrestige()) pBtn.classList.remove('disabled');
-            else pBtn.classList.add('disabled');
-            if (canSecondPrestige()) spBtn.classList.remove('disabled');
-            else spBtn.classList.add('disabled');
-
-            // 发动机列表显示
+            // 发动机列表
             const listDiv = document.getElementById('engineList');
             const tiers = Object.keys(state.engines)
                 .filter(tier => state.engines[tier].gt(0))
@@ -241,16 +407,35 @@
             if (tiers.length === 0) {
                 html = '<div>暂无发动机</div>';
             } else {
-                const maxShow = 15;
+                const maxShow = 20;
                 for (let i = 0; i < Math.min(tiers.length, maxShow); i++) {
                     const tier = tiers[i];
-                    html += '<div>代数 ' + tier + ' : ' + state.engines[tier].toString() + '</div>';
+                    html += '<div style="padding:3px 0;">代数 ' + tier + ' : ' + 
+                            state.engines[tier].toString() + '</div>';
                 }
                 if (tiers.length > maxShow) {
                     html += '<div>... 还有 ' + (tiers.length - maxShow) + ' 代</div>';
                 }
             }
             listDiv.innerHTML = html;
+        }
+
+        function updateButton(btnId, canFunc, name, base, count, type) {
+            const btn = document.getElementById(btnId);
+            let req;
+            if (type === '平方') {
+                req = O(base).mul(O(1 + count * count));
+            } else {
+                req = O(base).mul(O(type === '指数' ? (base === 1e7 ? 10 : 100) : 2).pow(count));
+            }
+            
+            btn.innerText = name + ' (需代数 ' + req.toString() + ')';
+            
+            if (canFunc()) {
+                btn.classList.remove('disabled');
+            } else {
+                btn.classList.add('disabled');
+            }
         }
 
         function mainLoop() {
@@ -264,17 +449,17 @@
 
         // 初始化
         if (!load()) {
-            state.engines = {1: O(1)};
-            state.maxTier = O(1);
-            state.points = O(0);
-            state.gameTime = 0;
-            lastTickTime = Date.now();
+            resetEngineState(O(1));
             save();
         }
         state._lastSave = Date.now();
+        
         document.getElementById('prestigeBtn').addEventListener('click', doPrestige);
         document.getElementById('secondPrestigeBtn').addEventListener('click', doSecondPrestige);
+        document.getElementById('thirdPrestigeBtn').addEventListener('click', doThirdPrestige);
+        document.getElementById('fourthPrestigeBtn').addEventListener('click', doFourthPrestige);
         window.addEventListener('beforeunload', save);
+        
         setInterval(mainLoop, 100);
         updateUI();
     })();
