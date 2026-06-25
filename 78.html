@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>发动机增量游戏 | 多阶声望版</title>
+    <title>发动机增量游戏 | 自动声望开关版</title>
     <script src="OmegaNum.js"></script>
     <style>
         body {
@@ -11,7 +11,7 @@
             color: #eee;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding: 20px;
-            max-width: 800px;
+            max-width: 900px;
             margin: auto;
             min-height: 100vh;
         }
@@ -51,39 +51,60 @@
             word-break: break-word;
         }
         button {
-            padding: 12px 20px;
-            margin: 5px;
+            padding: 8px 15px;
+            margin: 3px;
             font-weight: bold;
             cursor: pointer;
             border: none;
             border-radius: 8px;
             transition: all 0.3s;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
-        button:hover:not(.disabled) {
+        button:hover:not(.disabled):not(.auto-btn) {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
         .disabled {
             opacity: 0.4;
             pointer-events: none;
-            cursor: not-allowed;
         }
-        .prestige-btn {
-            background: linear-gradient(135deg, #f7b731, #f39c12);
-            color: #1a1a2e;
+        .prestige-btn { background: linear-gradient(135deg, #f7b731, #f39c12); color: #1a1a2e; }
+        .second-btn { background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; }
+        .third-btn { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; }
+        .fourth-btn { background: linear-gradient(135deg, #1abc9c, #16a085); color: white; }
+        
+        .auto-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+            flex-wrap: wrap;
         }
-        .second-prestige-btn {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        .auto-btn {
+            min-width: 70px;
+            font-size: 0.85rem;
+        }
+        .auto-on {
+            background: #27ae60;
             color: white;
         }
-        .third-prestige-btn {
-            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        .auto-off {
+            background: #7f8c8d;
             color: white;
         }
-        .fourth-prestige-btn {
-            background: linear-gradient(135deg, #1abc9c, #16a085);
+        input[type="number"] {
+            width: 80px;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #555;
+            background: #2c3e50;
             color: white;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .auto-label {
+            font-size: 0.9rem;
+            color: #bbb;
         }
         #status { 
             color: orange; 
@@ -91,8 +112,16 @@
             text-align: center;
             margin: 10px 0;
         }
-        .prestige-section {
-            margin: 10px 0;
+        .prestige-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            margin: 8px 0;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .engine-list {
             max-height: 300px;
@@ -127,40 +156,50 @@
     </div>
 
     <div class="card">
-        <h3 style="margin-top:0; color:#f7b731;">🌟 声望等级</h3>
-        <div class="stats-grid">
-            <div class="stat-item">
-                <div class="stat-label">🔄 一阶声望</div>
-                <div class="stat-value" id="prestigeCount">0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">🔥 二阶声望</div>
-                <div class="stat-value" id="secondPrestigeCount">0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">💜 三阶声望</div>
-                <div class="stat-value" id="thirdPrestigeCount">0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">💚 四阶声望</div>
-                <div class="stat-value" id="fourthPrestigeCount">0</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="card">
-        <h3 style="margin-top:0; color:#f7b731;">🎮 操作</h3>
-        <div class="prestige-section">
+        <h3 style="margin-top:0; color:#f7b731;">🎮 声望控制</h3>
+        
+        <!-- 一阶声望 -->
+        <div class="prestige-row">
             <button id="prestigeBtn" class="prestige-btn disabled">🔄 一阶声望</button>
+            <div class="auto-control">
+                <button id="autoPrestigeBtn" class="auto-btn auto-off" onclick="toggleAuto('prestige')">关闭</button>
+                <span class="auto-label">直至</span>
+                <input type="number" id="autoPrestigeTarget" value="10" min="0" max="10000">
+                <span class="auto-label">级 (当前: <span id="prestigeCount">0</span>)</span>
+            </div>
         </div>
-        <div class="prestige-section">
-            <button id="secondPrestigeBtn" class="second-prestige-btn disabled">🔥 二阶声望</button>
+
+        <!-- 二阶声望 -->
+        <div class="prestige-row">
+            <button id="secondPrestigeBtn" class="second-btn disabled">🔥 二阶声望</button>
+            <div class="auto-control">
+                <button id="autoSecondPrestigeBtn" class="auto-btn auto-off" onclick="toggleAuto('second')">关闭</button>
+                <span class="auto-label">直至</span>
+                <input type="number" id="autoSecondPrestigeTarget" value="5" min="0" max="10000">
+                <span class="auto-label">级 (当前: <span id="secondPrestigeCount">0</span>)</span>
+            </div>
         </div>
-        <div class="prestige-section">
-            <button id="thirdPrestigeBtn" class="third-prestige-btn disabled">💜 三阶声望</button>
+
+        <!-- 三阶声望 -->
+        <div class="prestige-row">
+            <button id="thirdPrestigeBtn" class="third-btn disabled">💜 三阶声望</button>
+            <div class="auto-control">
+                <button id="autoThirdPrestigeBtn" class="auto-btn auto-off" onclick="toggleAuto('third')">关闭</button>
+                <span class="auto-label">直至</span>
+                <input type="number" id="autoThirdPrestigeTarget" value="3" min="0" max="10000">
+                <span class="auto-label">级 (当前: <span id="thirdPrestigeCount">0</span>)</span>
+            </div>
         </div>
-        <div class="prestige-section">
-            <button id="fourthPrestigeBtn" class="fourth-prestige-btn disabled">💚 四阶声望</button>
+
+        <!-- 四阶声望 -->
+        <div class="prestige-row">
+            <button id="fourthPrestigeBtn" class="fourth-btn disabled">💚 四阶声望</button>
+            <div class="auto-control">
+                <button id="autoFourthPrestigeBtn" class="auto-btn auto-off" onclick="toggleAuto('fourth')">关闭</button>
+                <span class="auto-label">直至</span>
+                <input type="number" id="autoFourthPrestigeTarget" value="1" min="0" max="10000">
+                <span class="auto-label">级 (当前: <span id="fourthPrestigeCount">0</span>)</span>
+            </div>
         </div>
     </div>
 
@@ -174,39 +213,72 @@
     <script>
     (function() {
         if (typeof OmegaNum === 'undefined') {
-            document.getElementById('status').innerText = '❌ OmegaNum 未加载，请检查本地文件路径。';
+            document.getElementById('status').innerText = '❌ OmegaNum 未加载';
             return;
         }
 
         function O(val) { return new OmegaNum(val); }
 
         let state = {
-            // 声望次数
-            prestigeCount: 0,           // 一阶
-            secondPrestigeCount: 0,     // 二阶
-            thirdPrestigeCount: 0,      // 三阶
-            fourthPrestigeCount: 0,     // 四阶
-            
-            // 发动机数据
-            engines: {1: O(1)},         // 代数 -> 数量
-            maxTier: O(1),              // 当前最高代数
-            points: O(0),               // 点数
-            gameTime: 0                 // 游戏时间（秒）
+            prestigeCount: 0,
+            secondPrestigeCount: 0,
+            thirdPrestigeCount: 0,
+            fourthPrestigeCount: 0,
+            engines: {1: O(1)},
+            maxTier: O(1),
+            points: O(0),
+            gameTime: 0
         };
-        
+
+        // 自动声望设置
+        let autoSettings = {
+            prestige: { enabled: false, target: 10 },
+            second: { enabled: false, target: 5 },
+            third: { enabled: false, target: 3 },
+            fourth: { enabled: false, target: 1 }
+        };
+
         let lastTickTime = Date.now();
         let pendingTicks = 0;
 
-        // 计算总倍率：每阶声望都提供加成
+        // 切换自动声望开关
+        window.toggleAuto = function(type) {
+            autoSettings[type].enabled = !autoSettings[type].enabled;
+            updateAutoButtons();
+            save();
+        };
+
+        function updateAutoButtons() {
+            const types = ['prestige', 'second', 'third', 'fourth'];
+            const names = ['autoPrestigeBtn', 'autoSecondPrestigeBtn', 'autoThirdPrestigeBtn', 'autoFourthPrestigeBtn'];
+            
+            types.forEach((type, index) => {
+                const btn = document.getElementById(names[index]);
+                if (autoSettings[type].enabled) {
+                    btn.textContent = '开启';
+                    btn.className = 'auto-btn auto-on';
+                } else {
+                    btn.textContent = '关闭';
+                    btn.className = 'auto-btn auto-off';
+                }
+                // 读取目标值
+                const targetInput = document.getElementById(names[index].replace('Btn', 'Target'));
+                if (targetInput) {
+                    autoSettings[type].target = parseInt(targetInput.value) || 0;
+                }
+            });
+        }
+
         function getTotalMultiplier() {
             let mult = O(1);
-            mult = mult.add(state.secondPrestigeCount);      // 二阶：每级+1倍
-            mult = mult.mul(O(2).pow(state.thirdPrestigeCount)); // 三阶：每级×2
-            mult = mult.pow(O(1).add(O(0.5).mul(state.fourthPrestigeCount))); // 四阶：指数加成
+            mult = mult.add(state.secondPrestigeCount);
+            mult = mult.mul(O(2).pow(state.thirdPrestigeCount));
+            mult = mult.pow(O(1).add(O(0.5).mul(state.fourthPrestigeCount)));
             return mult;
         }
 
         function save() {
+            updateAutoButtons();
             const data = {
                 p: state.prestigeCount,
                 sp: state.secondPrestigeCount,
@@ -215,16 +287,17 @@
                 eng: {},
                 mt: state.maxTier.toString(),
                 pts: state.points.toString(),
-                gt: state.gameTime
+                gt: state.gameTime,
+                auto: autoSettings
             };
             for (let tier in state.engines) {
                 data.eng[tier] = state.engines[tier].toString();
             }
-            localStorage.setItem('engine_v4', JSON.stringify(data));
+            localStorage.setItem('engine_auto_v5', JSON.stringify(data));
         }
 
         function load() {
-            const raw = localStorage.getItem('engine_v4');
+            const raw = localStorage.getItem('engine_auto_v5');
             if (!raw) return false;
             try {
                 const data = JSON.parse(raw);
@@ -239,6 +312,9 @@
                 state.maxTier = O(data.mt);
                 state.points = O(data.pts);
                 state.gameTime = data.gt || 0;
+                if (data.auto) {
+                    autoSettings = data.auto;
+                }
                 lastTickTime = Date.now();
                 return true;
             } catch (e) {
@@ -249,12 +325,10 @@
         function doTick() {
             const mult = getTotalMultiplier();
             
-            // 解锁新代数
             state.maxTier = state.maxTier.add(1);
             const newTier = state.maxTier.toString();
             state.engines[newTier] = (state.engines[newTier] || O(0)).add(1);
             
-            // 从高到低生产
             const tiers = Object.keys(state.engines).sort((a, b) => Number(b) - Number(a));
             const produced = {};
             
@@ -269,12 +343,10 @@
                 }
             }
             
-            // 应用生产
             for (let tier in produced) {
                 state.engines[tier] = (state.engines[tier] || O(0)).add(produced[tier]);
             }
             
-            // 1代发动机生产点数
             const oneTierEngines = state.engines['1'] || O(0);
             if (oneTierEngines.gt(0)) {
                 state.points = state.points.add(oneTierEngines.mul(mult));
@@ -290,7 +362,11 @@
             }
             document.getElementById('status').innerText = '⏳ 追赶离线进度...';
             const steps = Math.min(pendingTicks, 500);
-            for (let i = 0; i < steps; i++) doTick();
+            for (let i = 0; i < steps; i++) {
+                doTick();
+                // 在离线追赶中也检查自动声望
+                checkAutoPrestige();
+            }
             pendingTicks -= steps;
             if (pendingTicks > 0) {
                 setTimeout(processPending, 10);
@@ -312,7 +388,6 @@
             if (pendingTicks === addTicks) processPending();
         }
 
-        // 各阶声望条件
         function canPrestige() {
             const req = O(1000).mul(O(1 + state.prestigeCount * state.prestigeCount));
             return req.lte(state.maxTier);
@@ -333,39 +408,42 @@
             return req.lte(state.maxTier);
         }
 
-        // 执行声望
         function doPrestige() {
-            if (!canPrestige()) return;
+            if (!canPrestige()) return false;
             state.prestigeCount++;
             resetEngineState(O(state.prestigeCount + 1));
             save();
+            return true;
         }
 
         function doSecondPrestige() {
-            if (!canSecondPrestige()) return;
+            if (!canSecondPrestige()) return false;
             state.secondPrestigeCount++;
             state.prestigeCount = 0;
             resetEngineState(O(1));
             save();
+            return true;
         }
 
         function doThirdPrestige() {
-            if (!canThirdPrestige()) return;
+            if (!canThirdPrestige()) return false;
             state.thirdPrestigeCount++;
             state.secondPrestigeCount = 0;
             state.prestigeCount = 0;
             resetEngineState(O(1));
             save();
+            return true;
         }
 
         function doFourthPrestige() {
-            if (!canFourthPrestige()) return;
+            if (!canFourthPrestige()) return false;
             state.fourthPrestigeCount++;
             state.thirdPrestigeCount = 0;
             state.secondPrestigeCount = 0;
             state.prestigeCount = 0;
             resetEngineState(O(1));
             save();
+            return true;
         }
 
         function resetEngineState(startTier) {
@@ -376,6 +454,35 @@
             state.gameTime = Math.floor(state.gameTime);
             lastTickTime = Date.now();
             pendingTicks = 0;
+        }
+
+        // 检查自动声望
+        function checkAutoPrestige() {
+            // 按优先级从高到低检查：四阶 > 三阶 > 二阶 > 一阶
+            if (autoSettings.fourth.enabled && state.fourthPrestigeCount < autoSettings.fourth.target) {
+                if (canFourthPrestige()) {
+                    doFourthPrestige();
+                    return;
+                }
+            }
+            if (autoSettings.third.enabled && state.thirdPrestigeCount < autoSettings.third.target) {
+                if (canThirdPrestige()) {
+                    doThirdPrestige();
+                    return;
+                }
+            }
+            if (autoSettings.second.enabled && state.secondPrestigeCount < autoSettings.second.target) {
+                if (canSecondPrestige()) {
+                    doSecondPrestige();
+                    return;
+                }
+            }
+            if (autoSettings.prestige.enabled && state.prestigeCount < autoSettings.prestige.target) {
+                if (canPrestige()) {
+                    doPrestige();
+                    return;
+                }
+            }
         }
 
         function updateUI() {
@@ -391,11 +498,11 @@
             document.getElementById('thirdPrestigeCount').innerText = state.thirdPrestigeCount;
             document.getElementById('fourthPrestigeCount').innerText = state.fourthPrestigeCount;
 
-            // 更新按钮状态
-            updateButton('prestigeBtn', canPrestige, '一阶声望', 1000, state.prestigeCount, '平方');
-            updateButton('secondPrestigeBtn', canSecondPrestige, '二阶声望', 100000, state.secondPrestigeCount, '平方');
-            updateButton('thirdPrestigeBtn', canThirdPrestige, '三阶声望', 1e7, state.thirdPrestigeCount, '指数');
-            updateButton('fourthPrestigeBtn', canFourthPrestige, '四阶声望', 1e10, state.fourthPrestigeCount, '指数');
+            // 更新按钮
+            updateButton('prestigeBtn', canPrestige, state.prestigeCount, '平方');
+            updateButton('secondPrestigeBtn', canSecondPrestige, state.secondPrestigeCount, '平方');
+            updateButton('thirdPrestigeBtn', canThirdPrestige, state.thirdPrestigeCount, '指数');
+            updateButton('fourthPrestigeBtn', canFourthPrestige, state.fourthPrestigeCount, '指数');
 
             // 发动机列表
             const listDiv = document.getElementById('engineList');
@@ -420,17 +527,8 @@
             listDiv.innerHTML = html;
         }
 
-        function updateButton(btnId, canFunc, name, base, count, type) {
+        function updateButton(btnId, canFunc, count, type) {
             const btn = document.getElementById(btnId);
-            let req;
-            if (type === '平方') {
-                req = O(base).mul(O(1 + count * count));
-            } else {
-                req = O(base).mul(O(type === '指数' ? (base === 1e7 ? 10 : 100) : 2).pow(count));
-            }
-            
-            btn.innerText = name + ' (需代数 ' + req.toString() + ')';
-            
             if (canFunc()) {
                 btn.classList.remove('disabled');
             } else {
@@ -440,6 +538,7 @@
 
         function mainLoop() {
             catchUp();
+            checkAutoPrestige();
             updateUI();
             if (Date.now() - (state._lastSave || 0) > 2000) {
                 save();
@@ -454,12 +553,34 @@
         }
         state._lastSave = Date.now();
         
-        document.getElementById('prestigeBtn').addEventListener('click', doPrestige);
-        document.getElementById('secondPrestigeBtn').addEventListener('click', doSecondPrestige);
-        document.getElementById('thirdPrestigeBtn').addEventListener('click', doThirdPrestige);
-        document.getElementById('fourthPrestigeBtn').addEventListener('click', doFourthPrestige);
+        // 加载自动设置界面
+        document.getElementById('autoPrestigeTarget').value = autoSettings.prestige.target;
+        document.getElementById('autoSecondPrestigeTarget').value = autoSettings.second.target;
+        document.getElementById('autoThirdPrestigeTarget').value = autoSettings.third.target;
+        document.getElementById('autoFourthPrestigeTarget').value = autoSettings.fourth.target;
+        updateAutoButtons();
+
+        // 手动按钮
+        document.getElementById('prestigeBtn').addEventListener('click', () => {
+            if (doPrestige()) updateUI();
+        });
+        document.getElementById('secondPrestigeBtn').addEventListener('click', () => {
+            if (doSecondPrestige()) updateUI();
+        });
+        document.getElementById('thirdPrestigeBtn').addEventListener('click', () => {
+            if (doThirdPrestige()) updateUI();
+        });
+        document.getElementById('fourthPrestigeBtn').addEventListener('click', () => {
+            if (doFourthPrestige()) updateUI();
+        });
+
+        // 监听目标值变化
+        ['autoPrestigeTarget', 'autoSecondPrestigeTarget', 'autoThirdPrestigeTarget', 'autoFourthPrestigeTarget']
+            .forEach(id => {
+                document.getElementById(id).addEventListener('change', updateAutoButtons);
+            });
+
         window.addEventListener('beforeunload', save);
-        
         setInterval(mainLoop, 100);
         updateUI();
     })();
