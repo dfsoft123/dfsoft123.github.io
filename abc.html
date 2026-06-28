@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>银河系 · 极限粒子重建</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#000003;--fg:#d0d8ff;--muted:#4a527a;--accent:#ffaa55;--border:rgba(100,120,180,0.1);--panel:rgba(2,4,12,0.8)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--fg);font-family:'Noto Sans SC',sans-serif}
+  #canvas-container{position:fixed;inset:0;z-index:0}
+  canvas{display:block}
+  #loader{position:fixed;inset:0;z-index:100;background:radial-gradient(ellipse at center,#05071a 0%,#000003 100%);display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity 1.2s ease,visibility 1.2s ease}
+  #loader.hidden{opacity:0;visibility:hidden}
+  .loader-ring{width:70px;height:70px;border-radius:50%;border:2px solid rgba(255,170,85,0.1);border-top-color:var(--accent);animation:spin 1.2s linear infinite;box-shadow:0 0 30px rgba(255,170,85,0.2)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .loader-text{margin-top:24px;font-family:'Orbitron',sans-serif;letter-spacing:0.3em;font-size:12px;color:var(--muted);text-transform:uppercase}
+  .loader-sub{margin-top:6px;font-size:10px;color:var(--muted);opacity:0.6}
+  .progress-wrap{margin-top:18px;width:280px;height:3px;background:rgba(255,170,85,0.1);border-radius:2px;overflow:hidden}
+  .progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#ff6a3a);transition:width 0.2s}
+  .progress-num{margin-top:8px;font-family:'Orbitron',sans-serif;font-size:11px;color:var(--accent);letter-spacing:0.2em}
+  .ui-layer{position:fixed;inset:0;z-index:10;pointer-events:none}
+  .ui-layer>*{pointer-events:auto}
+  .header{position:absolute;top:36px;left:40px;display:flex;align-items:flex-start;gap:18px}
+  .logo-mark{width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff5e0 0%,var(--accent) 30%,#3a1d00 70%,transparent 100%);box-shadow:0 0 20px rgba(255,170,85,0.2);position:relative}
+  .logo-mark::after{content:'';position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(255,170,85,0.15);animation:pulse 3s ease-in-out infinite}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:0.5}50%{transform:scale(1.15);opacity:0.1}}
+  .title-block h1{font-family:'Orbitron',sans-serif;font-weight:900;font-size:30px;letter-spacing:0.18em;line-height:1;color:rgba(255,255,255,0.9)}
+  .title-block .sub{margin-top:8px;font-size:10px;letter-spacing:0.5em;color:var(--muted);text-transform:uppercase;font-family:'Orbitron',sans-serif}
+  .title-block .cn{margin-top:5px;font-size:12px;color:var(--fg);opacity:0.4;letter-spacing:0.3em}
+  .coords{position:absolute;top:40px;right:40px;text-align:right;font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:0.25em;color:var(--muted);line-height:2}
+  .coords span{color:var(--fg);font-weight:700;opacity:0.8}
+  .coords .live{display:inline-block;width:6px;height:6px;border-radius:50%;background:#5cff8a;margin-right:6px;box-shadow:0 0 8px #5cff8a;animation:blink 1.4s infinite;vertical-align:middle}
+  @keyframes blink{50%{opacity:0.3}}
+  .info-panel{position:absolute;bottom:36px;left:40px;background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:4px;padding:20px 26px;min-width:300px}
+  .info-panel .label{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:0.4em;color:var(--muted);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .info-panel .label::before{content:'';width:14px;height:1px;background:var(--accent)}
+  .stat-row{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px dashed rgba(140,160,220,0.06);font-size:12px}
+  .stat-row:last-child{border-bottom:none}
+  .stat-row .k{color:var(--muted);letter-spacing:0.05em}
+  .stat-row .v{font-family:'Orbitron',sans-serif;color:var(--fg);font-weight:700;font-variant-numeric:tabular-nums;opacity:0.85}
+  .stat-row .v.accent{color:var(--accent);opacity:1}
+  .slider-wrap{margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+  .slider-wrap label{font-size:10px;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;font-family:'Orbitron',sans-serif;display:flex;justify-content:space-between;margin-bottom:8px}
+  .slider-wrap label span{color:var(--accent)}
+  input[type=range]{width:100%;-webkit-appearance:none;height:3px;background:rgba(255,170,85,0.2);border-radius:2px;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px rgba(255,170,85,0.5);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--accent);border:none;cursor:pointer}
+  .controls{position:absolute;bottom:36px;right:40px;text-align:right}
+  .controls .hint{font-size:11px;color:var(--muted);letter-spacing:0.15em;margin-bottom:10px}
+  .ctrl-grid{display:flex;gap:8px;justify-content:flex-end}
+  .ctrl-btn{background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--border);color:var(--fg);font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:0.2em;padding:10px 16px;border-radius:3px;cursor:pointer;transition:all 0.3s;text-transform:uppercase}
+  .ctrl-btn:hover{border-color:var(--accent);color:var(--accent);box-shadow:0 0 15px rgba(255,170,85,0.1)}
+  .ctrl-btn.active{background:rgba(255,170,85,0.08);border-color:var(--accent);color:var(--accent)}
+  .scale-bar{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);text-align:center}
+  .scale-bar .line{width:180px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);position:relative;margin-bottom:8px}
+  .scale-bar .line::before,.scale-bar .line::after{content:'';position:absolute;top:-3px;width:1px;height:7px;background:var(--accent)}
+  .scale-bar .line::before{left:0}.scale-bar .line::after{right:0}
+  .scale-bar .text{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:0.3em;color:var(--muted)}
+  .corner{position:absolute;width:30px;height:30px;border-color:var(--border)}
+  .corner.tl{top:20px;left:20px;border-top:1px solid;border-left:1px solid}
+  .corner.tr{top:20px;right:20px;border-top:1px solid;border-right:1px solid}
+  .corner.bl{bottom:20px;left:20px;border-bottom:1px solid;border-left:1px solid}
+  .corner.br{bottom:20px;right:20px;border-bottom:1px solid;border-right:1px solid}
+  @media(max-width:768px){.header{top:20px;left:20px}.title-block h1{font-size:20px}.coords{top:24px;right:20px}.info-panel{bottom:20px;left:20px;min-width:220px;padding:14px 18px;font-size:11px}.controls{bottom:20px;right:20px}.scale-bar{display:none}}
+</style>
+</head>
+<body>
+<div id="loader">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Generating Galaxy</div>
+  <div class="loader-sub">自适应粒子生成中</div>
+  <div class="progress-wrap"><div class="progress-bar" id="pbar"></div></div>
+  <div class="progress-num" id="pnum">0%</div>
+</div>
+<div id="canvas-container"></div>
+<div class="ui-layer">
+  <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+  <header class="header">
+    <div class="logo-mark"></div>
+    <div class="title-block">
+      <h1>MILKY WAY</h1>
+      <div class="sub">Maximal Volumetric Render</div>
+      <div class="cn">银河系 · 极限粒子重建</div>
+    </div>
+  </header>
+  <div class="coords">
+    <div><span class="live"></span>LIVE RENDER</div>
+    <div>RA <span>17h 45m</span></div>
+    <div>DEC <span>-29 00'</span></div>
+    <div>FPS <span id="fps">60</span></div>
+  </div>
+  <div class="info-panel">
+    <div class="label">Observation Data</div>
+    <div class="stat-row"><span class="k">设备内存 Device RAM</span><span class="v" id="ramInfo">-</span></div>
+    <div class="stat-row"><span class="k">最大粒子 Max Particles</span><span class="v accent" id="maxInfo">0</span></div>
+    <div class="stat-row"><span class="k">渲染粒子 Rendered</span><span class="v accent" id="starCount">0</span></div>
+    <div class="stat-row"><span class="k">星系直径 Diameter</span><span class="v">100,000 LY</span></div>
+    <div class="stat-row"><span class="k">观测距离 Distance</span><span class="v" id="distance">0 LY</span></div>
+    <div class="stat-row"><span class="k">星系类型 Type</span><span class="v">SBbc (Barred)</span></div>
+    <div class="slider-wrap">
+      <label>渲染粒子数 RENDER COUNT <span id="sliderVal">0</span></label>
+      <input type="range" id="particleSlider" min="5000000" max="55000000" step="1000000" value="55000000">
+    </div>
+  </div>
+  <div class="scale-bar"><div class="line"></div><div class="text">10,000 LIGHT YEARS</div></div>
+  <div class="controls">
+    <div class="hint">拖拽旋转 · 滚轮缩放</div>
+    <div class="ctrl-grid">
+      <button class="ctrl-btn active" id="btnRotate">自动巡航</button>
+      <button class="ctrl-btn" id="btnReset">视角重置</button>
+      <button class="ctrl-btn" id="btnTop">俯视</button>
+    </div>
+  </div>
+</div>
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+/* === 场景 === */
+const container = document.getElementById('canvas-container');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 1, 60000);
+camera.position.set(0, 2200, 5000);
+const renderer = new THREE.WebGLRenderer({ antialias:true, powerPreference:'high-performance' });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+// 亮度修正：曝光大幅下调
+renderer.toneMappingExposure = 0.28;
+renderer.setClearColor(0x000003, 1);
+container.appendChild(renderer.domElement);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.06;
+controls.minDistance = 600;
+controls.maxDistance = 25000;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.12;
+// 后处理：低强度 + 高阈值，避免泛光叠加发白
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.3, 0.6, 0.5));
+composer.addPass(new OutputPass());
+
+/* === 自适应粒子数：根据设备内存决定上限 === */
+const ram = (navigator.deviceMemory || 4);
+let MAX_PARTICLES;
+if (ram >= 16) MAX_PARTICLES = 55000000;
+else if (ram >= 8) MAX_PARTICLES = 35000000;
+else MAX_PARTICLES = 18000000;
+document.getElementById('ramInfo').textContent = ram + ' GB';
+document.getElementById('maxInfo').textContent = MAX_PARTICLES.toLocaleString();
+const slider = document.getElementById('particleSlider');
+slider.max = MAX_PARTICLES;
+slider.value = MAX_PARTICLES;
+
+/* === 随机数 === */
+let _seed = 1337;
+function fr(){ _seed = (_seed * 16807) % 2147483647; return _seed / 2147483647; }
+function fg(){ let u=0,v=0; while(u===0)u=fr(); while(v===0)v=fr(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+
+/* === 参数 === */
+const R_GAL = 5500, R_CORE = 650, N_ARMS = 4, TIGHT = 3.4;
+
+/* === 着色器：紧凑属性 aColor(Uint8 vec4 norm) aSize(Uint8 norm) === */
+const VS = `
+attribute vec4 aColor;
+attribute float aSize;
+varying vec4 vColor;
+uniform float uPixelRatio;
+uniform float uMaxSize;
+void main(){
+  vColor = aColor;
+  vec4 mv = modelViewMatrix * vec4(position, 1.0);
+  gl_PointSize = aSize * uMaxSize * uPixelRatio * (300.0 / max(-mv.z, 1.0));
+  gl_PointSize = max(gl_PointSize, 1.0);
+  gl_Position = projectionMatrix * mv;
+}`;
+const FS = `
+varying vec4 vColor;
+void main(){
+  vec2 uv = gl_PointCoord - 0.5;
+  float d = dot(uv, uv);
+  if(d > 0.25) discard;
+  float s = 1.0 - d * 4.0;
+  float core = s * s;
+  vec3 col = vColor.rgb * core * vColor.a;
+  gl_FragColor = vec4(col, core * vColor.a);
+}`;
+
+/* === 紧凑内存分配 === */
+let pos, col, siz, geometry, material, points;
+try {
+  pos = new Float32Array(MAX_PARTICLES * 3);
+  col = new Uint8Array(MAX_PARTICLES * 4);
+  siz = new Uint8Array(MAX_PARTICLES);
+} catch(e) {
+  document.getElementById('loader').innerHTML = '<div style="color:#ff6a4a;font-family:Orbitron;font-size:14px;text-align:center;letter-spacing:0.15em">内存不足<br><br>请关闭其他标签页后刷新</div>';
+  throw e;
+}
+
+/* === 分块异步生成（避免主线程卡死） === */
+const CHUNK = 1500000;
+let genIndex = 0;
+const pbar = document.getElementById('pbar');
+const pnum = document.getElementById('pnum');
+
+function genChunk(start, end){
+  for(let i = start; i < end; i++){
+    const r1 = fr();
+    let x, y, z, cr, cg, cb, alpha, sz;
+    if(r1 < 0.25){
+      // 棒状核心
+      const r = Math.abs(fg()) * R_CORE * 0.7;
+      const th = fr() * Math.PI * 2;
+      const ph = Math.acos(2*fr()-1);
+      x = r * Math.sin(ph) * Math.cos(th) * 2.2;
+      z = r * Math.sin(ph) * Math.sin(th);
+      y = r * Math.cos(ph) * 0.25;
+      const t = r / (R_CORE * 0.7);
+      cr = 255; cg = Math.round(255 - t*120); cb = Math.round(200 - t*150);
+      alpha = 0.7 + fr()*0.3;
+      sz = 0.55 + fr()*0.35;
+    } else if(r1 < 0.90){
+      // 螺旋臂 + 银盘
+      const armIdx = i % N_ARMS;
+      const armOff = (armIdx / N_ARMS) * Math.PI * 2;
+      const r = -Math.log(fr() || 1e-4) * 1300 + R_CORE * 0.5;
+      const t = Math.min(1.0, r / R_GAL);
+      const baseAng = Math.log(r * 0.01) * TIGHT + armOff;
+      const spread = 0.16 + t * 0.28;
+      const noise = fg() * spread;
+      const ang = baseAng + noise;
+      const fR = r + fg() * (160 + r * 0.05);
+      x = Math.cos(ang) * fR;
+      z = Math.sin(ang) * fR;
+      const thick = 110 * (1.0 - t * 0.8);
+      y = fg() * thick * 0.3 + Math.sin(fR * 0.005) * 12 * t;
+      const dc = Math.abs(noise) / spread;
+      const boost = Math.exp(-dc * dc * 3.0);
+      if(t < 0.3){ cr=255; cg=235; cb=190; }
+      else if(t < 0.7){ cr=217; cg=235; cb=255; }
+      else { cr=153; cg=191; cb=255; }
+      const rc = fr();
+      if(rc < 0.02){ cr=255; cg=102; cb=51; }
+      else if(rc < 0.05){ cr=255; cg=77; cb=128; }
+      const brt = 0.25 + boost * 0.75;
+      cr = Math.min(255, Math.round(cr * brt));
+      cg = Math.min(255, Math.round(cg * brt));
+      cb = Math.min(255, Math.round(cb * brt));
+      alpha = 0.12 + boost * 0.6;
+      sz = 0.4 + fr()*0.4;
+    } else if(r1 < 0.95){
+      // 星云气体
+      const armIdx = i % N_ARMS;
+      const armOff = (armIdx / N_ARMS) * Math.PI * 2;
+      const r = Math.pow(fr(), 0.4) * R_GAL * 0.85 + R_CORE;
+      const baseAng = Math.log(r * 0.01) * TIGHT + armOff;
+      const ang = baseAng + fg() * 0.22;
+      const fR = r + fg() * 220;
+      x = Math.cos(ang) * fR;
+      z = Math.sin(ang) * fR;
+      y = fg() * 32;
+      if(fr() < 0.6){ cr=230; cg=77; cb=128; }
+      else { cr=77; cg=128; cb=230; }
+      alpha = 0.04 + fr()*0.08;
+      sz = 0.75 + fr()*0.25;
+    } else {
+      // 银晕
+      const r = R_GAL * (0.4 + Math.pow(fr(), 0.3) * 0.9);
+      const th = fr() * Math.PI * 2;
+      const ph = Math.acos(2*fr()-1);
+      x = r * Math.sin(ph) * Math.cos(th);
+      z = r * Math.sin(ph) * Math.sin(th);
+      y = r * Math.cos(ph) * 0.85;
+      cr = 153 + Math.round(fr()*51);
+      cg = 128 + Math.round(fr()*26);
+      cb = 77 + Math.round(fr()*26);
+      alpha = 0.15 + fr()*0.25;
+      sz = 0.3 + fr()*0.3;
+    }
+    pos[i*3] = x;
+    pos[i*3+1] = y;
+    pos[i*3+2] = z;
+    col[i*4] = cr;
+    col[i*4+1] = cg;
+    col[i*4+2] = cb;
+    col[i*4+3] = Math.round(alpha * 255);
+    siz[i] = Math.round(sz * 255);
+  }
+}
+
+function step(){
+  const end = Math.min(genIndex + CHUNK, MAX_PARTICLES);
+  try {
+    genChunk(genIndex, end);
+  } catch(e) {
+    document.getElementById('loader').innerHTML = '<div style="color:#ff6a4a;font-family:Orbitron;font-size:14px;text-align:center">生成失败，内存不足</div>';
+    return;
+  }
+  genIndex = end;
+  const pct = Math.round(genIndex / MAX_PARTICLES * 100);
+  pbar.style.width = pct + '%';
+  pnum.textContent = pct + '%';
+  if(genIndex < MAX_PARTICLES){
+    setTimeout(step, 1);
+  } else {
+    finalize();
+  }
+}
+
+function finalize(){
+  geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const colorAttr = new THREE.BufferAttribute(col, 4);
+  colorAttr.normalized = true;
+  geometry.setAttribute('aColor', colorAttr);
+  const sizeAttr = new THREE.BufferAttribute(siz, 1);
+  sizeAttr.normalized = true;
+  geometry.setAttribute('aSize', sizeAttr);
+  geometry.setDrawRange(0, MAX_PARTICLES);
+  material = new THREE.ShaderMaterial({
+    uniforms: {
+      uPixelRatio: { value: Math.min(devicePixelRatio, 2) },
+      uMaxSize: { value: 28.0 }
+    },
+    vertexShader: VS,
+    fragmentShader: FS,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
+  points = new THREE.Points(geometry, material);
+  scene.add(points);
+  document.getElementById('starCount').textContent = MAX_PARTICLES.toLocaleString();
+  document.getElementById('sliderVal').textContent = MAX_PARTICLES.toLocaleString();
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hidden');
+    animate();
+  }, 300);
+}
+
+/* === 滑块控制渲染粒子数 === */
+slider.addEventListener('input', () => {
+  const v = parseInt(slider.value);
+  document.getElementById('sliderVal').textContent = v.toLocaleString();
+  document.getElementById('starCount').textContent = v.toLocaleString();
+  if(geometry) geometry.setDrawRange(0, v);
+});
+
+/* === UI 按钮 === */
+const btnRotate = document.getElementById('btnRotate');
+const btnReset = document.getElementById('btnReset');
+const btnTop = document.getElementById('btnTop');
+btnRotate.addEventListener('click', () => {
+  controls.autoRotate = !controls.autoRotate;
+  btnRotate.classList.toggle('active', controls.autoRotate);
+});
+function animateCam(tp, la){
+  const sp = camera.position.clone();
+  const st = controls.target.clone();
+  const dur = 2000;
+  const t0 = performance.now();
+  controls.autoRotate = false;
+  btnRotate.classList.remove('active');
+  (function tick(){
+    const t = Math.min(1, (performance.now() - t0) / dur);
+    const e = t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2;
+    camera.position.lerpVectors(sp, tp, e);
+    controls.target.lerpVectors(st, la, e);
+    controls.update();
+    if(t < 1) requestAnimationFrame(tick);
+  })();
+}
+btnReset.addEventListener('click', () => animateCam(new THREE.Vector3(0,2200,5000), new THREE.Vector3(0,0,0)));
+btnTop.addEventListener('click', () => animateCam(new THREE.Vector3(0,9000,0.1), new THREE.Vector3(0,0,0)));
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+  composer.setSize(innerWidth, innerHeight);
+});
+
+/* === 主循环 === */
+const clock = new THREE.Clock();
+let fc = 0, lt = performance.now();
+const distEl = document.getElementById('distance');
+const fpsEl = document.getElementById('fps');
+function animate(){
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+  if(points) points.rotation.y = t * 0.01;
+  controls.update();
+  composer.render();
+  fc++;
+  const now = performance.now();
+  if(now - lt > 500){
+    fpsEl.textContent = Math.round(fc * 1000 / (now - lt));
+    fc = 0; lt = now;
+  }
+  distEl.textContent = Math.round(camera.position.length() * 3.2).toLocaleString() + ' LY';
+}
+
+/* === 启动生成 === */
+step();
+</script>
+</body>
+</html>
