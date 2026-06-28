@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>我的世界 稳定多人联机版</title>
+    <title>我的世界 流程修复版</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; touch-action: none; user-select: none; }
         body { overflow: hidden; font-family: sans-serif; background: #1a1a1a; color: #fff; }
         canvas { display: block; position: absolute; top: 0; left: 0; }
 
-        /* 菜单 */
         #menu { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #222; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
         .panel { background: #333; padding: 20px; border-radius: 8px; width: 90%; max-width: 450px; box-shadow: 0 0 20px #000; text-align: center; }
         h1 { color: #5d9b41; margin-bottom: 5px; }
@@ -23,14 +22,12 @@
         button.danger { background: #a33; }
         .log { color: #ffa; font-size: 12px; margin-top: 5px; min-height: 20px; text-align: left; }
         
-        /* 游戏UI */
         #game-ui { position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 10; display: none; }
         #cross { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 24px; height: 24px; }
         #cross::before, #cross::after { content: ''; position: absolute; background: #fff; }
         #cross::before { width: 2px; height: 100%; left: 11px; }
         #cross::after { width: 100%; height: 2px; top: 11px; }
 
-        /* 手机控制 */
         #ctrl { position: absolute; bottom: 0; left: 0; width: 100%; height: 30%; z-index: 20; display: flex; justify-content: space-between; padding: 20px; }
         #joy-zone { width: 120px; height: 120px; position: relative; }
         #joy-base { width: 100%; height: 100%; background: rgba(255,255,255,0.1); border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); }
@@ -39,7 +36,6 @@
         #act-zone { display: flex; flex-direction: column; gap: 10px; pointer-events: auto; }
         .b { width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid rgba(255,255,255,0.4); color: #fff; }
 
-        /* 聊天与玩家列表 */
         #hud { position: absolute; top: 10px; left: 10px; pointer-events: none; }
         #plist { font-size: 12px; color: #0f0; margin-bottom: 5px; }
         #chat { width: 50%; }
@@ -50,19 +46,18 @@
 </head>
 <body>
 
-<!-- 强制加载 Three.js (使用传统标签，解决 Import 报错) -->
 <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
 <script>
     if (!window.THREE) {
-        document.body.innerHTML = "<div style='padding:20px;color:red;text-align:center;'>核心引擎加载失败！请检查网络，刷新重试。</div>";
+        document.body.innerHTML = "<div style='padding:20px;color:red;text-align:center;'>核心引擎加载失败！请检查网络刷新重试。</div>";
         throw new Error("Three.js missing");
     }
 </script>
 
 <div id="menu">
     <div class="panel">
-        <h1>我的世界 稳定版</h1>
-        <div class="sub">支持多人联机 | 修复连接失败</div>
+        <h1>我的世界 流程修复版</h1>
+        <div class="sub">已修复“流程错误”问题 | 支持多人</div>
         
         <input type="text" id="uname" placeholder="你的昵称" value="Player">
         
@@ -70,16 +65,23 @@
         <div style="margin-top:10px; border-top:1px solid #555; padding-top:10px;">
             <button id="btn-host">创建房间 (我是主机)</button>
             <div id="host-ui" style="display:none;">
-                <div class="log" id="log-host">正在生成邀请码...</div>
-                <textarea id="offer-out" readonly placeholder="邀请码 (发给想加入的人)"></textarea>
-                <button class="secondary" onclick="copy('offer-out')">复制邀请码</button>
+                <div class="log" id="log-host">状态：等待操作</div>
                 
-                <div style="margin-top:10px;">
-                    <input type="text" id="ans-in" placeholder="粘贴客机的回执码">
-                    <button id="btn-conn">连接该玩家</button>
+                <!-- 步骤1：生成邀请码 -->
+                <div id="step1">
+                    <button id="btn-gen">1. 生成邀请码</button>
+                    <textarea id="offer-out" readonly placeholder="点击上方按钮生成..."></textarea>
+                    <button class="secondary" onclick="copy('offer-out')">复制邀请码发给好友</button>
                 </div>
-                <div class="log" style="color:#afa">提示：连入一人后，需再次点击“生成新邀请码”接待下一位。</div>
-                <button id="btn-next" class="danger" style="display:none;">接待下一位玩家 (生成新码)</button>
+                
+                <!-- 步骤2：接收回执 -->
+                <div style="margin-top:10px;">
+                    <input type="text" id="ans-in" placeholder="2. 粘贴好友发回的回执码">
+                    <button id="btn-conn">3. 确认连接该玩家</button>
+                </div>
+                
+                <!-- 步骤3：接待下一位 -->
+                <button id="btn-next" class="danger" style="display:none;">已连入一人！点击接待下一位</button>
             </div>
         </div>
 
@@ -87,11 +89,11 @@
         <div style="margin-top:20px; border-top:1px solid #555; padding-top:10px;">
             <button id="btn-guest">加入房间 (我是客机)</button>
             <div id="guest-ui" style="display:none;">
-                <input type="text" id="offer-in" placeholder="粘贴主机的邀请码">
-                <button id="btn-ans">生成回执</button>
                 <div class="log" id="log-guest">等待操作...</div>
+                <input type="text" id="offer-in" placeholder="1. 粘贴主机的邀请码">
+                <button id="btn-ans">2. 生成回执</button>
                 <textarea id="ans-out" readonly style="display:none;" placeholder="回执码 (发回给主机)"></textarea>
-                <button class="secondary" id="btn-copy-ans" style="display:none;" onclick="copy('ans-out')">复制回执</button>
+                <button class="secondary" id="btn-copy-ans" style="display:none;" onclick="copy('ans-out')">复制回执发给主机</button>
             </div>
         </div>
     </div>
@@ -123,135 +125,108 @@ const $ = id => document.getElementById(id);
 const isMob = /Mobile|Android|iPhone/i.test(navigator.userAgent);
 
 // ================= 核心变量 =================
-let scene, cam, ren, clock;
-let world = {}; // 地形数据
-let meshGroups = {}; // 渲染网格
+let scene, cam, ren;
+let world = {}; 
 let me = { name: "Player", pos: new THREE.Vector3(0, 30, 0), vel: new THREE.Vector3(), yaw: 0, pitch: 0, ground: false };
-let peers = {}; // 其他玩家 { id: { mesh, name } }
-let connList = []; // 主机维护的连接列表
-let myConn = null; // 客机的连接
+let peers = {};
+let active_cons = []; // 已建立的连接列表
+let pending_pc = null; // 【关键修复】正在等待连接的 PC 对象
 let isHost = false;
 
-// ================= 联机核心 (手动多人版) =================
-// 彻底解决的逻辑：主机为每个人生成特定的 Offer
+// ================= 联机逻辑 (修复版) =================
 
-// 工具函数：等待 ICE 收集完成 (关键！解决连接失败)
 async function waitICE(pc) {
     return new Promise((resolve) => {
         if (pc.iceGatheringState === 'complete') resolve();
         else {
-            pc.onicegatheringstatechange = () => {
-                if (pc.iceGatheringState === 'complete') resolve();
-            };
-            // 兜底超时
-            setTimeout(resolve, 10000); 
+            pc.onicegatheringstatechange = () => { if (pc.iceGatheringState === 'complete') resolve(); };
+            setTimeout(resolve, 8000); 
         }
     });
 }
 
 function copy(id) {
-    const t = $(id);
-    navigator.clipboard.writeText(t.value).then(() => alert("已复制！"));
+    navigator.clipboard.writeText($(id).value).then(() => alert("已复制！"));
 }
 
-// --- 主机逻辑 ---
-$('btn-host').onclick = async () => {
+// --- 主机流程 ---
+$('btn-host').onclick = () => {
     me.name = $('uname').value || "Host";
     isHost = true;
     $('host-ui').style.display = 'block';
     $('btn-host').style.display = 'none';
     $('btn-guest').style.display = 'none';
-    $('log-host').innerText = "正在初始化...";
-    createOffer(); // 开始生成第一个码
+    $('step1').style.display = 'block'; // 显示第一步
+    $('btn-next').style.display = 'none';
 };
 
-async function createOffer() {
-    $('log-host').innerText = "正在生成邀请码 (需10秒左右)...";
-    const pc = new RTCPeerConnection({ iceServers: [{urls: 'stun:stun.l.google.com:19302'}] });
+// 生成邀请码 (核心修复：保存 pending_pc)
+$('btn-gen').onclick = async () => {
+    $('log-host').innerText = "正在生成邀请码 (需几秒钟)...";
+    $('offer-out').value = "";
     
-    // 创建数据通道
+    const pc = new RTCPeerConnection({ iceServers: [{urls: 'stun:stun.l.google.com:19302'}] });
+    pending_pc = pc; // 【修复点】必须保存到全局变量！
+    
     const dc = pc.createDataChannel('game');
     
-    // 监听连接成功
+    // 预先绑定通道事件
     dc.onopen = () => {
-        $('log-host').innerText = "玩家连接成功！";
-        connList.push(dc);
+        $('log-host').innerText = "连接成功！玩家已进入。";
+        active_cons.push(dc);
         dc.send(JSON.stringify({ t: 'init', name: me.name }));
-        // 发送当前世界状态给新人
         sendWorldData(dc);
+        updatePlayerList();
         
-        // 显示“接待下一位”按钮
-        $('btn-next').style.display = 'block';
-        $('ans-in').value = ''; // 清空输入框
+        // 切换UI状态
+        $('step1').style.display = 'none';
+        $('btn-next').style.display = 'block'; // 显示“接待下一位”
+        $('ans-in').value = '';
     };
-    
     dc.onmessage = e => handleMsg(e.data, dc);
     
-    // 创建 Offer
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
-    
-    // 等待 ICE 完全收集 (这是解决连接失败的核心)
     await waitICE(pc);
     
     $('offer-out').value = btoa(JSON.stringify(pc.localDescription));
-    $('log-host').innerText = "邀请码已生成！请发给一位好友。";
-}
+    $('log-host').innerText = "邀请码已生成！请发给好友。";
+};
 
+// 连接玩家
 $('btn-conn').onclick = async () => {
     const code = $('ans-in').value.trim();
     if(!code) return alert("请粘贴回执码");
-    $('log-host').innerText = "正在连接...";
-    // 注意：这里的 pc 是刚才生成 offer 时保存的，我们需要重建或者保存之前的 pc 实例。
-    // 为了简化代码逻辑，我们在 createOffer 时保存 pc 到临时变量
     
+    if(!pending_pc) {
+        alert("流程错误：找不到等待中的连接。请先点击‘生成邀请码’。");
+        return;
+    }
+    
+    $('log-host').innerText = "正在连接...";
     try {
-        // 重新获取上次生成 offer 的 pc (这里需要优化逻辑，为了简单我们临时存全局)
-        const pc = window._temp_pc; 
-        if(!pc) return alert("流程错误，请重新生成邀请码");
-        
         const answer = JSON.parse(atob(code));
-        await pc.setRemoteDescription(answer);
-        $('log-host').innerText = "正在建立通道...";
+        await pending_pc.setRemoteDescription(answer);
+        $('log-host').innerText = "正在建立通道，请稍候...";
     } catch(e) {
         $('log-host').innerText = "连接失败: " + e.message;
+        // 失败后重置，允许重新生成
+        pending_pc = null;
+        $('step1').style.display = 'block';
+        $('btn-next').style.display = 'none';
     }
 };
 
-// 重写生成逻辑，保存 pc 实例
-async function generateCode() {
+// 接待下一位 (重置流程)
+$('btn-next').onclick = () => {
+    pending_pc = null; // 清空旧的
     $('btn-next').style.display = 'none';
-    $('log-host').innerText = "正在为新玩家生成邀请码...";
-    
-    const pc = new RTCPeerConnection({ iceServers: [{urls: 'stun:stun.l.google.com:19302'}] });
-    window._temp_pc = pc; // 存起来
-    
-    const dc = pc.createDataChannel('game');
-    setupChannel(dc); // 复用通道处理逻辑
-    
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-    await waitICE(pc);
-    
-    $('offer-out').value = btoa(JSON.stringify(pc.localDescription));
-    $('log-host').innerText = "新邀请码已生成！发给下一位好友。";
-}
+    $('step1').style.display = 'block';
+    $('log-host').innerText = "准备接待新玩家...";
+    $('btn-gen').click(); // 自动帮用户生成新码
+};
 
-$('btn-next').onclick = generateCode;
-
-function setupChannel(dc) {
-    dc.onopen = () => {
-        connList.push(dc);
-        dc.send(JSON.stringify({ t: 'init', name: me.name }));
-        sendWorldData(dc);
-        $('log-host').innerText = "新玩家已连接！";
-        $('btn-next').style.display = 'block';
-        updatePlayerList();
-    };
-    dc.onmessage = e => handleMsg(e.data, dc);
-}
-
-// --- 客机逻辑 ---
+// --- 客机流程 ---
 $('btn-guest').onclick = () => {
     me.name = $('uname').value || "Guest";
     isHost = false;
@@ -268,13 +243,14 @@ $('btn-ans').onclick = async () => {
     const pc = new RTCPeerConnection({ iceServers: [{urls: 'stun:stun.l.google.com:19302'}] });
     
     pc.ondatachannel = e => {
-        myConn = e.channel;
-        myConn.onopen = () => {
+        const dc = e.channel;
+        dc.onopen = () => {
             $('log-guest').innerText = "连接成功！";
+            active_cons.push(dc); // 客机只维护一个连接
             startGame();
-            myConn.send(JSON.stringify({ t: 'init', name: me.name }));
+            dc.send(JSON.stringify({ t: 'init', name: me.name }));
         };
-        myConn.onmessage = ev => handleMsg(ev.data, myConn);
+        dc.onmessage = ev => handleMsg(ev.data, dc);
     };
     
     try {
@@ -283,7 +259,6 @@ $('btn-ans').onclick = async () => {
         
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
-        
         await waitICE(pc);
         
         $('ans-out').value = btoa(JSON.stringify(pc.localDescription));
@@ -295,40 +270,30 @@ $('btn-ans').onclick = async () => {
     }
 };
 
-// ================= 消息处理 =================
+// ================= 数据处理 =================
 function handleMsg(data, conn) {
     try {
         const msg = JSON.parse(data);
-        // 主机收到消息，广播给其他人
         if(isHost) {
-            connList.forEach(c => { if(c !== conn && c.readyState === 'open') c.send(data); });
+            // 主机收到消息，广播给其他人 (排除发送者)
+            active_cons.forEach(c => { if(c !== conn && c.readyState === 'open') c.send(data); });
         }
 
         if(msg.t === 'init') {
-            createPlayerModel(msg.name, msg.name); // id就用name，简单处理
-            if(!isHost) updatePlayerList();
+            createPlayerModel(msg.name, msg.name);
+            updatePlayerList();
         }
-        if(msg.t === 'pos') {
-            updatePlayerModel(msg.name, msg.p);
-        }
-        if(msg.t === 'blk') {
-            updateBlock(msg.x, msg.y, msg.z, msg.v, false);
-        }
-        if(msg.t === 'chat') {
-            addChat(msg.name, msg.k);
-        }
+        if(msg.t === 'pos') updatePlayerModel(msg.name, msg.p);
+        if(msg.t === 'blk') updateBlock(msg.x, msg.y, msg.z, msg.v, false);
+        if(msg.t === 'chat') addChat(msg.name, msg.k);
         if(msg.t === 'world') {
-            // 客机接收世界数据
-            if(!isHost) {
-                world = msg.data;
-                rebuildMesh();
-            }
+            world = msg.data;
+            rebuildMesh();
         }
-    } catch(e) {}
+    } catch(e){}
 }
 
 function sendWorldData(conn) {
-    // 发送地形数据 (简化版：只发送存在的方块键值)
     const data = {};
     for(let k in world) data[k] = world[k];
     conn.send(JSON.stringify({ t: 'world', data: data }));
@@ -336,19 +301,15 @@ function sendWorldData(conn) {
 
 function broadcast(msg) {
     const str = JSON.stringify(msg);
-    if(isHost) {
-        connList.forEach(c => { if(c.readyState === 'open') c.send(str); });
-    } else if(myConn && myConn.readyState === 'open') {
-        myConn.send(str);
-    }
+    active_cons.forEach(c => { if(c.readyState === 'open') c.send(str); });
 }
 
 function updatePlayerList() {
-    let count = isHost ? connList.length + 1 : Object.keys(peers).length + 1;
+    let count = active_cons.length + 1;
     $('plist').innerText = `在线: ${count}人`;
 }
 
-// ================= 游戏核心 =================
+// ================= 游戏引擎 =================
 function startGame() {
     $('menu').style.display = 'none';
     $('game-ui').style.display = 'block';
@@ -365,7 +326,6 @@ function initScene() {
     ren = new THREE.WebGLRenderer({ antialias: true });
     ren.setSize(innerWidth, innerHeight);
     document.body.appendChild(ren.domElement);
-    
     scene.add(new THREE.AmbientLight(0xffffff, 0.6));
     const sun = new THREE.DirectionalLight(0xffffff, 0.6);
     sun.position.set(50, 100, 50);
@@ -373,7 +333,6 @@ function initScene() {
 }
 
 function genWorld() {
-    // 地形数据生成
     for(let x=-10; x<=10; x++) {
         for(let z=-10; z<=10; z++) {
             let h = Math.floor(Math.sin(x*0.2)*Math.cos(z*0.2)*3 + 10);
@@ -386,15 +345,12 @@ function genWorld() {
 }
 
 function rebuildMesh() {
-    // 性能优化：合并网格
-    scene.children = scene.children.filter(c => !c.isInstancedMesh); // 清除旧方块
-    
+    scene.children = scene.children.filter(c => !c.isInstancedMesh);
     const geo = new THREE.BoxGeometry(1,1,1);
     const mat = new THREE.MeshLambertMaterial({color: 0x5a5});
     const count = Object.keys(world).length;
     const mesh = new THREE.InstancedMesh(geo, mat, count);
     scene.add(mesh);
-    
     const m = new THREE.Matrix4();
     let i = 0;
     for(let k in world) {
@@ -407,30 +363,21 @@ function rebuildMesh() {
 
 function updateBlock(x, y, z, v, sync=true) {
     const k = `${x},${y},${z}`;
-    if(v === 0) delete world[k];
-    else world[k] = v;
-    
-    rebuildMesh(); // 简单暴力重绘，确保多人同步一致
-    
+    if(v === 0) delete world[k]; else world[k] = v;
+    rebuildMesh();
     if(sync) broadcast({ t: 'blk', x, y, z, v });
 }
 
-// ================= 玩家模型 =================
 function createPlayerModel(name, id) {
     if(peers[id]) return;
     const g = new THREE.Group();
-    
-    // 头
     const head = new THREE.Mesh(new THREE.BoxGeometry(0.6,0.6,0.6), new THREE.MeshLambertMaterial({color: 0xffcc99}));
     head.position.y = 1.4;
     g.add(head);
-    
-    // 身体
     const body = new THREE.Mesh(new THREE.BoxGeometry(0.6,0.8,0.3), new THREE.MeshLambertMaterial({color: new THREE.Color().setHSL(Math.random(), 0.6, 0.5)}));
     body.position.y = 0.8;
     g.add(body);
     
-    // 名字 (Sprite)
     const canvas = document.createElement('canvas');
     canvas.width = 256; canvas.height = 64;
     const ctx = canvas.getContext('2d');
@@ -446,7 +393,6 @@ function createPlayerModel(name, id) {
     
     scene.add(g);
     peers[id] = g;
-    updatePlayerList();
 }
 
 function updatePlayerModel(id, pos) {
@@ -454,10 +400,16 @@ function updatePlayerModel(id, pos) {
     peers[id].position.set(pos.x, pos.y-1.0, pos.z);
 }
 
+function addChat(name, txt) {
+    const d = document.createElement('div');
+    d.className = 'msg';
+    d.innerText = name + ": " + txt;
+    $('chat').appendChild(d);
+    setTimeout(() => d.remove(), 10000);
+}
+
 // ================= 控制与物理 =================
 function setupCtrl() {
-    clock = new THREE.Clock();
-    
     if(isMob) {
         let joy = { active: false, x:0, y:0 };
         const base = $('joy-base'), thumb = $('joy-thumb');
@@ -465,31 +417,23 @@ function setupCtrl() {
         $('joy-zone').ontouchstart = e => {
             e.preventDefault();
             joy.active = true;
-            // 重置摇杆视觉位置到触摸点
             const rect = $('joy-zone').getBoundingClientRect();
-            const cx = e.touches[0].clientX - rect.left;
-            const cy = e.touches[0].clientY - rect.top;
-            base.style.left = cx + 'px';
-            base.style.top = cy + 'px';
-            thumb.style.left = cx + 'px';
-            thumb.style.top = cy + 'px';
-            joy.cx = cx; joy.cy = cy;
+            joy.cx = e.touches[0].clientX - rect.left;
+            joy.cy = e.touches[0].clientY - rect.top;
+            thumb.style.left = joy.cx + 'px';
+            thumb.style.top = joy.cy + 'px';
         };
         $('joy-zone').ontouchmove = e => {
             if(!joy.active) return;
-            const t = e.touches[0];
             const rect = $('joy-zone').getBoundingClientRect();
-            const tx = t.clientX - rect.left;
-            const ty = t.clientY - rect.top;
-            
+            const tx = e.touches[0].clientX - rect.left;
+            const ty = e.touches[0].clientY - rect.top;
             const dx = tx - joy.cx;
             const dy = ty - joy.cy;
             const dist = Math.min(40, Math.hypot(dx, dy));
             const ang = Math.atan2(dy, dx);
-            
             thumb.style.left = joy.cx + Math.cos(ang)*dist + 'px';
             thumb.style.top = joy.cy + Math.sin(ang)*dist + 'px';
-            
             joy.x = Math.cos(ang) * (dist/40);
             joy.y = Math.sin(ang) * (dist/40);
         };
@@ -502,7 +446,6 @@ function setupCtrl() {
             }
         }, 16);
 
-        // 视角控制 (触摸移动)
         let lastT = null;
         document.ontouchstart = e => { if(e.target.id.startsWith('b')) return; lastT = e.touches[0]; };
         document.ontouchmove = e => {
@@ -517,7 +460,6 @@ function setupCtrl() {
         $('b-q').ontouchstart = () => hit(false);
         $('b-p').ontouchstart = () => hit(true);
     } else {
-        // PC 控制
         document.addEventListener('click', () => ren.domElement.requestPointerLock());
         document.addEventListener('mousemove', e => {
             if(document.pointerLockElement) {
@@ -550,27 +492,20 @@ function setupCtrl() {
                 }
             }
         });
-        document.addEventListener('mousedown', e => {
-            if(document.pointerLockElement) hit(e.button===2);
-        });
+        document.addEventListener('mousedown', e => { if(document.pointerLockElement) hit(e.button===2); });
     }
-    
-    // 物理主循环
     setInterval(tick, 16);
 }
 
 function tick() {
     if(!scene) return;
-    
-    me.vel.y -= 0.01; // 重力
+    me.vel.y -= 0.01;
     me.pos.x += me.vel.x;
     me.pos.y += me.vel.y;
     me.pos.z += me.vel.z;
     
-    // 碰撞检测
     me.ground = false;
     const feetY = me.pos.y - 1.6;
-    // 检测脚下方块
     const key = `${Math.floor(me.pos.x)},${Math.floor(feetY)},${Math.floor(me.pos.z)}`;
     if(world[key]) {
         me.pos.y = Math.floor(feetY) + 2.6;
@@ -578,30 +513,11 @@ function tick() {
         me.ground = true;
     }
     
-    // 水平碰撞简易版
-    const hw = 0.3;
-    const keys = [
-        `${Math.floor(me.pos.x+hw)},${Math.floor(feetY)},${Math.floor(me.pos.z)}`,
-        `${Math.floor(me.pos.x-hw)},${Math.floor(feetY)},${Math.floor(me.pos.z)}`,
-        `${Math.floor(me.pos.x)},${Math.floor(feetY)},${Math.floor(me.pos.z+hw)}`,
-        `${Math.floor(me.pos.x)},${Math.floor(feetY)},${Math.floor(me.pos.z-hw)}`,
-    ];
-    keys.forEach(k => {
-        if(world[k]) {
-            // 简单推出
-            const bx = Math.floor(me.pos.x);
-            const bz = Math.floor(me.pos.z);
-            if(Math.abs(me.pos.x - bx) > Math.abs(me.pos.z - bz)) me.pos.x = bx + (me.pos.x > bx ? 0.6 : -0.6);
-            else me.pos.z = bz + (me.pos.z > bz ? 0.6 : -0.6);
-        }
-    });
-    
     me.vel.x *= 0.8;
     me.vel.z *= 0.8;
     
     if(me.pos.y < -10) { me.pos.set(0, 30, 0); me.vel.set(0,0,0); }
     
-    // 网络同步
     if(Math.random() < 0.2) {
         broadcast({ t: 'pos', name: me.name, p: { x: me.pos.x, y: me.pos.y, z: me.pos.z, yaw: me.yaw } });
     }
@@ -626,13 +542,7 @@ function hit(place) {
     }
 }
 
-function addChat(name, txt) {
-    const d = document.createElement('div');
-    d.className = 'msg';
-    d.innerText = name + ": " + txt;
-    $('chat').appendChild(d);
-    setTimeout(() => d.remove(), 10000);
-}
+const raycaster = new THREE.Raycaster();
 
 function anim() {
     requestAnimationFrame(anim);
