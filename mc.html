@@ -3,31 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>我的世界 流程修复版</title>
+    <title>我的世界 无限地图联机版</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; touch-action: none; user-select: none; }
         body { overflow: hidden; font-family: sans-serif; background: #1a1a1a; color: #fff; }
         canvas { display: block; position: absolute; top: 0; left: 0; }
 
+        /* 菜单样式 */
         #menu { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #222; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
         .panel { background: #333; padding: 20px; border-radius: 8px; width: 90%; max-width: 450px; box-shadow: 0 0 20px #000; text-align: center; }
         h1 { color: #5d9b41; margin-bottom: 5px; }
         .sub { color: #888; font-size: 12px; margin-bottom: 10px; }
         
         input, textarea { width: 100%; padding: 10px; margin: 5px 0; background: #222; border: 1px solid #555; color: #fff; border-radius: 4px; font-size: 14px; }
-        textarea { height: 100px; resize: none; font-family: monospace; font-size: 10px; word-break: break-all; }
+        textarea { height: 80px; resize: none; font-family: monospace; font-size: 10px; word-break: break-all; }
         button { width: 100%; padding: 12px; margin-top: 8px; background: #4a9a4a; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 16px; }
         button:active { background: #3a8a3a; }
         button.secondary { background: #555; }
         button.danger { background: #a33; }
         .log { color: #ffa; font-size: 12px; margin-top: 5px; min-height: 20px; text-align: left; }
         
+        /* 游戏界面 */
         #game-ui { position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 10; display: none; }
         #cross { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 24px; height: 24px; }
         #cross::before, #cross::after { content: ''; position: absolute; background: #fff; }
         #cross::before { width: 2px; height: 100%; left: 11px; }
         #cross::after { width: 100%; height: 2px; top: 11px; }
 
+        /* 手机控制 */
         #ctrl { position: absolute; bottom: 0; left: 0; width: 100%; height: 30%; z-index: 20; display: flex; justify-content: space-between; padding: 20px; }
         #joy-zone { width: 120px; height: 120px; position: relative; }
         #joy-base { width: 100%; height: 100%; background: rgba(255,255,255,0.1); border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); }
@@ -36,6 +39,7 @@
         #act-zone { display: flex; flex-direction: column; gap: 10px; pointer-events: auto; }
         .b { width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid rgba(255,255,255,0.4); color: #fff; }
 
+        /* HUD */
         #hud { position: absolute; top: 10px; left: 10px; pointer-events: none; }
         #plist { font-size: 12px; color: #0f0; margin-bottom: 5px; }
         #chat { width: 50%; }
@@ -46,59 +50,62 @@
 </head>
 <body>
 
+<!-- 加载 Three.js -->
 <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
 <script>
     if (!window.THREE) {
-        document.body.innerHTML = "<div style='padding:20px;color:red;text-align:center;'>核心引擎加载失败！请检查网络刷新重试。</div>";
+        document.body.innerHTML = "<div style='padding:20px;color:red;text-align:center;'>引擎加载失败！请刷新或检查网络。</div>";
         throw new Error("Three.js missing");
     }
 </script>
 
+<!-- 菜单界面 -->
 <div id="menu">
     <div class="panel">
-        <h1>我的世界 流程修复版</h1>
-        <div class="sub">已修复“流程错误”问题 | 支持多人</div>
+        <h1>我的世界 无限版</h1>
+        <div class="sub">动态地图生成 | 修复多人连接</div>
         
         <input type="text" id="uname" placeholder="你的昵称" value="Player">
         
-        <!-- 主机区 -->
+        <!-- 主机 -->
         <div style="margin-top:10px; border-top:1px solid #555; padding-top:10px;">
-            <button id="btn-host">创建房间 (我是主机)</button>
+            <button id="btn-host">创建房间 (主机)</button>
             <div id="host-ui" style="display:none;">
-                <div class="log" id="log-host">状态：等待操作</div>
+                <div class="log" id="log-host">等待操作...</div>
                 
-                <!-- 步骤1：生成邀请码 -->
+                <!-- 步骤1 -->
                 <div id="step1">
                     <button id="btn-gen">1. 生成邀请码</button>
-                    <textarea id="offer-out" readonly placeholder="点击上方按钮生成..."></textarea>
-                    <button class="secondary" onclick="copy('offer-out')">复制邀请码发给好友</button>
+                    <textarea id="offer-out" readonly placeholder="邀请码..."></textarea>
+                    <button class="secondary" onclick="copy('offer-out')">复制邀请码</button>
                 </div>
                 
-                <!-- 步骤2：接收回执 -->
+                <!-- 步骤2 -->
                 <div style="margin-top:10px;">
-                    <input type="text" id="ans-in" placeholder="2. 粘贴好友发回的回执码">
-                    <button id="btn-conn">3. 确认连接该玩家</button>
+                    <input type="text" id="ans-in" placeholder="粘贴好友的回执码">
+                    <button id="btn-conn">连接该玩家</button>
                 </div>
                 
-                <!-- 步骤3：接待下一位 -->
+                <!-- 步骤3 -->
                 <button id="btn-next" class="danger" style="display:none;">已连入一人！点击接待下一位</button>
             </div>
         </div>
 
-        <!-- 客机区 -->
+        <!-- 客机 -->
         <div style="margin-top:20px; border-top:1px solid #555; padding-top:10px;">
-            <button id="btn-guest">加入房间 (我是客机)</button>
+            <button id="btn-guest">加入房间 (客机)</button>
             <div id="guest-ui" style="display:none;">
                 <div class="log" id="log-guest">等待操作...</div>
-                <input type="text" id="offer-in" placeholder="1. 粘贴主机的邀请码">
-                <button id="btn-ans">2. 生成回执</button>
-                <textarea id="ans-out" readonly style="display:none;" placeholder="回执码 (发回给主机)"></textarea>
-                <button class="secondary" id="btn-copy-ans" style="display:none;" onclick="copy('ans-out')">复制回执发给主机</button>
+                <input type="text" id="offer-in" placeholder="粘贴主机的邀请码">
+                <button id="btn-ans">生成回执</button>
+                <textarea id="ans-out" readonly style="display:none;" placeholder="回执码..."></textarea>
+                <button class="secondary" id="btn-copy-ans" style="display:none;" onclick="copy('ans-out')">复制回执</button>
             </div>
         </div>
     </div>
 </div>
 
+<!-- 游戏界面 -->
 <div id="game-ui">
     <div id="hud">
         <div id="plist">在线: 1人</div>
@@ -126,21 +133,25 @@ const isMob = /Mobile|Android|iPhone/i.test(navigator.userAgent);
 
 // ================= 核心变量 =================
 let scene, cam, ren;
-let world = {}; 
+let world = {}; // 存储被修改的方块 (破坏或放置)
+let chunks = {}; // 存储地形网格 (动态生成)
 let me = { name: "Player", pos: new THREE.Vector3(0, 30, 0), vel: new THREE.Vector3(), yaw: 0, pitch: 0, ground: false };
 let peers = {};
-let active_cons = []; // 已建立的连接列表
-let pending_pc = null; // 【关键修复】正在等待连接的 PC 对象
+let connections = []; // 【关键修复】存储所有已建立的连接
+let pending_pc = null; // 当前正在等待连接的PC对象
 let isHost = false;
+const SEED = 12345; // 世界种子 (保证所有人地形一致)
+const CHUNK_SIZE = 16; // 区块大小
+const RENDER_DIST = 3; // 渲染半径 (3 = 48x48格)
 
-// ================= 联机逻辑 (修复版) =================
+// ================= 联机逻辑 (彻底修复多人连接) =================
 
 async function waitICE(pc) {
     return new Promise((resolve) => {
         if (pc.iceGatheringState === 'complete') resolve();
         else {
             pc.onicegatheringstatechange = () => { if (pc.iceGatheringState === 'complete') resolve(); };
-            setTimeout(resolve, 8000); 
+            setTimeout(resolve, 10000); 
         }
     });
 }
@@ -149,40 +160,46 @@ function copy(id) {
     navigator.clipboard.writeText($(id).value).then(() => alert("已复制！"));
 }
 
-// --- 主机流程 ---
+// --- 主机逻辑 ---
 $('btn-host').onclick = () => {
     me.name = $('uname').value || "Host";
     isHost = true;
     $('host-ui').style.display = 'block';
     $('btn-host').style.display = 'none';
     $('btn-guest').style.display = 'none';
-    $('step1').style.display = 'block'; // 显示第一步
+    $('step1').style.display = 'block';
     $('btn-next').style.display = 'none';
+    $('log-host').innerText = "准备就绪，点击生成邀请码。";
 };
 
-// 生成邀请码 (核心修复：保存 pending_pc)
+// 生成邀请码
 $('btn-gen').onclick = async () => {
-    $('log-host').innerText = "正在生成邀请码 (需几秒钟)...";
+    $('log-host').innerText = "正在生成... (约5秒)";
     $('offer-out').value = "";
     
+    // 创建新的独立连接对象
     const pc = new RTCPeerConnection({ iceServers: [{urls: 'stun:stun.l.google.com:19302'}] });
-    pending_pc = pc; // 【修复点】必须保存到全局变量！
+    pending_pc = pc; // 保存到临时变量
     
     const dc = pc.createDataChannel('game');
     
-    // 预先绑定通道事件
+    // 绑定成功事件
     dc.onopen = () => {
-        $('log-host').innerText = "连接成功！玩家已进入。";
-        active_cons.push(dc);
-        dc.send(JSON.stringify({ t: 'init', name: me.name }));
-        sendWorldData(dc);
+        $('log-host').innerText = "连接成功！玩家已加入。";
+        connections.push(dc); // 【关键修复】加入连接列表，而不是覆盖
+        
+        // 发送初始化数据 (种子 + 已修改方块)
+        dc.send(JSON.stringify({ t: 'init', name: me.name, seed: SEED, mods: world }));
+        
         updatePlayerList();
         
-        // 切换UI状态
+        // UI 切换
         $('step1').style.display = 'none';
-        $('btn-next').style.display = 'block'; // 显示“接待下一位”
+        $('btn-next').style.display = 'block';
         $('ans-in').value = '';
+        pending_pc = null; // 清空临时变量，连接已移交到 connections 列表
     };
+    
     dc.onmessage = e => handleMsg(e.data, dc);
     
     const offer = await pc.createOffer();
@@ -190,43 +207,35 @@ $('btn-gen').onclick = async () => {
     await waitICE(pc);
     
     $('offer-out').value = btoa(JSON.stringify(pc.localDescription));
-    $('log-host').innerText = "邀请码已生成！请发给好友。";
+    $('log-host').innerText = "邀请码已生成！发给好友。";
 };
 
 // 连接玩家
 $('btn-conn').onclick = async () => {
     const code = $('ans-in').value.trim();
-    if(!code) return alert("请粘贴回执码");
-    
-    if(!pending_pc) {
-        alert("流程错误：找不到等待中的连接。请先点击‘生成邀请码’。");
-        return;
-    }
+    if(!code) return alert("请粘贴回执");
+    if(!pending_pc) return alert("流程错误：请先点击生成邀请码");
     
     $('log-host').innerText = "正在连接...";
     try {
         const answer = JSON.parse(atob(code));
         await pending_pc.setRemoteDescription(answer);
-        $('log-host').innerText = "正在建立通道，请稍候...";
+        $('log-host').innerText = "正在建立通道...";
     } catch(e) {
         $('log-host').innerText = "连接失败: " + e.message;
-        // 失败后重置，允许重新生成
-        pending_pc = null;
-        $('step1').style.display = 'block';
-        $('btn-next').style.display = 'none';
     }
 };
 
-// 接待下一位 (重置流程)
+// 接待下一位
 $('btn-next').onclick = () => {
-    pending_pc = null; // 清空旧的
     $('btn-next').style.display = 'none';
     $('step1').style.display = 'block';
-    $('log-host').innerText = "准备接待新玩家...";
-    $('btn-gen').click(); // 自动帮用户生成新码
+    $('log-host').innerText = "准备接待下一位...";
+    // 自动点击生成，简化操作
+    $('btn-gen').click();
 };
 
-// --- 客机流程 ---
+// --- 客机逻辑 ---
 $('btn-guest').onclick = () => {
     me.name = $('uname').value || "Guest";
     isHost = false;
@@ -246,9 +255,8 @@ $('btn-ans').onclick = async () => {
         const dc = e.channel;
         dc.onopen = () => {
             $('log-guest').innerText = "连接成功！";
-            active_cons.push(dc); // 客机只维护一个连接
-            startGame();
-            dc.send(JSON.stringify({ t: 'init', name: me.name }));
+            connections.push(dc);
+            startGame(); // 客机进入游戏
         };
         dc.onmessage = ev => handleMsg(ev.data, dc);
     };
@@ -256,7 +264,6 @@ $('btn-ans').onclick = async () => {
     try {
         const offer = JSON.parse(atob(code));
         await pc.setRemoteDescription(offer);
-        
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
         await waitICE(pc);
@@ -264,7 +271,7 @@ $('btn-ans').onclick = async () => {
         $('ans-out').value = btoa(JSON.stringify(pc.localDescription));
         $('ans-out').style.display = 'block';
         $('btn-copy-ans').style.display = 'block';
-        $('log-guest').innerText = "回执已生成！复制发回给主机。";
+        $('log-guest').innerText = "回执已生成！复制发给主机。";
     } catch(e) {
         $('log-guest').innerText = "解析失败: " + e.message;
     }
@@ -274,47 +281,44 @@ $('btn-ans').onclick = async () => {
 function handleMsg(data, conn) {
     try {
         const msg = JSON.parse(data);
+        // 主机收到消息，转发给所有人 (排除发送者)
         if(isHost) {
-            // 主机收到消息，广播给其他人 (排除发送者)
-            active_cons.forEach(c => { if(c !== conn && c.readyState === 'open') c.send(data); });
+            connections.forEach(c => { if(c !== conn && c.readyState === 'open') c.send(data); });
         }
 
         if(msg.t === 'init') {
+            // 客机收到初始化数据
+            if(!isHost) {
+                // 应用种子 (已内置) 和修改数据
+                world = msg.mods || {};
+                rebuildModifiedBlocks(); // 重绘被修改的方块
+            }
             createPlayerModel(msg.name, msg.name);
             updatePlayerList();
         }
         if(msg.t === 'pos') updatePlayerModel(msg.name, msg.p);
-        if(msg.t === 'blk') updateBlock(msg.x, msg.y, msg.z, msg.v, false);
-        if(msg.t === 'chat') addChat(msg.name, msg.k);
-        if(msg.t === 'world') {
-            world = msg.data;
-            rebuildMesh();
+        if(msg.t === 'blk') {
+            updateBlock(msg.x, msg.y, msg.z, msg.v, false);
         }
+        if(msg.t === 'chat') addChat(msg.name, msg.k);
     } catch(e){}
-}
-
-function sendWorldData(conn) {
-    const data = {};
-    for(let k in world) data[k] = world[k];
-    conn.send(JSON.stringify({ t: 'world', data: data }));
 }
 
 function broadcast(msg) {
     const str = JSON.stringify(msg);
-    active_cons.forEach(c => { if(c.readyState === 'open') c.send(str); });
+    connections.forEach(c => { if(c.readyState === 'open') c.send(str); });
 }
 
 function updatePlayerList() {
-    let count = active_cons.length + 1;
+    let count = connections.length + 1;
     $('plist').innerText = `在线: ${count}人`;
 }
 
-// ================= 游戏引擎 =================
+// ================= 无限地图系统 =================
 function startGame() {
     $('menu').style.display = 'none';
     $('game-ui').style.display = 'block';
     initScene();
-    if(isHost) genWorld();
     setupCtrl();
     anim();
 }
@@ -322,52 +326,144 @@ function startGame() {
 function initScene() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87CEEB);
+    scene.fog = new THREE.Fog(0x87CEEB, 30, 60); // 雾效，远处看不清，减少渲染压力
+    
     cam = new THREE.PerspectiveCamera(70, innerWidth/innerHeight, 0.1, 200);
     ren = new THREE.WebGLRenderer({ antialias: true });
     ren.setSize(innerWidth, innerHeight);
     document.body.appendChild(ren.domElement);
+    
     scene.add(new THREE.AmbientLight(0xffffff, 0.6));
     const sun = new THREE.DirectionalLight(0xffffff, 0.6);
     sun.position.set(50, 100, 50);
     scene.add(sun);
 }
 
-function genWorld() {
-    for(let x=-10; x<=10; x++) {
-        for(let z=-10; z<=10; z++) {
-            let h = Math.floor(Math.sin(x*0.2)*Math.cos(z*0.2)*3 + 10);
-            for(let y=0; y<=h; y++) {
-                world[`${x},${y},${z}`] = 1;
+// 动态地形生成函数 (核心)
+function getTerrainHeight(wx, wz) {
+    // 简单的伪随机函数，保证种子一致地形一致
+    // 使用正弦波叠加模拟地形
+    const scale1 = 0.05;
+    const scale2 = 0.1;
+    const h = Math.sin(wx * scale1) * Math.cos(wz * scale1) * 8 + 
+              Math.sin(wx * scale2 + SEED) * Math.cos(wz * scale2) * 4 + 15;
+    return Math.floor(h);
+}
+
+// 更新区块 (在每一帧渲染中调用)
+function updateChunks() {
+    const cx = Math.floor(me.pos.x / CHUNK_SIZE);
+    const cz = Math.floor(me.pos.z / CHUNK_SIZE);
+    
+    // 1. 生成附近的区块
+    for(let dx = -RENDER_DIST; dx <= RENDER_DIST; dx++) {
+        for(let dz = -RENDER_DIST; dz <= RENDER_DIST; dz++) {
+            const key = `${cx+dx},${cz+dz}`;
+            if(!chunks[key]) {
+                generateChunk(cx+dx, cz+dz);
             }
         }
     }
-    rebuildMesh();
-}
-
-function rebuildMesh() {
-    scene.children = scene.children.filter(c => !c.isInstancedMesh);
-    const geo = new THREE.BoxGeometry(1,1,1);
-    const mat = new THREE.MeshLambertMaterial({color: 0x5a5});
-    const count = Object.keys(world).length;
-    const mesh = new THREE.InstancedMesh(geo, mat, count);
-    scene.add(mesh);
-    const m = new THREE.Matrix4();
-    let i = 0;
-    for(let k in world) {
-        const [x,y,z] = k.split(',');
-        m.setPosition(Number(x), Number(y), Number(z));
-        mesh.setMatrixAt(i++, m);
+    
+    // 2. 删除远处的区块 (节省内存)
+    for(let k in chunks) {
+        const [ocx, ocz] = k.split(',');
+        const dist = Math.abs(cx - Number(ocx)) + Math.abs(cz - Number(ocz));
+        if(dist > RENDER_DIST + 2) {
+            scene.remove(chunks[k]);
+            delete chunks[k];
+        }
     }
-    mesh.instanceMatrix.needsUpdate = true;
 }
 
+function generateChunk(cx, cz) {
+    const geo = new THREE.BoxGeometry(1,1,1);
+    const mat = new THREE.MeshLambertMaterial({color: 0x5d9b41}); // 草地色
+    
+    // 计算该区块有多少方块，创建 InstancedMesh
+    // 预估数量：16x16x高度范围，取最大高度约30
+    const mesh = new THREE.InstancedMesh(geo, mat, CHUNK_SIZE * CHUNK_SIZE * 30);
+    mesh.count = 0; // 先设为0，逐个添加
+    
+    const matrix = new THREE.Matrix4();
+    
+    for(let x=0; x<CHUNK_SIZE; x++) {
+        for(let z=0; z<CHUNK_SIZE; z++) {
+            const wx = cx * CHUNK_SIZE + x;
+            const wz = cz * CHUNK_SIZE + z;
+            
+            const h = getTerrainHeight(wx, wz);
+            
+            for(let y=0; y<=h; y++) {
+                // 检查是否被修改过 (破坏或放置)
+                const key = `${wx},${y},${wz}`;
+                let type = (y == h) ? 1 : 2; // 1=草地, 2=泥土
+                
+                // 如果有修改记录，跳过自然生成，由 rebuildModifiedBlocks 处理
+                // 或者如果是被挖掉的 (type=0)，直接不生成
+                if(world[key] === 0) continue; 
+                
+                matrix.setPosition(wx, y, wz);
+                mesh.setMatrixAt(mesh.count++, matrix);
+            }
+        }
+    }
+    
+    mesh.instanceMatrix.needsUpdate = true;
+    scene.add(mesh);
+    chunks[`${cx},${cz}`] = mesh;
+}
+
+// 重绘被修改的方块 (放置的方块)
+function rebuildModifiedBlocks() {
+    // 简单处理：单独为被放置的方块创建小 Mesh
+    // 后续可优化为合并到一个全局的“修改Mesh”中
+    for(let k in world) {
+        const v = world[k];
+        if(v !== 0 && v !== 1 && v !== 2) { // 如果是非自然方块 (比如石头、木头等)
+            const [x,y,z] = k.split(',');
+            // 检查是否已有单独的模型，避免重复
+            if(!world[k+'_mesh']) {
+                const geo = new THREE.BoxGeometry(1,1,1);
+                const color = (v==3) ? 0x888888 : 0x8b5a2b; // 3=石头
+                const mat = new THREE.MeshLambertMaterial({color: color});
+                const m = new THREE.Mesh(geo, mat);
+                m.position.set(Number(x), Number(y), Number(z));
+                scene.add(m);
+                world[k+'_mesh'] = m; // 标记已生成
+            }
+        }
+    }
+}
+
+// 方块操作
 function updateBlock(x, y, z, v, sync=true) {
-    const k = `${x},${y},${z}`;
-    if(v === 0) delete world[k]; else world[k] = v;
-    rebuildMesh();
+    const key = `${x},${y},${z}`;
+    
+    // 更新数据
+    if(v === 0) {
+        delete world[key]; // 挖掉
+        // 移除单独的放置模型
+        if(world[key+'_mesh']) {
+            scene.remove(world[key+'_mesh']);
+            delete world[key+'_mesh'];
+        }
+        // 强制刷新该区块 (重新生成，因为 InstancedMesh 不易单独修改)
+        const cx = Math.floor(x / CHUNK_SIZE);
+        const cz = Math.floor(z / CHUNK_SIZE);
+        if(chunks[`${cx},${cz}`]) {
+            scene.remove(chunks[`${cx},${cz}`]);
+            delete chunks[`${cx},${cz}`];
+        }
+    } else {
+        world[key] = v; // 放置
+        rebuildModifiedBlocks(); // 创建新模型
+    }
+    
     if(sync) broadcast({ t: 'blk', x, y, z, v });
 }
 
+// ================= 玩家模型 =================
 function createPlayerModel(name, id) {
     if(peers[id]) return;
     const g = new THREE.Group();
@@ -499,25 +595,37 @@ function setupCtrl() {
 
 function tick() {
     if(!scene) return;
+    
+    // 物理模拟
     me.vel.y -= 0.01;
     me.pos.x += me.vel.x;
     me.pos.y += me.vel.y;
     me.pos.z += me.vel.z;
     
+    // 碰撞检测
     me.ground = false;
     const feetY = me.pos.y - 1.6;
+    
+    // 检查脚下的地形高度
+    const groundH = getTerrainHeight(Math.floor(me.pos.x), Math.floor(me.pos.z));
+    
+    // 简单碰撞：如果脚坐标低于地形高度，就停住
+    // 注意：这里需要考虑破坏方块后的情况
     const key = `${Math.floor(me.pos.x)},${Math.floor(feetY)},${Math.floor(me.pos.z)}`;
-    if(world[key]) {
+    // 如果该位置有方块(被放置) 或者 是自然地形且未被破坏
+    if(world[key] || (world[key] !== 0 && feetY <= groundH)) {
         me.pos.y = Math.floor(feetY) + 2.6;
         me.vel.y = 0;
         me.ground = true;
     }
     
+    // 防止掉出世界
+    if(me.pos.y < -10) { me.pos.set(0, 30, 0); me.vel.set(0,0,0); }
+    
     me.vel.x *= 0.8;
     me.vel.z *= 0.8;
     
-    if(me.pos.y < -10) { me.pos.set(0, 30, 0); me.vel.set(0,0,0); }
-    
+    // 同步
     if(Math.random() < 0.2) {
         broadcast({ t: 'pos', name: me.name, p: { x: me.pos.x, y: me.pos.y, z: me.pos.z, yaw: me.yaw } });
     }
@@ -527,17 +635,39 @@ function hit(place) {
     const dir = new THREE.Vector3(0,0,-1).applyEuler(new THREE.Euler(me.pitch, me.yaw, 0, 'YXZ'));
     raycaster.set(cam.position, dir, 0, 5);
     
-    for(let k in world) {
-        const [x,y,z] = k.split(',');
-        const box = new THREE.Box3(new THREE.Vector3(Number(x),Number(y),Number(z)), new THREE.Vector3(Number(x)+1,Number(y)+1,Number(z)+1));
-        const hitp = raycaster.ray.intersectBox(box, new THREE.Vector3());
-        if(hitp) {
-            if(!place) updateBlock(Number(x), Number(y), Number(z), 0);
+    // 射线检测比较复杂，简化处理：只检测眼前的自然地形或放置的方块
+    // 这里暂时只实现简单的破坏逻辑
+    const step = 0.5;
+    for(let d=0; d<5; d+=step) {
+        const p = cam.position.clone().add(dir.clone().multiplyScalar(d));
+        const x = Math.floor(p.x), y = Math.floor(p.y), z = Math.floor(p.z);
+        
+        const h = getTerrainHeight(x, z);
+        const key = `${x},${y},${z}`;
+        
+        // 如果是自然地形且高于地表，或者是被放置的方块
+        if(y <= h && world[key] !== 0) { // 有方块
+            if(!place) updateBlock(x, y, z, 0);
             else {
-                const n = hitp.clone().sub(new THREE.Vector3(Number(x)+0.5, Number(y)+0.5, Number(z)+0.5)).normalize();
-                updateBlock(Number(x)+Math.round(n.x), Number(y)+Math.round(n.y), Number(z)+Math.round(n.z), 1);
+                // 放置：在面前空位放
+                // 修正：稍微退后一点找空位
+                const p2 = cam.position.clone().add(dir.clone().multiplyScalar(d-step));
+                const nx = Math.floor(p2.x), ny = Math.floor(p2.y), nz = Math.floor(p2.z);
+                updateBlock(nx, ny, nz, 3); // 放石头
             }
             break;
+        }
+        // 检查单独放置的方块 mesh?
+        // 简化版：通过 world 字典检测放置方块
+        if(world[key] && world[key] !== 0) {
+             if(!place) updateBlock(x, y, z, 0);
+             else {
+                 // 放置逻辑同上
+                 const p2 = cam.position.clone().add(dir.clone().multiplyScalar(d-step));
+                 const nx = Math.floor(p2.x), ny = Math.floor(p2.y), nz = Math.floor(p2.z);
+                 updateBlock(nx, ny, nz, 3);
+             }
+             break;
         }
     }
 }
@@ -546,6 +676,10 @@ const raycaster = new THREE.Raycaster();
 
 function anim() {
     requestAnimationFrame(anim);
+    
+    // 【核心】动态更新地图
+    updateChunks();
+    
     cam.position.set(me.pos.x, me.pos.y + 0.7, me.pos.z);
     cam.rotation.order = 'YXZ';
     cam.rotation.y = me.yaw;
