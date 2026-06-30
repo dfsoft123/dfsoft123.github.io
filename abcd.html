@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 文生视频生成器（对接 shenzheng.cstext.top）</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body{font-family:sans-serif;background:#0f172a;color:#e2e8f0}
+  .glass{background:rgba(30,41,59,.7);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1)}
+  .loader{border:3px solid #4c1d95;border-top:3px solid #a78bfa;border-radius:50%;width:18px;height:18px;animation:spin 1s linear infinite;display:inline-block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-8 px-4">
+
+<header class="text-center mb-6">
+  <h1 class="text-3xl font-bold text-purple-400">AI 文生视频生成器</h1>
+  <p class="text-slate-400 mt-1 text-sm">真实对接 http://shenzheng.cstext.top:8051 · 24fps · 配音+字幕 · AI 分镜</p>
+</header>
+
+<!-- 配置区 -->
+<div class="glass rounded-2xl p-6 w-full max-w-3xl mb-6 space-y-3">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div>
+      <label class="text-xs text-slate-400">API 后端地址（或本机代理地址）</label>
+      <input id="baseUrl" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm" value="http://localhost:8051">
+    </div>
+    <div>
+      <label class="text-xs text-slate-400">管理员密码（文档示例为 admin）</label>
+      <input id="password" type="password" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm" value="admin">
+    </div>
+  </div>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div>
+      <label class="text-xs text-slate-400">帧率 fps</label>
+      <input id="fps" type="number" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm" value="24">
+    </div>
+    <div>
+      <label class="text-xs text-slate-400">分辨率</label>
+      <select id="resolution" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm">
+        <option>1920x1080</option><option>1280x720</option><option>1080x1920</option>
+      </select>
+    </div>
+    <div>
+      <label class="text-xs text-slate-400">配音角色</label>
+      <select id="voice" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm">
+        <option>zh-CN-XiaoxiaoNeural</option>
+        <option>zh-CN-YunxiNeural</option>
+        <option>zh-CN-YunyangNeural</option>
+        <option>zh-CN-XiaoyiNeural</option>
+      </select>
+    </div>
+    <div>
+      <label class="text-xs text-slate-400">风格</label>
+      <select id="style" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm">
+        <option value="3D anime style, Pixar-like 3D render, soft lighting, high detail">3D动漫(Pixar)</option>
+        <option value="3D anime style, cel-shaded, vibrant colors, studio anime look">3D赛璐璐动漫</option>
+        <option value="Disney 3D animation style, cinematic, consistent character">迪士尼3D</option>
+      </select>
+    </div>
+  </div>
+  <div>
+    <label class="text-xs text-slate-400">故事文本（越长视频越长，按句号自然分镜）</label>
+    <textarea id="story" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded p-3 text-sm" placeholder="输入故事...">在一个悬浮于云端的水晶城里，银发红裙的少女艾拉发现了一颗会唱歌的宝石。她把宝石举过头顶，整座城市开始缓缓升空。艾拉决定带着宝石去寻找天空之门的守护者。</textarea>
+  </div>
+  <div class="flex items-center gap-3">
+    <label class="text-sm flex items-center gap-1"><input id="subtitle" type="checkbox" checked> 字幕</label>
+    <button id="genBtn" class="ml-auto bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-2 rounded font-bold flex items-center gap-2">
+      <span>生成真实视频</span><span id="spin" class="loader hidden"></span>
+    </button>
+  </div>
+</div>
+
+<!-- 进度区 -->
+<div id="log" class="w-full max-w-3xl text-sm text-slate-300 space-y-1 mb-6"></div>
+
+<!-- 视频区 -->
+<div id="videoBox" class="w-full max-w-3xl hidden">
+  <div class="glass rounded-2xl overflow-hidden">
+    <div class="bg-slate-900 p-3 text-sm text-slate-400 border-b border-slate-700">最终合成视频（真实 mp4，可右键保存）</div>
+    <video id="player" controls class="w-full bg-black aspect-video"></video>
+    <div class="p-3 flex justify-end gap-2">
+      <a id="dl" class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded text-sm cursor-pointer" download="ai_video.mp4">下载 mp4</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let TOKEN = '', BASE = '';
+
+function log(msg, color='slate-300'){
+  const div = document.createElement('div');
+  div.className = 'text-'+color;
+  div.textContent = msg;
+  $('log').appendChild(div);
+  div.scrollIntoView({behavior:'smooth'});
+}
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+
+async function api(path, {method='GET', body, headers={}, form}={}){
+  const opt = {method, headers:{...headers}};
+  if(TOKEN) opt.headers['Authorization'] = 'Bearer '+TOKEN;
+  if(form){ opt.body = form; }
+  else if(body){ opt.headers['Content-Type']='application/json'; opt.body = JSON.stringify(body); }
+  const res = await fetch(BASE+path, opt);
+  const ct = res.headers.get('content-type')||'';
+  if(ct.includes('application/json')) return await res.json();
+  return res; // 文件流
+}
+
+async function login(){
+  const r = await api('/api/admin/login', {headers:{password: $('password').value}});
+  if(r.code!==0) throw new Error('登录失败: '+r.message);
+  TOKEN = r.data.token;
+  log('✓ 登录成功，获得 JWT_TOKEN', 'green-400');
+}
+
+async function uploadDocument(){
+  // 把用户文本转成 .txt 文件上传
+  const text = $('story').value.trim();
+  const blob = new Blob([text], {type:'text/plain'});
+  const form = new FormData();
+  form.append('file', blob, 'story.txt');
+  form.append('generate_menu', '0');
+  const r = await api('/api/video-documents', {method:'POST', form});
+  if(r.code!==0) throw new Error('上传文稿失败: '+r.message);
+  log('✓ 文稿上传成功 document_id='+r.data.document_id, 'green-400');
+  return r.data.document_id;
+}
+
+async function orchestrate(documentId){
+  const r = await api('/api/video-orchestrations', {method:'POST', body:{
+    document_id: documentId,
+    enable_ai_generation_mode: true
+  }});
+  if(r.code!==0) throw new Error('创建编排任务失败: '+r.message);
+  const taskId = r.data.orchestration_task_id;
+  log('✓ AI 编排任务已创建，开始轮询分镜生成...', 'green-400');
+
+  // 轮询
+  for(let i=0;i<120;i++){
+    await sleep(3000);
+    const q = await api('/api/video-orchestrations/'+taskId);
+    if(q.data.status==='completed'){
+      log('✓ AI 分镜剧本编排完成 menu_id='+q.data.result.menu_id, 'green-400');
+      return q.data.result.menu_id;
+    }
+    if(q.data.status==='failed') throw new Error('编排失败: '+(q.data.message||''));
+    log('  …编排中 status='+q.data.status+' stage='+(q.data.stage||''), 'slate-500');
+  }
+  throw new Error('编排超时');
+}
+
+async function createVideoTask(menuId){
+  const fps = parseInt($('fps').value)||24;
+  const resolution = $('resolution').value;
+  const voice = $('voice').value;
+  const style = $('style').value;
+  const subtitle = $('subtitle').checked;
+  const r = await api('/api/video-tasks', {method:'POST', body:{
+    menu_id: menuId,
+    voice: voice,
+    options: {
+      fps: fps,
+      resolution: resolution,
+      enable_subtitle: subtitle,
+      // 全局 3D 动漫风格提示词，注入到每一段生成
+      ai_video_prompt: style + ', consistent character design across all scenes, 24fps cinematic',
+      use_text_to_video: false,
+      bgm_volume: 0.15,
+      voice_volume: 1.0
+    }
+  }});
+  if(r.code!==0) throw new Error('创建视频任务失败: '+r.message);
+  const taskId = r.data.video_task_id;
+  log('✓ 视频任务已创建 video_task_id='+taskId+'，开始渲染（这一步较慢，通常数分钟）', 'green-400');
+
+  for(let i=0;i<200;i++){
+    await sleep(5000);
+    const q = await api('/api/video-tasks/'+taskId);
+    if(q.data.status==='complete'){
+      log('✓ 视频渲染完成！', 'green-400');
+      return taskId;
+    }
+    if(q.data.status==='failed') throw new Error('视频生成失败: '+(q.data.message||''));
+    log('  …渲染中 status='+q.data.status+(q.data.queue_pos!=null?(' 队列位置='+q.data.queue_pos):''), 'slate-500');
+  }
+  throw new Error('视频生成超时');
+}
+
+function showVideo(taskId){
+  // 用 ?token= 方式直接给 video src，避免跨域 header 问题
+  const url = BASE+'/api/video-tasks/'+taskId+'/video?token='+encodeURIComponent(TOKEN);
+  $('player').src = url;
+  $('dl').href = url;
+  $('videoBox').classList.remove('hidden');
+  log('✓ 视频地址：'+url, 'green-400');
+  document.getElementById('player').scrollIntoView({behavior:'smooth'});
+}
+
+async function run(){
+  $('log').innerHTML='';
+  $('videoBox').classList.add('hidden');
+  $('spin').classList.remove('hidden');
+  $('genBtn').disabled = true;
+  BASE = $('baseUrl').value.replace(/\/$/,'');
+  try{
+    await login();
+    const docId = await uploadDocument();
+    const menuId = await orchestrate(docId);
+    const taskId = await createVideoTask(menuId);
+    showVideo(taskId);
+  }catch(e){
+    log('✗ 错误：'+e.message, 'red-400');
+    log('  若是 CORS/跨域错误，请先启动下面的 Node 代理，并把“API后端地址”填成 http://localhost:8051', 'yellow-400');
+  }finally{
+    $('spin').classList.add('hidden');
+    $('genBtn').disabled = false;
+  }
+}
+
+$('genBtn').addEventListener('click', run);
+</script>
+</body>
+</html>
