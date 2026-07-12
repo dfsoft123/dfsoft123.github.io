@@ -1,699 +1,949 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>我的世界 无限地图联机版</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; touch-action: none; user-select: none; }
-        body { overflow: hidden; font-family: sans-serif; background: #1a1a1a; color: #fff; }
-        canvas { display: block; position: absolute; top: 0; left: 0; }
-
-        /* 菜单样式 */
-        #menu { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #222; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
-        .panel { background: #333; padding: 20px; border-radius: 8px; width: 90%; max-width: 450px; box-shadow: 0 0 20px #000; text-align: center; }
-        h1 { color: #5d9b41; margin-bottom: 5px; }
-        .sub { color: #888; font-size: 12px; margin-bottom: 10px; }
-        
-        input, textarea { width: 100%; padding: 10px; margin: 5px 0; background: #222; border: 1px solid #555; color: #fff; border-radius: 4px; font-size: 14px; }
-        textarea { height: 80px; resize: none; font-family: monospace; font-size: 10px; word-break: break-all; }
-        button { width: 100%; padding: 12px; margin-top: 8px; background: #4a9a4a; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:active { background: #3a8a3a; }
-        button.secondary { background: #555; }
-        button.danger { background: #a33; }
-        .log { color: #ffa; font-size: 12px; margin-top: 5px; min-height: 20px; text-align: left; }
-        
-        /* 游戏界面 */
-        #game-ui { position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 10; display: none; }
-        #cross { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 24px; height: 24px; }
-        #cross::before, #cross::after { content: ''; position: absolute; background: #fff; }
-        #cross::before { width: 2px; height: 100%; left: 11px; }
-        #cross::after { width: 100%; height: 2px; top: 11px; }
-
-        /* 手机控制 */
-        #ctrl { position: absolute; bottom: 0; left: 0; width: 100%; height: 30%; z-index: 20; display: flex; justify-content: space-between; padding: 20px; }
-        #joy-zone { width: 120px; height: 120px; position: relative; }
-        #joy-base { width: 100%; height: 100%; background: rgba(255,255,255,0.1); border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); }
-        #joy-thumb { position: absolute; width: 50px; height: 50px; background: rgba(255,255,255,0.4); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-        
-        #act-zone { display: flex; flex-direction: column; gap: 10px; pointer-events: auto; }
-        .b { width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid rgba(255,255,255,0.4); color: #fff; }
-
-        /* HUD */
-        #hud { position: absolute; top: 10px; left: 10px; pointer-events: none; }
-        #plist { font-size: 12px; color: #0f0; margin-bottom: 5px; }
-        #chat { width: 50%; }
-        .msg { background: rgba(0,0,0,0.5); padding: 4px 8px; margin-bottom: 2px; font-size: 12px; border-radius: 4px; }
-        #cin-box { position: absolute; bottom: 0; width: 100%; pointer-events: auto; display: none; }
-        #cin { width: 100%; padding: 10px; background: rgba(0,0,0,0.8); border: none; color: #fff; }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>方块世界 · 体素沙盒</title>
+<style>
+  :root{
+    --grass:#7ac74f; --grass-dk:#5a8f3c; --dirt:#6b4d33; --stone:#7d7d82;
+    --ink:#e9e5d6; --ink-dim:#a9ad99; --panel:#23261e; --edge-hi:rgba(255,255,255,.28);
+    --edge-lo:rgba(0,0,0,.4);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;overflow:hidden;background:#0d1117;
+    font-family:"Courier New",ui-monospace,Menlo,monospace;
+    -webkit-user-select:none;user-select:none;touch-action:none;overscroll-behavior:none}
+  canvas{display:block}
+  #hud{position:fixed;top:10px;left:10px;color:var(--ink);font-size:12px;line-height:1.7;
+    text-shadow:1px 1px 0 rgba(0,0,0,.8);pointer-events:none;z-index:5;white-space:pre}
+  /* 准星 */
+  #cross{position:fixed;left:50%;top:50%;width:22px;height:22px;transform:translate(-50%,-50%);
+    pointer-events:none;z-index:5;opacity:.85}
+  #cross::before,#cross::after{content:"";position:absolute;background:#fff;mix-blend-mode:difference}
+  #cross::before{left:50%;top:0;width:2px;height:100%;transform:translateX(-50%)}
+  #cross::after{top:50%;left:0;height:2px;width:100%;transform:translateY(-50%)}
+  /* 快捷栏 */
+  #hotbar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:4px;
+    padding:5px;background:rgba(10,12,8,.6);border:2px solid rgba(0,0,0,.8);
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.12);z-index:6}
+  .slot{position:relative;width:46px;height:46px;background:rgba(30,33,25,.9);cursor:pointer;
+    border:2px solid #000;box-shadow:inset 2px 2px 0 var(--edge-lo),inset -2px -2px 0 var(--edge-hi)}
+  .slot canvas{position:absolute;left:5px;top:5px;image-rendering:pixelated}
+  .slot .num{position:absolute;left:3px;top:1px;font-size:9px;color:var(--ink-dim);
+    text-shadow:1px 1px 0 #000}
+  .slot.sel{border-color:#fff;box-shadow:inset 2px 2px 0 var(--edge-lo),inset -2px -2px 0 var(--edge-hi),0 0 0 2px var(--grass)}
+  #slotName{position:fixed;left:50%;bottom:74px;transform:translateX(-50%);color:var(--ink);
+    font-weight:700;font-size:15px;letter-spacing:2px;text-shadow:2px 2px 0 rgba(0,0,0,.85);
+    opacity:0;transition:opacity .5s;pointer-events:none;z-index:6}
+  #slotName.show{opacity:1;transition:none}
+  /* 水下滤镜 */
+  #waterFx{position:fixed;inset:0;background:rgba(28,74,150,.42);display:none;pointer-events:none;z-index:4}
+  /* 菜单 */
+  #menu{position:fixed;inset:0;background:rgba(8,10,14,.72);display:flex;align-items:center;
+    justify-content:center;z-index:20}
+  #panel{width:min(480px,92vw);max-height:92vh;overflow:auto;background:var(--panel);
+    border:3px solid #000;box-shadow:inset 3px 3px 0 var(--edge-hi),inset -3px -3px 0 var(--edge-lo),0 10px 0 rgba(0,0,0,.45)}
+  #panel .sod{height:12px;background:linear-gradient(#8fd45f,var(--grass-dk) 70%,#3c5c28)}
+  #panel .soil{height:6px;background:linear-gradient(#7a5a3c,#4c3722)}
+  #panel .inner{padding:22px 26px 18px}
+  h1{color:var(--ink);font-size:34px;letter-spacing:6px;text-shadow:3px 3px 0 #1d3312;margin-bottom:2px}
+  .sub{color:var(--ink-dim);font-size:12px;letter-spacing:2px;margin-bottom:16px}
+  .ctrls{display:grid;grid-template-columns:1fr 1fr;gap:4px 18px;margin-bottom:16px}
+  .ctrls div{color:var(--ink-dim);font-size:12px;line-height:1.9}
+  .ctrls b{color:var(--ink);font-weight:700}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+  label{color:var(--ink-dim);font-size:12px}
+  input,select{background:#171a12;color:var(--ink);border:2px solid #000;
+    box-shadow:inset 2px 2px 0 rgba(0,0,0,.5);padding:7px 8px;font-family:inherit;font-size:13px;width:110px}
+  select{width:auto}
+  .btn{background:var(--grass-dk);border:0;color:#fff;font:700 15px/1 "Courier New",monospace;
+    letter-spacing:2px;padding:13px 22px;cursor:pointer;text-shadow:1px 1px 0 rgba(0,0,0,.5);
+    box-shadow:inset -3px -4px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(255,255,255,.25),0 4px 0 #1e2a14}
+  .btn:hover{filter:brightness(1.1)}
+  .btn:active{transform:translateY(3px);box-shadow:inset -3px -4px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(255,255,255,.25),0 1px 0 #1e2a14}
+  .btn.gray{background:#666c76;box-shadow:inset -3px -4px 0 rgba(0,0,0,.35),inset 3px 3px 0 rgba(255,255,255,.25),0 4px 0 #23262b}
+  .foot{margin-top:14px;color:#6f7462;font-size:10.5px;line-height:1.7}
+  /* 触屏控件 */
+  #touchUI{position:fixed;inset:0;display:none;z-index:8;pointer-events:none}
+  #joyBase{position:absolute;width:112px;height:112px;border-radius:50%;
+    border:3px solid rgba(255,255,255,.35);background:rgba(0,0,0,.22);display:none}
+  #joyStick{position:absolute;left:50%;top:50%;width:48px;height:48px;border-radius:50%;
+    background:rgba(255,255,255,.45);transform:translate(-50%,-50%)}
+  .tbtn{position:absolute;width:62px;height:62px;border-radius:12px;border:2px solid #000;
+    background:rgba(20,24,16,.55);color:var(--ink);font:700 13px/1 "Courier New",monospace;
+    box-shadow:inset 2px 2px 0 var(--edge-hi),inset -2px -2px 0 var(--edge-lo);
+    pointer-events:auto;text-shadow:1px 1px 0 #000}
+  .tbtn:active{background:rgba(90,143,60,.7)}
+  #btnJump{right:22px;bottom:120px}
+  #btnDig{right:96px;bottom:78px}
+  #btnPut{right:22px;bottom:196px}
+  #pauseBtn{position:fixed;top:10px;right:10px;z-index:9;display:none;width:44px;height:40px;
+    border:2px solid #000;background:rgba(20,24,16,.6);color:var(--ink);font-size:16px;
+    box-shadow:inset 2px 2px 0 var(--edge-hi),inset -2px -2px 0 var(--edge-lo);cursor:pointer}
+</style>
 </head>
 <body>
+<div id="hud"></div>
+<div id="cross"></div>
+<div id="slotName"></div>
+<div id="hotbar"></div>
+<div id="waterFx"></div>
 
-<!-- 加载 Three.js -->
-<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-<script>
-    if (!window.THREE) {
-        document.body.innerHTML = "<div style='padding:20px;color:red;text-align:center;'>引擎加载失败！请刷新或检查网络。</div>";
-        throw new Error("Three.js missing");
-    }
-</script>
+<div id="touchUI">
+  <div id="joyBase"><div id="joyStick"></div></div>
+  <button class="tbtn" id="btnJump">跳</button>
+  <button class="tbtn" id="btnDig">挖</button>
+  <button class="tbtn" id="btnPut">放</button>
+</div>
+<button id="pauseBtn">‖</button>
 
-<!-- 菜单界面 -->
 <div id="menu">
-    <div class="panel">
-        <h1>我的世界 无限版</h1>
-        <div class="sub">动态地图生成 | 修复多人连接</div>
-        
-        <input type="text" id="uname" placeholder="你的昵称" value="Player">
-        
-        <!-- 主机 -->
-        <div style="margin-top:10px; border-top:1px solid #555; padding-top:10px;">
-            <button id="btn-host">创建房间 (主机)</button>
-            <div id="host-ui" style="display:none;">
-                <div class="log" id="log-host">等待操作...</div>
-                
-                <!-- 步骤1 -->
-                <div id="step1">
-                    <button id="btn-gen">1. 生成邀请码</button>
-                    <textarea id="offer-out" readonly placeholder="邀请码..."></textarea>
-                    <button class="secondary" onclick="copy('offer-out')">复制邀请码</button>
-                </div>
-                
-                <!-- 步骤2 -->
-                <div style="margin-top:10px;">
-                    <input type="text" id="ans-in" placeholder="粘贴好友的回执码">
-                    <button id="btn-conn">连接该玩家</button>
-                </div>
-                
-                <!-- 步骤3 -->
-                <button id="btn-next" class="danger" style="display:none;">已连入一人！点击接待下一位</button>
-            </div>
-        </div>
-
-        <!-- 客机 -->
-        <div style="margin-top:20px; border-top:1px solid #555; padding-top:10px;">
-            <button id="btn-guest">加入房间 (客机)</button>
-            <div id="guest-ui" style="display:none;">
-                <div class="log" id="log-guest">等待操作...</div>
-                <input type="text" id="offer-in" placeholder="粘贴主机的邀请码">
-                <button id="btn-ans">生成回执</button>
-                <textarea id="ans-out" readonly style="display:none;" placeholder="回执码..."></textarea>
-                <button class="secondary" id="btn-copy-ans" style="display:none;" onclick="copy('ans-out')">复制回执</button>
-            </div>
-        </div>
+  <div id="panel">
+    <div class="sod"></div><div class="soil"></div>
+    <div class="inner">
+      <h1>方块世界</h1>
+      <div class="sub">原创网页体素沙盒 · 挖掘 / 建造 / 探索</div>
+      <div class="ctrls" id="ctrlDesk">
+        <div><b>鼠标</b> 视角 &nbsp;<b>左键</b> 挖掘</div>
+        <div><b>右键</b> 放置 &nbsp;<b>中键</b> 取方块</div>
+        <div><b>W A S D</b> 移动 &nbsp;<b>空格</b> 跳跃</div>
+        <div><b>Shift</b> 疾跑 / 飞行下降</div>
+        <div><b>双击空格 / F</b> 切换飞行</div>
+        <div><b>滚轮 / 1-9</b> 选择方块</div>
+      </div>
+      <div class="ctrls" id="ctrlTouch" style="display:none">
+        <div><b>左下拖动</b> 移动</div>
+        <div><b>右侧拖动</b> 视角</div>
+        <div><b>挖 / 放</b> 对准星处操作</div>
+        <div><b>长按挖</b> 连续挖掘</div>
+      </div>
+      <div class="row">
+        <label>种子</label><input id="seedIn" type="number" value="1337">
+        <label>视距</label>
+        <select id="distSel">
+          <option value="2">近</option>
+          <option value="3" selected>中</option>
+          <option value="4">远</option>
+        </select>
+      </div>
+      <div class="row">
+        <button class="btn" id="startBtn">进入世界</button>
+        <button class="btn gray" id="regenBtn">生成新世界</button>
+      </div>
+      <div class="foot">世界不会存档，刷新页面即重置。本页面为原创技术演示，程序生成全部纹理，
+      与 Mojang / Microsoft 的《我的世界》（Minecraft）无关，也未使用其任何代码或素材。</div>
     </div>
+  </div>
 </div>
 
-<!-- 游戏界面 -->
-<div id="game-ui">
-    <div id="hud">
-        <div id="plist">在线: 1人</div>
-        <div id="chat"></div>
-        <div id="cin-box"><input type="text" id="cin" placeholder="按回车发送"></div>
-    </div>
-    <div id="cross"></div>
-    
-    <div id="ctrl">
-        <div id="joy-zone">
-            <div id="joy-base"></div>
-            <div id="joy-thumb"></div>
-        </div>
-        <div id="act-zone">
-            <div class="b" id="b-j">跳</div>
-            <div class="b" id="b-q">挖</div>
-            <div class="b" id="b-p">放</div>
-        </div>
-    </div>
-</div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
+"use strict";
+/* ================= 基础工具 ================= */
 const $ = id => document.getElementById(id);
-const isMob = /Mobile|Android|iPhone/i.test(navigator.userAgent);
+const isTouch = ('ontouchstart' in window) || matchMedia('(pointer:coarse)').matches;
+const clamp = (v,a,b)=>v<a?a:(v>b?b:v);
 
-// ================= 核心变量 =================
-let scene, cam, ren;
-let world = {}; // 存储被修改的方块 (破坏或放置)
-let chunks = {}; // 存储地形网格 (动态生成)
-let me = { name: "Player", pos: new THREE.Vector3(0, 30, 0), vel: new THREE.Vector3(), yaw: 0, pitch: 0, ground: false };
-let peers = {};
-let connections = []; // 【关键修复】存储所有已建立的连接
-let pending_pc = null; // 当前正在等待连接的PC对象
-let isHost = false;
-const SEED = 12345; // 世界种子 (保证所有人地形一致)
-const CHUNK_SIZE = 16; // 区块大小
-const RENDER_DIST = 3; // 渲染半径 (3 = 48x48格)
-
-// ================= 联机逻辑 (彻底修复多人连接) =================
-
-async function waitICE(pc) {
-    return new Promise((resolve) => {
-        if (pc.iceGatheringState === 'complete') resolve();
-        else {
-            pc.onicegatheringstatechange = () => { if (pc.iceGatheringState === 'complete') resolve(); };
-            setTimeout(resolve, 10000); 
-        }
-    });
+let SEED = 1337;
+function hash2(x,z){
+  let n = (Math.imul(x|0,374761393) + Math.imul(z|0,668265263) + Math.imul(SEED|0,144665)) | 0;
+  n = Math.imul(n ^ (n>>>13), 1274126177);
+  n = (n ^ (n>>>16)) >>> 0;
+  return n / 4294967296;
+}
+function mulberry32(a){return function(){a|=0;a=(a+0x6D2B79F5)|0;let t=Math.imul(a^(a>>>15),1|a);
+  t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296;};}
+const smooth = t => t*t*(3-2*t);
+function vnoise(x,z){
+  const xi=Math.floor(x), zi=Math.floor(z), xf=x-xi, zf=z-zi;
+  const a=hash2(xi,zi), b=hash2(xi+1,zi), c=hash2(xi,zi+1), d=hash2(xi+1,zi+1);
+  const u=smooth(xf), v=smooth(zf);
+  return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v;
+}
+function fbm(x,z,oct){
+  let amp=1,sum=0,tot=0;
+  for(let i=0;i<oct;i++){sum+=vnoise(x,z)*amp;tot+=amp;x*=2.03;z*=1.97;amp*=0.5;}
+  return sum/tot;
 }
 
-function copy(id) {
-    navigator.clipboard.writeText($(id).value).then(() => alert("已复制！"));
+/* ================= 方块定义 ================= */
+const B={AIR:0,GRASS:1,DIRT:2,STONE:3,LOG:4,LEAF:5,SAND:6,WATER:7,PLANK:8,GLASS:9,
+         BRICK:10,COBBLE:11,BEDROCK:12,SNOW:13};
+const BLOCKS={};
+BLOCKS[B.GRASS]  ={n:"草方块", t:[0,1,2]};
+BLOCKS[B.DIRT]   ={n:"泥土",   t:[2,2,2]};
+BLOCKS[B.STONE]  ={n:"石头",   t:[3,3,3]};
+BLOCKS[B.LOG]    ={n:"橡木原木",t:[5,4,5]};
+BLOCKS[B.LEAF]   ={n:"树叶",   t:[6,6,6]};
+BLOCKS[B.SAND]   ={n:"沙子",   t:[7,7,7]};
+BLOCKS[B.WATER]  ={n:"水",     t:[8,8,8]};
+BLOCKS[B.PLANK]  ={n:"木板",   t:[9,9,9]};
+BLOCKS[B.GLASS]  ={n:"玻璃",   t:[10,10,10]};
+BLOCKS[B.BRICK]  ={n:"红砖",   t:[11,11,11]};
+BLOCKS[B.COBBLE] ={n:"圆石",   t:[12,12,12]};
+BLOCKS[B.BEDROCK]={n:"基岩",   t:[13,13,13]};
+BLOCKS[B.SNOW]   ={n:"雪块",   t:[14,14,14]};
+const TRANSP=new Array(32).fill(false), SOLID=new Array(32).fill(true);
+TRANSP[B.AIR]=TRANSP[B.WATER]=TRANSP[B.GLASS]=TRANSP[B.LEAF]=true;
+SOLID[B.AIR]=false; SOLID[B.WATER]=false;
+
+/* ================= 程序化纹理图集 ================= */
+const T=16, ACOLS=4;
+const atlasCv=document.createElement('canvas');
+atlasCv.width=T*ACOLS; atlasCv.height=T*ACOLS;
+const ac=atlasCv.getContext('2d');
+function drawTile(idx,fn){
+  const ox=(idx%ACOLS)*T, oy=((idx/ACOLS)|0)*T;
+  const rnd=mulberry32(9000+idx*77);
+  const img=ac.createImageData(T,T);
+  for(let y=0;y<T;y++)for(let x=0;x<T;x++){
+    const c=fn(x,y,rnd), p=(y*T+x)*4;
+    img.data[p]=c[0]|0; img.data[p+1]=c[1]|0; img.data[p+2]=c[2]|0;
+    img.data[p+3]=(c[3]===undefined?255:c[3])|0;
+  }
+  ac.putImageData(img,ox,oy);
 }
+drawTile(0,(x,y,r)=>{const n=(r()*2-1)*14;return[109+n,178+n*0.8,63+n];});
+drawTile(1,(x,y,r)=>{ if(y<3||(y===3&&r()<0.5)){const n=(r()*2-1)*14;return[109+n,178+n,63+n];}
+  const n=(r()*2-1)*12;return[134+n,96+n,67+n];});
+drawTile(2,(x,y,r)=>{const n=(r()*2-1)*12;return[134+n,96+n,67+n];});
+drawTile(3,(x,y,r)=>{let n=(r()*2-1)*9; if(r()<0.08)n-=22; return[127+n,127+n,131+n];});
+drawTile(4,(x,y,r)=>{const s=(x%4===0)?-26:((x%4===2)?9:0);const n=(r()*2-1)*8;
+  return[104+s+n,82+s*0.8+n,50+s*0.5+n];});
+drawTile(5,(x,y,r)=>{const d=Math.max(Math.abs(x-7.5),Math.abs(y-7.5));
+  const ring=((d|0)%2===0)?14:-12;const n=(r()*2-1)*6;
+  return[150+ring+n,120+ring+n,72+ring*0.6+n];});
+drawTile(6,(x,y,r)=>{ if(r()<0.12)return[0,0,0,0];
+  const n=(r()*2-1)*18;return[54+n*0.5,132+n,44+n*0.5];});
+drawTile(7,(x,y,r)=>{const n=(r()*2-1)*10;return[219+n,205+n,158+n];});
+drawTile(8,(x,y,r)=>{const w=Math.sin(x*0.9+y*1.6)*7;const n=(r()*2-1)*5;
+  return[46+n,106+w+n,196+w+n,175];});
+drawTile(9,(x,y,r)=>{const line=(y%4===3)?-32:0;
+  const gap=(x===15&&((y>=0&&y<4)||(y>=8&&y<12)))?-32:0;const n=(r()*2-1)*7;
+  return[172+line+gap+n,136+(line+gap)*0.8+n,84+(line+gap)*0.6+n];});
+drawTile(10,(x,y,r)=>{const edge=(x===0||y===0||x===15||y===15);
+  if(edge)return[212,232,238,255];
+  if((x+y)%9===0)return[236,246,250,120];
+  return[190,220,232,42];});
+drawTile(11,(x,y,r)=>{const row=(y/4)|0;const off=(row%2)*4;const n=(r()*2-1)*8;
+  if(y%4===3||((x+off)%8===7))return[186+n,178+n,172+n];
+  return[152+n,74+n,62+n];});
+drawTile(12,(x,y,r)=>{const n=(r()*2-1)*16;const k=(((x*3+y*5)%7)===0)?-22:0;
+  return[118+n+k,118+n+k,120+n+k];});
+drawTile(13,(x,y,r)=>{const n=(r()*2-1)*22;return[60+n,58+n,60+n];});
+drawTile(14,(x,y,r)=>{const n=(r()*2-1)*8;return[236+n,240+n,244+n];});
+drawTile(15,()=>[255,0,255]);
 
-// --- 主机逻辑 ---
-$('btn-host').onclick = () => {
-    me.name = $('uname').value || "Host";
-    isHost = true;
-    $('host-ui').style.display = 'block';
-    $('btn-host').style.display = 'none';
-    $('btn-guest').style.display = 'none';
-    $('step1').style.display = 'block';
-    $('btn-next').style.display = 'none';
-    $('log-host').innerText = "准备就绪，点击生成邀请码。";
-};
+/* ================= 场景 / 渲染 ================= */
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,0.1,400);
+camera.rotation.order='YXZ';
+const renderer=new THREE.WebGLRenderer({antialias:false});
+renderer.setPixelRatio(Math.min(devicePixelRatio,isTouch?1.5:2));
+renderer.setSize(innerWidth,innerHeight);
+document.body.appendChild(renderer.domElement);
+addEventListener('resize',()=>{
+  camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+});
 
-// 生成邀请码
-$('btn-gen').onclick = async () => {
-    $('log-host').innerText = "正在生成... (约5秒)";
-    $('offer-out').value = "";
-    
-    // 创建新的独立连接对象
-    const pc = new RTCPeerConnection({ iceServers: [{urls: 'stun:stun.l.google.com:19302'}] });
-    pending_pc = pc; // 保存到临时变量
-    
-    const dc = pc.createDataChannel('game');
-    
-    // 绑定成功事件
-    dc.onopen = () => {
-        $('log-host').innerText = "连接成功！玩家已加入。";
-        connections.push(dc); // 【关键修复】加入连接列表，而不是覆盖
-        
-        // 发送初始化数据 (种子 + 已修改方块)
-        dc.send(JSON.stringify({ t: 'init', name: me.name, seed: SEED, mods: world }));
-        
-        updatePlayerList();
-        
-        // UI 切换
-        $('step1').style.display = 'none';
-        $('btn-next').style.display = 'block';
-        $('ans-in').value = '';
-        pending_pc = null; // 清空临时变量，连接已移交到 connections 列表
-    };
-    
-    dc.onmessage = e => handleMsg(e.data, dc);
-    
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-    await waitICE(pc);
-    
-    $('offer-out').value = btoa(JSON.stringify(pc.localDescription));
-    $('log-host').innerText = "邀请码已生成！发给好友。";
-};
+const tex=new THREE.CanvasTexture(atlasCv);
+tex.magFilter=THREE.NearestFilter; tex.minFilter=THREE.NearestFilter; tex.generateMipmaps=false;
+const matO=new THREE.MeshLambertMaterial({map:tex,vertexColors:true,alphaTest:0.5});
+const matT=new THREE.MeshLambertMaterial({map:tex,vertexColors:true,transparent:true,
+  depthWrite:false,side:THREE.DoubleSide});
 
-// 连接玩家
-$('btn-conn').onclick = async () => {
-    const code = $('ans-in').value.trim();
-    if(!code) return alert("请粘贴回执");
-    if(!pending_pc) return alert("流程错误：请先点击生成邀请码");
-    
-    $('log-host').innerText = "正在连接...";
-    try {
-        const answer = JSON.parse(atob(code));
-        await pending_pc.setRemoteDescription(answer);
-        $('log-host').innerText = "正在建立通道...";
-    } catch(e) {
-        $('log-host').innerText = "连接失败: " + e.message;
+const amb=new THREE.AmbientLight(0xffffff,1.0); scene.add(amb);
+const sun=new THREE.DirectionalLight(0xffffff,0.28); sun.position.set(60,100,40); scene.add(sun);
+const dayCol=new THREE.Color(0x87b7e4), nightCol=new THREE.Color(0x0a1026);
+scene.background=new THREE.Color(0x87b7e4);
+scene.fog=new THREE.Fog(0x87b7e4,20,46);
+
+/* 目标方块描边 */
+const outline=new THREE.LineSegments(
+  new THREE.EdgesGeometry(new THREE.BoxGeometry(1.002,1.002,1.002)),
+  new THREE.LineBasicMaterial({color:0x000000,transparent:true,opacity:0.55}));
+outline.visible=false; scene.add(outline);
+
+/* ================= 世界数据 ================= */
+const CH=16, H=64, SEA=21;
+let RDIST=isTouch?2:3;
+const chunks=new Map();          // "cx,cz" -> {data,mesh,meshT,built}
+const heightCache=new Map();
+const dirty=new Set();
+
+function heightAt(x,z){
+  const k=x+','+z;
+  let h=heightCache.get(k);
+  if(h!==undefined)return h;
+  const n=fbm(x*0.013,z*0.013,4);
+  const m=fbm(x*0.004+533,z*0.004-761,2);
+  h=Math.floor(6+n*22+m*24);
+  h=clamp(h,1,H-10);
+  heightCache.set(k,h);
+  return h;
+}
+function treeAt(x,z){
+  const h=heightAt(x,z);
+  if(h<=SEA+1||h>=44)return 0;
+  const forest=fbm(x*0.008+999,z*0.008+999,2);
+  const dens=forest>0.55?0.05:0.006;
+  if(hash2(x*13+7,z*17+3)<dens) return 4+((hash2(x+41,z+87)*3)|0);
+  return 0;
+}
+function genChunkData(cx,cz){
+  const data=new Uint8Array(CH*CH*H);
+  const put=(wx,y,wz,id,force)=>{
+    const lx=wx-cx*CH, lz=wz-cz*CH;
+    if(lx<0||lx>15||lz<0||lz>15||y<0||y>=H)return;
+    const i=lx+(lz<<4)+(y<<8);
+    if(force||data[i]===B.AIR)data[i]=id;
+  };
+  for(let lz=0;lz<CH;lz++)for(let lx=0;lx<CH;lx++){
+    const wx=cx*CH+lx, wz=cz*CH+lz;
+    const h=heightAt(wx,wz);
+    const beach=h<=SEA+1, snowy=h>=45;
+    for(let y=0;y<H;y++){
+      let id=B.AIR;
+      if(y===0)id=B.BEDROCK;
+      else if(y<h-3)id=B.STONE;
+      else if(y<h)id=beach?B.SAND:B.DIRT;
+      else if(y===h)id=beach?B.SAND:(snowy?B.SNOW:B.GRASS);
+      else if(y<=SEA)id=B.WATER;
+      if(id!==B.AIR)data[lx+(lz<<4)+(y<<8)]=id;
     }
-};
-
-// 接待下一位
-$('btn-next').onclick = () => {
-    $('btn-next').style.display = 'none';
-    $('step1').style.display = 'block';
-    $('log-host').innerText = "准备接待下一位...";
-    // 自动点击生成，简化操作
-    $('btn-gen').click();
-};
-
-// --- 客机逻辑 ---
-$('btn-guest').onclick = () => {
-    me.name = $('uname').value || "Guest";
-    isHost = false;
-    $('guest-ui').style.display = 'block';
-    $('btn-host').style.display = 'none';
-    $('btn-guest').style.display = 'none';
-};
-
-$('btn-ans').onclick = async () => {
-    const code = $('offer-in').value.trim();
-    if(!code) return alert("请粘贴邀请码");
-    $('log-guest').innerText = "正在解析...";
-    
-    const pc = new RTCPeerConnection({ iceServers: [{urls: 'stun:stun.l.google.com:19302'}] });
-    
-    pc.ondatachannel = e => {
-        const dc = e.channel;
-        dc.onopen = () => {
-            $('log-guest').innerText = "连接成功！";
-            connections.push(dc);
-            startGame(); // 客机进入游戏
-        };
-        dc.onmessage = ev => handleMsg(ev.data, dc);
-    };
-    
-    try {
-        const offer = JSON.parse(atob(code));
-        await pc.setRemoteDescription(offer);
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-        await waitICE(pc);
-        
-        $('ans-out').value = btoa(JSON.stringify(pc.localDescription));
-        $('ans-out').style.display = 'block';
-        $('btn-copy-ans').style.display = 'block';
-        $('log-guest').innerText = "回执已生成！复制发给主机。";
-    } catch(e) {
-        $('log-guest').innerText = "解析失败: " + e.message;
+  }
+  // 树木（带边界余量，保证跨区块的树完整）
+  for(let tx=-2;tx<18;tx++)for(let tz=-2;tz<18;tz++){
+    const wx=cx*CH+tx, wz=cz*CH+tz;
+    const th=treeAt(wx,wz);
+    if(!th)continue;
+    const gh=heightAt(wx,wz), top=gh+th;
+    for(let y=gh+1;y<=top;y++)put(wx,y,wz,B.LOG,true);
+    for(let dy=-1;dy<=2;dy++){
+      const ly=top+dy;
+      if(dy===2){
+        put(wx,ly,wz,B.LEAF);put(wx+1,ly,wz,B.LEAF);put(wx-1,ly,wz,B.LEAF);
+        put(wx,ly,wz+1,B.LEAF);put(wx,ly,wz-1,B.LEAF);
+        continue;
+      }
+      const rad=(dy<=0)?2:1;
+      for(let dx=-rad;dx<=rad;dx++)for(let dz=-rad;dz<=rad;dz++){
+        if(dx===0&&dz===0&&dy<=0)continue;
+        if(Math.abs(dx)===rad&&Math.abs(dz)===rad&&
+           hash2(wx*7+dx*3+ly,wz*7+dz*3-ly)<0.5)continue;
+        put(wx+dx,ly,wz+dz,B.LEAF);
+      }
     }
-};
-
-// ================= 数据处理 =================
-function handleMsg(data, conn) {
-    try {
-        const msg = JSON.parse(data);
-        // 主机收到消息，转发给所有人 (排除发送者)
-        if(isHost) {
-            connections.forEach(c => { if(c !== conn && c.readyState === 'open') c.send(data); });
-        }
-
-        if(msg.t === 'init') {
-            // 客机收到初始化数据
-            if(!isHost) {
-                // 应用种子 (已内置) 和修改数据
-                world = msg.mods || {};
-                rebuildModifiedBlocks(); // 重绘被修改的方块
-            }
-            createPlayerModel(msg.name, msg.name);
-            updatePlayerList();
-        }
-        if(msg.t === 'pos') updatePlayerModel(msg.name, msg.p);
-        if(msg.t === 'blk') {
-            updateBlock(msg.x, msg.y, msg.z, msg.v, false);
-        }
-        if(msg.t === 'chat') addChat(msg.name, msg.k);
-    } catch(e){}
+  }
+  return data;
+}
+function chunkKey(cx,cz){return cx+','+cz;}
+function getChunk(cx,cz){
+  const k=chunkKey(cx,cz);
+  let c=chunks.get(k);
+  if(!c){c={data:genChunkData(cx,cz),mesh:null,meshT:null,built:false};chunks.set(k,c);}
+  return c;
+}
+function getBlock(x,y,z){
+  if(y<0)return B.BEDROCK;
+  if(y>=H)return B.AIR;
+  const cx=Math.floor(x/CH), cz=Math.floor(z/CH);
+  return getChunk(cx,cz).data[(x-cx*CH)+((z-cz*CH)<<4)+(y<<8)];
+}
+function setBlock(x,y,z,id){
+  if(y<0||y>=H)return;
+  const cx=Math.floor(x/CH), cz=Math.floor(z/CH);
+  const lx=x-cx*CH, lz=z-cz*CH;
+  getChunk(cx,cz).data[lx+(lz<<4)+(y<<8)]=id;
+  dirty.add(chunkKey(cx,cz));
+  if(lx===0)dirty.add(chunkKey(cx-1,cz));
+  if(lx===15)dirty.add(chunkKey(cx+1,cz));
+  if(lz===0)dirty.add(chunkKey(cx,cz-1));
+  if(lz===15)dirty.add(chunkKey(cx,cz+1));
 }
 
-function broadcast(msg) {
-    const str = JSON.stringify(msg);
-    connections.forEach(c => { if(c.readyState === 'open') c.send(str); });
+/* ================= 区块网格构建 ================= */
+const FACES=[
+  {dir:[-1,0,0],shade:0.72,corners:[
+    {pos:[0,1,0],uv:[0,1]},{pos:[0,0,0],uv:[0,0]},{pos:[0,1,1],uv:[1,1]},{pos:[0,0,1],uv:[1,0]}]},
+  {dir:[1,0,0],shade:0.72,corners:[
+    {pos:[1,1,1],uv:[0,1]},{pos:[1,0,1],uv:[0,0]},{pos:[1,1,0],uv:[1,1]},{pos:[1,0,0],uv:[1,0]}]},
+  {dir:[0,-1,0],shade:0.55,corners:[
+    {pos:[1,0,1],uv:[1,0]},{pos:[0,0,1],uv:[0,0]},{pos:[1,0,0],uv:[1,1]},{pos:[0,0,0],uv:[0,1]}]},
+  {dir:[0,1,0],shade:1.0,corners:[
+    {pos:[0,1,1],uv:[1,1]},{pos:[1,1,1],uv:[0,1]},{pos:[0,1,0],uv:[1,0]},{pos:[1,1,0],uv:[0,0]}]},
+  {dir:[0,0,-1],shade:0.86,corners:[
+    {pos:[1,0,0],uv:[0,0]},{pos:[0,0,0],uv:[1,0]},{pos:[1,1,0],uv:[0,1]},{pos:[0,1,0],uv:[1,1]}]},
+  {dir:[0,0,1],shade:0.86,corners:[
+    {pos:[0,0,1],uv:[0,0]},{pos:[1,0,1],uv:[1,0]},{pos:[0,1,1],uv:[0,1]},{pos:[1,1,1],uv:[1,1]}]},
+];
+const TS=1/ACOLS, TEPS=0.5/(T*ACOLS);
+function uvFor(tile,u,v){
+  const tx=tile%ACOLS, ty=(tile/ACOLS)|0;
+  const u0=tx*TS+TEPS, u1=(tx+1)*TS-TEPS;
+  const v1=1-ty*TS-TEPS, v0=1-(ty+1)*TS+TEPS;
+  return [u0+(u1-u0)*u, v0+(v1-v0)*v];
 }
-
-function updatePlayerList() {
-    let count = connections.length + 1;
-    $('plist').innerText = `在线: ${count}人`;
+function tileOf(id,f){
+  const t=BLOCKS[id].t;
+  if(f.dir[1]===1)return t[0];
+  if(f.dir[1]===-1)return t[2];
+  return t[1];
 }
-
-// ================= 无限地图系统 =================
-function startGame() {
-    $('menu').style.display = 'none';
-    $('game-ui').style.display = 'block';
-    initScene();
-    setupCtrl();
-    anim();
+function makeGeo(p,n,u,c,i){
+  if(!i.length)return null;
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));
+  g.setAttribute('normal',new THREE.Float32BufferAttribute(n,3));
+  g.setAttribute('uv',new THREE.Float32BufferAttribute(u,2));
+  g.setAttribute('color',new THREE.Float32BufferAttribute(c,3));
+  g.setIndex(i);
+  return g;
 }
-
-function initScene() {
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x87CEEB);
-    scene.fog = new THREE.Fog(0x87CEEB, 30, 60); // 雾效，远处看不清，减少渲染压力
-    
-    cam = new THREE.PerspectiveCamera(70, innerWidth/innerHeight, 0.1, 200);
-    ren = new THREE.WebGLRenderer({ antialias: true });
-    ren.setSize(innerWidth, innerHeight);
-    document.body.appendChild(ren.domElement);
-    
-    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-    const sun = new THREE.DirectionalLight(0xffffff, 0.6);
-    sun.position.set(50, 100, 50);
-    scene.add(sun);
+function disposeChunkMesh(c){
+  if(c.mesh){scene.remove(c.mesh);c.mesh.geometry.dispose();c.mesh=null;}
+  if(c.meshT){scene.remove(c.meshT);c.meshT.geometry.dispose();c.meshT=null;}
+  c.built=false;
 }
-
-// 动态地形生成函数 (核心)
-function getTerrainHeight(wx, wz) {
-    // 简单的伪随机函数，保证种子一致地形一致
-    // 使用正弦波叠加模拟地形
-    const scale1 = 0.05;
-    const scale2 = 0.1;
-    const h = Math.sin(wx * scale1) * Math.cos(wz * scale1) * 8 + 
-              Math.sin(wx * scale2 + SEED) * Math.cos(wz * scale2) * 4 + 15;
-    return Math.floor(h);
-}
-
-// 更新区块 (在每一帧渲染中调用)
-function updateChunks() {
-    const cx = Math.floor(me.pos.x / CHUNK_SIZE);
-    const cz = Math.floor(me.pos.z / CHUNK_SIZE);
-    
-    // 1. 生成附近的区块
-    for(let dx = -RENDER_DIST; dx <= RENDER_DIST; dx++) {
-        for(let dz = -RENDER_DIST; dz <= RENDER_DIST; dz++) {
-            const key = `${cx+dx},${cz+dz}`;
-            if(!chunks[key]) {
-                generateChunk(cx+dx, cz+dz);
-            }
-        }
+function buildChunk(cx,cz){
+  const c=getChunk(cx,cz);
+  disposeChunkMesh(c);
+  const p=[],n=[],u=[],col=[],ix=[];
+  const pT=[],nT=[],uT=[],colT=[],ixT=[];
+  const data=c.data;
+  for(let y=0;y<H;y++)for(let lz=0;lz<CH;lz++)for(let lx=0;lx<CH;lx++){
+    const id=data[lx+(lz<<4)+(y<<8)];
+    if(!id)continue;
+    const wx=cx*CH+lx, wz=cz*CH+lz;
+    const trans=(id===B.WATER||id===B.GLASS);
+    const P=trans?pT:p, N=trans?nT:n, U=trans?uT:u, C=trans?colT:col, I=trans?ixT:ix;
+    for(let f=0;f<6;f++){
+      const F=FACES[f];
+      const nb=getBlock(wx+F.dir[0],y+F.dir[1],wz+F.dir[2]);
+      if(!(TRANSP[nb]&&nb!==id))continue;
+      const tile=tileOf(id,F);
+      const base=P.length/3;
+      for(let k=0;k<4;k++){
+        const cr=F.corners[k];
+        P.push(wx+cr.pos[0],y+cr.pos[1],wz+cr.pos[2]);
+        N.push(F.dir[0],F.dir[1],F.dir[2]);
+        const uvp=uvFor(tile,cr.uv[0],cr.uv[1]);
+        U.push(uvp[0],uvp[1]);
+        C.push(F.shade,F.shade,F.shade);
+      }
+      I.push(base,base+1,base+2, base+2,base+1,base+3);
     }
-    
-    // 2. 删除远处的区块 (节省内存)
-    for(let k in chunks) {
-        const [ocx, ocz] = k.split(',');
-        const dist = Math.abs(cx - Number(ocx)) + Math.abs(cz - Number(ocz));
-        if(dist > RENDER_DIST + 2) {
-            scene.remove(chunks[k]);
-            delete chunks[k];
-        }
+  }
+  const g=makeGeo(p,n,u,col,ix);
+  if(g){c.mesh=new THREE.Mesh(g,matO);scene.add(c.mesh);}
+  const gT=makeGeo(pT,nT,uT,colT,ixT);
+  if(gT){c.meshT=new THREE.Mesh(gT,matT);c.meshT.renderOrder=1;scene.add(c.meshT);}
+  c.built=true;
+}
+
+/* 区块加载调度 */
+let needList=[], lastPC='';
+function refreshNeeded(force){
+  const pcx=Math.floor(pos.x/CH), pcz=Math.floor(pos.z/CH);
+  const pk=pcx+','+pcz+'|'+RDIST;
+  if(!force&&pk===lastPC)return;
+  lastPC=pk;
+  needList=[];
+  for(let dx=-RDIST;dx<=RDIST;dx++)for(let dz=-RDIST;dz<=RDIST;dz++){
+    const cx=pcx+dx, cz=pcz+dz;
+    const c=chunks.get(chunkKey(cx,cz));
+    if(!c||!c.built)needList.push({cx,cz,d:dx*dx+dz*dz});
+  }
+  needList.sort((a,b)=>a.d-b.d);
+  for(const [k,c] of chunks){
+    if(!c.built)continue;
+    const parts=k.split(','), cx=+parts[0], cz=+parts[1];
+    const dd=Math.max(Math.abs(cx-pcx),Math.abs(cz-pcz));
+    if(dd>RDIST+1)disposeChunkMesh(c);   // 保留数据（玩家建造不丢失），只卸载网格
+  }
+}
+function processChunks(){
+  for(const k of dirty){
+    const c=chunks.get(k);
+    if(c&&c.built){const parts=k.split(',');buildChunk(+parts[0],+parts[1]);}
+  }
+  dirty.clear();
+  let budget=2;
+  while(budget>0&&needList.length){
+    const it=needList.shift();
+    const c=chunks.get(chunkKey(it.cx,it.cz));
+    if(c&&c.built)continue;
+    buildChunk(it.cx,it.cz);
+    budget--;
+  }
+}
+
+/* ================= 玩家 ================= */
+const HW=0.30, PH=1.80, EYE=1.62, GRAV=28, JUMP=8.6, SPEED=4.4, FLY=11;
+const pos=new THREE.Vector3(), vel=new THREE.Vector3();
+let yaw=Math.PI*0.75, pitch=-0.1, onGround=false, fly=false, lastSpaceTap=0;
+const keys={};
+let joyF=0, joyR=0, touchJump=false;
+
+function findSpawn(){
+  // 从中心向外找一块开阔地：顶部不是树叶/原木，且高于海平面
+  for(let ring=0;ring<8;ring++){
+    for(let dx=-ring;dx<=ring;dx++)for(let dz=-ring;dz<=ring;dz++){
+      if(Math.max(Math.abs(dx),Math.abs(dz))!==ring)continue;
+      const x=8+dx*3, z=8+dz*3;
+      for(let y=H-1;y>0;y--){
+        const id=getBlock(x,y,z);
+        if(!SOLID[id])continue;
+        if(id!==B.LEAF&&id!==B.LOG&&y>SEA)return new THREE.Vector3(x+0.5,y+1.01,z+0.5);
+        break; // 这一列顶部是树或在水下，换下一列
+      }
     }
+  }
+  for(let y=H-1;y>0;y--){
+    if(SOLID[getBlock(8,y,8)])return new THREE.Vector3(8.5,y+1.01,8.5);
+  }
+  return new THREE.Vector3(8.5,40,8.5);
 }
+function respawn(){pos.copy(findSpawn());vel.set(0,0,0);fly=false;}
 
-function generateChunk(cx, cz) {
-    const geo = new THREE.BoxGeometry(1,1,1);
-    const mat = new THREE.MeshLambertMaterial({color: 0x5d9b41}); // 草地色
-    
-    // 计算该区块有多少方块，创建 InstancedMesh
-    // 预估数量：16x16x高度范围，取最大高度约30
-    const mesh = new THREE.InstancedMesh(geo, mat, CHUNK_SIZE * CHUNK_SIZE * 30);
-    mesh.count = 0; // 先设为0，逐个添加
-    
-    const matrix = new THREE.Matrix4();
-    
-    for(let x=0; x<CHUNK_SIZE; x++) {
-        for(let z=0; z<CHUNK_SIZE; z++) {
-            const wx = cx * CHUNK_SIZE + x;
-            const wz = cz * CHUNK_SIZE + z;
-            
-            const h = getTerrainHeight(wx, wz);
-            
-            for(let y=0; y<=h; y++) {
-                // 检查是否被修改过 (破坏或放置)
-                const key = `${wx},${y},${wz}`;
-                let type = (y == h) ? 1 : 2; // 1=草地, 2=泥土
-                
-                // 如果有修改记录，跳过自然生成，由 rebuildModifiedBlocks 处理
-                // 或者如果是被挖掉的 (type=0)，直接不生成
-                if(world[key] === 0) continue; 
-                
-                matrix.setPosition(wx, y, wz);
-                mesh.setMatrixAt(mesh.count++, matrix);
-            }
-        }
+function clipAxis(axis,d){
+  const x0=Math.floor(pos.x-HW), x1=Math.floor(pos.x+HW-1e-9);
+  const y0=Math.floor(pos.y),    y1=Math.floor(pos.y+PH-1e-9);
+  const z0=Math.floor(pos.z-HW), z1=Math.floor(pos.z+HW-1e-9);
+  for(let by=y0;by<=y1;by++)for(let bz=z0;bz<=z1;bz++)for(let bx=x0;bx<=x1;bx++){
+    if(!SOLID[getBlock(bx,by,bz)])continue;
+    if(axis==='y'){
+      if(d<0){pos.y=by+1;vel.y=0;onGround=true;}
+      else{pos.y=by-PH-0.001;vel.y=0;}
+    }else if(axis==='x'){
+      if(d>0)pos.x=bx-HW-0.001; else pos.x=bx+1+HW+0.001;
+      vel.x=0;
+    }else{
+      if(d>0)pos.z=bz-HW-0.001; else pos.z=bz+1+HW+0.001;
+      vel.z=0;
     }
-    
-    mesh.instanceMatrix.needsUpdate = true;
-    scene.add(mesh);
-    chunks[`${cx},${cz}`] = mesh;
+    return;
+  }
+}
+function sweep(axis,d){
+  const steps=Math.max(1,Math.ceil(Math.abs(d)/0.4));
+  const s=d/steps;
+  for(let i=0;i<steps;i++){pos[axis]+=s;clipAxis(axis,s);}
+}
+function updatePlayer(dt){
+  let f=(keys.KeyW?1:0)-(keys.KeyS?1:0)+joyF;
+  let r=(keys.KeyD?1:0)-(keys.KeyA?1:0)+joyR;
+  const len=Math.hypot(f,r);
+  if(len>1){f/=len;r/=len;}
+  let sp=fly?FLY:SPEED*((keys.ShiftLeft||keys.ShiftRight)?1.55:1);
+  vel.x=(-Math.sin(yaw)*f+Math.cos(yaw)*r)*sp;
+  vel.z=(-Math.cos(yaw)*f-Math.sin(yaw)*r)*sp;
+
+  const inWater=getBlock(Math.floor(pos.x),Math.floor(pos.y+0.9),Math.floor(pos.z))===B.WATER;
+  const wantUp=keys.Space||touchJump;
+  if(fly){
+    vel.y=((wantUp?1:0)-((keys.ShiftLeft||keys.ShiftRight)?1:0))*FLY*0.8;
+  }else if(inWater){
+    vel.y-=10*dt;
+    if(vel.y<-3.4)vel.y=-3.4;
+    if(wantUp)vel.y=Math.min(vel.y+34*dt,3.2);
+  }else{
+    vel.y-=GRAV*dt;
+    if(vel.y<-55)vel.y=-55;
+    if(wantUp&&onGround){vel.y=JUMP;onGround=false;}
+  }
+  onGround=false;
+  sweep('y',vel.y*dt);
+  sweep('x',vel.x*dt);
+  sweep('z',vel.z*dt);
+  if(pos.y<-12)respawn();
+  camera.position.set(pos.x,pos.y+EYE,pos.z);
+  camera.rotation.y=yaw;
+  camera.rotation.x=pitch;
 }
 
-// 重绘被修改的方块 (放置的方块)
-function rebuildModifiedBlocks() {
-    // 简单处理：单独为被放置的方块创建小 Mesh
-    // 后续可优化为合并到一个全局的“修改Mesh”中
-    for(let k in world) {
-        const v = world[k];
-        if(v !== 0 && v !== 1 && v !== 2) { // 如果是非自然方块 (比如石头、木头等)
-            const [x,y,z] = k.split(',');
-            // 检查是否已有单独的模型，避免重复
-            if(!world[k+'_mesh']) {
-                const geo = new THREE.BoxGeometry(1,1,1);
-                const color = (v==3) ? 0x888888 : 0x8b5a2b; // 3=石头
-                const mat = new THREE.MeshLambertMaterial({color: color});
-                const m = new THREE.Mesh(geo, mat);
-                m.position.set(Number(x), Number(y), Number(z));
-                scene.add(m);
-                world[k+'_mesh'] = m; // 标记已生成
-            }
-        }
+/* ================= 射线拾取 ================= */
+let target=null;
+function raycastVoxel(o,d,maxD){
+  let x=Math.floor(o.x), y=Math.floor(o.y), z=Math.floor(o.z);
+  const id0=getBlock(x,y,z);
+  if(id0!==B.AIR&&id0!==B.WATER)return{x,y,z,nx:0,ny:0,nz:0,id:id0};
+  const sx=d.x>0?1:-1, sy=d.y>0?1:-1, sz=d.z>0?1:-1;
+  const tdx=d.x!==0?Math.abs(1/d.x):Infinity;
+  const tdy=d.y!==0?Math.abs(1/d.y):Infinity;
+  const tdz=d.z!==0?Math.abs(1/d.z):Infinity;
+  let tmx=d.x!==0?((sx>0?(x+1-o.x):(o.x-x))*tdx):Infinity;
+  let tmy=d.y!==0?((sy>0?(y+1-o.y):(o.y-y))*tdy):Infinity;
+  let tmz=d.z!==0?((sz>0?(z+1-o.z):(o.z-z))*tdz):Infinity;
+  let t=0,nx=0,ny=0,nz=0;
+  while(t<=maxD){
+    if(tmx<tmy&&tmx<tmz){x+=sx;t=tmx;tmx+=tdx;nx=-sx;ny=0;nz=0;}
+    else if(tmy<tmz){y+=sy;t=tmy;tmy+=tdy;nx=0;ny=-sy;nz=0;}
+    else{z+=sz;t=tmz;tmz+=tdz;nx=0;ny=0;nz=-sz;}
+    if(t>maxD)break;
+    const id=getBlock(x,y,z);
+    if(id!==B.AIR&&id!==B.WATER)return{x,y,z,nx,ny,nz,id};
+  }
+  return null;
+}
+const camDir=new THREE.Vector3();
+function updateTarget(){
+  camera.getWorldDirection(camDir);
+  target=raycastVoxel(camera.position,camDir,6);
+  if(target){
+    outline.visible=true;
+    outline.position.set(target.x+0.5,target.y+0.5,target.z+0.5);
+  }else outline.visible=false;
+}
+
+/* ================= 声音 ================= */
+let AC=null;
+function initAudio(){
+  if(!AC){
+    try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){AC=null;}
+  }
+  if(AC&&AC.state==='suspended')AC.resume();
+}
+function blip(freq){
+  if(!AC)return;
+  try{
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.type='square'; o.frequency.value=freq;
+    g.gain.setValueAtTime(0.06,AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+0.09);
+    o.connect(g); g.connect(AC.destination);
+    o.start(); o.stop(AC.currentTime+0.1);
+  }catch(e){}
+}
+
+/* ================= 挖掘 / 放置 / 快捷栏 ================= */
+const HOT=[B.GRASS,B.DIRT,B.STONE,B.LOG,B.PLANK,B.LEAF,B.SAND,B.GLASS,B.BRICK];
+let sel=0;
+const slotCvs=[];
+function buildHotbar(){
+  const bar=$('hotbar');
+  bar.innerHTML='';
+  slotCvs.length=0;
+  for(let i=0;i<9;i++){
+    const s=document.createElement('div');
+    s.className='slot'+(i===sel?' sel':'');
+    const num=document.createElement('span');
+    num.className='num'; num.textContent=i+1; s.appendChild(num);
+    const cv=document.createElement('canvas');
+    cv.width=32; cv.height=32; s.appendChild(cv);
+    slotCvs.push(cv);
+    drawSlot(i);
+    s.addEventListener('pointerdown',e=>{e.stopPropagation();selectSlot(i);});
+    bar.appendChild(s);
+  }
+}
+function drawSlot(i){
+  const cv=slotCvs[i], ctx=cv.getContext('2d');
+  ctx.imageSmoothingEnabled=false;
+  ctx.clearRect(0,0,32,32);
+  const tile=BLOCKS[HOT[i]].t[1];
+  ctx.drawImage(atlasCv,(tile%ACOLS)*T,((tile/ACOLS)|0)*T,T,T,0,0,32,32);
+}
+let toastTimer=0;
+function selectSlot(i){
+  sel=(i+9)%9;
+  const slots=$('hotbar').children;
+  for(let k=0;k<9;k++)slots[k].classList.toggle('sel',k===sel);
+  const el=$('slotName');
+  el.textContent=BLOCKS[HOT[sel]].n;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),1200);
+}
+function doBreak(){
+  if(!target)return;
+  if(target.id===B.BEDROCK){blip(80);return;}
+  setBlock(target.x,target.y,target.z,B.AIR);
+  blip(150+hash2(target.x,target.z)*90);
+}
+function doPlace(){
+  if(!target)return;
+  const nx=target.x+target.nx, ny=target.y+target.ny, nz=target.z+target.nz;
+  if(ny<0||ny>=H)return;
+  if(getBlock(nx,ny,nz)!==B.AIR&&getBlock(nx,ny,nz)!==B.WATER)return;
+  // 不允许放进玩家身体
+  if(nx+1>pos.x-HW&&nx<pos.x+HW&&nz+1>pos.z-HW&&nz<pos.z+HW&&
+     ny+1>pos.y&&ny<pos.y+PH)return;
+  setBlock(nx,ny,nz,HOT[sel]);
+  blip(300);
+}
+function doPick(){
+  if(!target)return;
+  const id=target.id;
+  if(id===B.BEDROCK)return;
+  const i=HOT.indexOf(id);
+  if(i>=0)selectSlot(i);
+  else{HOT[sel]=id;drawSlot(sel);selectSlot(sel);}
+}
+
+/* ================= 输入：桌面 ================= */
+let playing=false, dragLook=false, lockFailed=false;
+let holdBreak=false, holdPlace=false, holdT=0;
+
+document.addEventListener('keydown',e=>{
+  if(document.activeElement&&document.activeElement.tagName==='INPUT')return;
+  keys[e.code]=true;
+  if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Tab'].includes(e.code))e.preventDefault();
+  if(!playing)return;
+  if(e.code==='Space'&&!e.repeat){
+    const now=performance.now();
+    if(now-lastSpaceTap<280){fly=!fly;vel.y=0;}
+    lastSpaceTap=now;
+  }
+  if(e.code==='KeyF'){fly=!fly;vel.y=0;}
+  if(e.code.startsWith('Digit')){
+    const d=+e.code.slice(5);
+    if(d>=1&&d<=9)selectSlot(d-1);
+  }
+});
+document.addEventListener('keyup',e=>{keys[e.code]=false;});
+
+document.addEventListener('mousemove',e=>{
+  if(!playing)return;
+  if(document.pointerLockElement){
+    yaw-=e.movementX*0.0023;
+    pitch=clamp(pitch-e.movementY*0.0023,-Math.PI/2+0.01,Math.PI/2-0.01);
+  }else if(dragLook&&dragState.down){
+    yaw-=(e.clientX-dragState.x)*0.005;
+    pitch=clamp(pitch-(e.clientY-dragState.y)*0.005,-Math.PI/2+0.01,Math.PI/2-0.01);
+    dragState.moved+=Math.abs(e.clientX-dragState.x)+Math.abs(e.clientY-dragState.y);
+    dragState.x=e.clientX;dragState.y=e.clientY;
+  }
+});
+const dragState={down:false,x:0,y:0,moved:0,btn:0};
+document.addEventListener('mousedown',e=>{
+  if(!playing||isTouch)return;
+  if(document.pointerLockElement){
+    if(e.button===0){doBreak();holdBreak=true;holdT=0;}
+    else if(e.button===1){e.preventDefault();doPick();}
+    else if(e.button===2){doPlace();holdPlace=true;holdT=0;}
+  }else if(dragLook){
+    dragState.down=true;dragState.x=e.clientX;dragState.y=e.clientY;
+    dragState.moved=0;dragState.btn=e.button;
+  }
+});
+document.addEventListener('mouseup',e=>{
+  holdBreak=holdPlace=false;
+  if(dragLook&&dragState.down){
+    dragState.down=false;
+    if(dragState.moved<6){
+      if(dragState.btn===0)doBreak();
+      else if(dragState.btn===2)doPlace();
+      else if(dragState.btn===1)doPick();
     }
-}
+  }
+});
+addEventListener('contextmenu',e=>e.preventDefault());
+addEventListener('wheel',e=>{
+  if(!playing)return;
+  e.preventDefault();
+  selectSlot(sel+(e.deltaY>0?1:-1));
+},{passive:false});
 
-// 方块操作
-function updateBlock(x, y, z, v, sync=true) {
-    const key = `${x},${y},${z}`;
-    
-    // 更新数据
-    if(v === 0) {
-        delete world[key]; // 挖掉
-        // 移除单独的放置模型
-        if(world[key+'_mesh']) {
-            scene.remove(world[key+'_mesh']);
-            delete world[key+'_mesh'];
-        }
-        // 强制刷新该区块 (重新生成，因为 InstancedMesh 不易单独修改)
-        const cx = Math.floor(x / CHUNK_SIZE);
-        const cz = Math.floor(z / CHUNK_SIZE);
-        if(chunks[`${cx},${cz}`]) {
-            scene.remove(chunks[`${cx},${cz}`]);
-            delete chunks[`${cx},${cz}`];
-        }
-    } else {
-        world[key] = v; // 放置
-        rebuildModifiedBlocks(); // 创建新模型
+/* 指针锁定 */
+document.addEventListener('pointerlockchange',()=>{
+  if(document.pointerLockElement){playing=true;$('menu').style.display='none';}
+  else if(!dragLook&&!isTouch){playing=false;$('menu').style.display='flex';}
+});
+document.addEventListener('pointerlockerror',()=>{
+  lockFailed=true; dragLook=true; playing=true;
+  $('menu').style.display='none'; $('pauseBtn').style.display='block';
+});
+
+/* ================= 输入：触屏 ================= */
+const joy={id:null,cx:0,cy:0};
+const lookT={id:null,x:0,y:0};
+if(isTouch){
+  $('ctrlDesk').style.display='none';
+  $('ctrlTouch').style.display='grid';
+  document.addEventListener('touchstart',e=>{
+    if(!playing)return;
+    for(const t of e.changedTouches){
+      const el=document.elementFromPoint(t.clientX,t.clientY);
+      if(el&&(el.closest('#hotbar')||el.closest('.tbtn')||el.closest('#pauseBtn')))continue;
+      if(t.clientX<innerWidth*0.42&&t.clientY>innerHeight*0.4&&joy.id===null){
+        joy.id=t.identifier;joy.cx=t.clientX;joy.cy=t.clientY;
+        const b=$('joyBase');
+        b.style.display='block';
+        b.style.left=(t.clientX-56)+'px';b.style.top=(t.clientY-56)+'px';
+      }else if(lookT.id===null){
+        lookT.id=t.identifier;lookT.x=t.clientX;lookT.y=t.clientY;
+      }
     }
-    
-    if(sync) broadcast({ t: 'blk', x, y, z, v });
-}
-
-// ================= 玩家模型 =================
-function createPlayerModel(name, id) {
-    if(peers[id]) return;
-    const g = new THREE.Group();
-    const head = new THREE.Mesh(new THREE.BoxGeometry(0.6,0.6,0.6), new THREE.MeshLambertMaterial({color: 0xffcc99}));
-    head.position.y = 1.4;
-    g.add(head);
-    const body = new THREE.Mesh(new THREE.BoxGeometry(0.6,0.8,0.3), new THREE.MeshLambertMaterial({color: new THREE.Color().setHSL(Math.random(), 0.6, 0.5)}));
-    body.position.y = 0.8;
-    g.add(body);
-    
-    const canvas = document.createElement('canvas');
-    canvas.width = 256; canvas.height = 64;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 32px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText(name, 128, 40);
-    const tex = new THREE.CanvasTexture(canvas);
-    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true }));
-    sprite.scale.set(2, 0.5, 1);
-    sprite.position.y = 2.0;
-    g.add(sprite);
-    
-    scene.add(g);
-    peers[id] = g;
-}
-
-function updatePlayerModel(id, pos) {
-    if(!peers[id]) createPlayerModel(id, id);
-    peers[id].position.set(pos.x, pos.y-1.0, pos.z);
-}
-
-function addChat(name, txt) {
-    const d = document.createElement('div');
-    d.className = 'msg';
-    d.innerText = name + ": " + txt;
-    $('chat').appendChild(d);
-    setTimeout(() => d.remove(), 10000);
-}
-
-// ================= 控制与物理 =================
-function setupCtrl() {
-    if(isMob) {
-        let joy = { active: false, x:0, y:0 };
-        const base = $('joy-base'), thumb = $('joy-thumb');
-        
-        $('joy-zone').ontouchstart = e => {
-            e.preventDefault();
-            joy.active = true;
-            const rect = $('joy-zone').getBoundingClientRect();
-            joy.cx = e.touches[0].clientX - rect.left;
-            joy.cy = e.touches[0].clientY - rect.top;
-            thumb.style.left = joy.cx + 'px';
-            thumb.style.top = joy.cy + 'px';
-        };
-        $('joy-zone').ontouchmove = e => {
-            if(!joy.active) return;
-            const rect = $('joy-zone').getBoundingClientRect();
-            const tx = e.touches[0].clientX - rect.left;
-            const ty = e.touches[0].clientY - rect.top;
-            const dx = tx - joy.cx;
-            const dy = ty - joy.cy;
-            const dist = Math.min(40, Math.hypot(dx, dy));
-            const ang = Math.atan2(dy, dx);
-            thumb.style.left = joy.cx + Math.cos(ang)*dist + 'px';
-            thumb.style.top = joy.cy + Math.sin(ang)*dist + 'px';
-            joy.x = Math.cos(ang) * (dist/40);
-            joy.y = Math.sin(ang) * (dist/40);
-        };
-        $('joy-zone').ontouchend = e => { joy.active = false; joy.x=0; joy.y=0; thumb.style.left=base.style.left; thumb.style.top=base.style.top; };
-        
-        setInterval(() => {
-            if(joy.active) {
-                me.vel.x -= joy.x * 0.1;
-                me.vel.z -= joy.y * 0.1;
-            }
-        }, 16);
-
-        let lastT = null;
-        document.ontouchstart = e => { if(e.target.id.startsWith('b')) return; lastT = e.touches[0]; };
-        document.ontouchmove = e => {
-            if(e.target.id.startsWith('b')) return;
-            if(!lastT) return;
-            me.yaw -= (e.touches[0].clientX - lastT.clientX) * 0.005;
-            me.pitch -= (e.touches[0].clientY - lastT.clientY) * 0.005;
-            lastT = e.touches[0];
-        };
-
-        $('b-j').ontouchstart = () => { if(me.ground) me.vel.y = 0.2; };
-        $('b-q').ontouchstart = () => hit(false);
-        $('b-p').ontouchstart = () => hit(true);
-    } else {
-        document.addEventListener('click', () => ren.domElement.requestPointerLock());
-        document.addEventListener('mousemove', e => {
-            if(document.pointerLockElement) {
-                me.yaw -= e.movementX * 0.002;
-                me.pitch -= e.movementY * 0.002;
-            }
-        });
-        window.addEventListener('keydown', e => {
-            const s = 0.1;
-            if(e.code === 'KeyW') { me.vel.x -= Math.sin(me.yaw)*s; me.vel.z -= Math.cos(me.yaw)*s; }
-            if(e.code === 'KeyS') { me.vel.x += Math.sin(me.yaw)*s; me.vel.z += Math.cos(me.yaw)*s; }
-            if(e.code === 'KeyA') { me.vel.x -= Math.cos(me.yaw)*s; me.vel.z += Math.sin(me.yaw)*s; }
-            if(e.code === 'KeyD') { me.vel.x += Math.cos(me.yaw)*s; me.vel.z -= Math.sin(me.yaw)*s; }
-            if(e.code === 'Space' && me.ground) me.vel.y = 0.2;
-            
-            if(e.code === 'Enter') {
-                const box = $('cin-box');
-                if(box.style.display === 'block') {
-                    if($('cin').value) {
-                        broadcast({ t: 'chat', name: me.name, k: $('cin').value });
-                        addChat(me.name, $('cin').value);
-                        $('cin').value = '';
-                    }
-                    box.style.display = 'none';
-                    ren.domElement.requestPointerLock();
-                } else {
-                    box.style.display = 'block';
-                    $('cin').focus();
-                    document.exitPointerLock();
-                }
-            }
-        });
-        document.addEventListener('mousedown', e => { if(document.pointerLockElement) hit(e.button===2); });
+    if(e.cancelable)e.preventDefault();
+  },{passive:false});
+  document.addEventListener('touchmove',e=>{
+    if(!playing)return;
+    for(const t of e.changedTouches){
+      if(t.identifier===joy.id){
+        let dx=t.clientX-joy.cx, dy=t.clientY-joy.cy;
+        const m=Math.hypot(dx,dy);
+        if(m>48){dx=dx/m*48;dy=dy/m*48;}
+        $('joyStick').style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;
+        joyR=dx/48; joyF=-dy/48;
+      }else if(t.identifier===lookT.id){
+        yaw-=(t.clientX-lookT.x)*0.005;
+        pitch=clamp(pitch-(t.clientY-lookT.y)*0.005,-Math.PI/2+0.01,Math.PI/2-0.01);
+        lookT.x=t.clientX;lookT.y=t.clientY;
+      }
     }
-    setInterval(tick, 16);
+    if(e.cancelable)e.preventDefault();
+  },{passive:false});
+  const endTouch=e=>{
+    for(const t of e.changedTouches){
+      if(t.identifier===joy.id){
+        joy.id=null;joyF=joyR=0;
+        $('joyBase').style.display='none';
+        $('joyStick').style.transform='translate(-50%,-50%)';
+      }
+      if(t.identifier===lookT.id)lookT.id=null;
+    }
+  };
+  document.addEventListener('touchend',endTouch);
+  document.addEventListener('touchcancel',endTouch);
+
+  const bindBtn=(id,down,up)=>{
+    const el=$(id);
+    el.addEventListener('touchstart',e=>{e.stopPropagation();e.preventDefault();down();},{passive:false});
+    el.addEventListener('touchend',e=>{e.stopPropagation();if(up)up();});
+  };
+  bindBtn('btnJump',()=>{
+    touchJump=true;
+    const now=performance.now();
+    if(now-lastSpaceTap<280){fly=!fly;vel.y=0;}
+    lastSpaceTap=now;
+  },()=>{touchJump=false;});
+  bindBtn('btnDig',()=>{doBreak();holdBreak=true;holdT=0;},()=>{holdBreak=false;});
+  bindBtn('btnPut',()=>{doPlace();},null);
+}
+$('pauseBtn').addEventListener('click',()=>{
+  playing=false;
+  $('menu').style.display='flex';
+});
+
+/* ================= 菜单 ================= */
+function startGame(){
+  initAudio();
+  SEEDFROMINPUT();
+  RDIST=+$('distSel').value;
+  setViewDist();
+  refreshNeeded(true);
+  $('menu').style.display='none';
+  if(isTouch){
+    playing=true;
+    $('touchUI').style.display='block';
+    $('pauseBtn').style.display='block';
+  }else if(dragLook||lockFailed){
+    playing=true;
+    $('pauseBtn').style.display='block';
+  }else{
+    try{document.body.requestPointerLock();}catch(e){
+      dragLook=true;playing=true;$('pauseBtn').style.display='block';
+    }
+    // 若 300ms 后仍未锁定，切到拖拽视角模式
+    setTimeout(()=>{
+      if(!document.pointerLockElement&&!playing){
+        dragLook=true;playing=true;
+        $('menu').style.display='none';
+        $('pauseBtn').style.display='block';
+      }
+    },350);
+  }
+}
+let usedSeed=1337;
+function SEEDFROMINPUT(){
+  const v=parseInt($('seedIn').value,10);
+  const s=isNaN(v)?1337:v;
+  if(s!==usedSeed){usedSeed=s;regenWorld(s);}
+}
+function regenWorld(s){
+  SEED=s;
+  for(const [,c] of chunks)disposeChunkMesh(c);
+  chunks.clear(); heightCache.clear(); dirty.clear();
+  needList=[]; lastPC='';
+  respawn();
+  refreshNeeded(true);
+  // 立刻同步构建脚下几个区块，避免出生在虚空视觉里
+  let n=0;
+  while(n<9&&needList.length){const it=needList.shift();buildChunk(it.cx,it.cz);n++;}
+}
+$('startBtn').addEventListener('click',startGame);
+$('regenBtn').addEventListener('click',()=>{
+  const s=(Math.random()*1e9)|0;
+  $('seedIn').value=s;
+  usedSeed=s; regenWorld(s);
+  startGame();
+});
+function setViewDist(){
+  const far=(RDIST+0.55)*CH;
+  scene.fog.near=far*0.45;
+  scene.fog.far=far*0.97;
 }
 
-function tick() {
-    if(!scene) return;
-    
-    // 物理模拟
-    me.vel.y -= 0.01;
-    me.pos.x += me.vel.x;
-    me.pos.y += me.vel.y;
-    me.pos.z += me.vel.z;
-    
-    // 碰撞检测
-    me.ground = false;
-    const feetY = me.pos.y - 1.6;
-    
-    // 检查脚下的地形高度
-    const groundH = getTerrainHeight(Math.floor(me.pos.x), Math.floor(me.pos.z));
-    
-    // 简单碰撞：如果脚坐标低于地形高度，就停住
-    // 注意：这里需要考虑破坏方块后的情况
-    const key = `${Math.floor(me.pos.x)},${Math.floor(feetY)},${Math.floor(me.pos.z)}`;
-    // 如果该位置有方块(被放置) 或者 是自然地形且未被破坏
-    if(world[key] || (world[key] !== 0 && feetY <= groundH)) {
-        me.pos.y = Math.floor(feetY) + 2.6;
-        me.vel.y = 0;
-        me.ground = true;
+/* ================= 昼夜 / HUD / 主循环 ================= */
+const clock=new THREE.Clock();
+const DAY=300;
+let elapsed=DAY*0.35;
+let fps=0,frames=0,fpsT=0;
+const skyTmp=new THREE.Color();
+function updateDay(dt){
+  elapsed+=dt;
+  const phase=(elapsed/DAY)%1;
+  const bright=0.5-0.5*Math.cos(phase*Math.PI*2);
+  amb.intensity=0.25+0.85*bright;
+  sun.intensity=0.05+0.3*bright;
+  skyTmp.copy(nightCol).lerp(dayCol,Math.pow(bright,0.8));
+  scene.background.copy(skyTmp);
+  scene.fog.color.copy(skyTmp);
+}
+function updateHUD(dt){
+  frames++; fpsT+=dt;
+  if(fpsT>=0.5){fps=Math.round(frames/fpsT);frames=0;fpsT=0;}
+  $('hud').textContent=
+    `FPS ${fps}\n坐标 ${pos.x.toFixed(1)}  ${pos.y.toFixed(1)}  ${pos.z.toFixed(1)}`+
+    (fly?'\n[飞行中]':'');
+  $('waterFx').style.display=
+    getBlock(Math.floor(camera.position.x),Math.floor(camera.position.y),
+             Math.floor(camera.position.z))===B.WATER?'block':'none';
+}
+function tick(){
+  requestAnimationFrame(tick);
+  const dt=Math.min(clock.getDelta(),0.05);
+  if(playing){
+    updatePlayer(dt);
+    if(holdBreak||holdPlace){
+      holdT+=dt;
+      if(holdT>=0.25){holdT=0;if(holdBreak)doBreak();if(holdPlace)doPlace();}
     }
-    
-    // 防止掉出世界
-    if(me.pos.y < -10) { me.pos.set(0, 30, 0); me.vel.set(0,0,0); }
-    
-    me.vel.x *= 0.8;
-    me.vel.z *= 0.8;
-    
-    // 同步
-    if(Math.random() < 0.2) {
-        broadcast({ t: 'pos', name: me.name, p: { x: me.pos.x, y: me.pos.y, z: me.pos.z, yaw: me.yaw } });
-    }
+  }
+  updateDay(dt);
+  updateTarget();
+  refreshNeeded(false);
+  processChunks();
+  updateHUD(dt);
+  renderer.render(scene,camera);
 }
 
-function hit(place) {
-    const dir = new THREE.Vector3(0,0,-1).applyEuler(new THREE.Euler(me.pitch, me.yaw, 0, 'YXZ'));
-    raycaster.set(cam.position, dir, 0, 5);
-    
-    // 射线检测比较复杂，简化处理：只检测眼前的自然地形或放置的方块
-    // 这里暂时只实现简单的破坏逻辑
-    const step = 0.5;
-    for(let d=0; d<5; d+=step) {
-        const p = cam.position.clone().add(dir.clone().multiplyScalar(d));
-        const x = Math.floor(p.x), y = Math.floor(p.y), z = Math.floor(p.z);
-        
-        const h = getTerrainHeight(x, z);
-        const key = `${x},${y},${z}`;
-        
-        // 如果是自然地形且高于地表，或者是被放置的方块
-        if(y <= h && world[key] !== 0) { // 有方块
-            if(!place) updateBlock(x, y, z, 0);
-            else {
-                // 放置：在面前空位放
-                // 修正：稍微退后一点找空位
-                const p2 = cam.position.clone().add(dir.clone().multiplyScalar(d-step));
-                const nx = Math.floor(p2.x), ny = Math.floor(p2.y), nz = Math.floor(p2.z);
-                updateBlock(nx, ny, nz, 3); // 放石头
-            }
-            break;
-        }
-        // 检查单独放置的方块 mesh?
-        // 简化版：通过 world 字典检测放置方块
-        if(world[key] && world[key] !== 0) {
-             if(!place) updateBlock(x, y, z, 0);
-             else {
-                 // 放置逻辑同上
-                 const p2 = cam.position.clone().add(dir.clone().multiplyScalar(d-step));
-                 const nx = Math.floor(p2.x), ny = Math.floor(p2.y), nz = Math.floor(p2.z);
-                 updateBlock(nx, ny, nz, 3);
-             }
-             break;
-        }
-    }
+/* ================= 启动 ================= */
+buildHotbar();
+selectSlot(0);
+respawn();
+setViewDist();
+refreshNeeded(true);
+{ // 预构建出生点附近
+  let n=0;
+  while(n<9&&needList.length){const it=needList.shift();buildChunk(it.cx,it.cz);n++;}
 }
-
-const raycaster = new THREE.Raycaster();
-
-function anim() {
-    requestAnimationFrame(anim);
-    
-    // 【核心】动态更新地图
-    updateChunks();
-    
-    cam.position.set(me.pos.x, me.pos.y + 0.7, me.pos.z);
-    cam.rotation.order = 'YXZ';
-    cam.rotation.y = me.yaw;
-    cam.rotation.x = me.pitch;
-    ren.render(scene, cam);
-}
-
-window.onresize = () => {
-    if(ren) {
-        ren.setSize(innerWidth, innerHeight);
-        cam.aspect = innerWidth/innerHeight;
-        cam.updateProjectionMatrix();
-    }
-};
+camera.position.set(pos.x,pos.y+EYE,pos.z);
+camera.rotation.y=yaw; camera.rotation.x=pitch;
+tick();
 </script>
 </body>
 </html>
