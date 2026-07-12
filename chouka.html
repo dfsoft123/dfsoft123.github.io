@@ -118,6 +118,7 @@
         .btn-gacha { background: linear-gradient(135deg, #8a2be2, #ff416c); }
         .btn-upgrade { background: linear-gradient(135deg, #005c97, #363795); }
         .btn-rebirth-pull { background: linear-gradient(135deg, #c31432, #240b36); }
+        .btn-super-rebirth-pull { background: linear-gradient(135deg, #8e2de2, #ff8c00); }
         .btn-rebirth { background: linear-gradient(135deg, #f12711, #f5af19); color: #000; }
         .btn-auto { background: linear-gradient(135deg, #11998e, #38ef7d); }
         .btn-auto.active { background: linear-gradient(135deg, #cb2d3e, #ef473a); }
@@ -142,6 +143,7 @@
         .pack-card.active { border-color: var(--gold); background: rgba(255, 215, 0, 0.08); box-shadow: 0 0 20px rgba(255,215,0,0.2); }
         .pack-card.super-pack { border-color: var(--super); background: rgba(255, 140, 0, 0.08); box-shadow: 0 0 20px rgba(255,140,0,0.2); }
         .pack-card.reborn-pack { border-color: var(--rebirth); }
+        .pack-card.super-reborn-pack { border-color: var(--super); background: rgba(255, 140, 0, 0.05); }
         .pack-card-head { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9em; }
         .pack-name { font-weight: 700; color: #fff; }
         .pack-price { color: var(--gold); font-weight: 600; }
@@ -256,9 +258,7 @@
         .rb-EX { 
             background: #000;
             border: 2px solid transparent;
-            background-image: 
-                linear-gradient(#050505, #050505), 
-                linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff, #00ffff);
+            background-image: linear-gradient(#050505, #050505), linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff, #00ffff);
             background-origin: border-box;
             background-clip: padding-box, border-box;
             box-shadow: 0 0 30px #ff00ff, 0 0 60px #00ffff, inset 0 0 20px rgba(255,255,255,0.2);
@@ -267,10 +267,49 @@
         .rb-EX::before { 
             content: ''; position: absolute; inset: -50%; 
             background: conic-gradient(from 0deg, transparent 0%, #ff00ff 20%, transparent 40%, #00ffff 60%, transparent 80%, #ff00ff 100%); 
-            animation: ex-spin 3s linear infinite; 
-            z-index: 0; 
-            filter: blur(12px);
-            opacity: 0.9;
+            animation: ex-spin 3s linear infinite; z-index: 0; filter: blur(12px); opacity: 0.9;
+        }
+
+        /* 新增超高阶重生卡特效 */
+        .rb-EXp { 
+            background: #000;
+            border: 2px solid transparent;
+            background-image: linear-gradient(#000, #000), conic-gradient(from 0deg, #ffd700, #ff00ff, #00ffff, #ffd700);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            box-shadow: 0 0 40px #ffd700, 0 0 80px #00ffff;
+            overflow: hidden;
+        }
+        .rb-EXp::before { 
+            content: ''; position: absolute; inset: -50%; 
+            background: conic-gradient(from 0deg, transparent 0%, #ffd700 20%, transparent 40%, #00ffff 60%, transparent 80%, #ffd700 100%); 
+            animation: ex-spin 2s linear infinite; z-index: 0; filter: blur(15px); opacity: 1;
+        }
+
+        .rb-SEX {
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff, #00ffff);
+            background-size: 400% 400%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 40px #fff, inset 0 0 20px rgba(255,255,255,0.5);
+            animation: galaxy 1s ease infinite, ex-spin 3s linear infinite;
+        }
+
+        .rb-SEXp {
+            background: radial-gradient(circle, #fff, #000, #fff);
+            background-size: 200% 200%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 50px #fff, inset 0 0 30px #ff00ff;
+            animation: galaxy 0.5s ease infinite;
+        }
+
+        .rb-UEX { 
+            background: #000; 
+            border: 2px solid transparent;
+            background-image: linear-gradient(#000, #000), conic-gradient(from 0deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3, #ff0000);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            box-shadow: 0 0 50px #fff, inset 0 0 30px rgba(255,255,255,0.5);
+            animation: ex-spin 0.5s linear infinite;
         }
 
         @keyframes supreme-anim { from { box-shadow: 0 0 30px #ff00ff, inset 0 0 15px #4b0082; } to { box-shadow: 0 0 60px #ffffff, inset 0 0 30px #ff00ff; filter: brightness(1.5); } }
@@ -356,6 +395,7 @@
         </div>
         <div class="ctrl-group">
             <button id="rebirthPullBtn" class="btn btn-rebirth-pull">🌌 抽重生卡 (10币)</button>
+            <button id="superRebirthPullBtn" class="btn btn-super-rebirth-pull">🌌 抽超级重生 (10万币)</button>
             <button id="bulkRebirthPullBtn" class="btn btn-rebirth-pull">🌌 一键抽重生</button>
             <button id="autoBulkRebirthPullBtn" class="btn btn-rebirth-pull" disabled>🌌 自动抽重生 (锁定)</button>
             <button id="rebirthBtn" class="btn btn-rebirth">🔄 重生 (10万)</button>
@@ -438,6 +478,18 @@
         { name: 'EX', prob: 0.002, mult: 25 }
     ];
 
+    // 新增超级重生卡包掉落
+    const SUPER_REBIRTH_DROPS = [
+        { name: 'SP', prob: 70, mult: 3 },
+        { name: 'SSP', prob: 20, mult: 5 },
+        { name: 'SUP', prob: 7.5, mult: 10 },
+        { name: 'EX', prob: 1.5, mult: 25 },
+        { name: 'EX+', prob: 0.8, mult: 50 },
+        { name: 'SEX', prob: 0.15, mult: 100 },
+        { name: 'SEX+', prob: 0.04, mult: 200 },
+        { name: 'UEX', prob: 0.01, mult: 500 }
+    ];
+
     const REBIRTH_BREAKTHROUGH_BASE_COST = 1e24; // 1杼
     const REBIRTH_BREAKTHROUGH_CAP = 22;
 
@@ -465,13 +517,18 @@
         return getRebirthCap() * 0.1001;
     }
 
+    // 突破价格每次翻2倍
     function getBreakthroughCost() {
-        return REBIRTH_BREAKTHROUGH_BASE_COST * Math.pow(10, state.rebirthBreakthrough);
+        return REBIRTH_BREAKTHROUGH_BASE_COST * Math.pow(2, state.rebirthBreakthrough);
     }
 
-    // 修改为：每次开启的卡包数量 = （多重等级 + 1） * （突破次数 + 1）
     function getPullAmount() {
         return (state.multiLvl + 1) * (state.rebirthBreakthrough + 1);
+    }
+
+    // 查找重生卡掉落数据
+    function findRebirthDrop(type) {
+        return REBIRTH_DROPS.find(d => d.name === type) || SUPER_REBIRTH_DROPS.find(d => d.name === type);
     }
 
     function getCurrentDrops(pack) {
@@ -491,11 +548,20 @@
         return state.superMode ? pack[1] * 10000 : pack[1];
     }
 
+    // 格式化概率：小于万分之一显示 1/xxx
+    function getProbStr(probNum) {
+        if (probNum > 0 && probNum < 0.01) {
+            return `1/${Math.round(100 / probNum)}`;
+        } else {
+            return probNum.toFixed(4) + '%';
+        }
+    }
+
     function renderPacks() {
         let html = '';
         PACKS.forEach(pack => {
             let drops = getCurrentDrops(pack);
-            let dropsHtml = drops.map(d => `<div class="pack-drop-item"><span>${RARITY_DISPLAY[d[0]]}${d[1]}级</span><span>${d[3]}%</span></div>`).join('');
+            let dropsHtml = drops.map(d => `<div class="pack-drop-item"><span>${RARITY_DISPLAY[d[0]]}${d[1]}级</span><span>${getProbStr(d[3])}</span></div>`).join('');
             let price = getPackPrice(pack);
             let isSuper = state.superMode;
             html += `
@@ -508,7 +574,7 @@
                 </div>
             `;
         });
-        let rebirthDropsHtml = REBIRTH_DROPS.map(d => `<div class="pack-drop-item"><span>${d.name}级</span><span>${d.prob}%</span></div>`).join('');
+        let rebirthDropsHtml = REBIRTH_DROPS.map(d => `<div class="pack-drop-item"><span>${d.name}级</span><span>${getProbStr(d.prob)}</span></div>`).join('');
         html += `
             <div class="pack-card reborn-pack" id="pack_rebirth">
                 <div class="pack-card-head">
@@ -516,6 +582,16 @@
                     <span class="pack-price" style="color: var(--rebirth);">10 🔮</span>
                 </div>
                 <div class="pack-drops">${rebirthDropsHtml}</div>
+            </div>
+        `;
+        let superRebirthDropsHtml = SUPER_REBIRTH_DROPS.map(d => `<div class="pack-drop-item"><span>${d.name}级</span><span>${getProbStr(d.prob)}</span></div>`).join('');
+        html += `
+            <div class="pack-card super-reborn-pack" id="pack_super_rebirth">
+                <div class="pack-card-head">
+                    <span class="pack-name" style="color: var(--super);">⚡ 超级重生卡包</span>
+                    <span class="pack-price super-price">10万 🔮</span>
+                </div>
+                <div class="pack-drops">${superRebirthDropsHtml}</div>
             </div>
         `;
         $('packsContainer').innerHTML = html;
@@ -529,7 +605,7 @@
                 SPECIALS.forEach((special, sIdx) => {
                     let id = `${pack[0]}_${rarityIdx}_${baseLevel}_${sIdx}`;
                     let actualIncome = baseIncome * special.mult;
-                    let finalProb = (dropProb * special.prob / 100).toFixed(4);
+                    let probNum = dropProb * special.prob / 100;
                     let displayName = `${special.name}${RARITY_DISPLAY[rarityIdx]}${baseLevel}级`;
                     
                     let div = document.createElement('div');
@@ -539,7 +615,7 @@
                     div.dataset.sortTotal = 0;
                     div.innerHTML = `
                         <div class="card-top">${displayName}</div>
-                        <div class="card-mid">${actualIncome.toFixed(1)}/s | ${finalProb}%</div>
+                        <div class="card-mid">${formatNum(actualIncome)}/s | ${getProbStr(probNum)}</div>
                         <div class="card-bot">
                             <div class="card-count" id="count_${id}">×0</div>
                             <div>
@@ -585,32 +661,70 @@
         return true;
     }
 
-    function bulkPullRebirthCards() {
-        let count = Math.floor(state.rebirthCoins / 10);
-        if (count === 0) return;
+    function pullSuperRebirthCard() {
+        if (state.rebirthCoins < 100000) return false;
+        state.rebirthCoins -= 100000;
         
-        state.rebirthCoins -= count * 10;
+        let rand = Math.random() * 100, acc = 0, chosen = SUPER_REBIRTH_DROPS[0];
+        for (let drop of SUPER_REBIRTH_DROPS) { acc += drop.prob; if (rand <= acc) { chosen = drop; break; } }
+        
+        let type = chosen.name;
+        state.rebirthCards[type] = (state.rebirthCards[type] || 0) + 1;
+        return true;
+    }
+
+    function bulkPullRebirthCards() {
+        let superCount = Math.floor(state.rebirthCoins / 100000);
+        let remainingCoins = state.rebirthCoins % 100000;
+        let normalCount = Math.floor(remainingCoins / 10);
+        remainingCoins = remainingCoins % 10;
+
+        if (superCount === 0 && normalCount === 0) return;
+
+        state.rebirthCoins = remainingCoins;
         
         let newCards = {};
-        if (count > 100000) {
-            REBIRTH_DROPS.forEach(drop => {
-                let expected = count * (drop.prob / 100);
-                let variance = expected * 0.05;
-                let amount = Math.round(expected + (Math.random() * 2 - 1) * variance);
-                if (amount > 0) newCards[drop.name] = amount;
-            });
-        } else {
-            for (let i = 0; i < count; i++) {
-                let rand = Math.random() * 100, acc = 0, chosen = REBIRTH_DROPS[0];
-                for (let drop of REBIRTH_DROPS) { acc += drop.prob; if (rand <= acc) { chosen = drop; break; } }
-                newCards[chosen.name] = (newCards[chosen.name] || 0) + 1;
+        
+        // 处理超级重生卡包
+        if (superCount > 0) {
+            if (superCount > 100000) {
+                SUPER_REBIRTH_DROPS.forEach(drop => {
+                    let expected = superCount * (drop.prob / 100);
+                    let variance = expected * 0.05;
+                    let amount = Math.round(expected + (Math.random() * 2 - 1) * variance);
+                    if (amount > 0) newCards[drop.name] = (newCards[drop.name] || 0) + amount;
+                });
+            } else {
+                for (let i = 0; i < superCount; i++) {
+                    let rand = Math.random() * 100, acc = 0, chosen = SUPER_REBIRTH_DROPS[0];
+                    for (let drop of SUPER_REBIRTH_DROPS) { acc += drop.prob; if (rand <= acc) { chosen = drop; break; } }
+                    newCards[chosen.name] = (newCards[chosen.name] || 0) + 1;
+                }
+            }
+        }
+
+        // 处理普通重生卡包
+        if (normalCount > 0) {
+            if (normalCount > 100000) {
+                REBIRTH_DROPS.forEach(drop => {
+                    let expected = normalCount * (drop.prob / 100);
+                    let variance = expected * 0.05;
+                    let amount = Math.round(expected + (Math.random() * 2 - 1) * variance);
+                    if (amount > 0) newCards[drop.name] = (newCards[drop.name] || 0) + amount;
+                });
+            } else {
+                for (let i = 0; i < normalCount; i++) {
+                    let rand = Math.random() * 100, acc = 0, chosen = REBIRTH_DROPS[0];
+                    for (let drop of REBIRTH_DROPS) { acc += drop.prob; if (rand <= acc) { chosen = drop; break; } }
+                    newCards[chosen.name] = (newCards[chosen.name] || 0) + 1;
+                }
             }
         }
         
         let pulledTypes = new Set();
         for (let type in newCards) {
             state.rebirthCards[type] = (state.rebirthCards[type] || 0) + newCards[type];
-            let key = 'rebirth_' + type;
+            let key = 'rebirth_' + type.replace('+', 'p');
             if (!cardElements[key]) createRebirthCardDOM(type);
             pulledTypes.add(key);
         }
@@ -622,9 +736,10 @@
     }
 
     function createRebirthCardDOM(type) {
-        let key = 'rebirth_' + type;
+        let safeType = type.replace('+', 'p');
+        let key = 'rebirth_' + safeType;
         let div = document.createElement('div');
-        div.className = `card reborn rb-${type}`;
+        div.className = `card reborn rb-${safeType}`;
         div.id = `card_${key}`;
         div.dataset.sortSingle = 0;
         div.dataset.sortTotal = 0;
@@ -650,7 +765,7 @@
         if (!el) return;
 
         if (isRebirth) {
-            let type = id.replace('rebirth_', '');
+            let type = id.replace('rebirth_', '').replace('p', '+');
             count = state.rebirthCards[type] || 0;
         } else {
             count = state.cards[id] || 0;
@@ -663,8 +778,8 @@
             let maxIncome = getMaxSingleIncome();
             
             if (isRebirth) {
-                let type = id.replace('rebirth_', '');
-                let drop = REBIRTH_DROPS.find(d => d.name === type);
+                let type = id.replace('rebirth_', '').replace('p', '+');
+                let drop = findRebirthDrop(type);
                 let income = maxIncome * drop.mult;
                 totalIncome = income * count;
                 $(`mid_${id}`).textContent = `${formatNum(income)}/s | 倍率 x${drop.mult}`;
@@ -699,7 +814,7 @@
         for (let type in state.rebirthCards) {
             if (state.rebirthCards[type] > 0) {
                 cardCount += state.rebirthCards[type];
-                let drop = REBIRTH_DROPS.find(d => d.name === type);
+                let drop = findRebirthDrop(type);
                 let income = maxIncome * drop.mult;
                 baseTotal += income * state.rebirthCards[type];
             }
@@ -719,8 +834,8 @@
             let maxInc = getMaxSingleIncome();
 
             if (el.dataset.isRebirth) {
-                let type = id.replace('rebirth_', '');
-                let drop = REBIRTH_DROPS.find(d => d.name === type);
+                let type = id.replace('rebirth_', '').replace('p', '+');
+                let drop = findRebirthDrop(type);
                 let income = maxInc * drop.mult;
                 totalIncome = income * state.rebirthCards[type];
                 $(`mid_${id}`).textContent = `${formatNum(income)}/s | 倍率 x${drop.mult}`;
@@ -933,7 +1048,19 @@
     $('rebirthPullBtn').addEventListener('click', () => {
         if (pullRebirthCard()) {
             let type = Object.keys(state.rebirthCards).pop();
-            let key = 'rebirth_' + type;
+            let key = 'rebirth_' + type.replace('+', 'p');
+            updateCardUI(key, true);
+            calcIncome();
+            sortCards();
+            updateRebirthUI();
+        }
+    });
+
+    $('superRebirthPullBtn').addEventListener('click', () => {
+        if (pullSuperRebirthCard()) {
+            let type = Object.keys(state.rebirthCards).pop();
+            let key = 'rebirth_' + type.replace('+', 'p');
+            if (!cardElements[key]) createRebirthCardDOM(type);
             updateCardUI(key, true);
             calcIncome();
             sortCards();
@@ -1087,7 +1214,7 @@
         let packName = `${pack[0]}级${state.superMode ? '超级' : ''}`;
         $('pullBtn').textContent = `🎴 抽卡 (${packName} x${getPullAmount()})`;
         
-        document.querySelectorAll('.pack-card:not(.reborn-pack)').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.pack-card:not(.reborn-pack):not(.super-reborn-pack)').forEach(el => el.classList.remove('active'));
         document.getElementById(`pack_${pack[0]}`).classList.add('active');
 
         $('upgradeBtn').disabled = state.coins < state.multiPrice;
@@ -1113,9 +1240,9 @@
             let newRebirthCards = {};
             for (let key in state.rebirthCards) {
                 let type = key.split('_')[0];
-                if (REBIRTH_DROPS.find(d => d.name === type)) {
+                if (findRebirthDrop(type)) {
                     newRebirthCards[type] = (newRebirthCards[type] || 0) + state.rebirthCards[key];
-                } else if (REBIRTH_DROPS.find(d => d.name === key)) {
+                } else if (findRebirthDrop(key)) {
                     newRebirthCards[key] = (newRebirthCards[key] || 0) + state.rebirthCards[key];
                 }
             }
@@ -1123,7 +1250,7 @@
 
             for (let id in state.cards) updateCardUI(id);
             for (let type in state.rebirthCards) {
-                let key = 'rebirth_' + type;
+                let key = 'rebirth_' + type.replace('+', 'p');
                 if (!cardElements[key]) createRebirthCardDOM(type);
                 updateCardUI(key, true);
             }
