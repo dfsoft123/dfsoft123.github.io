@@ -185,10 +185,39 @@
         .s-gold { box-shadow: 0 0 20px var(--gold); border-color: var(--gold) !important; }
         .s-gold::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255,215,0,0.4), transparent); animation: shine 3s infinite linear; z-index: 1; }
         .s-diamond { box-shadow: 0 0 20px var(--diamond); border-color: var(--diamond) !important; }
-        .s-rainbow { border-image: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3) 1; animation: rainbow-rot 3s infinite linear; }
-        .s-transcendent { border-color: #333 !important; background: #000 !important; box-shadow: 0 0 25px rgba(138, 43, 226, 0.8); }
-        .s-transcendent::after { content: ''; position: absolute; top: 50%; left: 50%; width: 180%; height: 180%; background: conic-gradient(from 0deg, transparent, #8a2be2, #ffd700, #00ffff, transparent); border-radius: 50%; transform: translate(-50%, -50%) scale(0.3); animation: blackhole-spin 2s linear infinite; opacity: 0.9; z-index: 1; filter: blur(8px); }
-        .s-transcendent::before { content: ''; position: absolute; top: 50%; left: 50%; width: 70%; height: 70%; background: #000; border-radius: 50%; transform: translate(-50%, -50%); z-index: 1; box-shadow: 0 0 30px rgba(138,43,226,0.9) inset; }
+        
+        /* 修复彩虹卡圆角边框 */
+        .s-rainbow { 
+            border: 2px solid transparent;
+            background-image: 
+                linear-gradient(rgba(10, 10, 20, 0.95), rgba(10, 10, 20, 0.95)), 
+                linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            animation: rainbow-rot 3s infinite linear; 
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
+        }
+        
+        /* 超凡卡特效增强 */
+        .s-transcendent { 
+            border-color: rgba(255,255,255,0.8) !important; 
+            background: radial-gradient(circle at center, #1a0a2e, #000) !important; 
+            box-shadow: 0 0 35px rgba(138, 43, 226, 1), 0 0 60px rgba(0, 255, 255, 0.4), inset 0 0 20px rgba(255,255,255,0.2);
+            overflow: hidden;
+        }
+        .s-transcendent::after { 
+            content: ''; position: absolute; top: 50%; left: 50%; width: 150%; height: 150%; 
+            background: conic-gradient(from 0deg, transparent 0%, #8a2be2 15%, #ffd700 30%, #00ffff 45%, #ff416c 60%, #8a2be2 75%, transparent 100%); 
+            border-radius: 50%; transform: translate(-50%, -50%) scale(0.8) rotate(0deg); 
+            animation: blackhole-spin 4s linear infinite; 
+            z-index: 1; filter: blur(8px); opacity: 0.9;
+        }
+        .s-transcendent::before { 
+            content: ''; position: absolute; top: 50%; left: 50%; width: 70%; height: 70%; 
+            background: #000; border-radius: 50%; transform: translate(-50%, -50%); z-index: 2; 
+            box-shadow: 0 0 30px rgba(255,255,255,0.9) inset, 0 0 15px rgba(138,43,226,0.9) inset; 
+            animation: blackhole-core 2s infinite alternate;
+        }
 
         /* 重生卡特效 */
         .card.reborn { border-width: 2px; }
@@ -198,7 +227,7 @@
         .rb-SSR { background: linear-gradient(135deg, #001f3f, #ffd700); border-color: #ffd700; animation: rb-flash-gold 1s infinite alternate; }
         .rb-UR { background: linear-gradient(135deg, #ff0000, #0000ff); border-color: #ff00ff; animation: rb-flash-rb 0.8s infinite alternate; }
         .rb-SUR { background: linear-gradient(135deg, #000, #fff); border-color: #fff; animation: rb-flash-bw 0.6s infinite alternate; box-shadow: 0 0 20px #fff; }
-        .rb-SP { background: linear-gradient(135deg, #000, #ffd700); border-color: #ffd700; animation: rb-flash-gold 0.5s infinite alternate; box-shadow: 0 0 30px #ffd700; }
+        .rb-SP { background: linear-gradient(135deg, #000, #ffd700); border-color: #000; animation: rb-flash-gold 0.5s infinite alternate; box-shadow: 0 0 30px #ffd700; }
         
         .rb-SSP { background: #000; border-color: #fff; overflow: hidden; box-shadow: 0 0 30px rgba(255,255,255,0.5); }
         .rb-SSP::before { content: ''; position: absolute; top: 50%; left: 50%; width: 140%; height: 140%; transform: translate(-50%, -50%); background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='white'/><path d='M50 5 A45 45 0 0 1 50 95 A22.5 22.5 0 0 1 50 50 A22.5 22.5 0 0 0 50 5 Z' fill='black'/><circle cx='50' cy='27.5' r='6' fill='white'/><circle cx='50' cy='72.5' r='6' fill='black'/></svg>"); background-size: contain; background-repeat: no-repeat; background-position: center; animation: spin 4s linear infinite; opacity: 0.9; z-index: 1; filter: drop-shadow(0 0 5px #fff); }
@@ -213,7 +242,8 @@
         @keyframes divine-anim { from { box-shadow: 0 0 20px #00ffff; } to { box-shadow: 0 0 60px #ffffff; filter: brightness(1.5); } }
         @keyframes shine { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes rainbow-rot { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
-        @keyframes blackhole-spin { 0% { transform: translate(-50%, -50%) scale(0.3) rotate(0deg); } 100% { transform: translate(-50%, -50%) scale(0.3) rotate(360deg); } }
+        @keyframes blackhole-spin { 0% { transform: translate(-50%, -50%) scale(0.8) rotate(0deg); } 100% { transform: translate(-50%, -50%) scale(0.8) rotate(360deg); } }
+        @keyframes blackhole-core { from { box-shadow: 0 0 30px rgba(255,255,255,0.9) inset, 0 0 15px rgba(138,43,226,0.9) inset; } to { box-shadow: 0 0 50px rgba(255,255,255,1) inset, 0 0 30px rgba(138,43,226,1) inset; } }
         @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
         @keyframes galaxy { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         @keyframes starTwinkle { 0% { opacity: 0.3; } 100% { opacity: 0.9; } }
@@ -287,7 +317,7 @@
         <div class="ctrl-group">
             <button id="rebirthPullBtn" class="btn btn-rebirth-pull">🌌 抽重生卡 (10币)</button>
             <button id="bulkRebirthPullBtn" class="btn btn-rebirth-pull">🌌 一键抽重生</button>
-            <button id="rebirthBtn" class="btn btn-rebirth">🔄 重生 (100万)</button>
+            <button id="rebirthBtn" class="btn btn-rebirth">🔄 重生 (10万)</button>
             <button id="bulkRebirthBtn" class="btn btn-rebirth">⏩ 一键重生</button>
             <button id="autoRebirthBtn" class="btn btn-auto">⏱ 自动重生</button>
         </div>
@@ -322,7 +352,7 @@
     const RARITY_NAMES = ['common', 'uncommon', 'rare', 'epic', 'legend', 'myth', 'divine'];
     const RARITY_DISPLAY = ['常见', '罕见', '稀有', '史诗', '传说', '神话', '神圣'];
     const SPECIALS = [
-        { key: 'normal', name: '', mult: 1, prob: 88.89 }, // 修正概率，总和100%
+        { key: 'normal', name: '', mult: 1, prob: 88.89 },
         { key: 'gold', name: '黄金', mult: 2, prob: 10 },
         { key: 'diamond', name: '钻石', mult: 5, prob: 1 },
         { key: 'rainbow', name: '彩虹', mult: 20, prob: 0.1 },
@@ -456,6 +486,7 @@
         
         if (!cardElements[key]) createRebirthCardDOM(type);
         updateCardUI(key, true);
+        updateRebirthUI(); // 立即更新顶部状态栏
         return true;
     }
 
@@ -613,7 +644,7 @@
     }
 
     function doRebirth() {
-        let price = 1000000 * (1 + state.rebirthCount);
+        let price = 100000 * (1 + state.rebirthCount); // 修改为每次增加10万
         if (state.coins >= price) {
             state.coins -= price;
             state.rebirthCount++;
@@ -635,7 +666,7 @@
     function updateRebirthUI() {
         $('rebirthCount').textContent = state.rebirthCount;
         $('rebirthCoins').textContent = state.rebirthCoins;
-        let price = 1000000 * (1 + state.rebirthCount);
+        let price = 100000 * (1 + state.rebirthCount); // 修改为每次增加10万
         $('rebirthBtn').textContent = `🔄 重生 (${formatNum(price)})`;
     }
 
@@ -844,6 +875,7 @@
     if (!state.cards["1_0_1_0"]) { state.cards["1_0_1_0"] = 1; } 
     updateCardUI("1_0_1_0");
     updateUpgradeBtn();
+    updateRebirthUI();
     sortCards();
     
     setInterval(gameTick, 100);
