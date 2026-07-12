@@ -361,7 +361,7 @@
             <button id="rebirthBtn" class="btn btn-rebirth">🔄 重生 (10万)</button>
             <button id="bulkRebirthBtn" class="btn btn-rebirth">⏩ 一键重生</button>
             <button id="autoRebirthBtn" class="btn btn-auto">⏱ 自动重生</button>
-            <button id="breakthroughBtn" class="btn btn-breakthrough">✨ 突破 (1穰)</button>
+            <button id="breakthroughBtn" class="btn btn-breakthrough">✨ 突破 (1杼)</button>
         </div>
         <div class="ctrl-group">
             <button id="sortBtn" class="btn btn-sort">📊 按单张收益排序</button>
@@ -415,7 +415,6 @@
         [11, 10000000000000000000000000, [[0, 11, 1500000, 40], [1, 11, 2250000, 30], [2, 11, 3000000, 20], [3, 11, 3750000, 7.5], [4, 11, 12000000, 2], [5, 11, 30000000, 0.4], [6, 11, 75000000, 0.08], [7, 11, 22500000, 0.015], [8, 11, 45000000, 0.005]]]
     ];
 
-    // 超级模式概率配置 (修正为最新提供的数据，总和为100%)
     const SUPER_DROPS = {
         1: [[3, 100]],
         2: [[3, 100]],
@@ -439,7 +438,7 @@
         { name: 'EX', prob: 0.002, mult: 25 }
     ];
 
-    const REBIRTH_BREAKTHROUGH_BASE_COST = 1e28;
+    const REBIRTH_BREAKTHROUGH_BASE_COST = 1e24; // 1杼
     const REBIRTH_BREAKTHROUGH_CAP = 22;
 
     const SAVE_KEY = 'cardGameStellarV1';
@@ -470,8 +469,9 @@
         return REBIRTH_BREAKTHROUGH_BASE_COST * Math.pow(10, state.rebirthBreakthrough);
     }
 
+    // 修改为：每次开启的卡包数量 = （多重等级 + 1） * （突破次数 + 1）
     function getPullAmount() {
-        return state.multiLvl + 1 + state.rebirthBreakthrough;
+        return (state.multiLvl + 1) * (state.rebirthBreakthrough + 1);
     }
 
     function getCurrentDrops(pack) {
@@ -1031,7 +1031,6 @@
     function formatNum(num) {
         if (!isFinite(num)) return "无限";
         if (num < 10000) return num.toFixed(2);
-        // 加入更多大数单位
         const units = [
             { val: 1e88, name: "超限数" }, 
             { val: 1e84, name: "不可数不可数转" }, 
