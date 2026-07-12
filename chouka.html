@@ -447,30 +447,31 @@
         if (state.rebirthCoins < 10) return;
         state.rebirthCoins -= 10;
         
-        let maxIncome = getMaxSingleIncome();
         let rand = Math.random() * 100, acc = 0, chosen = REBIRTH_DROPS[0];
         for (let drop of REBIRTH_DROPS) { acc += drop.prob; if (rand <= acc) { chosen = drop; break; } }
         
-        let income = maxIncome * chosen.mult;
-        let key = `${chosen.name}_${income.toFixed(4)}`;
-        state.rebirthCards[key] = (state.rebirthCards[key] || 0) + 1;
+        let type = chosen.name;
+        let key = 'rebirth_' + type;
+        state.rebirthCards[type] = (state.rebirthCards[type] || 0) + 1;
         
-        if (!cardElements[key]) createRebirthCardDOM(key, chosen.name, income);
+        if (!cardElements[key]) createRebirthCardDOM(type);
         updateCardUI(key, true);
         sortCards();
         calcIncome();
     }
 
-    function createRebirthCardDOM(key, type, income) {
+    function createRebirthCardDOM(type) {
+        let key = 'rebirth_' + type;
+        let drop = REBIRTH_DROPS.find(d => d.name === type);
         let div = document.createElement('div');
         div.className = `card reborn rb-${type}`;
         div.id = `card_${key}`;
-        div.dataset.sortSingle = income;
+        div.dataset.sortSingle = 0; // 动态更新
         div.dataset.sortTotal = 0;
         div.dataset.isRebirth = 'true';
         div.innerHTML = `
             <div class="card-top">${type}级重生卡</div>
-            <div class="card-mid">${income.toFixed(1)}/s | 固定收益</div>
+            <div class="card-mid" id="mid_${key}">实时收益</div>
             <div class="card-bot">
                 <div class="card-count" id="count_${key}">×0</div>
                 <div>
@@ -484,17 +485,30 @@
     }
 
     function updateCardUI(id, isRebirth=false) {
-        let count = isRebirth ? (state.rebirthCards[id] || 0) : (state.cards[id] || 0);
+        let count = 0;
         let el = cardElements[id];
         if (!el) return;
+
+        if (isRebirth) {
+            let type = id.replace('rebirth_', '');
+            count = state.rebirthCards[type] || 0;
+        } else {
+            count = state.cards[id] || 0;
+        }
         
         if (count > 0) {
             el.classList.add('owned');
             $(`count_${id}`).textContent = `×${formatNum(count)}`;
             let totalIncome = 0;
+            let maxIncome = getMaxSingleIncome();
+            
             if (isRebirth) {
-                let income = parseFloat(id.split('_')[1]);
+                let type = id.replace('rebirth_', '');
+                let drop = REBIRTH_DROPS.find(d => d.name === type);
+                let income = maxIncome * drop.mult;
                 totalIncome = income * count;
+                $(`mid_${id}`).textContent = `${formatNum(income)}/s | 倍率 x${drop.mult}`;
+                el.dataset.sortSingle = income; // 实时更新单张收益用于排序
             } else {
                 let parts = id.split('_');
                 let pack = PACKS.find(p => p[0] == parts[0]);
@@ -520,11 +534,14 @@
                 baseTotal += drop[2] * SPECIALS[parts[3]].mult * state.cards[id];
             }
         }
-        for (let key in state.rebirthCards) {
-            if (state.rebirthCards[key] > 0) {
-                cardCount += state.rebirthCards[key];
-                let income = parseFloat(key.split('_')[1]);
-                baseTotal += income * state.rebirthCards[key];
+        
+        let maxIncome = getMaxSingleIncome();
+        for (let type in state.rebirthCards) {
+            if (state.rebirthCards[type] > 0) {
+                cardCount += state.rebirthCards[type];
+                let drop = REBIRTH_DROPS.find(d => d.name === type);
+                let income = maxIncome * drop.mult;
+                baseTotal += income * state.rebirthCards[type];
             }
         }
         
@@ -536,12 +553,31 @@
         $('mult').textContent = (1 + state.rebirthCount);
         $('totalCards').textContent = formatNum(cardCount);
 
+        // 实时更新所有卡片显示
         document.querySelectorAll('.card.owned').forEach(el => {
             let id = el.id.replace('card_', '');
-            let totalIncome = parseFloat(el.dataset.sortTotal);
+            let totalIncome = 0;
+            let maxInc = getMaxSingleIncome();
+
+            if (el.dataset.isRebirth) {
+                let type = id.replace('rebirth_', '');
+                let drop = REBIRTH_DROPS.find(d => d.name === type);
+                let income = maxInc * drop.mult;
+                totalIncome = income * state.rebirthCards[type];
+                $(`mid_${id}`).textContent = `${formatNum(income)}/s | 倍率 x${drop.mult}`;
+                el.dataset.sortSingle = income;
+            } else {
+                let parts = id.split('_');
+                let pack = PACKS.find(p => p[0] == parts[0]);
+                let drop = pack[2].find(d => d[0] == parts[1] && d[1] == parts[2]);
+                totalIncome = drop[2] * SPECIALS[parts[3]].mult * state.cards[id];
+            }
+            
+            el.dataset.sortTotal = totalIncome;
+            $(`total_${id}`).textContent = `${formatNum(totalIncome)}/s`;
+            
             let percent = state.baseIncome > 0 ? (totalIncome / state.baseIncome * 100) : 0;
-            let percentEl = $(`percent_${id}`);
-            if (percentEl) percentEl.textContent = percent.toFixed(2) + '%';
+            $(`percent_${id}`).textContent = percent.toFixed(2) + '%';
         });
     }
 
@@ -574,7 +610,7 @@
             state.cards[id] = (state.cards[id] || 0) + 1;
             updateCardUI(id);
         }
-        calcIncome();
+        calcIncome(); // 抽到新卡可能改变maxIncome，从而更新重生卡
         sortCards();
         return true;
     }
@@ -585,14 +621,7 @@
             state.coins -= price;
             state.rebirthCount++;
             state.rebirthCoins += 10;
-            state.cards = { "1_0_1_0": 1 };
-            
-            for (let id in cardElements) {
-                if (!cardElements[id].dataset.isRebirth) {
-                    cardElements[id].classList.remove('owned');
-                }
-            }
-            updateCardUI("1_0_1_0");
+            // 不重置任何卡片
             calcIncome();
             updateRebirthUI();
             return true;
@@ -685,15 +714,12 @@
 
     // ===== 重置游戏功能 =====
     function resetGame() {
-        // 1. 关闭所有自动定时器
         if (autoPullInterval) { clearInterval(autoPullInterval); autoPullInterval = null; }
         if (autoRebirthInterval) { clearInterval(autoRebirthInterval); autoRebirthInterval = null; }
         if (autoRebirthPullInterval) { clearInterval(autoRebirthPullInterval); autoRebirthPullInterval = null; }
 
-        // 2. 清除存档
         localStorage.removeItem(SAVE_KEY);
 
-        // 3. 移除所有动态创建的重生卡DOM，普通卡移除owned状态
         for (let key in cardElements) {
             if (cardElements[key].dataset.isRebirth) {
                 cardElements[key].remove();
@@ -703,10 +729,8 @@
             }
         }
 
-        // 4. 重置state到初始值
         state = getInitialState();
 
-        // 5. 重置所有按钮UI状态
         $('autoBtn').classList.remove('active');
         $('autoBtn').textContent = '🤖 自动抽卡';
         $('pullBtn').disabled = false;
@@ -716,7 +740,6 @@
         $('autoRebirthBtn').textContent = '⏱ 自动重生';
         $('sortBtn').textContent = '📊 按单张收益排序';
 
-        // 6. 刷新所有显示
         updateCardUI("1_0_1_0");
         updateUpgradeBtn();
         updateRebirthUI();
@@ -724,21 +747,15 @@
         sortCards();
     }
 
-    $('resetBtn').addEventListener('click', () => {
-        $('resetModal').classList.add('show');
-    });
-    $('cancelResetBtn').addEventListener('click', () => {
-        $('resetModal').classList.remove('show');
-    });
+    $('resetBtn').addEventListener('click', () => $('resetModal').classList.add('show'));
+    $('cancelResetBtn').addEventListener('click', () => $('resetModal').classList.remove('show'));
     $('confirmResetBtn').addEventListener('click', () => {
         $('resetModal').classList.remove('show');
         resetGame();
     });
-    // 点击遮罩关闭
     $('resetModal').addEventListener('click', (e) => {
         if (e.target === $('resetModal')) $('resetModal').classList.remove('show');
     });
-    // ESC关闭
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') $('resetModal').classList.remove('show');
     });
@@ -754,9 +771,7 @@
             { val: 1e8, name: "亿" }, { val: 1e4, name: "万" }
         ];
         for (let i = 0; i < units.length; i++) {
-            if (num >= units[i].val) {
-                return (num / units[i].val).toFixed(2) + units[i].name;
-            }
+            if (num >= units[i].val) return (num / units[i].val).toFixed(2) + units[i].name;
         }
         return num.toFixed(2);
     }
@@ -797,9 +812,9 @@
             if (state.sortMode === 'total') $('sortBtn').textContent = '📊 按总收益排序';
             
             for (let id in state.cards) updateCardUI(id);
-            for (let key in state.rebirthCards) {
-                let parts = key.split('_');
-                if (!cardElements[key]) createRebirthCardDOM(key, parts[0], parseFloat(parts[1]));
+            for (let type in state.rebirthCards) {
+                let key = 'rebirth_' + type;
+                if (!cardElements[key]) createRebirthCardDOM(type);
                 updateCardUI(key, true);
             }
             updateRebirthUI();
