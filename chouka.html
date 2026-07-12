@@ -655,7 +655,8 @@
         if (state.autoPull || isPulling) return;
         isPulling = true; $('pullBtn').disabled = true;
         pullCard();
-        setTimeout(() => { isPulling = false; if (!state.autoPull) $('pullBtn').disabled = false; }, 500);
+        // 修改为0.2s间隔
+        setTimeout(() => { isPulling = false; if (!state.autoPull) $('pullBtn').disabled = false; }, 200);
     });
 
     $('upgradeBtn').addEventListener('click', () => {
@@ -672,7 +673,8 @@
         $('autoBtn').classList.toggle('active', state.autoPull);
         $('autoBtn').textContent = state.autoPull ? '🤖 关闭自动' : '🤖 自动抽卡';
         $('pullBtn').disabled = state.autoPull;
-        if (state.autoPull) autoPullInterval = setInterval(pullCard, 500);
+        // 修改为0.2s间隔
+        if (state.autoPull) autoPullInterval = setInterval(pullCard, 200);
         else clearInterval(autoPullInterval);
     });
 
@@ -683,7 +685,7 @@
         state.autoRebirthPull = !state.autoRebirthPull;
         $('autoRebirthPullBtn').classList.toggle('active', state.autoRebirthPull);
         $('autoRebirthPullBtn').textContent = state.autoRebirthPull ? '🌌 关闭抽重生' : '🌌 自动抽重生';
-        if (state.autoRebirthPull) autoRebirthPullInterval = setInterval(pullRebirthCard, 500);
+        if (state.autoRebirthPull) autoRebirthPullInterval = setInterval(pullRebirthCard, 200);
         else clearInterval(autoRebirthPullInterval);
     });
 
