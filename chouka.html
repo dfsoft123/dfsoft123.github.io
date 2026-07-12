@@ -332,13 +332,15 @@
         @keyframes ex-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* 重置确认模态框 */
-        .reset-modal-overlay {
+        .reset-modal-overlay, .df-console-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px);
             z-index: 9999; display: none;
             justify-content: center; align-items: center;
         }
         .reset-modal-overlay.show { display: flex; }
+        .df-console-overlay.show { display: flex; z-index: 10000; }
+
         .reset-modal {
             background: linear-gradient(145deg, #1a1020, #0a0510);
             border: 1px solid rgba(255, 65, 108, 0.35);
@@ -365,6 +367,39 @@
         .reset-modal-btn:hover { transform: translateY(-2px); filter: brightness(1.2); }
         .btn-confirm-reset { background: linear-gradient(135deg, #6b0f1a, #c31432); color: #fff; box-shadow: 0 4px 12px rgba(195,20,50,0.4); }
         .btn-cancel-reset { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid var(--border-glow); }
+
+        /* 隐藏控制台样式 */
+        .df-console-panel {
+            background: #0c0c14;
+            border: 1px solid #444;
+            border-radius: 12px;
+            width: 600px; height: 80vh;
+            display: flex; flex-direction: column;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        }
+        .df-console-header {
+            padding: 15px; border-bottom: 1px solid #333; background: #111;
+            border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;
+        }
+        .df-console-title { font-weight: bold; color: #fff; }
+        .df-console-tip { font-size: 0.8em; color: #888; }
+        .df-console-body {
+            flex: 1; overflow-y: auto; padding: 15px;
+        }
+        .df-console-body::-webkit-scrollbar { width: 6px; }
+        .df-console-body::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+        .df-console-body h3 { color: var(--gold); margin-top: 15px; margin-bottom: 10px; font-size: 1em; }
+        .df-console-row {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 8px; padding: 5px; background: rgba(255,255,255,0.03);
+            border-radius: 4px;
+        }
+        .df-console-row span { font-size: 0.85em; color: #ccc; }
+        .df-console-row input {
+            width: 120px; padding: 5px 8px; background: #222; color: #fff;
+            border: 1px solid #555; border-radius: 4px; outline: none; font-size: 0.85em;
+        }
+        .df-console-row input:focus { border-color: var(--super); }
     </style>
 </head>
 <body>
@@ -430,6 +465,17 @@
     </div>
 </div>
 
+<!-- 隐藏控制台 -->
+<div class="df-console-overlay" id="dfConsole">
+    <div class="df-console-panel">
+        <div class="df-console-header">
+            <span class="df-console-title">开发者控制台</span>
+            <span class="df-console-tip">修改后自动保存，再次输入 dfsoft123 关闭</span>
+        </div>
+        <div class="df-console-body" id="dfConsoleBody"></div>
+    </div>
+</div>
+
 <script>
     const RARITY_NAMES = ['common', 'uncommon', 'rare', 'epic', 'legend', 'myth', 'divine', 'supreme', 'beyond'];
     const RARITY_DISPLAY = ['常见', '罕见', '稀有', '史诗', '传说', '神话', '神圣', '至高', '超越'];
@@ -478,7 +524,6 @@
         { name: 'EX', prob: 0.002, mult: 25 }
     ];
 
-    // 新增超级重生卡包掉落
     const SUPER_REBIRTH_DROPS = [
         { name: 'SP', prob: 70, mult: 3 },
         { name: 'SSP', prob: 20, mult: 5 },
@@ -517,7 +562,6 @@
         return getRebirthCap() * 0.1001;
     }
 
-    // 突破价格每次翻2倍
     function getBreakthroughCost() {
         return REBIRTH_BREAKTHROUGH_BASE_COST * Math.pow(2, state.rebirthBreakthrough);
     }
@@ -526,7 +570,6 @@
         return (state.multiLvl + 1) * (state.rebirthBreakthrough + 1);
     }
 
-    // 查找重生卡掉落数据
     function findRebirthDrop(type) {
         return REBIRTH_DROPS.find(d => d.name === type) || SUPER_REBIRTH_DROPS.find(d => d.name === type);
     }
@@ -548,7 +591,6 @@
         return state.superMode ? pack[1] * 10000 : pack[1];
     }
 
-    // 格式化概率：小于万分之一显示 1/xxx
     function getProbStr(probNum) {
         if (probNum > 0 && probNum < 0.01) {
             return `1/${Math.round(100 / probNum)}`;
@@ -652,10 +694,8 @@
     function pullRebirthCard() {
         if (state.rebirthCoins < 10) return false;
         state.rebirthCoins -= 10;
-        
         let rand = Math.random() * 100, acc = 0, chosen = REBIRTH_DROPS[0];
         for (let drop of REBIRTH_DROPS) { acc += drop.prob; if (rand <= acc) { chosen = drop; break; } }
-        
         let type = chosen.name;
         state.rebirthCards[type] = (state.rebirthCards[type] || 0) + 1;
         return true;
@@ -664,10 +704,8 @@
     function pullSuperRebirthCard() {
         if (state.rebirthCoins < 100000) return false;
         state.rebirthCoins -= 100000;
-        
         let rand = Math.random() * 100, acc = 0, chosen = SUPER_REBIRTH_DROPS[0];
         for (let drop of SUPER_REBIRTH_DROPS) { acc += drop.prob; if (rand <= acc) { chosen = drop; break; } }
-        
         let type = chosen.name;
         state.rebirthCards[type] = (state.rebirthCards[type] || 0) + 1;
         return true;
@@ -680,12 +718,9 @@
         remainingCoins = remainingCoins % 10;
 
         if (superCount === 0 && normalCount === 0) return;
-
         state.rebirthCoins = remainingCoins;
         
         let newCards = {};
-        
-        // 处理超级重生卡包
         if (superCount > 0) {
             if (superCount > 100000) {
                 SUPER_REBIRTH_DROPS.forEach(drop => {
@@ -703,7 +738,6 @@
             }
         }
 
-        // 处理普通重生卡包
         if (normalCount > 0) {
             if (normalCount > 100000) {
                 REBIRTH_DROPS.forEach(drop => {
@@ -1264,6 +1298,100 @@
             calcIncome();
         }
     }
+
+    // ================= 开发者控制台逻辑 =================
+    let secretCode = '';
+    const targetCode = 'dfsoft123';
+    document.addEventListener('keydown', (e) => {
+        if (e.key.length === 1) {
+            secretCode += e.key.toLowerCase();
+            if (secretCode.length > targetCode.length) {
+                secretCode = secretCode.slice(-targetCode.length);
+            }
+            if (secretCode === targetCode) {
+                toggleDevConsole();
+                secretCode = '';
+            }
+        }
+    });
+
+    function toggleDevConsole() {
+        const el = $('dfConsole');
+        if (el.classList.contains('show')) {
+            el.classList.remove('show');
+        } else {
+            buildConsoleUI();
+            el.classList.add('show');
+        }
+    }
+
+    function buildConsoleUI() {
+        let html = '';
+        PACKS.forEach(pack => {
+            html += `<h3>${pack[0]}级卡包</h3>`;
+            pack[2].forEach(drop => {
+                SPECIALS.forEach((sp, idx) => {
+                    let id = `${pack[0]}_${drop[0]}_${drop[1]}_${idx}`;
+                    let count = state.cards[id] || 0;
+                    html += `<div class="df-console-row">
+                        <span>${sp.name}${RARITY_DISPLAY[drop[0]]}${drop[1]}级</span>
+                        <input type="number" data-id="${id}" value="${count}" min="0">
+                    </div>`;
+                });
+            });
+        });
+        
+        html += `<h3>普通重生卡</h3>`;
+        REBIRTH_DROPS.forEach(d => {
+            let count = state.rebirthCards[d.name] || 0;
+            html += `<div class="df-console-row">
+                <span>${d.name}级重生卡</span>
+                <input type="number" data-type="${d.name}" value="${count}" min="0">
+            </div>`;
+        });
+        
+        html += `<h3>超级重生卡</h3>`;
+        SUPER_REBIRTH_DROPS.forEach(d => {
+            let count = state.rebirthCards[d.name] || 0;
+            html += `<div class="df-console-row">
+                <span>${d.name}级超级重生卡</span>
+                <input type="number" data-type="${d.name}" value="${count}" min="0">
+            </div>`;
+        });
+        
+        $('dfConsoleBody').innerHTML = html;
+    }
+
+    $('dfConsoleBody').addEventListener('change', (e) => {
+        if (e.target.tagName === 'INPUT') {
+            let val = parseInt(e.target.value) || 0;
+            if (val < 0) val = 0;
+            
+            if (e.target.dataset.id) {
+                let id = e.target.dataset.id;
+                if (val > 0) {
+                    state.cards[id] = val;
+                } else {
+                    delete state.cards[id];
+                }
+                updateCardUI(id);
+            } else if (e.target.dataset.type) {
+                let type = e.target.dataset.type;
+                if (val > 0) {
+                    state.rebirthCards[type] = val;
+                    let key = 'rebirth_' + type.replace('+', 'p');
+                    if (!cardElements[key]) createRebirthCardDOM(type);
+                    updateCardUI(key, true);
+                } else {
+                    delete state.rebirthCards[type];
+                    let key = 'rebirth_' + type.replace('+', 'p');
+                    updateCardUI(key, true);
+                }
+            }
+            calcIncome();
+            sortCards();
+        }
+    });
 
     renderPacks();
     generateCardLibrary();
