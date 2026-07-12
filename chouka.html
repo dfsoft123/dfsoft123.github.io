@@ -462,11 +462,10 @@
 
     function createRebirthCardDOM(type) {
         let key = 'rebirth_' + type;
-        let drop = REBIRTH_DROPS.find(d => d.name === type);
         let div = document.createElement('div');
         div.className = `card reborn rb-${type}`;
         div.id = `card_${key}`;
-        div.dataset.sortSingle = 0; // 动态更新
+        div.dataset.sortSingle = 0;
         div.dataset.sortTotal = 0;
         div.dataset.isRebirth = 'true';
         div.innerHTML = `
@@ -508,7 +507,7 @@
                 let income = maxIncome * drop.mult;
                 totalIncome = income * count;
                 $(`mid_${id}`).textContent = `${formatNum(income)}/s | 倍率 x${drop.mult}`;
-                el.dataset.sortSingle = income; // 实时更新单张收益用于排序
+                el.dataset.sortSingle = income;
             } else {
                 let parts = id.split('_');
                 let pack = PACKS.find(p => p[0] == parts[0]);
@@ -553,7 +552,6 @@
         $('mult').textContent = (1 + state.rebirthCount);
         $('totalCards').textContent = formatNum(cardCount);
 
-        // 实时更新所有卡片显示
         document.querySelectorAll('.card.owned').forEach(el => {
             let id = el.id.replace('card_', '');
             let totalIncome = 0;
@@ -610,7 +608,7 @@
             state.cards[id] = (state.cards[id] || 0) + 1;
             updateCardUI(id);
         }
-        calcIncome(); // 抽到新卡可能改变maxIncome，从而更新重生卡
+        calcIncome();
         sortCards();
         return true;
     }
@@ -811,6 +809,18 @@
             if (state.autoRebirthPull) { state.autoRebirthPull = false; $('autoRebirthPullBtn').click(); }
             if (state.sortMode === 'total') $('sortBtn').textContent = '📊 按总收益排序';
             
+            // 兼容旧版重生卡数据结构迁移
+            let newRebirthCards = {};
+            for (let key in state.rebirthCards) {
+                let type = key.split('_')[0]; // 例如 'SSR_100.0000' -> 'SSR'
+                if (REBIRTH_DROPS.find(d => d.name === type)) {
+                    newRebirthCards[type] = (newRebirthCards[type] || 0) + state.rebirthCards[key];
+                } else if (REBIRTH_DROPS.find(d => d.name === key)) {
+                    newRebirthCards[key] = (newRebirthCards[key] || 0) + state.rebirthCards[key];
+                }
+            }
+            state.rebirthCards = newRebirthCards;
+
             for (let id in state.cards) updateCardUI(id);
             for (let type in state.rebirthCards) {
                 let key = 'rebirth_' + type;
