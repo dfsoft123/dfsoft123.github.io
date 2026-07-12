@@ -8,6 +8,7 @@
             --gold: #ffd700;
             --diamond: #b9f2ff;
             --rebirth: #e056fd;
+            --super: #ff8c00;
             --bg-dark: #04040e;
             --panel-bg: rgba(20, 24, 40, 0.55);
             --border-glow: rgba(255, 255, 255, 0.1);
@@ -120,6 +121,8 @@
         .btn-rebirth { background: linear-gradient(135deg, #f12711, #f5af19); color: #000; }
         .btn-auto { background: linear-gradient(135deg, #11998e, #38ef7d); }
         .btn-auto.active { background: linear-gradient(135deg, #cb2d3e, #ef473a); }
+        .btn-super { background: linear-gradient(135deg, #8e2de2, #ff8c00); }
+        .btn-super.active { box-shadow: 0 0 15px var(--super), inset 0 0 10px rgba(255,255,255,0.3); }
         .btn-sort { background: rgba(255,255,255,0.1); border: 1px solid var(--border-glow); }
         .btn-reset { background: linear-gradient(135deg, #6b0f1a, #c31432); box-shadow: 0 4px 10px rgba(195, 20, 50, 0.4); }
 
@@ -136,10 +139,12 @@
             flex-shrink: 0;
         }
         .pack-card.active { border-color: var(--gold); background: rgba(255, 215, 0, 0.08); box-shadow: 0 0 20px rgba(255,215,0,0.2); }
+        .pack-card.super-pack { border-color: var(--super); background: rgba(255, 140, 0, 0.08); box-shadow: 0 0 20px rgba(255,140,0,0.2); }
         .pack-card.reborn-pack { border-color: var(--rebirth); }
         .pack-card-head { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9em; }
         .pack-name { font-weight: 700; color: #fff; }
         .pack-price { color: var(--gold); font-weight: 600; }
+        .pack-price.super-price { color: var(--super); }
         .pack-drops { font-size: 0.7em; color: var(--text-dim); line-height: 1.5; }
         .pack-drop-item { display: flex; justify-content: space-between; }
 
@@ -180,7 +185,6 @@
         .r-legend { border-color: #f1c40f; background: linear-gradient(145deg, #d35400, #a04000); animation: legend-anim 2s infinite alternate; }
         .r-myth { border-color: #e74c3c; background: linear-gradient(145deg, #c0392b, #922b21); animation: myth-anim 1s infinite alternate; }
         .r-divine { border-color: #00ffff; background: linear-gradient(145deg, #00b3b3, #008080); animation: divine-anim 0.5s infinite alternate; }
-        /* 新增至高卡 */
         .r-supreme { border-color: #ff00ff; background: linear-gradient(145deg, #8a2be2, #4b0082); animation: supreme-anim 0.4s infinite alternate; }
 
         /* 特殊变异 */
@@ -188,7 +192,6 @@
         .s-gold::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255,215,0,0.4), transparent); animation: shine 3s infinite linear; z-index: 1; }
         .s-diamond { box-shadow: 0 0 20px var(--diamond); border-color: var(--diamond) !important; }
         
-        /* 彩虹卡：整卡铺满渐变 + 半透明遮罩 + 圆角描边 */
         .s-rainbow { 
             background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3) !important;
             border: 2px solid rgba(255,255,255,0.9) !important;
@@ -201,7 +204,6 @@
             z-index: 1;
         }
         
-        /* 超凡卡特效增强 */
         .s-transcendent { 
             border-color: rgba(255,255,255,0.8) !important; 
             background: radial-gradient(circle at center, #1a0a2e, #000) !important; 
@@ -240,7 +242,6 @@
         .rb-SUP::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(2px 2px at 20px 30px, #fff, transparent), radial-gradient(1px 1px at 40px 70px, rgba(255,255,255,0.9), transparent), radial-gradient(2px 2px at 90px 40px, #fff, transparent); background-size: 100px 100px; animation: starTwinkle 1.5s infinite alternate; z-index: 1; }
         .rb-SUP::after { content: ''; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, transparent 50%); transform: translate(-50%, -50%); border-radius: 50%; animation: pulse 2s infinite; z-index: 1; }
 
-        /* EX 级宏大特效 */
         .rb-EX { 
             background: #000;
             border: 2px solid transparent;
@@ -339,6 +340,7 @@
             <button id="pullBtn" class="btn btn-gacha">🎴 抽卡 (1级)</button>
             <button id="upgradeBtn" class="btn btn-upgrade">⬆ 升级多重 (Lv.0 | 100)</button>
             <button id="autoBtn" class="btn btn-auto">🤖 自动抽卡</button>
+            <button id="superModeBtn" class="btn btn-super">⚡ 超级卡包 (关闭)</button>
         </div>
         <div class="ctrl-group">
             <button id="rebirthPullBtn" class="btn btn-rebirth-pull">🌌 抽重生卡 (10币)</button>
@@ -394,19 +396,30 @@
         [5, 1000000, [[0, 5, 50, 40], [1, 5, 75, 30], [2, 5, 100, 20], [3, 5, 125, 7.5], [4, 5, 400, 2], [5, 5, 1000, 0.5]]],
         [6, 100000000, [[0, 6, 250, 40], [1, 6, 375, 30], [2, 6, 500, 20], [3, 6, 675, 7.5], [4, 6, 2000, 2], [5, 6, 5000, 0.5]]],
         [7, 25000000000, [[0, 7, 1000, 40], [1, 7, 1500, 30], [2, 7, 2000, 20], [3, 7, 2500, 7.5], [4, 7, 8000, 2], [5, 7, 20000, 0.4], [6, 7, 50000, 0.1]]],
-        // 新增 8 级卡包，价格为7级的400倍，收益为7级的5倍
         [8, 10000000000000, [[0, 8, 5000, 40], [1, 8, 7500, 30], [2, 8, 10000, 20], [3, 8, 12500, 7.5], [4, 8, 40000, 2], [5, 8, 100000, 0.4], [6, 8, 250000, 0.1]]],
-        // 新增 9 级卡包，价格为8级的1000倍，收益为8级的6倍，神圣卡概率调整并加入至高卡
         [9, 10000000000000000, [[0, 9, 30000, 40], [1, 9, 45000, 30], [2, 9, 60000, 20], [3, 9, 75000, 7.5], [4, 9, 240000, 2], [5, 9, 600000, 0.4], [6, 9, 1500000, 0.08], [7, 9, 4500000, 0.02]]]
     ];
+
+    // 超级模式概率配置 (总和为100%)
+    const SUPER_DROPS = {
+        1: [[3, 100]],
+        2: [[3, 100]],
+        3: [[3, 75], [4, 25]],
+        4: [[3, 75], [4, 25]],
+        5: [[3, 75], [4, 20], [5, 5]],
+        6: [[3, 75], [4, 20], [5, 5]],
+        7: [[3, 74], [4, 20], [5, 5], [6, 1]],
+        8: [[3, 74], [4, 20], [5, 5], [6, 1]],
+        9: [[3, 74], [4, 20], [5, 5], [6, 0.8], [7, 0.2]]
+    };
 
     const REBIRTH_DROPS = [
         { name: 'N', prob: 40, mult: 0.1 }, { name: 'R', prob: 30, mult: 0.2 },
         { name: 'SR', prob: 20, mult: 0.3 }, { name: 'SSR', prob: 7.5, mult: 0.5 },
         { name: 'UR', prob: 2, mult: 1 }, { name: 'SUR', prob: 0.4, mult: 2 },
         { name: 'SP', prob: 0.07, mult: 3 }, { name: 'SSP', prob: 0.02, mult: 5 },
-        { name: 'SUP', prob: 0.08, mult: 10 }, 
-        { name: 'EX', prob: 0.02, mult: 25 }
+        { name: 'SUP', prob: 0.008, mult: 10 }, 
+        { name: 'EX', prob: 0.002, mult: 25 }
     ];
 
     const REBIRTH_CAP = 2200000;
@@ -417,7 +430,7 @@
     function getInitialState() {
         return {
             coins: 1, cards: { "1_0_1_0": 1 }, rebirthCards: {}, multiLvl: 0, multiPrice: 100,
-            autoPull: false, autoRebirth: false, autoBulkRebirthPull: false, baseIncome: 1, income: 1, lastTime: Date.now(),
+            autoPull: false, autoRebirth: false, autoBulkRebirthPull: false, superMode: false, baseIncome: 1, income: 1, lastTime: Date.now(),
             rebirthCount: 0, rebirthCoins: 0, sortMode: 'single',
             startTime: Date.now(), onlineSeconds: 0
         };
@@ -428,15 +441,36 @@
     const $ = id => document.getElementById(id);
     const collectionEl = $('collection');
 
+    // 根据超级模式获取实际掉落信息
+    function getCurrentDrops(pack) {
+        if (!state.superMode) return pack[2];
+        let superData = SUPER_DROPS[pack[0]];
+        let result = [];
+        superData.forEach(([rarityIdx, prob]) => {
+            let normalDrop = pack[2].find(d => d[0] === rarityIdx);
+            if (normalDrop) {
+                result.push([rarityIdx, normalDrop[1], normalDrop[2], prob]);
+            }
+        });
+        return result;
+    }
+
+    function getPackPrice(pack) {
+        return state.superMode ? pack[1] * 10000 : pack[1];
+    }
+
     function renderPacks() {
         let html = '';
         PACKS.forEach(pack => {
-            let dropsHtml = pack[2].map(d => `<div class="pack-drop-item"><span>${RARITY_DISPLAY[d[0]]}${d[1]}级</span><span>${d[3]}%</span></div>`).join('');
+            let drops = getCurrentDrops(pack);
+            let dropsHtml = drops.map(d => `<div class="pack-drop-item"><span>${RARITY_DISPLAY[d[0]]}${d[1]}级</span><span>${d[3]}%</span></div>`).join('');
+            let price = getPackPrice(pack);
+            let isSuper = state.superMode;
             html += `
-                <div class="pack-card" id="pack_${pack[0]}">
+                <div class="pack-card ${isSuper ? 'super-pack' : ''}" id="pack_${pack[0]}">
                     <div class="pack-card-head">
-                        <span class="pack-name">${pack[0]}级卡包</span>
-                        <span class="pack-price">${formatNum(pack[1])}</span>
+                        <span class="pack-name">${pack[0]}级卡包 ${isSuper ? '⚡' : ''}</span>
+                        <span class="pack-price ${isSuper ? 'super-price' : ''}">${formatNum(price)}</span>
                     </div>
                     <div class="pack-drops">${dropsHtml}</div>
                 </div>
@@ -667,17 +701,17 @@
 
     function getHighestPack() {
         for (let i = PACKS.length - 1; i >= 0; i--) {
-            if (state.coins >= PACKS[i][1] * (state.multiLvl + 1)) return PACKS[i];
+            if (state.coins >= getPackPrice(PACKS[i]) * (state.multiLvl + 1)) return PACKS[i];
         }
         for (let i = PACKS.length - 1; i >= 0; i--) {
-            if (state.coins >= PACKS[i][1]) return PACKS[i];
+            if (state.coins >= getPackPrice(PACKS[i])) return PACKS[i];
         }
         return PACKS[0];
     }
 
     function pullCard() {
         let pack = getHighestPack();
-        let cost = pack[1], amount = state.multiLvl + 1, totalCost = cost * amount;
+        let cost = getPackPrice(pack), amount = state.multiLvl + 1, totalCost = cost * amount;
         if (state.coins < totalCost) {
             amount = Math.floor(state.coins / cost);
             if (amount === 0) return false;
@@ -685,10 +719,11 @@
         }
         state.coins -= totalCost;
 
+        let drops = getCurrentDrops(pack);
         let pulledCards = new Set();
         for (let i = 0; i < amount; i++) {
             let rand = Math.random() * 100, acc = 0, chosenDrop = null;
-            for (let drop of pack[2]) { acc += drop[3]; if (rand <= acc) { chosenDrop = drop; break; } }
+            for (let drop of drops) { acc += drop[3]; if (rand <= acc) { chosenDrop = drop; break; } }
             let sRand = Math.random() * 100, sAcc = 0, chosenSpecial = 0;
             for (let j = 0; j < SPECIALS.length; j++) { sAcc += SPECIALS[j].prob; if (sRand <= sAcc) { chosenSpecial = j; break; } }
             let id = `${pack[0]}_${chosenDrop[0]}_${chosenDrop[1]}_${chosenSpecial}`;
@@ -809,6 +844,13 @@
         else clearInterval(autoPullInterval);
     });
 
+    $('superModeBtn').addEventListener('click', () => {
+        state.superMode = !state.superMode;
+        $('superModeBtn').classList.toggle('active', state.superMode);
+        $('superModeBtn').textContent = state.superMode ? '⚡ 超级卡包 (开启)' : '⚡ 超级卡包 (关闭)';
+        renderPacks(); // 刷新图鉴面板显示
+    });
+
     $('rebirthPullBtn').addEventListener('click', () => {
         if (pullRebirthCard()) {
             let type = Object.keys(state.rebirthCards).pop();
@@ -879,6 +921,8 @@
         $('autoRebirthBtn').classList.remove('active');
         $('autoRebirthBtn').textContent = '⏱ 自动重生';
         $('autoBulkRebirthPullBtn').classList.remove('active');
+        $('superModeBtn').classList.remove('active');
+        $('superModeBtn').textContent = '⚡ 超级卡包 (关闭)';
         $('sortBtn').textContent = '📊 按单张收益排序';
 
         updateCardUI("1_0_1_0");
@@ -887,6 +931,7 @@
         checkAutoRebirthUnlock();
         calcIncome();
         sortCards();
+        renderPacks();
     }
 
     $('resetBtn').addEventListener('click', () => $('resetModal').classList.add('show'));
@@ -940,7 +985,8 @@
         $('onlineTime').textContent = formatTime(state.onlineSeconds);
 
         let pack = getHighestPack();
-        $('pullBtn').textContent = `🎴 抽卡 (${pack[0]}级)`;
+        let packName = `${pack[0]}级${state.superMode ? '超级' : ''}`;
+        $('pullBtn').textContent = `🎴 抽卡 (${packName})`;
         
         document.querySelectorAll('.pack-card:not(.reborn-pack)').forEach(el => el.classList.remove('active'));
         document.getElementById(`pack_${pack[0]}`).classList.add('active');
@@ -956,6 +1002,12 @@
             if (state.autoPull) { state.autoPull = false; $('autoBtn').click(); }
             if (state.autoRebirth) { state.autoRebirth = false; $('autoRebirthBtn').click(); }
             if (state.sortMode === 'total') $('sortBtn').textContent = '📊 按总收益排序';
+            
+            // 更新超级模式按钮状态
+            if (state.superMode) {
+                $('superModeBtn').classList.add('active');
+                $('superModeBtn').textContent = '⚡ 超级卡包 (开启)';
+            }
             
             let newRebirthCards = {};
             for (let key in state.rebirthCards) {
