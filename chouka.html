@@ -286,7 +286,7 @@
         </div>
         <div class="ctrl-group">
             <button id="rebirthPullBtn" class="btn btn-rebirth-pull">🌌 抽重生卡 (10币)</button>
-            <button id="autoRebirthPullBtn" class="btn btn-auto">🌌 自动抽重生</button>
+            <button id="bulkRebirthPullBtn" class="btn btn-rebirth-pull">🌌 一键抽重生</button>
             <button id="rebirthBtn" class="btn btn-rebirth">🔄 重生 (100万)</button>
             <button id="bulkRebirthBtn" class="btn btn-rebirth">⏩ 一键重生</button>
             <button id="autoRebirthBtn" class="btn btn-auto">⏱ 自动重生</button>
@@ -353,7 +353,7 @@
     function getInitialState() {
         return {
             coins: 1, cards: { "1_0_1_0": 1 }, rebirthCards: {}, multiLvl: 0, multiPrice: 100,
-            autoPull: false, autoRebirth: false, autoRebirthPull: false, baseIncome: 1, income: 1, lastTime: Date.now(),
+            autoPull: false, autoRebirth: false, baseIncome: 1, income: 1, lastTime: Date.now(),
             rebirthCount: 0, rebirthCoins: 0, sortMode: 'single',
             startTime: Date.now(), onlineSeconds: 0
         };
@@ -444,7 +444,7 @@
     }
 
     function pullRebirthCard() {
-        if (state.rebirthCoins < 10) return;
+        if (state.rebirthCoins < 10) return false;
         state.rebirthCoins -= 10;
         
         let rand = Math.random() * 100, acc = 0, chosen = REBIRTH_DROPS[0];
@@ -456,8 +456,7 @@
         
         if (!cardElements[key]) createRebirthCardDOM(type);
         updateCardUI(key, true);
-        sortCards();
-        calcIncome();
+        return true;
     }
 
     function createRebirthCardDOM(type) {
@@ -655,7 +654,7 @@
         if (state.autoPull || isPulling) return;
         isPulling = true; $('pullBtn').disabled = true;
         pullCard();
-        // 修改为0.2s间隔
+        // 0.2s 间隔
         setTimeout(() => { isPulling = false; if (!state.autoPull) $('pullBtn').disabled = false; }, 200);
     });
 
@@ -673,20 +672,29 @@
         $('autoBtn').classList.toggle('active', state.autoPull);
         $('autoBtn').textContent = state.autoPull ? '🤖 关闭自动' : '🤖 自动抽卡';
         $('pullBtn').disabled = state.autoPull;
-        // 修改为0.2s间隔
+        // 0.2s 间隔
         if (state.autoPull) autoPullInterval = setInterval(pullCard, 200);
         else clearInterval(autoPullInterval);
     });
 
-    $('rebirthPullBtn').addEventListener('click', pullRebirthCard);
+    // 单抽重生卡
+    $('rebirthPullBtn').addEventListener('click', () => {
+        if (pullRebirthCard()) {
+            calcIncome();
+            sortCards();
+        }
+    });
 
-    let autoRebirthPullInterval = null;
-    $('autoRebirthPullBtn').addEventListener('click', () => {
-        state.autoRebirthPull = !state.autoRebirthPull;
-        $('autoRebirthPullBtn').classList.toggle('active', state.autoRebirthPull);
-        $('autoRebirthPullBtn').textContent = state.autoRebirthPull ? '🌌 关闭抽重生' : '🌌 自动抽重生';
-        if (state.autoRebirthPull) autoRebirthPullInterval = setInterval(pullRebirthCard, 200);
-        else clearInterval(autoRebirthPullInterval);
+    // 一键抽重生卡（一次性抽完所有重生币）
+    $('bulkRebirthPullBtn').addEventListener('click', () => {
+        let pulled = false;
+        while (pullRebirthCard()) {
+            pulled = true;
+        }
+        if (pulled) {
+            calcIncome();
+            sortCards();
+        }
     });
 
     $('rebirthBtn').addEventListener('click', () => { if (doRebirth()) sortCards(); });
@@ -716,7 +724,6 @@
     function resetGame() {
         if (autoPullInterval) { clearInterval(autoPullInterval); autoPullInterval = null; }
         if (autoRebirthInterval) { clearInterval(autoRebirthInterval); autoRebirthInterval = null; }
-        if (autoRebirthPullInterval) { clearInterval(autoRebirthPullInterval); autoRebirthPullInterval = null; }
 
         localStorage.removeItem(SAVE_KEY);
 
@@ -734,8 +741,6 @@
         $('autoBtn').classList.remove('active');
         $('autoBtn').textContent = '🤖 自动抽卡';
         $('pullBtn').disabled = false;
-        $('autoRebirthPullBtn').classList.remove('active');
-        $('autoRebirthPullBtn').textContent = '🌌 自动抽重生';
         $('autoRebirthBtn').classList.remove('active');
         $('autoRebirthBtn').textContent = '⏱ 自动重生';
         $('sortBtn').textContent = '📊 按单张收益排序';
@@ -808,7 +813,6 @@
             updateUpgradeBtn();
             if (state.autoPull) { state.autoPull = false; $('autoBtn').click(); }
             if (state.autoRebirth) { state.autoRebirth = false; $('autoRebirthBtn').click(); }
-            if (state.autoRebirthPull) { state.autoRebirthPull = false; $('autoRebirthPullBtn').click(); }
             if (state.sortMode === 'total') $('sortBtn').textContent = '📊 按总收益排序';
             
             // 兼容旧版重生卡数据结构迁移
