@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>抽卡</title>
+    <style>
+        :root {
+            --gold: #ffd700;
+            --diamond: #b9f2ff;
+            --rebirth: #e056fd;
+            --bg-dark: #04040e;
+            --panel-bg: rgba(20, 24, 40, 0.55);
+            --border-glow: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-dim: #8a8d9b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* 动态深空背景 */
+        .bg-animated {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(138, 43, 226, 0.15), transparent 35%),
+                radial-gradient(circle at 90% 80%, rgba(0, 255, 255, 0.1), transparent 35%),
+                radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.03), transparent 60%);
+            animation: bg-pulse 10s infinite alternate ease-in-out;
+        }
+        @keyframes bg-pulse { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.1); opacity: 1; } }
+
+        /* 顶部状态栏 */
+        header {
+            background: rgba(4, 4, 14, 0.85);
+            backdrop-filter: blur(25px);
+            border-bottom: 1px solid var(--border-glow);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            gap: 20px;
+        }
+        .logo {
+            font-size: 1.8em; font-weight: 800; letter-spacing: 4px; flex-shrink: 0;
+            background: linear-gradient(to right, #fff, #b9f2ff, #e056fd);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(185, 242, 255, 0.3);
+        }
+        .stats-bar { display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
+        .stat-box {
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 6px 14px; border-radius: 8px;
+            border: 1px solid var(--border-glow);
+            transition: all 0.3s;
+        }
+        .stat-box:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255,255,255,0.2); }
+        .stat-icon { font-size: 1.1em; }
+        .stat-info { display: flex; flex-direction: column; line-height: 1.2; }
+        .stat-label { font-size: 0.65em; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+        .stat-value { font-size: 1em; font-weight: 700; color: var(--text-main); }
+        .stat-value.gold { color: var(--gold); text-shadow: 0 0 8px rgba(255, 215, 0, 0.4); }
+        .stat-value.diamond { color: var(--diamond); text-shadow: 0 0 8px rgba(185, 242, 255, 0.4); }
+        .stat-value.rebirth { color: var(--rebirth); text-shadow: 0 0 8px rgba(224, 86, 253, 0.4); }
+
+        /* 控制与卡包面板 */
+        .main-panel {
+            padding: 20px 30px;
+            background: linear-gradient(to bottom, rgba(10, 12, 25, 0.6), transparent);
+        }
+        
+        /* 模块化按钮组 */
+        .controls-row {
+            display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;
+            align-items: stretch;
+        }
+        .ctrl-group {
+            display: flex; gap: 10px; align-items: center;
+            background: var(--panel-bg);
+            padding: 8px; border-radius: 12px;
+            border: 1px solid var(--border-glow);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn {
+            padding: 10px 20px; border: none; border-radius: 8px;
+            font-size: 0.85em; font-weight: 600; cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+            color: #fff; position: relative; overflow: hidden;
+            display: flex; align-items: center; gap: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            white-space: nowrap;
+        }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.2); box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
+        
+        /* 按钮流光特效 */
+        .btn::after {
+            content: ''; position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: 0.5s;
+        }
+        .btn:hover:not(:disabled)::after { left: 100%; }
+
+        .btn-gacha { background: linear-gradient(135deg, #8a2be2, #ff416c); }
+        .btn-upgrade { background: linear-gradient(135deg, #005c97, #363795); }
+        .btn-rebirth-pull { background: linear-gradient(135deg, #c31432, #240b36); }
+        .btn-rebirth { background: linear-gradient(135deg, #f12711, #f5af19); color: #000; }
+        .btn-auto { background: linear-gradient(135deg, #11998e, #38ef7d); }
+        .btn-auto.active { background: linear-gradient(135deg, #cb2d3e, #ef473a); }
+        .btn-sort { background: rgba(255,255,255,0.1); border: 1px solid var(--border-glow); }
+        .btn-reset { background: linear-gradient(135deg, #6b0f1a, #c31432); box-shadow: 0 4px 10px rgba(195, 20, 50, 0.4); }
+
+        .packs-wrapper { margin-bottom: 10px; }
+        .packs-title { font-size: 0.8em; color: var(--text-dim); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; padding-left: 5px; }
+        .packs-list { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; }
+        .packs-list::-webkit-scrollbar { height: 6px; }
+        .packs-list::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        
+        .pack-card {
+            min-width: 180px; padding: 12px; border-radius: 10px;
+            background: var(--panel-bg); border: 1px solid var(--border-glow);
+            transition: all 0.3s; backdrop-filter: blur(5px);
+            flex-shrink: 0;
+        }
+        .pack-card.active { border-color: var(--gold); background: rgba(255, 215, 0, 0.08); box-shadow: 0 0 20px rgba(255,215,0,0.2); }
+        .pack-card.reborn-pack { border-color: var(--rebirth); }
+        .pack-card-head { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9em; }
+        .pack-name { font-weight: 700; color: #fff; }
+        .pack-price { color: var(--gold); font-weight: 600; }
+        .pack-drops { font-size: 0.7em; color: var(--text-dim); line-height: 1.5; }
+        .pack-drop-item { display: flex; justify-content: space-between; }
+
+        /* 卡片图鉴 */
+        #collection {
+            flex: 1; padding: 20px 30px 40px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px; align-content: start;
+            perspective: 1000px;
+        }
+
+        .card {
+            border-radius: 12px; padding: 12px; position: relative; overflow: hidden;
+            border-width: 1.5px; border-style: solid; height: 110px;
+            display: none; flex-direction: column; justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s;
+            transform-style: preserve-3d;
+        }
+        .card.owned { display: flex; }
+        .card.owned:hover { 
+            transform: translateY(-6px) scale(1.06) rotateZ(1deg); 
+            z-index: 10; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8); 
+        }
+        
+        .card-top { font-weight: 700; font-size: 0.9em; text-shadow: 0 2px 4px rgba(0,0,0,0.8); z-index: 2; }
+        .card-mid { font-size: 0.7em; color: rgba(255,255,255,0.85); z-index: 2; }
+        .card-bot { display: flex; justify-content: space-between; align-items: flex-end; z-index: 2; }
+        .card-count { font-size: 1.1em; font-weight: 800; color: #fff; }
+        .card-total { font-size: 0.7em; color: var(--gold); text-align: right; font-weight: 600; }
+        .card-percent { font-size: 0.65em; color: var(--diamond); text-align: right; margin-top: 2px; font-weight: 600; }
+
+        /* 普通卡稀有度 */
+        .r-common { border-color: #7f8c8d; background: linear-gradient(145deg, #2c3e50, #1a252f); }
+        .r-uncommon { border-color: #2ecc71; background: linear-gradient(145deg, #27ae60, #1e8449); }
+        .r-rare { border-color: #3498db; background: linear-gradient(145deg, #2980b9, #1f618d); }
+        .r-epic { border-color: #9b59b6; background: linear-gradient(145deg, #8e44ad, #6c3483); }
+        .r-legend { border-color: #f1c40f; background: linear-gradient(145deg, #d35400, #a04000); animation: legend-anim 2s infinite alternate; }
+        .r-myth { border-color: #e74c3c; background: linear-gradient(145deg, #c0392b, #922b21); animation: myth-anim 1s infinite alternate; }
+        .r-divine { border-color: #00ffff; background: linear-gradient(145deg, #00b3b3, #008080); animation: divine-anim 0.5s infinite alternate; }
+
+        /* 特殊变异 */
+        .s-gold { box-shadow: 0 0 20px var(--gold); border-color: var(--gold) !important; }
+        .s-gold::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255,215,0,0.4), transparent); animation: shine 3s infinite linear; z-index: 1; }
+        .s-diamond { box-shadow: 0 0 20px var(--diamond); border-color: var(--diamond) !important; }
+        .s-rainbow { border-image: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3) 1; animation: rainbow-rot 3s infinite linear; }
+        .s-transcendent { border-color: #333 !important; background: #000 !important; box-shadow: 0 0 25px rgba(138, 43, 226, 0.8); }
+        .s-transcendent::after { content: ''; position: absolute; top: 50%; left: 50%; width: 180%; height: 180%; background: conic-gradient(from 0deg, transparent, #8a2be2, #ffd700, #00ffff, transparent); border-radius: 50%; transform: translate(-50%, -50%) scale(0.3); animation: blackhole-spin 2s linear infinite; opacity: 0.9; z-index: 1; filter: blur(8px); }
+        .s-transcendent::before { content: ''; position: absolute; top: 50%; left: 50%; width: 70%; height: 70%; background: #000; border-radius: 50%; transform: translate(-50%, -50%); z-index: 1; box-shadow: 0 0 30px rgba(138,43,226,0.9) inset; }
+
+        /* 重生卡特效 */
+        .card.reborn { border-width: 2px; }
+        .rb-N { background: #050505; border-color: #333; color: #fff; }
+        .rb-R { background: #050505; border-color: #555; animation: rb-flash 1.5s infinite alternate; }
+        .rb-SR { background: #050505; border-color: #0055ff; animation: rb-flash-blue 1.2s infinite alternate; }
+        .rb-SSR { background: linear-gradient(135deg, #001f3f, #ffd700); border-color: #ffd700; animation: rb-flash-gold 1s infinite alternate; }
+        .rb-UR { background: linear-gradient(135deg, #ff0000, #0000ff); border-color: #ff00ff; animation: rb-flash-rb 0.8s infinite alternate; }
+        .rb-SUR { background: linear-gradient(135deg, #000, #fff); border-color: #fff; animation: rb-flash-bw 0.6s infinite alternate; box-shadow: 0 0 20px #fff; }
+        .rb-SP { background: linear-gradient(135deg, #000, #ffd700); border-color: #ffd700; animation: rb-flash-gold 0.5s infinite alternate; box-shadow: 0 0 30px #ffd700; }
+        
+        .rb-SSP { background: #000; border-color: #fff; overflow: hidden; box-shadow: 0 0 30px rgba(255,255,255,0.5); }
+        .rb-SSP::before { content: ''; position: absolute; top: 50%; left: 50%; width: 140%; height: 140%; transform: translate(-50%, -50%); background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='white'/><path d='M50 5 A45 45 0 0 1 50 95 A22.5 22.5 0 0 1 50 50 A22.5 22.5 0 0 0 50 5 Z' fill='black'/><circle cx='50' cy='27.5' r='6' fill='white'/><circle cx='50' cy='72.5' r='6' fill='black'/></svg>"); background-size: contain; background-repeat: no-repeat; background-position: center; animation: spin 4s linear infinite; opacity: 0.9; z-index: 1; filter: drop-shadow(0 0 5px #fff); }
+        .rb-SSP::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, transparent 40%, rgba(255,255,255,0.2) 100%); z-index: 2; }
+        
+        .rb-SUP { background: linear-gradient(45deg, #001f3f, #8a2be2, #ff416c, #001f3f); background-size: 400% 400%; animation: galaxy 3s ease infinite; border-color: #fff; box-shadow: 0 0 40px rgba(255,255,255,0.8), 0 0 80px rgba(138, 43, 226, 0.5); overflow: hidden; }
+        .rb-SUP::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(2px 2px at 20px 30px, #fff, transparent), radial-gradient(1px 1px at 40px 70px, rgba(255,255,255,0.9), transparent), radial-gradient(2px 2px at 90px 40px, #fff, transparent); background-size: 100px 100px; animation: starTwinkle 1.5s infinite alternate; z-index: 1; }
+        .rb-SUP::after { content: ''; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, transparent 50%); transform: translate(-50%, -50%); border-radius: 50%; animation: pulse 2s infinite; z-index: 1; }
+
+        @keyframes legend-anim { from { box-shadow: 0 0 10px #e67e22; } to { box-shadow: 0 0 30px #f1c40f, inset 0 0 15px #f1c40f; } }
+        @keyframes myth-anim { from { box-shadow: 0 0 15px #e74c3c; filter: brightness(1); } to { box-shadow: 0 0 40px #ff0000; filter: brightness(1.3); } }
+        @keyframes divine-anim { from { box-shadow: 0 0 20px #00ffff; } to { box-shadow: 0 0 60px #ffffff; filter: brightness(1.5); } }
+        @keyframes shine { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes rainbow-rot { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+        @keyframes blackhole-spin { 0% { transform: translate(-50%, -50%) scale(0.3) rotate(0deg); } 100% { transform: translate(-50%, -50%) scale(0.3) rotate(360deg); } }
+        @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+        @keyframes galaxy { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes starTwinkle { 0% { opacity: 0.3; } 100% { opacity: 0.9; } }
+        @keyframes pulse { 0%, 100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.5; } 50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.9; } }
+        @keyframes rb-flash { from { box-shadow: 0 0 5px #555; } to { box-shadow: 0 0 20px #fff; } }
+        @keyframes rb-flash-blue { from { box-shadow: 0 0 5px #0055ff; } to { box-shadow: 0 0 25px #00aaff; } }
+        @keyframes rb-flash-gold { from { box-shadow: 0 0 10px #ffd700; } to { box-shadow: 0 0 30px #fff, 0 0 50px #ffd700; } }
+        @keyframes rb-flash-rb { from { box-shadow: 0 0 10px #ff0000; } to { box-shadow: 0 0 30px #0000ff; } }
+        @keyframes rb-flash-bw { from { box-shadow: 0 0 10px #000; } to { box-shadow: 0 0 30px #fff; } }
+
+        /* 重置确认模态框 */
+        .reset-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px);
+            z-index: 9999; display: none;
+            justify-content: center; align-items: center;
+        }
+        .reset-modal-overlay.show { display: flex; }
+        .reset-modal {
+            background: linear-gradient(145deg, #1a1020, #0a0510);
+            border: 1px solid rgba(255, 65, 108, 0.35);
+            border-radius: 16px; padding: 32px;
+            max-width: 400px; width: 90%;
+            box-shadow: 0 20px 60px rgba(195, 20, 50, 0.4), 0 0 50px rgba(255, 65, 108, 0.15);
+            text-align: center;
+            animation: modalIn 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        @keyframes modalIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .reset-modal-icon { font-size: 2.5em; margin-bottom: 10px; filter: drop-shadow(0 0 12px rgba(255, 65, 108, 0.6)); }
+        .reset-modal h3 {
+            color: #ff416c; font-size: 1.3em; margin-bottom: 12px;
+            text-shadow: 0 0 15px rgba(255, 65, 108, 0.5); letter-spacing: 1px;
+        }
+        .reset-modal p { color: var(--text-dim); margin-bottom: 28px; line-height: 1.7; font-size: 0.88em; }
+        .reset-modal p strong { color: #ff416c; }
+        .reset-modal-btns { display: flex; gap: 12px; justify-content: center; }
+        .reset-modal-btn {
+            padding: 10px 28px; border: none; border-radius: 8px;
+            font-weight: 600; cursor: pointer; transition: all 0.25s;
+            font-size: 0.9em;
+        }
+        .reset-modal-btn:hover { transform: translateY(-2px); filter: brightness(1.2); }
+        .btn-confirm-reset { background: linear-gradient(135deg, #6b0f1a, #c31432); color: #fff; box-shadow: 0 4px 12px rgba(195,20,50,0.4); }
+        .btn-cancel-reset { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid var(--border-glow); }
+    </style>
+</head>
+<body>
+
+<div class="bg-animated"></div>
+
+<header>
+    <div class="logo">✦ 抽卡</div>
+    <div class="stats-bar">
+        <div class="stat-box"><span class="stat-icon">💰</span><div class="stat-info"><span class="stat-label">金币</span><span class="stat-value gold" id="coins">1.00</span></div></div>
+        <div class="stat-box"><span class="stat-icon">⚡</span><div class="stat-info"><span class="stat-label">总收益(x<span id="mult">1</span>)</span><span class="stat-value gold" id="income">1.00</span></div></div>
+        <div class="stat-box"><span class="stat-icon">📉</span><div class="stat-info"><span class="stat-label">基础收益</span><span class="stat-value diamond" id="baseIncome">1.00</span></div></div>
+        <div class="stat-box"><span class="stat-icon">🔮</span><div class="stat-info"><span class="stat-label">重生币</span><span class="stat-value rebirth" id="rebirthCoins">0</span></div></div>
+        <div class="stat-box"><span class="stat-icon">🔄</span><div class="stat-info"><span class="stat-label">重生次数</span><span class="stat-value rebirth" id="rebirthCount">0</span></div></div>
+        <div class="stat-box"><span class="stat-icon">🃏</span><div class="stat-info"><span class="stat-label">卡片总数</span><span class="stat-value" id="totalCards">1</span></div></div>
+        <div class="stat-box"><span class="stat-icon">⏱</span><div class="stat-info"><span class="stat-label">在线时间</span><span class="stat-value" id="onlineTime">0时0分0秒</span></div></div>
+    </div>
+</header>
+
+<div class="main-panel">
+    <div class="controls-row">
+        <div class="ctrl-group">
+            <button id="pullBtn" class="btn btn-gacha">🎴 抽卡 (1级)</button>
+            <button id="upgradeBtn" class="btn btn-upgrade">⬆ 升级多重 (Lv.0 | 100)</button>
+            <button id="autoBtn" class="btn btn-auto">🤖 自动抽卡</button>
+        </div>
+        <div class="ctrl-group">
+            <button id="rebirthPullBtn" class="btn btn-rebirth-pull">🌌 抽重生卡 (10币)</button>
+            <button id="autoRebirthPullBtn" class="btn btn-auto">🌌 自动抽重生</button>
+            <button id="rebirthBtn" class="btn btn-rebirth">🔄 重生 (100万)</button>
+            <button id="bulkRebirthBtn" class="btn btn-rebirth">⏩ 一键重生</button>
+            <button id="autoRebirthBtn" class="btn btn-auto">⏱ 自动重生</button>
+        </div>
+        <div class="ctrl-group">
+            <button id="sortBtn" class="btn btn-sort">📊 按单张收益排序</button>
+            <button id="resetBtn" class="btn btn-reset">🗑️ 重置游戏</button>
+        </div>
+    </div>
+
+    <div class="packs-wrapper">
+        <div class="packs-title">📦 卡包图鉴</div>
+        <div class="packs-list" id="packsContainer"></div>
+    </div>
+</div>
+
+<div id="collection"></div>
+
+<!-- 重置确认弹窗 -->
+<div class="reset-modal-overlay" id="resetModal">
+    <div class="reset-modal">
+        <div class="reset-modal-icon">⚠️</div>
+        <h3>确认重置游戏？</h3>
+        <p>此操作将<strong>永久清除</strong>您的全部进度，包括金币、所有卡片、重生次数与重生币，且<strong>无法恢复</strong>。<br>确定要从头开始吗？</p>
+        <div class="reset-modal-btns">
+            <button class="reset-modal-btn btn-cancel-reset" id="cancelResetBtn">取消</button>
+            <button class="reset-modal-btn btn-confirm-reset" id="confirmResetBtn">确认重置</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const RARITY_NAMES = ['common', 'uncommon', 'rare', 'epic', 'legend', 'myth', 'divine'];
+    const RARITY_DISPLAY = ['常见', '罕见', '稀有', '史诗', '传说', '神话', '神圣'];
+    const SPECIALS = [
+        { key: 'normal', name: '', mult: 1, prob: 89.89 },
+        { key: 'gold', name: '黄金', mult: 2, prob: 10 },
+        { key: 'diamond', name: '钻石', mult: 5, prob: 1 },
+        { key: 'rainbow', name: '彩虹', mult: 20, prob: 0.1 },
+        { key: 'transcendent', name: '超凡', mult: 100, prob: 0.01 }
+    ];
+
+    // 3级卡包等级已修正：罕见到传说均为3级（与卡包等级一致）
+    const PACKS = [
+        [1, 10, [[0, 1, 1, 50], [1, 1, 1.5, 30], [2, 1, 2, 15], [3, 1, 2.5, 5]]],
+        [2, 50, [[0, 2, 2, 50], [1, 2, 3, 30], [2, 2, 4, 15], [3, 2, 5, 5]]],
+        [3, 1000, [[0, 3, 5, 40], [1, 3, 7.5, 30], [2, 3, 10, 20], [3, 3, 12.5, 7.5], [4, 3, 40, 2.5]]],
+        [4, 20000, [[0, 4, 20, 40], [1, 4, 30, 30], [2, 4, 40, 20], [3, 4, 50, 7.5], [4, 4, 160, 2.5]]],
+        [5, 1000000, [[0, 5, 50, 40], [1, 5, 75, 30], [2, 5, 100, 20], [3, 5, 125, 7.5], [4, 5, 400, 2], [5, 5, 1000, 0.5]]],
+        [6, 100000000, [[0, 6, 250, 40], [1, 6, 375, 30], [2, 6, 500, 20], [3, 6, 675, 7.5], [4, 6, 2000, 2], [5, 6, 5000, 0.5]]],
+        [7, 25000000000, [[0, 7, 1000, 40], [1, 7, 1500, 30], [2, 7, 2000, 20], [3, 7, 2500, 7.5], [4, 7, 8000, 2], [5, 7, 20000, 0.4], [6, 7, 50000, 0.1]]]
+    ];
+
+    const REBIRTH_DROPS = [
+        { name: 'N', prob: 40, mult: 0.1 }, { name: 'R', prob: 30, mult: 0.2 },
+        { name: 'SR', prob: 20, mult: 0.3 }, { name: 'SSR', prob: 7.5, mult: 0.5 },
+        { name: 'UR', prob: 2, mult: 1 }, { name: 'SUR', prob: 0.4, mult: 2 },
+        { name: 'SP', prob: 0.07, mult: 3 }, { name: 'SSP', prob: 0.02, mult: 5 },
+        { name: 'SUP', prob: 0.01, mult: 10 }
+    ];
+
+    const SAVE_KEY = 'cardGameStellarV1';
+
+    function getInitialState() {
+        return {
+            coins: 1, cards: { "1_0_1_0": 1 }, rebirthCards: {}, multiLvl: 0, multiPrice: 100,
+            autoPull: false, autoRebirth: false, autoRebirthPull: false, baseIncome: 1, income: 1, lastTime: Date.now(),
+            rebirthCount: 0, rebirthCoins: 0, sortMode: 'single',
+            startTime: Date.now(), onlineSeconds: 0
+        };
+    }
+
+    let state = getInitialState();
+
+    const $ = id => document.getElementById(id);
+    const collectionEl = $('collection');
+
+    function renderPacks() {
+        let html = '';
+        PACKS.forEach(pack => {
+            let dropsHtml = pack[2].map(d => `<div class="pack-drop-item"><span>${RARITY_DISPLAY[d[0]]}${d[1]}级</span><span>${d[3]}%</span></div>`).join('');
+            html += `
+                <div class="pack-card" id="pack_${pack[0]}">
+                    <div class="pack-card-head">
+                        <span class="pack-name">${pack[0]}级卡包</span>
+                        <span class="pack-price">${formatNum(pack[1])}</span>
+                    </div>
+                    <div class="pack-drops">${dropsHtml}</div>
+                </div>
+            `;
+        });
+        let rebirthDropsHtml = REBIRTH_DROPS.map(d => `<div class="pack-drop-item"><span>${d.name}级</span><span>${d.prob}%</span></div>`).join('');
+        html += `
+            <div class="pack-card reborn-pack" id="pack_rebirth">
+                <div class="pack-card-head">
+                    <span class="pack-name" style="color: var(--rebirth);">🌌 重生卡包</span>
+                    <span class="pack-price" style="color: var(--rebirth);">10 🔮</span>
+                </div>
+                <div class="pack-drops">${rebirthDropsHtml}</div>
+            </div>
+        `;
+        $('packsContainer').innerHTML = html;
+    }
+
+    const cardElements = {};
+    function generateCardLibrary() {
+        PACKS.forEach(pack => {
+            pack[2].forEach(drop => {
+                let [rarityIdx, baseLevel, baseIncome, dropProb] = drop;
+                SPECIALS.forEach((special, sIdx) => {
+                    let id = `${pack[0]}_${rarityIdx}_${baseLevel}_${sIdx}`;
+                    let actualIncome = baseIncome * special.mult;
+                    let finalProb = (dropProb * special.prob / 100).toFixed(4);
+                    let displayName = `${special.name}${RARITY_DISPLAY[rarityIdx]}${baseLevel}级`;
+                    
+                    let div = document.createElement('div');
+                    div.className = `card r-${RARITY_NAMES[rarityIdx]} s-${special.key}`;
+                    div.id = `card_${id}`;
+                    div.dataset.sortSingle = actualIncome;
+                    div.dataset.sortTotal = 0;
+                    div.innerHTML = `
+                        <div class="card-top">${displayName}</div>
+                        <div class="card-mid">${actualIncome.toFixed(1)}/s | ${finalProb}%</div>
+                        <div class="card-bot">
+                            <div class="card-count" id="count_${id}">×0</div>
+                            <div>
+                                <div class="card-total" id="total_${id}">0/s</div>
+                                <div class="card-percent" id="percent_${id}">0%</div>
+                            </div>
+                        </div>
+                    `;
+                    collectionEl.appendChild(div);
+                    cardElements[id] = div;
+                });
+            });
+        });
+    }
+
+    function updateUpgradeBtn() {
+        $('upgradeBtn').textContent = `⬆ 升级多重 (Lv.${state.multiLvl} | ${formatNum(state.multiPrice)})`;
+    }
+
+    function getMaxSingleIncome() {
+        let maxIncome = 1;
+        for (let id in state.cards) {
+            if (state.cards[id] > 0) {
+                let parts = id.split('_');
+                let pack = PACKS.find(p => p[0] == parts[0]);
+                let drop = pack[2].find(d => d[0] == parts[1] && d[1] == parts[2]);
+                let income = drop[2] * SPECIALS[parts[3]].mult;
+                if (income > maxIncome) maxIncome = income;
+            }
+        }
+        return maxIncome;
+    }
+
+    function pullRebirthCard() {
+        if (state.rebirthCoins < 10) return;
+        state.rebirthCoins -= 10;
+        
+        let maxIncome = getMaxSingleIncome();
+        let rand = Math.random() * 100, acc = 0, chosen = REBIRTH_DROPS[0];
+        for (let drop of REBIRTH_DROPS) { acc += drop.prob; if (rand <= acc) { chosen = drop; break; } }
+        
+        let income = maxIncome * chosen.mult;
+        let key = `${chosen.name}_${income.toFixed(4)}`;
+        state.rebirthCards[key] = (state.rebirthCards[key] || 0) + 1;
+        
+        if (!cardElements[key]) createRebirthCardDOM(key, chosen.name, income);
+        updateCardUI(key, true);
+        sortCards();
+        calcIncome();
+    }
+
+    function createRebirthCardDOM(key, type, income) {
+        let div = document.createElement('div');
+        div.className = `card reborn rb-${type}`;
+        div.id = `card_${key}`;
+        div.dataset.sortSingle = income;
+        div.dataset.sortTotal = 0;
+        div.dataset.isRebirth = 'true';
+        div.innerHTML = `
+            <div class="card-top">${type}级重生卡</div>
+            <div class="card-mid">${income.toFixed(1)}/s | 固定收益</div>
+            <div class="card-bot">
+                <div class="card-count" id="count_${key}">×0</div>
+                <div>
+                    <div class="card-total" id="total_${key}">0/s</div>
+                    <div class="card-percent" id="percent_${key}">0%</div>
+                </div>
+            </div>
+        `;
+        collectionEl.appendChild(div);
+        cardElements[key] = div;
+    }
+
+    function updateCardUI(id, isRebirth=false) {
+        let count = isRebirth ? (state.rebirthCards[id] || 0) : (state.cards[id] || 0);
+        let el = cardElements[id];
+        if (!el) return;
+        
+        if (count > 0) {
+            el.classList.add('owned');
+            $(`count_${id}`).textContent = `×${formatNum(count)}`;
+            let totalIncome = 0;
+            if (isRebirth) {
+                let income = parseFloat(id.split('_')[1]);
+                totalIncome = income * count;
+            } else {
+                let parts = id.split('_');
+                let pack = PACKS.find(p => p[0] == parts[0]);
+                let drop = pack[2].find(d => d[0] == parts[1] && d[1] == parts[2]);
+                totalIncome = drop[2] * SPECIALS[parts[3]].mult * count;
+            }
+            $(`total_${id}`).textContent = `${formatNum(totalIncome)}/s`;
+            el.dataset.sortTotal = totalIncome;
+        } else {
+            el.classList.remove('owned');
+        }
+    }
+
+    function calcIncome() {
+        let baseTotal = 0;
+        let cardCount = 0;
+        for (let id in state.cards) {
+            if (state.cards[id] > 0) {
+                cardCount += state.cards[id];
+                let parts = id.split('_');
+                let pack = PACKS.find(p => p[0] == parts[0]);
+                let drop = pack[2].find(d => d[0] == parts[1] && d[1] == parts[2]);
+                baseTotal += drop[2] * SPECIALS[parts[3]].mult * state.cards[id];
+            }
+        }
+        for (let key in state.rebirthCards) {
+            if (state.rebirthCards[key] > 0) {
+                cardCount += state.rebirthCards[key];
+                let income = parseFloat(key.split('_')[1]);
+                baseTotal += income * state.rebirthCards[key];
+            }
+        }
+        
+        state.baseIncome = baseTotal;
+        state.income = baseTotal * (1 + state.rebirthCount);
+        
+        $('baseIncome').textContent = formatNum(state.baseIncome);
+        $('income').textContent = formatNum(state.income);
+        $('mult').textContent = (1 + state.rebirthCount);
+        $('totalCards').textContent = formatNum(cardCount);
+
+        document.querySelectorAll('.card.owned').forEach(el => {
+            let id = el.id.replace('card_', '');
+            let totalIncome = parseFloat(el.dataset.sortTotal);
+            let percent = state.baseIncome > 0 ? (totalIncome / state.baseIncome * 100) : 0;
+            let percentEl = $(`percent_${id}`);
+            if (percentEl) percentEl.textContent = percent.toFixed(2) + '%';
+        });
+    }
+
+    function getHighestPack() {
+        for (let i = PACKS.length - 1; i >= 0; i--) {
+            if (state.coins >= PACKS[i][1] * (state.multiLvl + 1)) return PACKS[i];
+        }
+        for (let i = PACKS.length - 1; i >= 0; i--) {
+            if (state.coins >= PACKS[i][1]) return PACKS[i];
+        }
+        return PACKS[0];
+    }
+
+    function pullCard() {
+        let pack = getHighestPack();
+        let cost = pack[1], amount = state.multiLvl + 1, totalCost = cost * amount;
+        if (state.coins < totalCost) {
+            amount = Math.floor(state.coins / cost);
+            if (amount === 0) return false;
+            totalCost = cost * amount;
+        }
+        state.coins -= totalCost;
+
+        for (let i = 0; i < amount; i++) {
+            let rand = Math.random() * 100, acc = 0, chosenDrop = null;
+            for (let drop of pack[2]) { acc += drop[3]; if (rand <= acc) { chosenDrop = drop; break; } }
+            let sRand = Math.random() * 100, sAcc = 0, chosenSpecial = 0;
+            for (let j = 0; j < SPECIALS.length; j++) { sAcc += SPECIALS[j].prob; if (sRand <= sAcc) { chosenSpecial = j; break; } }
+            let id = `${pack[0]}_${chosenDrop[0]}_${chosenDrop[1]}_${chosenSpecial}`;
+            state.cards[id] = (state.cards[id] || 0) + 1;
+            updateCardUI(id);
+        }
+        calcIncome();
+        sortCards();
+        return true;
+    }
+
+    function doRebirth() {
+        let price = 1000000 * (1 + state.rebirthCount);
+        if (state.coins >= price) {
+            state.coins -= price;
+            state.rebirthCount++;
+            state.rebirthCoins += 10;
+            state.cards = { "1_0_1_0": 1 };
+            
+            for (let id in cardElements) {
+                if (!cardElements[id].dataset.isRebirth) {
+                    cardElements[id].classList.remove('owned');
+                }
+            }
+            updateCardUI("1_0_1_0");
+            calcIncome();
+            updateRebirthUI();
+            return true;
+        }
+        return false;
+    }
+
+    function bulkRebirth() {
+        let count = 0;
+        while(doRebirth()) { count++; }
+        if (count > 0) sortCards();
+    }
+
+    function updateRebirthUI() {
+        $('rebirthCount').textContent = state.rebirthCount;
+        $('rebirthCoins').textContent = state.rebirthCoins;
+        let price = 1000000 * (1 + state.rebirthCount);
+        $('rebirthBtn').textContent = `🔄 重生 (${formatNum(price)})`;
+    }
+
+    function sortCards() {
+        const cards = Array.from(document.querySelectorAll('.card.owned'));
+        cards.sort((a, b) => {
+            let valA = state.sortMode === 'single' ? parseFloat(a.dataset.sortSingle) : parseFloat(a.dataset.sortTotal);
+            let valB = state.sortMode === 'single' ? parseFloat(b.dataset.sortSingle) : parseFloat(b.dataset.sortTotal);
+            return valB - valA;
+        });
+        cards.forEach(c => collectionEl.appendChild(c));
+    }
+
+    let isPulling = false;
+    $('pullBtn').addEventListener('click', () => {
+        if (state.autoPull || isPulling) return;
+        isPulling = true; $('pullBtn').disabled = true;
+        pullCard();
+        setTimeout(() => { isPulling = false; if (!state.autoPull) $('pullBtn').disabled = false; }, 500);
+    });
+
+    $('upgradeBtn').addEventListener('click', () => {
+        if (state.coins >= state.multiPrice) {
+            state.coins -= state.multiPrice;
+            state.multiLvl++; state.multiPrice *= 2;
+            updateUpgradeBtn();
+        }
+    });
+
+    let autoPullInterval = null;
+    $('autoBtn').addEventListener('click', () => {
+        state.autoPull = !state.autoPull;
+        $('autoBtn').classList.toggle('active', state.autoPull);
+        $('autoBtn').textContent = state.autoPull ? '🤖 关闭自动' : '🤖 自动抽卡';
+        $('pullBtn').disabled = state.autoPull;
+        if (state.autoPull) autoPullInterval = setInterval(pullCard, 500);
+        else clearInterval(autoPullInterval);
+    });
+
+    $('rebirthPullBtn').addEventListener('click', pullRebirthCard);
+
+    let autoRebirthPullInterval = null;
+    $('autoRebirthPullBtn').addEventListener('click', () => {
+        state.autoRebirthPull = !state.autoRebirthPull;
+        $('autoRebirthPullBtn').classList.toggle('active', state.autoRebirthPull);
+        $('autoRebirthPullBtn').textContent = state.autoRebirthPull ? '🌌 关闭抽重生' : '🌌 自动抽重生';
+        if (state.autoRebirthPull) autoRebirthPullInterval = setInterval(pullRebirthCard, 500);
+        else clearInterval(autoRebirthPullInterval);
+    });
+
+    $('rebirthBtn').addEventListener('click', () => { if (doRebirth()) sortCards(); });
+    $('bulkRebirthBtn').addEventListener('click', bulkRebirth);
+
+    let autoRebirthInterval = null;
+    $('autoRebirthBtn').addEventListener('click', () => {
+        state.autoRebirth = !state.autoRebirth;
+        $('autoRebirthBtn').classList.toggle('active', state.autoRebirth);
+        $('autoRebirthBtn').textContent = state.autoRebirth ? '⏱ 关闭自动重生' : '⏱ 自动重生';
+        if (state.autoRebirth) autoRebirthInterval = setInterval(() => { if(doRebirth()) sortCards(); }, 1000);
+        else clearInterval(autoRebirthInterval);
+    });
+
+    $('sortBtn').addEventListener('click', () => {
+        if (state.sortMode === 'single') {
+            state.sortMode = 'total';
+            $('sortBtn').textContent = '📊 按总收益排序';
+        } else {
+            state.sortMode = 'single';
+            $('sortBtn').textContent = '📊 按单张收益排序';
+        }
+        sortCards();
+    });
+
+    // ===== 重置游戏功能 =====
+    function resetGame() {
+        // 1. 关闭所有自动定时器
+        if (autoPullInterval) { clearInterval(autoPullInterval); autoPullInterval = null; }
+        if (autoRebirthInterval) { clearInterval(autoRebirthInterval); autoRebirthInterval = null; }
+        if (autoRebirthPullInterval) { clearInterval(autoRebirthPullInterval); autoRebirthPullInterval = null; }
+
+        // 2. 清除存档
+        localStorage.removeItem(SAVE_KEY);
+
+        // 3. 移除所有动态创建的重生卡DOM，普通卡移除owned状态
+        for (let key in cardElements) {
+            if (cardElements[key].dataset.isRebirth) {
+                cardElements[key].remove();
+                delete cardElements[key];
+            } else {
+                cardElements[key].classList.remove('owned');
+            }
+        }
+
+        // 4. 重置state到初始值
+        state = getInitialState();
+
+        // 5. 重置所有按钮UI状态
+        $('autoBtn').classList.remove('active');
+        $('autoBtn').textContent = '🤖 自动抽卡';
+        $('pullBtn').disabled = false;
+        $('autoRebirthPullBtn').classList.remove('active');
+        $('autoRebirthPullBtn').textContent = '🌌 自动抽重生';
+        $('autoRebirthBtn').classList.remove('active');
+        $('autoRebirthBtn').textContent = '⏱ 自动重生';
+        $('sortBtn').textContent = '📊 按单张收益排序';
+
+        // 6. 刷新所有显示
+        updateCardUI("1_0_1_0");
+        updateUpgradeBtn();
+        updateRebirthUI();
+        calcIncome();
+        sortCards();
+    }
+
+    $('resetBtn').addEventListener('click', () => {
+        $('resetModal').classList.add('show');
+    });
+    $('cancelResetBtn').addEventListener('click', () => {
+        $('resetModal').classList.remove('show');
+    });
+    $('confirmResetBtn').addEventListener('click', () => {
+        $('resetModal').classList.remove('show');
+        resetGame();
+    });
+    // 点击遮罩关闭
+    $('resetModal').addEventListener('click', (e) => {
+        if (e.target === $('resetModal')) $('resetModal').classList.remove('show');
+    });
+    // ESC关闭
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') $('resetModal').classList.remove('show');
+    });
+
+    // 中文数字格式化
+    function formatNum(num) {
+        if (!isFinite(num)) return "无限";
+        if (num < 10000) return num.toFixed(2);
+        const units = [
+            { val: 1e32, name: "沟" }, { val: 1e28, name: "穰" },
+            { val: 1e24, name: "杼" }, { val: 1e20, name: "垓" },
+            { val: 1e16, name: "京" }, { val: 1e12, name: "兆" },
+            { val: 1e8, name: "亿" }, { val: 1e4, name: "万" }
+        ];
+        for (let i = 0; i < units.length; i++) {
+            if (num >= units[i].val) {
+                return (num / units[i].val).toFixed(2) + units[i].name;
+            }
+        }
+        return num.toFixed(2);
+    }
+
+    function formatTime(seconds) {
+        let h = Math.floor(seconds / 3600);
+        let m = Math.floor((seconds % 3600) / 60);
+        let s = Math.floor(seconds % 60);
+        return `${h}时${m}分${s}秒`;
+    }
+
+    function gameTick() {
+        let now = Date.now(), delta = (now - state.lastTime) / 1000;
+        state.lastTime = now;
+        state.onlineSeconds += delta;
+        
+        state.coins += state.income * delta;
+        $('coins').textContent = formatNum(state.coins);
+        $('onlineTime').textContent = formatTime(state.onlineSeconds);
+
+        let pack = getHighestPack();
+        $('pullBtn').textContent = `🎴 抽卡 (${pack[0]}级)`;
+        
+        document.querySelectorAll('.pack-card:not(.reborn-pack)').forEach(el => el.classList.remove('active'));
+        document.getElementById(`pack_${pack[0]}`).classList.add('active');
+    }
+
+    function save() { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }
+    function load() {
+        let saved = localStorage.getItem(SAVE_KEY);
+        if (saved) {
+            Object.assign(state, JSON.parse(saved));
+            state.lastTime = Date.now();
+            updateUpgradeBtn();
+            if (state.autoPull) { state.autoPull = false; $('autoBtn').click(); }
+            if (state.autoRebirth) { state.autoRebirth = false; $('autoRebirthBtn').click(); }
+            if (state.autoRebirthPull) { state.autoRebirthPull = false; $('autoRebirthPullBtn').click(); }
+            if (state.sortMode === 'total') $('sortBtn').textContent = '📊 按总收益排序';
+            
+            for (let id in state.cards) updateCardUI(id);
+            for (let key in state.rebirthCards) {
+                let parts = key.split('_');
+                if (!cardElements[key]) createRebirthCardDOM(key, parts[0], parseFloat(parts[1]));
+                updateCardUI(key, true);
+            }
+            updateRebirthUI();
+            calcIncome();
+        }
+    }
+
+    renderPacks();
+    generateCardLibrary();
+    load();
+    if (!state.cards["1_0_1_0"]) { state.cards["1_0_1_0"] = 1; } 
+    updateCardUI("1_0_1_0");
+    updateUpgradeBtn();
+    sortCards();
+    
+    setInterval(gameTick, 100);
+    setInterval(save, 1000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) state.lastTime = Date.now(); });
+</script>
+</body>
+</html>
