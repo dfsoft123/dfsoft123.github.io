@@ -186,16 +186,18 @@
         .s-gold::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255,215,0,0.4), transparent); animation: shine 3s infinite linear; z-index: 1; }
         .s-diamond { box-shadow: 0 0 20px var(--diamond); border-color: var(--diamond) !important; }
         
-        /* 修复彩虹卡圆角边框 */
+        /* 彩虹卡：整卡铺满渐变 + 半透明遮罩 + 圆角描边 */
         .s-rainbow { 
-            border: 2px solid transparent;
-            background-image: 
-                linear-gradient(rgba(10, 10, 20, 0.95), rgba(10, 10, 20, 0.95)), 
-                linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
-            background-origin: border-box;
-            background-clip: padding-box, border-box;
+            background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3) !important;
+            border: 2px solid rgba(255,255,255,0.9) !important;
             animation: rainbow-rot 3s infinite linear; 
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.5), inset 0 0 10px rgba(255,255,255,0.2);
+        }
+        /* 半透明遮罩压暗彩虹底色，保证卡面文字清晰，不影响内容层(z-index:2) */
+        .s-rainbow::before {
+            content: ''; position: absolute; inset: 0;
+            background: rgba(0, 0, 0, 0.28);
+            z-index: 1;
         }
         
         /* 超凡卡特效增强 */
@@ -629,6 +631,7 @@
         }
         state.coins -= totalCost;
 
+        let pulledCards = new Set();
         for (let i = 0; i < amount; i++) {
             let rand = Math.random() * 100, acc = 0, chosenDrop = null;
             for (let drop of pack[2]) { acc += drop[3]; if (rand <= acc) { chosenDrop = drop; break; } }
@@ -636,8 +639,11 @@
             for (let j = 0; j < SPECIALS.length; j++) { sAcc += SPECIALS[j].prob; if (sRand <= sAcc) { chosenSpecial = j; break; } }
             let id = `${pack[0]}_${chosenDrop[0]}_${chosenDrop[1]}_${chosenSpecial}`;
             state.cards[id] = (state.cards[id] || 0) + 1;
-            updateCardUI(id);
+            pulledCards.add(id);
         }
+        
+        // 批量更新抽到的卡片UI
+        pulledCards.forEach(id => updateCardUI(id));
         calcIncome();
         sortCards();
         return true;
@@ -657,10 +663,29 @@
         return false;
     }
 
+    // 一键重生（使用等差数列求和公式瞬间计算，告别卡顿）
     function bulkRebirth() {
-        let count = 0;
-        while(doRebirth()) { count++; }
-        if (count > 0) sortCards();
+        let c = state.rebirthCount;
+        let C = state.coins;
+        let nextPrice = 100000 * (c + 1);
+        
+        if (C < nextPrice) return;
+
+        // 设连续重生 N 次，总花费为 50000 * (N^2 + N*(2c+1))
+        let K = C / 50000;
+        let b = 2 * c + 1;
+        let N = Math.floor((-b + Math.sqrt(b * b + 4 * K)) / 2);
+
+        if (N > 0) {
+            let totalCost = 50000 * (N * N + N * b);
+            state.coins -= totalCost;
+            state.rebirthCount += N;
+            state.rebirthCoins += 10 * N;
+            
+            calcIncome();
+            updateRebirthUI();
+            sortCards();
+        }
     }
 
     function updateRebirthUI() {
@@ -670,6 +695,7 @@
         $('rebirthBtn').textContent = `🔄 重生 (${formatNum(price)})`;
     }
 
+    // 使用 CSS order 属性排序，避免移动 DOM 节点打断 CSS 动画
     function sortCards() {
         const cards = Array.from(document.querySelectorAll('.card.owned'));
         cards.sort((a, b) => {
@@ -677,7 +703,9 @@
             let valB = state.sortMode === 'single' ? parseFloat(b.dataset.sortSingle) : parseFloat(b.dataset.sortTotal);
             return valB - valA;
         });
-        cards.forEach(c => collectionEl.appendChild(c));
+        cards.forEach((c, index) => {
+            c.style.order = index;
+        });
     }
 
     let isPulling = false;
@@ -764,6 +792,7 @@
                 delete cardElements[key];
             } else {
                 cardElements[key].classList.remove('owned');
+                cardElements[key].style.order = 9999; // 重置排序
             }
         }
 
