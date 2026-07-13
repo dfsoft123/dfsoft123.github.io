@@ -113,6 +113,7 @@ const gameData = {
     level: 1,
     experience: 0,
     usageBonus: 1,
+    specialBonus: 1, // 新增特殊增益
     digCount: 0,
     blocksMined: 0,
     // 浇树相关变量
@@ -125,7 +126,8 @@ const gameData = {
     originalStartTime: Date.now(),
     lastOnlineTime: Date.now(),
     currentHp: 100,
-    sqrtPower: 1 // 开方次，1、2或3
+    sqrtPower: 1, // 开方次，1、2或3
+    consoleEnabled: false // 控制台开关
 };
 
 // DOM元素
@@ -154,6 +156,7 @@ const elements = {
     trophyBonus: document.getElementById('trophy-bonus'),
     beaconBonus: document.getElementById('beacon-bonus'),
     timeBonus: document.getElementById('time-bonus'),
+    specialBonus: document.getElementById('special-bonus'),
     totalDamage: document.getElementById('total-damage'),
     level: document.getElementById('level'),
     experience: document.getElementById('experience'),
@@ -188,7 +191,14 @@ const elements = {
     playtime: document.getElementById('playtime'),
     digCount: document.getElementById('dig-count'),
     blocksMined: document.getElementById('blocks-mined'),
-    shopItems: document.getElementById('shop-items')
+    shopItems: document.getElementById('shop-items'),
+    // 兑换码与控制台元素
+    redeemInput: document.getElementById('redeem-input'),
+    redeemBtn: document.getElementById('redeem-btn'),
+    consolePanel: document.getElementById('console-panel'),
+    consoleAttr: document.getElementById('console-attr'),
+    consoleVal: document.getElementById('console-val'),
+    consoleApplyBtn: document.getElementById('console-apply-btn')
 };
 
 // 单位格式化
@@ -239,10 +249,8 @@ function updateBlockDisplay() {
     const hpPercent = (gameData.currentHp / block.hp) * 100;
     elements.hpBar.style.width = hpPercent + '%';
 
-    // 显示掉落信息，对所有开方区的方块都显示
     if (block.drop) {
         const dropChance = block.dropChance || 100;
-        // 将掉落物品ID转换为中文名称
         let dropName = '';
         switch (block.drop) {
             case 'amethyst': dropName = '紫水晶'; break;
@@ -264,7 +272,6 @@ function updateBlockDisplay() {
             case 'jingCore': dropName = '京核'; break;
             default: dropName = block.drop;
         }
-        // 获取掉落数量，默认1个
         const dropAmount = block.dropAmount || 1;
         elements.dropInfo.textContent = `${dropChance}%概率掉落${dropName} x ${dropAmount}`;
         elements.dropInfo.style.display = 'block';
@@ -299,14 +306,12 @@ function showDamageText(damage) {
     const damageText = document.createElement('div');
     damageText.className = 'damage-text';
     damageText.textContent = formatNumber(damage);
-    // 随机位置
     const x = Math.random() * 200 - 100;
     const y = Math.random() * 200 - 100;
     damageText.style.left = `50%`;
     damageText.style.top = `50%`;
     damageText.style.transform = `translate(${x}px, ${y}px)`;
     elements.damageTextContainer.appendChild(damageText);
-    // 1秒后移除
     setTimeout(() => {
         damageText.remove();
     }, 1000);
@@ -324,20 +329,16 @@ function calculateTimeBonus() {
     if (seconds < baseTime) {
         return 1;
     }
-    // 时间增益 = log16(在线时间（单位：秒）/160)
-    // 使用换底公式：log16(x) = ln(x) / ln(16)
     const timeRatio = seconds / baseTime;
-    return Math.log(timeRatio) / Math.log(10);
+    return Math.log(timeRatio) / Math.log(16);
 }
 
 // 计算浇树增益
 function calculateTreeBonus() {
-    // 浇树增益 = 树等级^0.4
     return Math.pow(gameData.treeLevel, 0.4);
 }
 
-// 计算总伤害
-// 总伤害 = （镐子增益*使用增益*等级增益*奖杯增益）^(1/开方数）*信标增益*时间增益*浇树增益
+// 计算总伤害 (加入specialBonus)
 function calculateTotalDamage() {
     const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
     const levelBonus = Math.pow(gameData.level, 0.5);
@@ -345,116 +346,86 @@ function calculateTotalDamage() {
     const beaconBonus = calculateBeaconBonus();
     const timeBonus = calculateTimeBonus();
     const treeBonus = calculateTreeBonus();
-    // 镐子增益 = pickaxe.damage
-    // 使用增益 = gameData.usageBonus
-    // 等级增益 = levelBonus
-    // 奖杯增益 = trophyBonus
     const bonusProduct = pickaxe.damage * gameData.usageBonus * levelBonus * trophyBonus;
-    return Math.pow(bonusProduct, 1 / gameData.sqrtPower) * beaconBonus * timeBonus * treeBonus;
+    // specialBonus 作为外部乘数不参与开方
+    return Math.pow(bonusProduct, 1 / gameData.sqrtPower) * beaconBonus * timeBonus * treeBonus * gameData.specialBonus;
 }
 
 // 浇树功能
 function waterTree() {
-    // 检查是否有水立方
     if (gameData.waterCube < 1) {
         console.log('水立方不足，无法浇树');
         return;
     }
-    // 消耗1水立方
     gameData.waterCube--;
-    // 增加浇树经验
     gameData.treeExperience++;
-    // 检查是否需要升级
     const requiredExp = 10 * gameData.treeLevel;
     while (gameData.treeExperience >= requiredExp) {
-        // 升级树
         gameData.treeLevel++;
-        // 重置经验
         gameData.treeExperience -= requiredExp;
     }
-    // 更新UI
     updateStats();
     updateShopButtons();
 }
 
 // 一键浇树功能
 function autoWaterTree() {
-    // 检查是否有水立方
     if (gameData.waterCube < 1) {
         console.log('水立方不足，无法浇树');
         return;
     }
-    // 获取当前水立方数量
     const availableWater = gameData.waterCube;
-    // 消耗所有水立方
     gameData.waterCube = 0;
-    // 增加浇树经验
     gameData.treeExperience += availableWater;
-    // 检查是否需要升级
     const requiredExp = 10 * gameData.treeLevel;
     while (gameData.treeExperience >= requiredExp) {
-        // 升级树
         gameData.treeLevel++;
-        // 重置经验
         gameData.treeExperience -= requiredExp;
     }
-    // 更新UI
     updateStats();
     updateShopButtons();
-    console.log(`一键浇树完成，消耗了${availableWater}个水立方`);
 }
 
 // 执行挖掘
 function dig(silent = false) {
     const block = gameData.blocks[gameData.currentBlockIndex];
     const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
-    // 计算伤害
     const damage = calculateTotalDamage();
-    // 减少方块血量
     gameData.currentHp -= damage;
     gameData.digCount++;
-    // 更新使用增益
     gameData.usageBonus += pickaxe.usage;
-    // 显示伤害数字 (如果是批量后台执行则不显示，防止卡顿)
+    
     if (!silent) {
         showDamageText(damage);
     }
-    // 检查方块是否被挖掉
+    
     if (gameData.currentHp <= 0) {
-        // 获得金币
         const earnedCoins = block.coins * pickaxe.coins;
         gameData.coins += earnedCoins;
-        // 获得经验
         const earnedExp = earnedCoins * Math.pow(1 + Math.log(earnedCoins), 2);
         gameData.experience += earnedExp;
-        // 统计挖掉的方块
         gameData.blocksMined++;
-        // 检查方块掉落
+        
         if (block.drop) {
             if (block.dropChance) {
-                // 有掉落概率的方块
                 if (Math.random() * 100 <= block.dropChance) {
                     const dropAmount = block.dropAmount || 1;
                     gameData[block.drop] += dropAmount;
                 }
             } else {
-                // 100%掉落的方块
                 const dropAmount = block.dropAmount || 1;
                 gameData[block.drop] += dropAmount;
             }
         }
-        // 重置方块血量
         gameData.currentHp = block.hp;
-        // 检查是否需要自动兑换
         checkAutoExchange();
     }
-    // 更新显示
     updateBlockDisplay();
     updateStats();
     updateExchangeButton();
 }
 
-// 自动挖矿
+// 自动挖矿(后台兼容)
 let autoMineInterval = null;
 let lastAutoMineTime = 0;
 
@@ -465,12 +436,10 @@ function autoMineTick() {
     if (lastAutoMineTime === 0) lastAutoMineTime = now;
     
     const elapsed = now - lastAutoMineTime;
-    // 计算这段时间内应该执行的挖掘次数，限制最大1000次防止极端情况卡死
     const ticks = Math.min(1000, Math.floor(elapsed / 100)); 
     
-    // 批量静默执行挖矿
     for (let i = 0; i < ticks; i++) {
-        dig(i < ticks - 1); // 只有最后一次正常显示伤害数字
+        dig(i < ticks - 1); 
     }
     
     lastAutoMineTime = now;
@@ -511,7 +480,6 @@ function updateAutoExchangeThreshold() {
     if (threshold >= 100) {
         gameData.autoExchangeThreshold = threshold;
     } else {
-        // 阈值小于100，重置输入框为当前阈值
         elements.autoExchangeThreshold.value = gameData.autoExchangeThreshold;
     }
 }
@@ -525,7 +493,6 @@ function checkAutoExchange() {
 
 // 计算每次兑换能获得的奖杯数
 function calculateExchangeInfo() {
-    // 每次兑换增加的奖杯数 = 向下取整（（金币/100）^（3/4））
     const earnedTrophies = Math.floor(Math.pow(gameData.coins / 100, 3/4));
     return { earnedTrophies: earnedTrophies };
 }
@@ -535,34 +502,28 @@ function updateExchangeButton() {
     const exchangeInfo = calculateExchangeInfo();
     if (exchangeInfo.earnedTrophies > 0) {
         elements.exchangeBtn.textContent = `兑换奖杯 (获得: ${exchangeInfo.earnedTrophies}个)`;
-        elements.exchangeBtn.style.animation = 'pulse 1s ease-in-out infinite';
         elements.exchangeBtn.disabled = false;
     } else {
         elements.exchangeBtn.textContent = `兑换奖杯 (需100金币以上)`;
-        elements.exchangeBtn.style.animation = '';
         elements.exchangeBtn.disabled = true;
     }
 }
 
-// 兑换奖杯函数，每次兑换后金币归零
+// 兑换奖杯函数
 function exchangeTrophies(updateUI = true) {
     const exchangeInfo = calculateExchangeInfo();
     if (exchangeInfo.earnedTrophies > 0) {
-        // 授予奖杯
         gameData.trophies += exchangeInfo.earnedTrophies;
-        // 金币归零
         gameData.coins = 0;
-        // 更新显示（仅在需要时）
         if (updateUI) {
             updateStats();
             updateShopButtons();
             updateExchangeButton();
         }
-        console.log(`兑换获得了 ${exchangeInfo.earnedTrophies} 个奖杯，金币已归零！`);
     }
 }
 
-// 长按挖掘
+// 长按挖掘(后台兼容)
 let longPressInterval = null;
 let lastLongPressTime = 0;
 
@@ -613,13 +574,11 @@ function updateStats() {
     const treeBonus = calculateTreeBonus();
     const totalDamage = calculateTotalDamage();
 
-    // 更新经验条
     const requiredExp = Math.pow(gameData.level, 2);
     const expPercent = (gameData.experience / requiredExp) * 100;
     elements.expBar.style.width = expPercent + '%';
 
     elements.pickaxeName.textContent = pickaxe.name;
-    // 更新镐子属性
     elements.pickaxeDamageValue.textContent = formatNumber(pickaxe.damage) + 'x';
     elements.pickaxeUsageValue.textContent = formatNumber(pickaxe.usage) + 'x';
     elements.pickaxeCoinsValue.textContent = formatNumber(pickaxe.coins) + 'x';
@@ -628,15 +587,19 @@ function updateStats() {
     elements.usageBonus.textContent = formatNumber(gameData.usageBonus) + 'x';
     elements.levelBonus.textContent = formatNumber(levelBonus) + 'x';
     elements.trophyBonus.textContent = formatNumber(trophyBonus) + 'x';
-    // 显示信标增益，绿色字体
+    
     elements.beaconBonus.textContent = formatNumber(beaconBonus) + 'x';
     elements.beaconBonus.style.color = '#2ecc71';
-    // 显示浇树增益，绿色字体
+    
     elements.treeBonus.textContent = formatNumber(treeBonus) + 'x';
     elements.treeBonus.style.color = '#2ecc71';
-    // 显示时间增益，绿色字体
+    
     elements.timeBonus.textContent = formatNumber(timeBonus) + 'x';
     elements.timeBonus.style.color = '#2ecc71';
+
+    // 新增特殊增益显示
+    elements.specialBonus.textContent = formatNumber(gameData.specialBonus) + 'x';
+    elements.specialBonus.style.color = '#2ecc71';
 
     elements.totalDamage.textContent = formatNumber(totalDamage);
     elements.level.textContent = gameData.level;
@@ -661,7 +624,6 @@ function updateStats() {
     elements.fiveElementCrystal.textContent = formatNumber(gameData.fiveElementCrystal);
     elements.jingCore.textContent = formatNumber(gameData.jingCore);
 
-    // 更新浇树相关UI
     const treeRequiredExp = 10 * gameData.treeLevel;
     const treeExpPercent = (gameData.treeExperience / treeRequiredExp) * 100;
     elements.treeLevel.textContent = gameData.treeLevel;
@@ -673,9 +635,59 @@ function updateStats() {
     elements.blocksMined.textContent = formatNumber(gameData.blocksMined);
 }
 
+// 兑换码逻辑
+function redeemCode() {
+    const code = elements.redeemInput.value.trim();
+    let success = false;
+    
+    if (code === '姚俊希220') {
+        gameData.specialBonus = 2.2;
+        alert('兑换成功！特殊增益变为 2.2');
+        success = true;
+    } else if (code === '七八九幺十三一六九') {
+        gameData.specialBonus = 7.8;
+        alert('兑换成功！特殊增益变为 7.8');
+        success = true;
+    } else if (code === 'dfsoft123控制台开关6767') {
+        gameData.consoleEnabled = true;
+        elements.consolePanel.style.display = 'block';
+        alert('开发者控制台已开启！');
+        success = true;
+    } else {
+        alert('无效的兑换码！');
+    }
+    
+    if (success) {
+        elements.redeemInput.value = '';
+        updateStats();
+        saveGame();
+    }
+}
+
+// 控制台属性修改逻辑
+function applyConsoleChange() {
+    const attr = elements.consoleAttr.value.trim();
+    const val = elements.consoleVal.value.trim();
+    if (attr && val !== '') {
+        if (gameData.hasOwnProperty(attr)) {
+            let numVal = parseFloat(val);
+            if (!isNaN(numVal)) {
+                gameData[attr] = numVal;
+                alert(`修改成功：${attr} = ${numVal}`);
+                updateStats();
+                updateBlockDisplay();
+                saveGame();
+            } else {
+                alert('请输入有效的数值！');
+            }
+        } else {
+            alert('属性名不存在！请检查拼写。');
+        }
+    }
+}
+
 // 保存游戏数据
 function saveGame() {
-    // 只保存需要的数据，不保存blocks数组，这样代码中修改的blocks数据能生效
     const gameState = {
         currentBlockIndex: gameData.currentBlockIndex,
         currentPickaxeIndex: gameData.currentPickaxeIndex,
@@ -703,6 +715,8 @@ function saveGame() {
         level: gameData.level,
         experience: gameData.experience,
         usageBonus: gameData.usageBonus,
+        specialBonus: gameData.specialBonus, // 保存特殊增益
+        consoleEnabled: gameData.consoleEnabled, // 保存控制台状态
         digCount: gameData.digCount,
         blocksMined: gameData.blocksMined,
         treeLevel: gameData.treeLevel,
@@ -714,11 +728,9 @@ function saveGame() {
         originalStartTime: gameData.originalStartTime,
         lastOnlineTime: Date.now(),
         currentHp: gameData.currentHp,
-        // 保存pickaxes数组，因为包含购买的数量
         pickaxes: gameData.pickaxes
     };
     localStorage.setItem('miningGameSave', JSON.stringify(gameState));
-    console.log('游戏已保存');
 }
 
 // 加载游戏数据
@@ -727,15 +739,11 @@ function loadGame() {
         const savedGame = localStorage.getItem('miningGameSave');
         if (savedGame) {
             const gameState = JSON.parse(savedGame);
-            // 检查是否是旧版本数据（包含blocks数组）
             if (gameState.blocks) {
-                console.log('检测到旧版本数据，清除并使用新数据');
                 localStorage.removeItem('miningGameSave');
-                // 重置当前血量为当前方块的新血量
                 gameData.currentHp = gameData.blocks[gameData.currentBlockIndex].hp;
                 return;
             }
-            // 只合并需要的数据，不覆盖blocks数组
             Object.assign(gameData, {
                 currentBlockIndex: gameState.currentBlockIndex,
                 currentPickaxeIndex: gameState.currentPickaxeIndex,
@@ -763,6 +771,8 @@ function loadGame() {
                 level: gameState.level,
                 experience: gameState.experience,
                 usageBonus: gameState.usageBonus,
+                specialBonus: gameState.specialBonus || 1, // 读取特殊增益
+                consoleEnabled: gameState.consoleEnabled || false, // 读取控制台状态
                 digCount: gameState.digCount,
                 blocksMined: gameState.blocksMined,
                 treeLevel: gameState.treeLevel || 1,
@@ -774,9 +784,7 @@ function loadGame() {
                 originalStartTime: gameState.originalStartTime,
                 lastOnlineTime: gameState.lastOnlineTime,
                 currentHp: gameState.currentHp
-                // 不直接覆盖pickaxes数组，只更新数量
             });
-            // 只更新每个镐子的数量，保留所有镐子
             if (gameState.pickaxes) {
                 gameState.pickaxes.forEach((savedPickaxe, index) => {
                     if (gameData.pickaxes[index]) {
@@ -784,11 +792,9 @@ function loadGame() {
                     }
                 });
             }
-            console.log('游戏已加载');
         }
     } catch (error) {
         console.error('加载游戏数据失败:', error);
-        // 重置游戏数据
         gameData.coins = 0;
         gameData.trophies = 0;
         gameData.level = 1;
@@ -800,10 +806,8 @@ function loadGame() {
         gameData.startTime = Date.now();
         gameData.originalStartTime = Date.now();
         gameData.currentHp = gameData.blocks[gameData.currentBlockIndex].hp;
-        console.log('游戏数据已重置');
     }
 
-    // 确保pickaxes数组包含所有29种镐子和物品（23种基础镐子+3种合成镐子+1种基岩镐+1种坤坤镐+1种信标物品）
     const defaultPickaxes = [
         { name: '木镐', damage: 1, usage: 0.01, coins: 1, price: 1, count: 1, currency: 'trophies' },
         { name: '石镐', damage: 2, usage: 0.02, coins: 1, price: 2, count: 0, currency: 'trophies' },
@@ -828,13 +832,11 @@ function loadGame() {
         { name: '铜镐IV', damage: 125, usage: 1, coins: 3, price: 500, count: 0, currency: 'copperIngot' },
         { name: '铜镐V', damage: 625, usage: 1, coins: 3.5, price: 2000, count: 0, currency: 'copperIngot' },
         { name: '铜镐VI', damage: 3125, usage: 1, coins: 4, price: 10000, count: 0, currency: 'copperIngot' },
-        // 新增合成镐子
         { name: '蓝曜石镐', damage: 1000000, usage: 1.5, coins: 1, count: 0, isCraftable: true, recipe: { '黑曜石镐': 1, '紫水晶镐VI': 1, '铜镐VI': 1, '蓝曜石碎片': 10 } },
         { name: '红曜石镐', damage: 2500000, usage: 2, coins: 1, count: 0, isCraftable: true, recipe: { '蓝曜石镐': 1, '红曜石碎片': 10 } },
         { name: '红蓝镐', damage: 6666666, usage: 3, coins: 1.5, count: 0, isCraftable: true, recipe: { '蓝曜石镐': 1, '红曜石镐': 1, '红蓝结晶': 10 } },
         { name: '基岩镐', damage: 1.6e7, usage: 4, coins: 1.5, count: 0, isCraftable: true, recipe: { '红蓝镐': 1, '基岩碎片': 10 } },
         { name: '坤坤镐', damage: 8e7, usage: 5, coins: 2.5, count: 0, isCraftable: true, recipe: { '基岩镐': 1, '坤坤': 25 } },
-        // 新增镐子
         { name: '土核心镐', damage: 2e8, usage: 6, coins: 2.5, count: 0, isCraftable: true, recipe: { '坤坤镐': 1, '土核心': 10 } },
         { name: '木核心镐', damage: 3e8, usage: 7, coins: 2.5, count: 0, isCraftable: true, recipe: { '土核心镐': 1, '木核心': 10 } },
         { name: '火立方镐', damage: 1e9, usage: 8, coins: 2.5, count: 0, isCraftable: true, recipe: { '火立方': 10, '使用增益': 2.5e5 } },
@@ -842,32 +844,24 @@ function loadGame() {
         { name: '金立方镐', damage: 5e9, usage: 10, coins: 3.5, count: 0, isCraftable: true, recipe: { '金立方': 10, '金币': 1e11 } },
         { name: '五行镐', damage: 1e10, usage: 15, coins: 5, count: 0, isCraftable: true, recipe: { '土核心镐': 1, '木核心镐': 1, '火立方镐': 1, '水立方镐': 1, '金立方镐': 1, '五行结晶': 10 } },
         { name: '京镐', damage: 2e10, usage: 16, coins: 5.4, count: 0, isCraftable: true, recipe: { '五行镐': 1, '京核': 32 } },
-        // 新增物品
         { name: '信标', type: 'item', count: 0, isCraftable: true, recipe: { '黑曜石': 3, '玻璃': 5, '下界之星': 1 } }
     ];
 
-    // 如果pickaxes数组不存在，创建新数组
     if (!gameData.pickaxes) {
-        console.log('pickaxes数组不存在，创建新数组');
         gameData.pickaxes = defaultPickaxes;
     } else {
-        // 确保pickaxes数组长度正确（当前应该是35个元素，包括京镐和信标）
         while (gameData.pickaxes.length < defaultPickaxes.length) {
-            // 添加缺失的镐子或物品，保留count为0
             const missingIndex = gameData.pickaxes.length;
             gameData.pickaxes.push({ ...defaultPickaxes[missingIndex], count: 0 });
         }
-        // 确保每个镐子或物品都有正确的属性，保留count属性
         gameData.pickaxes.forEach((pickaxe, index) => {
             const defaultPickaxe = defaultPickaxes[index];
-            // 保留count属性，其他属性从默认值中获取
             const currentCount = pickaxe.count || 0;
             Object.assign(pickaxe, defaultPickaxe);
             pickaxe.count = currentCount;
         });
     }
 
-    // 处理离线挖矿
     processOfflineMining();
 }
 
@@ -877,7 +871,6 @@ function processOfflineMining() {
     const lastOnline = gameData.lastOnlineTime || now;
     const offlineTime = now - lastOnline;
 
-    // 记录离线前的资源数量，用于计算离线收益
     const beforeOffline = {
         coins: gameData.coins,
         experience: gameData.experience,
@@ -886,7 +879,6 @@ function processOfflineMining() {
         level: gameData.level,
         digCount: gameData.digCount,
         blocksMined: gameData.blocksMined,
-        // 记录所有可能的掉落物品数量
         amethyst: gameData.amethyst,
         copperIngot: gameData.copperIngot,
         blueObsidianFragment: gameData.blueObsidianFragment,
@@ -906,62 +898,43 @@ function processOfflineMining() {
         jingCore: gameData.jingCore
     };
 
-    // 计算离线期间可以进行的挖矿次数（每次300ms）
     const miningActions = Math.floor(offlineTime / 300);
     if (miningActions > 0) {
-        console.log(`处理离线挖矿: ${miningActions} 次操作`);
         const block = gameData.blocks[gameData.currentBlockIndex];
         const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
         let remainingHp = gameData.currentHp;
 
         for (let i = 0; i < miningActions; i++) {
-            // 计算伤害
             const totalDamage = calculateTotalDamage();
-            // 减少方块血量
             remainingHp -= totalDamage;
             gameData.digCount++;
-            // 更新使用增益
             gameData.usageBonus += pickaxe.usage;
-            // 检查方块是否被挖掉
             if (remainingHp <= 0) {
-                // 获得金币
                 const earnedCoins = block.coins * pickaxe.coins;
                 gameData.coins += earnedCoins;
-                // 获得经验
                 const earnedExp = earnedCoins * Math.pow(1 + Math.log(earnedCoins), 2);
                 gameData.experience += earnedExp;
-                // 统计挖掉的方块
                 gameData.blocksMined++;
-                // 处理方块掉落
                 if (block.drop) {
                     if (block.dropChance) {
-                        // 有掉落概率的方块
                         if (Math.random() * 100 <= block.dropChance) {
                             const dropAmount = block.dropAmount || 1;
                             gameData[block.drop] += dropAmount;
                         }
                     } else {
-                        // 100%掉落的方块
                         const dropAmount = block.dropAmount || 1;
                         gameData[block.drop] += dropAmount;
                     }
                 }
-                // 重置方块血量
                 remainingHp = block.hp;
-                // 检查是否需要自动兑换
                 checkAutoExchange();
             }
         }
-        // 更新当前血量
         gameData.currentHp = remainingHp;
-        // 处理升级
         levelUp();
-        console.log(`离线挖矿完成，获得了金币和经验`);
 
-        // 检查是否需要自动兑换
         checkAutoExchange();
 
-        // 计算离线收益
         const offlineGains = {
             coins: gameData.coins - beforeOffline.coins,
             experience: gameData.experience - beforeOffline.experience,
@@ -970,11 +943,9 @@ function processOfflineMining() {
             level: gameData.level - beforeOffline.level,
             digCount: gameData.digCount - beforeOffline.digCount,
             blocksMined: gameData.blocksMined - beforeOffline.blocksMined,
-            // 计算所有掉落物品的收益
             drops: {}
         };
 
-        // 计算掉落物品收益
         Object.keys(beforeOffline).forEach(key => {
             if (key !== 'coins' && key !== 'experience' && key !== 'usageBonus' && key !== 'trophies' && key !== 'level' && key !== 'digCount' && key !== 'blocksMined') {
                 const gain = gameData[key] - beforeOffline[key];
@@ -984,37 +955,22 @@ function processOfflineMining() {
             }
         });
 
-        // 显示离线收益弹窗
         showOfflineGainsPopup(offlineGains, offlineTime);
     }
 
-    // 更新最后在线时间
     gameData.lastOnlineTime = now;
-    // 注意：这里不更新originalStartTime，确保离线时间不计入总在线时间
     gameData.startTime = now;
 }
 
 // 显示离线收益弹窗
 function showOfflineGainsPopup(gains, offlineTime) {
-    // 创建弹窗元素
     const popup = document.createElement('div');
     popup.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.9);
-        color: white;
-        padding: 20px;
-        border-radius: 10px;
-        z-index: 1000;
-        max-width: 400px;
-        max-height: 80vh;
-        overflow-y: auto;
-        font-family: Arial, sans-serif;
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.9); color: white; padding: 20px; border-radius: 10px;
+        z-index: 1000; max-width: 400px; max-height: 80vh; overflow-y: auto; font-family: Arial, sans-serif;
     `;
 
-    // 格式化离线时间
     const hours = Math.floor(offlineTime / (1000 * 60 * 60));
     const minutes = Math.floor((offlineTime % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((offlineTime % (1000 * 60)) / 1000);
@@ -1024,79 +980,19 @@ function showOfflineGainsPopup(gains, offlineTime) {
     if (seconds > 0) offlineTimeStr += `${seconds}秒`;
     if (offlineTimeStr === '') offlineTimeStr = '0秒';
 
-    // 标题
-    popup.innerHTML = `
-        <h2 style="margin-top: 0; text-align: center;">离线收益</h2>
-        <p style="text-align: center; color: #aaa; margin-bottom: 20px;">离线时间: ${offlineTimeStr}</p>
-        <div style="display: grid; gap: 10px;">
-    `;
+    popup.innerHTML = `<h2 style="margin-top: 0; text-align: center;">离线收益</h2><p style="text-align: center; color: #aaa; margin-bottom: 20px;">离线时间: ${offlineTimeStr}</p><div style="display: grid; gap: 10px;">`;
 
-    // 添加各项收益
-    if (gains.coins > 0) {
-        popup.innerHTML += `
-            <div style="display: flex; justify-content: space-between;">
-                <span>金币:</span>
-                <span style="color: gold;">+${formatNumber(gains.coins)}</span>
-            </div>
-        `;
-    }
-    if (gains.experience > 0) {
-        popup.innerHTML += `
-            <div style="display: flex; justify-content: space-between;">
-                <span>经验:</span>
-                <span style="color: #5cdb95;">+${formatNumber(gains.experience)}</span>
-            </div>
-        `;
-    }
-    if (gains.usageBonus > 0) {
-        popup.innerHTML += `
-            <div style="display: flex; justify-content: space-between;">
-                <span>使用增益:</span>
-                <span style="color: #379683;">+${formatNumber(gains.usageBonus)}</span>
-            </div>
-        `;
-    }
-    if (gains.trophies > 0) {
-        popup.innerHTML += `
-            <div style="display: flex; justify-content: space-between;">
-                <span>奖杯:</span>
-                <span style="color: #edf5e1;">+${formatNumber(gains.trophies)}</span>
-            </div>
-        `;
-    }
-    if (gains.level > 0) {
-        popup.innerHTML += `
-            <div style="display: flex; justify-content: space-between;">
-                <span>等级提升:</span>
-                <span style="color: #8ee4af;">+${gains.level}</span>
-            </div>
-        `;
-    }
-    if (gains.digCount > 0) {
-        popup.innerHTML += `
-            <div style="display: flex; justify-content: space-between;">
-                <span>挖掘次数:</span>
-                <span style="color: #659dbd;">+${formatNumber(gains.digCount)}</span>
-            </div>
-        `;
-    }
-    if (gains.blocksMined > 0) {
-        popup.innerHTML += `
-            <div style="display: flex; justify-content: space-between;">
-                <span>挖掉方块:</span>
-                <span style="color: #daad86;">+${formatNumber(gains.blocksMined)}</span>
-            </div>
-        `;
-    }
+    if (gains.coins > 0) popup.innerHTML += `<div style="display: flex; justify-content: space-between;"><span>金币:</span><span style="color: gold;">+${formatNumber(gains.coins)}</span></div>`;
+    if (gains.experience > 0) popup.innerHTML += `<div style="display: flex; justify-content: space-between;"><span>经验:</span><span style="color: #5cdb95;">+${formatNumber(gains.experience)}</span></div>`;
+    if (gains.usageBonus > 0) popup.innerHTML += `<div style="display: flex; justify-content: space-between;"><span>使用增益:</span><span style="color: #379683;">+${formatNumber(gains.usageBonus)}</span></div>`;
+    if (gains.trophies > 0) popup.innerHTML += `<div style="display: flex; justify-content: space-between;"><span>奖杯:</span><span style="color: #edf5e1;">+${formatNumber(gains.trophies)}</span></div>`;
+    if (gains.level > 0) popup.innerHTML += `<div style="display: flex; justify-content: space-between;"><span>等级提升:</span><span style="color: #8ee4af;">+${gains.level}</span></div>`;
+    if (gains.digCount > 0) popup.innerHTML += `<div style="display: flex; justify-content: space-between;"><span>挖掘次数:</span><span style="color: #659dbd;">+${formatNumber(gains.digCount)}</span></div>`;
+    if (gains.blocksMined > 0) popup.innerHTML += `<div style="display: flex; justify-content: space-between;"><span>挖掉方块:</span><span style="color: #daad86;">+${formatNumber(gains.blocksMined)}</span></div>`;
 
-    // 添加掉落物品收益
     if (Object.keys(gains.drops).length > 0) {
-        popup.innerHTML += `
-            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #333;">
-                <h3 style="margin-top: 0; margin-bottom: 10px;">掉落物品:</h3>
-        `;
+        popup.innerHTML += `<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #333;"><h3 style="margin-top: 0; margin-bottom: 10px;">掉落物品:</h3>`;
         Object.entries(gains.drops).forEach(([drop, amount]) => {
-            // 转换掉落物品ID为中文名称
             let dropName = drop;
             switch (drop) {
                 case 'amethyst': dropName = '紫水晶'; break;
@@ -1117,40 +1013,18 @@ function showOfflineGainsPopup(gains, offlineTime) {
                 case 'fiveElementCrystal': dropName = '五行结晶'; break;
                 case 'jingCore': dropName = '京核'; break;
             }
-            popup.innerHTML += `
-                <div style="display: flex; justify-content: space-between; margin-left: 10px;">
-                    <span>${dropName}:</span>
-                    <span style="color: #fbeec1;">+${amount}</span>
-                </div>
-            `;
+            popup.innerHTML += `<div style="display: flex; justify-content: space-between; margin-left: 10px;"><span>${dropName}:</span><span style="color: #fbeec1;">+${amount}</span></div>`;
         });
         popup.innerHTML += `</div>`;
     }
 
-    // 关闭按钮
-    popup.innerHTML += `
-        </div>
-        <div style="text-align: center; margin-top: 20px;">
-            <button onclick="this.parentElement.parentElement.remove()" style="
-                padding: 10px 20px;
-                background: #444;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                font-size: 16px;
-            ">确定</button>
-        </div>
-    `;
-
-    // 添加到页面
+    popup.innerHTML += `</div><div style="text-align: center; margin-top: 20px;"><button onclick="this.parentElement.parentElement.remove()" style="padding: 10px 20px; background: #444; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">确定</button></div>`;
     document.body.appendChild(popup);
 }
 
 // 更新在线时间
 function updatePlaytime() {
     const now = Date.now();
-    // 使用originalStartTime计算总在线时间，这样在线时间就能被正确保存
     const seconds = Math.floor((now - gameData.originalStartTime) / 1000);
     const years = Math.floor(seconds / 31536000);
     const days = Math.floor((seconds % 31536000) / 86400);
@@ -1162,17 +1036,9 @@ function updatePlaytime() {
 
 // 初始化商店
 function initShop() {
-    // 清空商店内容
     elements.shopItems.innerHTML = '';
-    // 确保shopItems元素存在
-    if (!elements.shopItems) {
-        console.error('shopItems元素不存在！');
-        return;
-    }
-    // 同步信标数量到pickaxes数组
-    // 移除信标数量同步逻辑，信标应与其他物品一样由buyPickaxe函数直接管理
+    if (!elements.shopItems) return;
 
-    // 简化商店物品创建
     gameData.pickaxes.forEach((pickaxe, index) => {
         const shopItem = document.createElement('div');
         shopItem.className = 'shop-item';
@@ -1180,13 +1046,9 @@ function initShop() {
         let recipeHtml = '';
 
         if (pickaxe.isCraftable) {
-            // 合成物品
-            // 生成合成材料描述
             let recipeDesc = '合成材料：';
             for (const [material, required] of Object.entries(pickaxe.recipe)) {
-                // 将材料键名转换为中文显示
                 let materialName = material;
-                // 添加转换规则
                 switch (material) {
                     case 'usageBonus': materialName = '使用增益'; break;
                     case 'coins': materialName = '金币'; break;
@@ -1194,13 +1056,11 @@ function initShop() {
                     case 'amethyst': materialName = '紫水晶'; break;
                     case 'copperIngot': materialName = '铜锭'; break;
                 }
-                // 使用formatNumber函数格式化数值
                 recipeDesc += `${formatNumber(required)}${materialName} `;
             }
             recipeHtml = `<div class="recipe-desc">${recipeDesc}</div>`;
             buyButtonHtml = `<button class="buy-btn craft-btn" data-index="${index}">合成</button>`;
         } else {
-            // 根据镐子的货币类型显示不同的购买信息
             const currencyName = {
                 'trophies': '奖杯',
                 'amethyst': '紫水晶',
@@ -1209,7 +1069,6 @@ function initShop() {
             buyButtonHtml = `<button class="buy-btn" data-index="${index}">购买 (${pickaxe.price}${currencyName})</button>`;
         }
 
-        // 简化HTML结构，让所有元素在同一行
         let useButtonHtml = '';
         if (pickaxe.type !== 'item') {
             useButtonHtml = `<button class="use-btn" data-index="${index}">使用</button>`;
@@ -1228,7 +1087,6 @@ function initShop() {
         elements.shopItems.appendChild(shopItem);
     });
 
-    // 添加事件监听器
     document.querySelectorAll('.buy-btn').forEach(btn => {
         btn.addEventListener('click', buyPickaxe);
     });
@@ -1244,9 +1102,7 @@ function updateShopButtons() {
     document.querySelectorAll('.buy-btn').forEach((btn, index) => {
         const pickaxe = gameData.pickaxes[index];
         if (pickaxe.isCraftable) {
-            // 检查合成条件是否满足
             let canCraft = true;
-            // 检查合成配方中的每种材料
             for (const [material, required] of Object.entries(pickaxe.recipe)) {
                 switch (material) {
                     case '黑曜石镐': if (gameData.pickaxes[10].count < required) { canCraft = false; } break;
@@ -1279,7 +1135,7 @@ function updateShopButtons() {
                     case '金立方镐': if (gameData.pickaxes[32].count < required) { canCraft = false; } break;
                     case '五行结晶': if (gameData.fiveElementCrystal < required) { canCraft = false; } break;
                     case '京核': if (gameData.jingCore < required) { canCraft = false; } break;
-                    case '五行镐': // 五行镐的正确索引是34
+                    case '五行镐': 
                         if (gameData.pickaxes[34] && gameData.pickaxes[34].count < required) { canCraft = false; } break;
                     default: canCraft = false;
                 }
@@ -1287,7 +1143,6 @@ function updateShopButtons() {
             }
             btn.disabled = !canCraft;
         } else {
-            // 普通购买物品
             const currencyType = pickaxe.currency || 'trophies';
             btn.disabled = gameData[currencyType] < pickaxe.price;
         }
@@ -1302,9 +1157,7 @@ function buyPickaxe(e) {
     const index = parseInt(e.target.dataset.index);
     const pickaxe = gameData.pickaxes[index];
     if (pickaxe.isCraftable) {
-        // 合成物品
         let canCraft = true;
-        // 再次检查合成条件（双重保险）
         for (const [material, required] of Object.entries(pickaxe.recipe)) {
             switch (material) {
                 case '黑曜石镐': if (gameData.pickaxes[10].count < required) { canCraft = false; } break;
@@ -1337,14 +1190,13 @@ function buyPickaxe(e) {
                 case '金立方镐': if (gameData.pickaxes[32].count < required) { canCraft = false; } break;
                 case '五行结晶': if (gameData.fiveElementCrystal < required) { canCraft = false; } break;
                 case '京核': if (gameData.jingCore < required) { canCraft = false; } break;
-                case '五行镐': // 五行镐的正确索引是33
+                case '五行镐':
                     if (gameData.pickaxes[33] && gameData.pickaxes[33].count >= required) { 
                         gameData.pickaxes[33].count -= required;
                     } break;
             }
         }
         if (canCraft) {
-            // 消耗合成材料
             for (const [material, required] of Object.entries(pickaxe.recipe)) {
                 switch (material) {
                     case '黑曜石镐': gameData.pickaxes[10].count -= required; break;
@@ -1377,20 +1229,17 @@ function buyPickaxe(e) {
                     case '金立方镐': gameData.pickaxes[32].count -= required; break;
                     case '五行结晶': gameData.fiveElementCrystal -= required; break;
                     case '京核': gameData.jingCore -= required; break;
-                    case '五行镐': // 五行镐的正确索引是33
+                    case '五行镐': 
                         if (gameData.pickaxes[33] && gameData.pickaxes[33].count >= required) {
                             gameData.pickaxes[33].count -= required;
                         } break;
                 }
             }
-            // 增加合成物品的数量
             pickaxe.count++;
-            // 移除信标数量更新逻辑，信标数量应只通过pickaxe.count管理
             initShop();
             updateStats();
         }
     } else {
-        // 普通购买物品
         const currencyType = pickaxe.currency || 'trophies';
         if (gameData[currencyType] >= pickaxe.price) {
             gameData[currencyType] -= pickaxe.price;
@@ -1422,27 +1271,24 @@ function handleKeyDown(e) {
 
 // 初始化游戏
 function initGame() {
-    // 加载游戏数据
     loadGame();
-    // 添加事件监听器
     elements.prevBlock.addEventListener('click', () => changeBlock(-1));
     elements.nextBlock.addEventListener('click', () => changeBlock(1));
     elements.autoMineBtn.addEventListener('click', toggleAutoMine);
     elements.autoExchangeBtn.addEventListener('click', toggleAutoExchange);
     elements.autoExchangeThreshold.addEventListener('change', updateAutoExchangeThreshold);
     elements.exchangeBtn.addEventListener('click', exchangeTrophies);
+    elements.redeemBtn.addEventListener('click', redeemCode);
+    elements.consoleApplyBtn.addEventListener('click', applyConsoleChange);
 
-    // 设置自动兑换初始状态
     elements.autoExchangeBtn.textContent = `自动兑换: ${gameData.autoExchange ? '开启' : '关闭'}`;
     elements.autoExchangeBtn.classList.toggle('active', gameData.autoExchange);
     elements.autoExchangeThreshold.value = gameData.autoExchangeThreshold;
 
-    // 添加开方次输入框事件监听器
     elements.sqrtPower.addEventListener('change', () => {
         const value = parseInt(elements.sqrtPower.value);
         if (value === 1 || value === 2 || value === 3) {
             gameData.sqrtPower = value;
-            // 切换到对应开方区的第一个方块
             const currentBlocks = getCurrentSqrtZoneBlocks();
             if (currentBlocks.length > 0) {
                 gameData.currentBlockIndex = currentBlocks[0];
@@ -1456,7 +1302,6 @@ function initGame() {
     });
     elements.sqrtPower.value = gameData.sqrtPower;
 
-    // 初始化时确保当前方块在正确的开方区
     const currentBlocks = getCurrentSqrtZoneBlocks();
     if (!currentBlocks.includes(gameData.currentBlockIndex) && currentBlocks.length > 0) {
         gameData.currentBlockIndex = currentBlocks[0];
@@ -1464,39 +1309,35 @@ function initGame() {
         updateBlockDisplay();
     }
 
-    // 长按挖掘
+    // 控制台状态恢复
+    if (gameData.consoleEnabled) {
+        elements.consolePanel.style.display = 'block';
+    }
+
     elements.blockDisplay.addEventListener('mousedown', startLongPress);
     elements.blockDisplay.addEventListener('mouseup', stopLongPress);
     elements.blockDisplay.addEventListener('mouseleave', stopLongPress);
     elements.blockDisplay.addEventListener('touchstart', startLongPress);
     elements.blockDisplay.addEventListener('touchend', stopLongPress);
 
-    // 键盘控制
     document.addEventListener('keydown', handleKeyDown);
-
-    // 浇树按钮事件监听器
     elements.waterTreeBtn.addEventListener('click', waterTree);
-    // 一键浇树按钮事件监听器
     elements.autoWaterTreeBtn.addEventListener('click', autoWaterTree);
 
-    // 初始化显示
     updateBlockDisplay();
     updateStats();
     updateAutoMine();
     initShop();
     updateExchangeButton();
 
-    // 每秒执行一键升级
     setInterval(() => {
         levelUp();
         updateStats();
     }, 1000);
 
-    // 更新在线时间
     setInterval(updatePlaytime, 1000);
     updatePlaytime();
 
-    // 每5秒自动保存游戏
     setInterval(saveGame, 5000);
 }
 
