@@ -271,7 +271,7 @@ function calcCPS(){ let cps=0; for(const r of RARITIES) cps += (state.cards[r.id
 // 扩展单位列表
 function formatNum(n){
   if(n<1000) return n.toFixed(n<10?2:0).replace(/\.00$/,'');
-  const u=['','K','M','B','T','Qa','Qi','Sx','Sp','Oc','No','Dc','UDC','DDC','TDC','QADC','QIDC','SXDC','SPDC','OCDC','NODC','VT','UVT','DVT','TVT'];
+  const u=['','K','M','B','T','Qa','Qi','Sx','Sp','Oc','No','Dc','UDc','DDc','TDc','QaDc','QiDc','SxDc','SpDc','OcDc','NoDc','Vt','UVt','DVt','TVt','QaVt'];
   let i=0; while(n>=1000&&i<u.length-1){n/=1000;i++;}
   return n.toFixed(n<10?2:n<100?1:0)+u[i];
 }
