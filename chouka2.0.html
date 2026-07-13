@@ -175,6 +175,20 @@ body::before{
       <h2 class="font-display font-black text-xl gold-text">SETTINGS · 设置</h2>
       <button id="closeSettings" class="text-2xl leading-none text-[var(--muted)] hover:text-white">×</button>
     </div>
+
+    <!-- 全局特效开关 -->
+    <div class="mb-6">
+      <h3 class="text-sm font-bold mb-3 tracking-wider">视觉特效</h3>
+      <label class="flex items-center justify-between p-3 rounded-lg border border-[var(--border)] cursor-pointer hover:border-[#00e5ff]">
+        <div>
+          <div class="text-sm font-bold">全局特效</div>
+          <div class="text-[10px] text-[var(--muted)]">关闭后将停止星空、粒子及震动</div>
+        </div>
+        <input type="checkbox" id="csEffects" class="w-5 h-5 accent-[#00e5ff]" checked>
+      </label>
+    </div>
+
+    <!-- 过场动画设置 -->
     <div class="mb-6">
       <h3 class="text-sm font-bold mb-3 tracking-wider">过场动画</h3>
       <div class="grid grid-cols-2 gap-3">
@@ -184,6 +198,8 @@ body::before{
         <label class="flex items-center justify-between p-3 rounded-lg border border-[var(--border)] cursor-pointer hover:border-[#ffffff]"><div><div class="text-sm font-bold">四级动画</div><div class="text-[10px] text-[var(--muted)]">INF</div></div><input type="checkbox" id="csT4" class="w-5 h-5 accent-[#ffffff]"></label>
       </div>
     </div>
+
+    <!-- 存档管理 -->
     <div class="mb-4">
       <h3 class="text-sm font-bold mb-3 tracking-wider">存档管理</h3>
       <div class="flex gap-2 mb-3"><button id="exportSave" class="flex-1 py-2 rounded-lg border border-[var(--border)] hover:border-[#00e5ff] hover:text-[#00e5ff] transition text-sm">导出存档到剪贴板</button></div>
@@ -221,11 +237,11 @@ function getGrad(r, angle=135){ return `linear-gradient(${angle}deg, ${r.colors.
 function hexToRgba(hex, a=1){ let h=hex.replace('#',''); if(h.length===3) h=h.split('').map(c=>c+c).join(''); const r=parseInt(h.substr(0,2),16), g=parseInt(h.substr(2,2),16), b=parseInt(h.substr(4,2),16); return `rgba(${r},${g},${b},${a})`; }
 function getMultiGlow(r){ return hexToRgba(r.colors[0], 0.8); }
 
-let state = { coins:0, lucky:0, multiLevel:1, multiCost:100, luckyCost:500, goldLevel:1, goldCost:1000, cards:{}, totalDraws:0, bestTier:-1, startTime:Date.now(), lastSave:Date.now(), autoUnlocked:false, autoEnabled:false, cutscene:{t1:true,t2:true,t3:true,t4:true} };
+let state = { coins:0, lucky:0, multiLevel:1, multiCost:100, luckyCost:500, goldLevel:1, goldCost:1000, cards:{}, totalDraws:0, bestTier:-1, startTime:Date.now(), lastSave:Date.now(), autoUnlocked:false, autoEnabled:false, cutscene:{t1:true,t2:true,t3:true,t4:true}, effectsEnabled: true };
 
 try {
   const saved = localStorage.getItem('genesisDrawSave');
-  if (saved) { const data = JSON.parse(saved); Object.assign(state, data); if(!state.cutscene) state.cutscene={t1:true,t2:true,t3:true,t4:true}; if(state.goldLevel===undefined) state.goldLevel=1; if(state.goldCost===undefined) state.goldCost=1000;
+  if (saved) { const data = JSON.parse(saved); Object.assign(state, data); if(!state.cutscene) state.cutscene={t1:true,t2:true,t3:true,t4:true}; if(state.goldLevel===undefined) state.goldLevel=1; if(state.goldCost===undefined) state.goldCost=1000; if(state.effectsEnabled===undefined) state.effectsEnabled=true;
     const now = Date.now(); const offlineSec = Math.min((now - (state.lastSave||now))/1000, 86400*3);
     const cps = calcCPS();
     if (cps > 0 && offlineSec > 5) { const earned = cps * offlineSec; state.coins += earned; setTimeout(()=>{ addLog(`离线 ${formatTime(offlineSec)} 收获 ${formatNum(earned)} 星辉石`, '#f5c842'); }, 500); }
@@ -237,16 +253,7 @@ function calcCPS(){ let cps=0; for(const r of RARITIES) cps += (state.cards[r.id
 function formatNum(n){ if(n<1000) return n.toFixed(n<10?2:0).replace(/\.00$/,''); const u=['','K','M','B','T','Qa','Qi','Sx','Sp','Oc','No','Dc']; let i=0; while(n>=1000&&i<u.length-1){n/=1000;i++;} return n.toFixed(n<10?2:n<100?1:0)+u[i]; }
 function formatTime(s){ if(s<60) return Math.floor(s)+'s'; if(s<3600) return Math.floor(s/60)+'m'; if(s<86400) return Math.floor(s/3600)+'h'; return Math.floor(s/86400)+'d'; }
 
-// 幸运值弱指数增长
-function getProbabilities(){
-  // 基础系数 lf，每点幸运值带来 1.5% 的指数底数增长
-  const lf = Math.pow(1.015, state.lucky);
-  // 越高级的卡，享受越多次方的指数加成
-  const weights = RARITIES.map((r,i) => r.prob * Math.pow(lf, i));
-  const sum = weights.reduce((a,b)=>a+b, 0);
-  return weights.map(w => w/sum);
-}
-
+function getProbabilities(){ const lf = Math.pow(1.015, state.lucky); const weights = RARITIES.map((r,i) => r.prob * Math.pow(lf, i)); const sum = weights.reduce((a,b)=>a+b, 0); return weights.map(w => w/sum); }
 function drawOne(){ const p=getProbabilities(); let r=Math.random(); let idx=0; for(let i=0;i<p.length;i++){ if(r<p[i]){idx=i;break;} r-=p[i]; } return RARITIES[idx]; }
 
 const $ = id => document.getElementById(id);
@@ -311,8 +318,11 @@ async function doDraw(){
   addLog(parts.join(' · '), best.colors[0]);
 
   const rect = drawBtn.getBoundingClientRect(); floatCoin(`+${count} 抽`, rect.left + rect.width/2, rect.top + 30, best.colors[0]);
-  drawBtn.classList.add('shake'); setTimeout(()=>drawBtn.classList.remove('shake'), 500);
-  triggerFX(best); save(); updateUI(); drawing = false;
+  if (state.effectsEnabled) {
+    drawBtn.classList.add('shake'); setTimeout(()=>drawBtn.classList.remove('shake'), 500);
+    triggerFX(best);
+  }
+  save(); updateUI(); drawing = false;
 }
 
 async function playCutscene(r){
@@ -350,7 +360,7 @@ async function playCutscene(r){
       <div style="position:absolute;left:50%;top:50%;width:400px;height:400px;background:radial-gradient(circle, #fff, ${r.colors[0]}, transparent);border-radius:50%;filter:blur(20px);animation:cs3-expand 2s ease-out infinite"></div>
       ${Array.from({length:80}).map(()=>`<div style="position:absolute;left:50%;top:50%;width:${2+Math.random()*4}px;height:${2+Math.random()*4}px;border-radius:50%;background:#fff;box-shadow:0 0 10px ${r.colors[Math.floor(Math.random()*r.colors.length)]};transform:translate(-50%,-50%) rotate(${Math.random()*360}deg) translateX(${100+Math.random()*400}px);animation:spin ${1+Math.random()*3}s linear infinite ${Math.random()>.5?'':'reverse'}</div>`).join('')}
     `;
-    document.body.classList.add('shake'); setTimeout(()=>document.body.classList.remove('shake'), 600);
+    if (state.effectsEnabled) { document.body.classList.add('shake'); setTimeout(()=>document.body.classList.remove('shake'), 600); }
   } else if(r.tier === 4){
     duration = 7000;
     flash.style.background = '#fff';
@@ -359,7 +369,7 @@ async function playCutscene(r){
       <div style="position:absolute;left:50%;top:50%;width:100px;height:100px;background:#fff;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 100px #fff, 0 0 200px ${r.colors[0]};animation:cs3-expand 1.5s ease-out infinite"></div>
       ${Array.from({length:120}).map((_,i)=>`<div style="position:absolute;left:50%;top:50%;width:${3+Math.random()*5}px;height:20px;background:${r.colors[i%r.colors.length]};box-shadow:0 0 15px ${r.colors[i%r.colors.length]};transform:translate(-50%,-50%) rotate(${i*3}deg);animation:spin ${1+Math.random()*1.5}s linear infinite ${i%2?'':'reverse'}</div>`).join('')}
     `;
-    document.body.classList.add('shake'); setTimeout(()=>document.body.classList.remove('shake'), 1000);
+    if (state.effectsEnabled) { document.body.classList.add('shake'); setTimeout(()=>document.body.classList.remove('shake'), 1000); }
   }
 
   flash.classList.add('show');
@@ -376,6 +386,7 @@ const fxCanvas = $('fxCanvas'), fxCtx = fxCanvas.getContext('2d'); let fxParticl
 function resizeFx(){ fxCanvas.width = fxCanvas.offsetWidth; fxCanvas.height = fxCanvas.offsetHeight; }
 window.addEventListener('resize', resizeFx); setTimeout(resizeFx, 100);
 function triggerFX(r){
+  if (!state.effectsEnabled) return;
   const cx = fxCanvas.width/2, cy = fxCanvas.height/2;
   const n = 30 + r.tier * 50;
   for(let i=0;i<n;i++){
@@ -384,22 +395,33 @@ function triggerFX(r){
   }
 }
 function fxLoop(){
-  fxCtx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
-  fxParticles = fxParticles.filter(p => p.life > 0);
-  fxParticles.forEach(p => {
-    p.x += p.vx; p.y += p.vy; p.vx *= 0.97; p.vy *= 0.97; p.life -= 0.015;
-    fxCtx.globalAlpha = Math.max(0, p.life); fxCtx.fillStyle = p.color; fxCtx.shadowColor = p.color; fxCtx.shadowBlur = 10 + p.size*2;
-    if(p.trail){ fxCtx.strokeStyle = p.color; fxCtx.lineWidth = p.size * p.life; fxCtx.beginPath(); fxCtx.moveTo(p.x, p.y); fxCtx.lineTo(p.x - p.vx*2, p.y - p.vy*2); fxCtx.stroke(); }
-    fxCtx.beginPath(); fxCtx.arc(p.x, p.y, Math.max(0.1, p.size * p.life), 0, Math.PI*2); fxCtx.fill();
-  });
-  fxCtx.globalAlpha = 1; fxCtx.shadowBlur = 0; requestAnimationFrame(fxLoop);
+  if (state.effectsEnabled) {
+    fxCtx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
+    fxParticles = fxParticles.filter(p => p.life > 0);
+    fxParticles.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.vx *= 0.97; p.vy *= 0.97; p.life -= 0.015;
+      fxCtx.globalAlpha = Math.max(0, p.life); fxCtx.fillStyle = p.color; fxCtx.shadowColor = p.color; fxCtx.shadowBlur = 10 + p.size*2;
+      if(p.trail){ fxCtx.strokeStyle = p.color; fxCtx.lineWidth = p.size * p.life; fxCtx.beginPath(); fxCtx.moveTo(p.x, p.y); fxCtx.lineTo(p.x - p.vx*2, p.y - p.vy*2); fxCtx.stroke(); }
+      fxCtx.beginPath(); fxCtx.arc(p.x, p.y, Math.max(0.1, p.size * p.life), 0, Math.PI*2); fxCtx.fill();
+    });
+    fxCtx.globalAlpha = 1; fxCtx.shadowBlur = 0;
+  } else {
+    fxParticles = []; // 清空粒子，防止重新开启时瞬间爆发
+  }
+  requestAnimationFrame(fxLoop);
 }
 fxLoop();
 
 const starsCanvas = $('stars'), sCtx = starsCanvas.getContext('2d'); let stars = [];
 function initStars(){ starsCanvas.width = innerWidth; starsCanvas.height = innerHeight; stars = []; for(let i=0;i<150;i++) stars.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.4,a:Math.random()*0.6+0.2,sp:Math.random()*0.02+0.005}); }
 initStars(); window.addEventListener('resize', initStars);
-function starLoop(){ sCtx.clearRect(0,0,starsCanvas.width,starsCanvas.height); stars.forEach(s=>{ s.a+=s.sp; sCtx.fillStyle=`rgba(255,240,200,${0.3+Math.abs(Math.sin(s.a))*0.6})`; sCtx.beginPath(); sCtx.arc(s.x,s.y,Math.max(0.1,s.r),0,Math.PI*2); sCtx.fill(); }); requestAnimationFrame(starLoop); }
+function starLoop(){
+  if (state.effectsEnabled) {
+    sCtx.clearRect(0,0,starsCanvas.width,starsCanvas.height);
+    stars.forEach(s=>{ s.a+=s.sp; sCtx.fillStyle=`rgba(255,240,200,${0.3+Math.abs(Math.sin(s.a))*0.6})`; sCtx.beginPath(); sCtx.arc(s.x,s.y,Math.max(0.1,s.r),0,Math.PI*2); sCtx.fill(); });
+  }
+  requestAnimationFrame(starLoop);
+}
 starLoop();
 
 function updateUI(){
@@ -438,12 +460,25 @@ setInterval(() => { const now = Date.now(); const dt = (now - lastTick)/1000; la
 setInterval(() => { if (!state.autoEnabled || !state.autoUnlocked || drawing) return; doDraw(); }, 200);
 
 const settingsModal = $('settingsModal');
-$('settingsBtn').addEventListener('click', () => { $('csT1').checked = state.cutscene.t1; $('csT2').checked = state.cutscene.t2; $('csT3').checked = state.cutscene.t3; $('csT4').checked = state.cutscene.t4; $('settingsMsg').textContent = ''; settingsModal.classList.remove('hidden'); settingsModal.classList.add('flex'); });
+$('settingsBtn').addEventListener('click', () => {
+  $('csT1').checked = state.cutscene.t1; $('csT2').checked = state.cutscene.t2; $('csT3').checked = state.cutscene.t3; $('csT4').checked = state.cutscene.t4;
+  $('csEffects').checked = state.effectsEnabled;
+  $('settingsMsg').textContent = ''; settingsModal.classList.remove('hidden'); settingsModal.classList.add('flex');
+});
 $('closeSettings').addEventListener('click', () => { settingsModal.classList.add('hidden'); settingsModal.classList.remove('flex'); });
 settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) { settingsModal.classList.add('hidden'); settingsModal.classList.remove('flex'); } });
+
 ['T1','T2','T3','T4'].forEach(t => { $('cs'+t).addEventListener('change', (e) => { state.cutscene['t'+t.slice(1)] = e.target.checked; save(); $('settingsMsg').textContent = '设置已保存'; setTimeout(()=> $('settingsMsg').textContent='', 1500); }); });
+
+$('csEffects').addEventListener('change', (e) => {
+  state.effectsEnabled = e.target.checked;
+  save();
+  $('settingsMsg').textContent = state.effectsEnabled ? '特效已开启' : '特效已关闭';
+  setTimeout(()=> $('settingsMsg').textContent='', 1500);
+});
+
 $('exportSave').addEventListener('click', async () => { const data = btoa(encodeURIComponent(JSON.stringify(state))); try { await navigator.clipboard.writeText(data); $('settingsMsg').textContent = '✓ 存档已复制到剪贴板'; } catch (err) { $('importArea').value = data; $('importArea').select(); document.execCommand('copy'); $('settingsMsg').textContent = '✓ 存档已复制'; } setTimeout(()=> $('settingsMsg').textContent='', 2000); });
-$('importSave').addEventListener('click', () => { const text = $('importArea').value.trim(); if (!text) { $('settingsMsg').textContent = '✗ 请粘贴存档数据'; return; } try { const data = JSON.parse(decodeURIComponent(atob(text))); Object.assign(state, data); if(!state.cutscene) state.cutscene={t1:true,t2:true,t3:true,t4:true}; save(); updateUI(); $('settingsMsg').textContent = '✓ 存档导入成功'; setTimeout(()=> { settingsModal.classList.add('hidden'); settingsModal.classList.remove('flex'); }, 1000); } catch (err) { $('settingsMsg').textContent = '✗ 存档格式错误'; } });
+$('importSave').addEventListener('click', () => { const text = $('importArea').value.trim(); if (!text) { $('settingsMsg').textContent = '✗ 请粘贴存档数据'; return; } try { const data = JSON.parse(decodeURIComponent(atob(text))); Object.assign(state, data); if(!state.cutscene) state.cutscene={t1:true,t2:true,t3:true,t4:true}; if(state.effectsEnabled===undefined) state.effectsEnabled=true; save(); updateUI(); $('settingsMsg').textContent = '✓ 存档导入成功'; setTimeout(()=> { settingsModal.classList.add('hidden'); settingsModal.classList.remove('flex'); }, 1000); } catch (err) { $('settingsMsg').textContent = '✗ 存档格式错误'; } });
 
 updateUI();
 addLog('欢迎来到抽卡2.0 · 命运之门已开启', '#f5c842');
