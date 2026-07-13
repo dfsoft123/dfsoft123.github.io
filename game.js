@@ -327,7 +327,7 @@ function calculateTimeBonus() {
     // 时间增益 = log16(在线时间（单位：秒）/160)
     // 使用换底公式：log16(x) = ln(x) / ln(16)
     const timeRatio = seconds / baseTime;
-    return Math.log(timeRatio) / Math.log(16);
+    return Math.log(timeRatio) / Math.log(10);
 }
 
 // 计算浇树增益
