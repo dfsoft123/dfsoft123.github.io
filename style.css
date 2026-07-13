@@ -164,6 +164,25 @@ body {
 .special-item { border-color: rgba(188, 19, 254, 0.3); }
 .special-item .stat-value { color: var(--neon-purple); }
 
+/* 调试模式 input 样式 */
+input.editable-debug {
+    width: 100%; padding: 0; margin: 0; background: transparent;
+    border: none; outline: none; color: inherit;
+    font-family: inherit; font-size: inherit; font-weight: inherit;
+    text-align: left; cursor: default;
+}
+input.stat-value.editable-debug {
+    font-family: var(--font-title); font-size: 18px; font-weight: 700;
+}
+.dmg-row input.editable-debug {
+    width: 90px; text-align: right; font-family: var(--font-body); font-size: 15px; font-weight: 700;
+}
+input.editable-debug:disabled { opacity: 1; -webkit-text-fill-color: inherit; }
+input.editable-debug:not(:disabled) {
+    border-bottom: 1px dashed var(--neon-red);
+    cursor: text;
+}
+
 .sqrt-control { margin-top: 16px; display: flex; align-items: center; gap: 10px; justify-content: flex-end; font-size: 14px; color: var(--text-dim); }
 
 .current-pickaxe {
@@ -182,7 +201,7 @@ body {
     border: 1px solid transparent; transition: all 0.2s ease;
 }
 .dmg-row:hover { border-color: var(--border-main); background: rgba(0, 243, 255, 0.05); }
-.dmg-row span:last-child { color: var(--text-main); font-weight: 700; }
+.dmg-row span:last-child, .dmg-row input.editable-debug { color: var(--text-main); font-weight: 700; }
 .dmg-row.total-damage {
     margin-top: 8px; background: linear-gradient(90deg, rgba(188, 19, 254, 0.1), rgba(0, 243, 255, 0.1));
     border-color: var(--neon-cyan); box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
@@ -237,23 +256,20 @@ body {
 .use-btn:hover { background: var(--neon-cyan); color: #000; box-shadow: 0 0 15px rgba(0, 243, 255, 0.4); }
 .use-btn.active { background: var(--neon-green); border-color: var(--neon-green); color: #000; box-shadow: 0 0 15px rgba(0, 255, 157, 0.4); }
 
-/* 兑换码与调试模式样式 */
+/* 兑换码样式 */
 .redeem-panel .panel-title { color: var(--neon-gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
 .redeem-panel .panel-title::before { content: '🎁'; color: var(--neon-gold); }
-.redeem-controls, .debug-controls {
+.redeem-controls {
     display: flex; gap: 10px;
 }
-.redeem-controls input, .debug-controls input {
+.redeem-controls input {
     flex: 1; padding: 10px 15px; background: rgba(0, 0, 0, 0.5);
     border: 1px solid var(--border-main); border-radius: 8px;
     color: var(--text-main); outline: none; font-family: var(--font-body); font-size: 15px;
 }
-.redeem-controls input:focus, .debug-controls input:focus {
+.redeem-controls input:focus {
     border-color: var(--neon-gold); box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
 }
-.debug-panel .panel-title { color: var(--neon-red); text-shadow: 0 0 10px rgba(255, 0, 85, 0.5); }
-.debug-panel .panel-title::before { content: '🛠️'; color: var(--neon-red); }
-.debug-controls input:focus { border-color: var(--neon-red); box-shadow: 0 0 8px rgba(255, 0, 85, 0.3); }
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
