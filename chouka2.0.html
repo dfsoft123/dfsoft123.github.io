@@ -21,6 +21,13 @@ body::before{
              linear-gradient(180deg,#05060f 0%,#0a0b1d 60%,#05060f 100%);
 }
 #stars{position:fixed;inset:0;z-index:-1;pointer-events:none}
+
+/* 通关背景水印 */
+#completedWatermark{position:fixed;inset:0;z-index:-1;display:none;align-items:center;justify-content:center;pointer-events:none}
+#completedWatermark.show{display:flex}
+#completedWatermark span{font-size:30vw;font-weight:900;font-family:'Cinzel',serif;color:rgba(245,200,66,0.05);transform:rotate(-20deg);white-space:nowrap;text-shadow:0 0 50px rgba(245,200,66,0.1);animation:wm-pulse 5s ease-in-out infinite}
+@keyframes wm-pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+
 .glass{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));border:1px solid var(--border);backdrop-filter:blur(8px)}
 .gold-text{background:linear-gradient(180deg,#fff7d6,#f5c842 60%,#9a6b1a);-webkit-background-clip:text;background-clip:text;color:transparent}
 .cyan-text{background:linear-gradient(180deg,#e6fdff,#00e5ff 60%,#006e7a);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -72,6 +79,7 @@ body::before{
 <body>
 
 <canvas id="stars"></canvas>
+<div id="completedWatermark"><span>已通关</span></div>
 
 <header class="glass sticky top-0 z-40 px-6 py-3 flex items-center gap-6 border-b">
   <div class="flex items-center gap-3">
@@ -169,6 +177,17 @@ body::before{
   </div>
 </div>
 
+<!-- 通关弹窗 -->
+<div id="winModal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-black/90 backdrop-blur-md">
+  <div class="glass rounded-2xl p-8 w-[500px] max-w-[92vw] text-center border-2 border-[#f5c842]" style="box-shadow:0 0 80px rgba(245,200,66,.4)">
+    <div class="font-display text-5xl gold-text font-black mb-4">CONGRATULATIONS</div>
+    <div class="text-xl font-bold mb-2">你已通关当前版本</div>
+    <div class="text-sm text-[var(--muted)] mb-6">星辉石达到 100 UDC！感谢游玩，等待后续更新！<br>你可以点击下方按钮继续游玩。</div>
+    <button id="closeWinModal" class="up-btn w-full" style="border-color:#f5c842;max-width:200px;margin:0 auto">继续游玩</button>
+  </div>
+</div>
+
+<!-- 设置弹窗 -->
 <div id="settingsModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-sm">
   <div class="glass rounded-2xl p-6 w-[520px] max-w-[92vw] max-h-[88vh] overflow-y-auto">
     <div class="flex justify-between items-center mb-5">
@@ -176,7 +195,6 @@ body::before{
       <button id="closeSettings" class="text-2xl leading-none text-[var(--muted)] hover:text-white">×</button>
     </div>
 
-    <!-- 全局特效开关 -->
     <div class="mb-6">
       <h3 class="text-sm font-bold mb-3 tracking-wider">视觉特效</h3>
       <label class="flex items-center justify-between p-3 rounded-lg border border-[var(--border)] cursor-pointer hover:border-[#00e5ff]">
@@ -188,7 +206,6 @@ body::before{
       </label>
     </div>
 
-    <!-- 过场动画设置 -->
     <div class="mb-6">
       <h3 class="text-sm font-bold mb-3 tracking-wider">过场动画</h3>
       <div class="grid grid-cols-2 gap-3">
@@ -199,7 +216,6 @@ body::before{
       </div>
     </div>
 
-    <!-- 存档管理 -->
     <div class="mb-4">
       <h3 class="text-sm font-bold mb-3 tracking-wider">存档管理</h3>
       <div class="flex gap-2 mb-3"><button id="exportSave" class="flex-1 py-2 rounded-lg border border-[var(--border)] hover:border-[#00e5ff] hover:text-[#00e5ff] transition text-sm">导出存档到剪贴板</button></div>
@@ -237,20 +253,28 @@ function getGrad(r, angle=135){ return `linear-gradient(${angle}deg, ${r.colors.
 function hexToRgba(hex, a=1){ let h=hex.replace('#',''); if(h.length===3) h=h.split('').map(c=>c+c).join(''); const r=parseInt(h.substr(0,2),16), g=parseInt(h.substr(2,2),16), b=parseInt(h.substr(4,2),16); return `rgba(${r},${g},${b},${a})`; }
 function getMultiGlow(r){ return hexToRgba(r.colors[0], 0.8); }
 
-let state = { coins:0, lucky:0, multiLevel:1, multiCost:100, luckyCost:500, goldLevel:1, goldCost:1000, cards:{}, totalDraws:0, bestTier:-1, startTime:Date.now(), lastSave:Date.now(), autoUnlocked:false, autoEnabled:false, cutscene:{t1:true,t2:true,t3:true,t4:true}, effectsEnabled: true };
+let state = { coins:0, lucky:0, multiLevel:1, multiCost:100, luckyCost:500, goldLevel:1, goldCost:1000, cards:{}, totalDraws:0, bestTier:-1, startTime:Date.now(), lastSave:Date.now(), autoUnlocked:false, autoEnabled:false, cutscene:{t1:true,t2:true,t3:true,t4:true}, effectsEnabled: true, gameCompleted: false };
 
 try {
   const saved = localStorage.getItem('genesisDrawSave');
-  if (saved) { const data = JSON.parse(saved); Object.assign(state, data); if(!state.cutscene) state.cutscene={t1:true,t2:true,t3:true,t4:true}; if(state.goldLevel===undefined) state.goldLevel=1; if(state.goldCost===undefined) state.goldCost=1000; if(state.effectsEnabled===undefined) state.effectsEnabled=true;
+  if (saved) { const data = JSON.parse(saved); Object.assign(state, data); if(!state.cutscene) state.cutscene={t1:true,t2:true,t3:true,t4:true}; if(state.goldLevel===undefined) state.goldLevel=1; if(state.goldCost===undefined) state.goldCost=1000; if(state.effectsEnabled===undefined) state.effectsEnabled=true; if(state.gameCompleted===undefined) state.gameCompleted=false;
     const now = Date.now(); const offlineSec = Math.min((now - (state.lastSave||now))/1000, 86400*3);
     const cps = calcCPS();
     if (cps > 0 && offlineSec > 5) { const earned = cps * offlineSec; state.coins += earned; setTimeout(()=>{ addLog(`离线 ${formatTime(offlineSec)} 收获 ${formatNum(earned)} 星辉石`, '#f5c842'); }, 500); }
     state.lastSave = now;
+    if (state.gameCompleted) $('completedWatermark').classList.add('show');
   }
 } catch(e){ console.warn(e); }
 
 function calcCPS(){ let cps=0; for(const r of RARITIES) cps += (state.cards[r.id]||0) * r.gold; return cps * Math.pow(1.5, state.goldLevel - 1); }
-function formatNum(n){ if(n<1000) return n.toFixed(n<10?2:0).replace(/\.00$/,''); const u=['','K','M','B','T','Qa','Qi','Sx','Sp','Oc','No','Dc']; let i=0; while(n>=1000&&i<u.length-1){n/=1000;i++;} return n.toFixed(n<10?2:n<100?1:0)+u[i]; }
+
+// 扩展单位列表
+function formatNum(n){
+  if(n<1000) return n.toFixed(n<10?2:0).replace(/\.00$/,'');
+  const u=['','K','M','B','T','Qa','Qi','Sx','Sp','Oc','No','Dc','UDC','DDC','TDC','QADC','QIDC','SXDC','SPDC','OCDC','NODC','VT','UVT','DVT','TVT'];
+  let i=0; while(n>=1000&&i<u.length-1){n/=1000;i++;}
+  return n.toFixed(n<10?2:n<100?1:0)+u[i];
+}
 function formatTime(s){ if(s<60) return Math.floor(s)+'s'; if(s<3600) return Math.floor(s/60)+'m'; if(s<86400) return Math.floor(s/3600)+'h'; return Math.floor(s/86400)+'d'; }
 
 function getProbabilities(){ const lf = Math.pow(1.015, state.lucky); const weights = RARITIES.map((r,i) => r.prob * Math.pow(lf, i)); const sum = weights.reduce((a,b)=>a+b, 0); return weights.map(w => w/sum); }
@@ -406,7 +430,7 @@ function fxLoop(){
     });
     fxCtx.globalAlpha = 1; fxCtx.shadowBlur = 0;
   } else {
-    fxParticles = []; // 清空粒子，防止重新开启时瞬间爆发
+    fxParticles = [];
   }
   requestAnimationFrame(fxLoop);
 }
@@ -423,6 +447,17 @@ function starLoop(){
   requestAnimationFrame(starLoop);
 }
 starLoop();
+
+function checkGameCompletion() {
+  if (!state.gameCompleted && state.coins >= 1e38) { // 100 UDC = 10^38
+    state.gameCompleted = true;
+    save();
+    $('completedWatermark').classList.add('show');
+    $('winModal').classList.remove('hidden');
+    $('winModal').classList.add('flex');
+    addLog('恭喜达成通关条件：100 UDC 星辉石！', '#f5c842');
+  }
+}
 
 function updateUI(){
   coinEl.textContent = formatNum(state.coins); cpsEl.textContent = formatNum(calcCPS()) + '/s'; luckyEl.textContent = state.lucky;
@@ -449,6 +484,7 @@ $('upLucky').addEventListener('click', () => { if(state.coins < state.luckyCost)
 $('upGold').addEventListener('click', () => { if(state.coins < state.goldCost) return; state.coins -= state.goldCost; state.goldLevel++; state.goldCost = Math.floor(state.goldCost * 2.2); updateUI(); save(); addLog(`星辉增幅升级 → ${formatNum(Math.pow(1.5, state.goldLevel - 1))} 倍 产出`, '#10b981'); });
 $('upAuto').addEventListener('click', () => { if(!state.autoUnlocked) return; state.autoEnabled = !state.autoEnabled; updateUI(); save(); addLog(state.autoEnabled ? '自动抽卡已开启 · 每 0.2s 一次' : '自动抽卡已关闭', '#00e5ff'); });
 
+$('closeWinModal').addEventListener('click', () => { $('winModal').classList.add('hidden'); $('winModal').classList.remove('flex'); });
 drawBtn.addEventListener('click', doDraw);
 document.addEventListener('keydown', e => { if (e.code === 'Space' && !drawing) { e.preventDefault(); doDraw(); } });
 $('resetBtn').addEventListener('click', () => { if (confirm('确定要重置所有进度吗？')) { localStorage.removeItem('genesisDrawSave'); location.reload(); } });
@@ -456,7 +492,7 @@ $('resetBtn').addEventListener('click', () => { if (confirm('确定要重置所�
 function save(){ state.lastSave = Date.now(); localStorage.setItem('genesisDrawSave', JSON.stringify(state)); }
 setInterval(save, 5000); window.addEventListener('beforeunload', save);
 let lastTick = Date.now();
-setInterval(() => { const now = Date.now(); const dt = (now - lastTick)/1000; lastTick = now; state.coins += calcCPS() * dt; coinEl.textContent = formatNum(state.coins); cpsEl.textContent = formatNum(calcCPS()) + '/s'; $('upMulti').disabled = state.coins < state.multiCost; $('upLucky').disabled = state.coins < state.luckyCost; $('upGold').disabled = state.coins < state.goldCost; $('statTime').textContent = formatTime((now - state.startTime)/1000); }, 200);
+setInterval(() => { const now = Date.now(); const dt = (now - lastTick)/1000; lastTick = now; state.coins += calcCPS() * dt; coinEl.textContent = formatNum(state.coins); cpsEl.textContent = formatNum(calcCPS()) + '/s'; $('upMulti').disabled = state.coins < state.multiCost; $('upLucky').disabled = state.coins < state.luckyCost; $('upGold').disabled = state.coins < state.goldCost; $('statTime').textContent = formatTime((now - state.startTime)/1000); checkGameCompletion(); }, 200);
 setInterval(() => { if (!state.autoEnabled || !state.autoUnlocked || drawing) return; doDraw(); }, 200);
 
 const settingsModal = $('settingsModal');
@@ -469,16 +505,9 @@ $('closeSettings').addEventListener('click', () => { settingsModal.classList.add
 settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) { settingsModal.classList.add('hidden'); settingsModal.classList.remove('flex'); } });
 
 ['T1','T2','T3','T4'].forEach(t => { $('cs'+t).addEventListener('change', (e) => { state.cutscene['t'+t.slice(1)] = e.target.checked; save(); $('settingsMsg').textContent = '设置已保存'; setTimeout(()=> $('settingsMsg').textContent='', 1500); }); });
-
-$('csEffects').addEventListener('change', (e) => {
-  state.effectsEnabled = e.target.checked;
-  save();
-  $('settingsMsg').textContent = state.effectsEnabled ? '特效已开启' : '特效已关闭';
-  setTimeout(()=> $('settingsMsg').textContent='', 1500);
-});
-
+$('csEffects').addEventListener('change', (e) => { state.effectsEnabled = e.target.checked; save(); $('settingsMsg').textContent = state.effectsEnabled ? '特效已开启' : '特效已关闭'; setTimeout(()=> $('settingsMsg').textContent='', 1500); });
 $('exportSave').addEventListener('click', async () => { const data = btoa(encodeURIComponent(JSON.stringify(state))); try { await navigator.clipboard.writeText(data); $('settingsMsg').textContent = '✓ 存档已复制到剪贴板'; } catch (err) { $('importArea').value = data; $('importArea').select(); document.execCommand('copy'); $('settingsMsg').textContent = '✓ 存档已复制'; } setTimeout(()=> $('settingsMsg').textContent='', 2000); });
-$('importSave').addEventListener('click', () => { const text = $('importArea').value.trim(); if (!text) { $('settingsMsg').textContent = '✗ 请粘贴存档数据'; return; } try { const data = JSON.parse(decodeURIComponent(atob(text))); Object.assign(state, data); if(!state.cutscene) state.cutscene={t1:true,t2:true,t3:true,t4:true}; if(state.effectsEnabled===undefined) state.effectsEnabled=true; save(); updateUI(); $('settingsMsg').textContent = '✓ 存档导入成功'; setTimeout(()=> { settingsModal.classList.add('hidden'); settingsModal.classList.remove('flex'); }, 1000); } catch (err) { $('settingsMsg').textContent = '✗ 存档格式错误'; } });
+$('importSave').addEventListener('click', () => { const text = $('importArea').value.trim(); if (!text) { $('settingsMsg').textContent = '✗ 请粘贴存档数据'; return; } try { const data = JSON.parse(decodeURIComponent(atob(text))); Object.assign(state, data); if(!state.cutscene) state.cutscene={t1:true,t2:true,t3:true,t4:true}; if(state.effectsEnabled===undefined) state.effectsEnabled=true; if(state.gameCompleted===undefined) state.gameCompleted=false; save(); updateUI(); $('settingsMsg').textContent = '✓ 存档导入成功'; setTimeout(()=> { settingsModal.classList.add('hidden'); settingsModal.classList.remove('flex'); }, 1000); } catch (err) { $('settingsMsg').textContent = '✗ 存档格式错误'; } });
 
 updateUI();
 addLog('欢迎来到抽卡2.0 · 命运之门已开启', '#f5c842');
