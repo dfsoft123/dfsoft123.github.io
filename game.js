@@ -32,18 +32,21 @@ const gameData = {
         { name: '下界之星', hp: 1e12, coins: 1e6, drop: 'netherStar', sqrtZone: 2 },
         { name: '玻璃', hp: 1, coins: 1, drop: 'glass', dropChance: 0.1, sqrtZone: 2 },
         { name: '坤坤', hp: 2.5e13, coins: 2.5e6, drop: 'kunKun', sqrtZone: 2 },
-        { name: '玻璃2.0', hp: 4e9, coins: 1e7, drop: 'glass', sqrtZone: 3 },
+        { name: '物质X', hp: 1e24, coins: 1e8, drop: 'matterX', sqrtZone: 2 },
+        { name: '物质Y', hp: 1e24, coins: 1e8, drop: 'matterY', sqrtZone: 2 },
+        { name: '物质Z', hp: 1e24, coins: 1e8, drop: 'matterZ', sqrtZone: 2 },
         // 三次开方区新增方块
+        { name: '玻璃2.0', hp: 4e9, coins: 1e7, drop: 'glass', sqrtZone: 3 },
         { name: '土核心', hp: 1e10, coins: 1.5e7, drop: 'earthCore', sqrtZone: 3 },
         { name: '木核心', hp: 1.5e10, coins: 2e7, drop: 'woodCore', sqrtZone: 3 },
         { name: '火立方', hp: 5e10, coins: 3e7, drop: 'fireCube', sqrtZone: 3 },
         { name: '水立方', hp: 8e10, coins: 5e7, drop: 'waterCube', sqrtZone: 3 },
         { name: '金立方', hp: 2e11, coins: 1e8, drop: 'goldCube', sqrtZone: 3 },
         { name: '五行结晶', hp: 4e12, coins: 2e8, drop: 'fiveElementCrystal', sqrtZone: 3 },
-        // 新增三次开方区方块
         { name: '方立水', hp: 1e13, coins: 4.5e8, drop: 'waterCube', dropAmount: 64, sqrtZone: 3 },
         { name: '水沝㴇淼㵘', hp: 5e14, coins: 1e9, drop: 'waterCube', dropAmount: 256, sqrtZone: 3 },
-        { name: '纯金', hp: 2e15, coins: 1e10, sqrtZone: 3 }
+        { name: '纯金', hp: 2e15, coins: 1e10, sqrtZone: 3 },
+        { name: '元素晶片', hp: 1e13, coins: 1e6, drop: 'elementChip', sqrtZone: 3 }
     ],
     // 镐子属性
     pickaxes: [
@@ -70,13 +73,11 @@ const gameData = {
         { name: '铜镐IV', damage: 125, usage: 1, coins: 3, price: 500, count: 0, currency: 'copperIngot' },
         { name: '铜镐V', damage: 625, usage: 1, coins: 3.5, price: 2000, count: 0, currency: 'copperIngot' },
         { name: '铜镐VI', damage: 3125, usage: 1, coins: 4, price: 10000, count: 0, currency: 'copperIngot' },
-        // 新增合成镐子
         { name: '蓝曜石镐', damage: 1000000, usage: 1.5, coins: 1, count: 0, isCraftable: true, recipe: { '黑曜石镐': 1, '紫水晶镐VI': 1, '铜镐VI': 1, '蓝曜石碎片': 10 } },
         { name: '红曜石镐', damage: 2500000, usage: 2, coins: 1, count: 0, isCraftable: true, recipe: { '蓝曜石镐': 1, '红曜石碎片': 10 } },
         { name: '红蓝镐', damage: 6666666, usage: 3, coins: 1.5, count: 0, isCraftable: true, recipe: { '蓝曜石镐': 1, '红曜石镐': 1, '红蓝结晶': 10 } },
         { name: '基岩镐', damage: 1.6e7, usage: 4, coins: 1.5, count: 0, isCraftable: true, recipe: { '红蓝镐': 1, '基岩碎片': 10 } },
         { name: '坤坤镐', damage: 8e7, usage: 5, coins: 2.5, count: 0, isCraftable: true, recipe: { '基岩镐': 1, '坤坤': 25 } },
-        // 新增镐子
         { name: '土核心镐', damage: 2e8, usage: 6, coins: 2.5, count: 0, isCraftable: true, recipe: { '坤坤镐': 1, '土核心': 10 } },
         { name: '木核心镐', damage: 3e8, usage: 7, coins: 2.5, count: 0, isCraftable: true, recipe: { '土核心镐': 1, '木核心': 10 } },
         { name: '火立方镐', damage: 1e9, usage: 8, coins: 2.5, count: 0, isCraftable: true, recipe: { '火立方': 10, '使用增益': 2.5e5 } },
@@ -84,7 +85,7 @@ const gameData = {
         { name: '金立方镐', damage: 5e9, usage: 10, coins: 3.5, count: 0, isCraftable: true, recipe: { '金立方': 10, '金币': 1e11 } },
         { name: '五行镐', damage: 1e10, usage: 15, coins: 5, count: 0, isCraftable: true, recipe: { '土核心镐': 1, '木核心镐': 1, '火立方镐': 1, '水立方镐': 1, '金立方镐': 1, '五行结晶': 10 } },
         { name: '京镐', damage: 2e10, usage: 16, coins: 5.4, count: 0, isCraftable: true, recipe: { '五行镐': 1, '京核': 32 } },
-        // 新增物品
+        { name: '元素镐', damage: 5e10, usage: 20, coins: 6.4, count: 0, isCraftable: true, recipe: { '元素晶片': 1000 } },
         { name: '信标', type: 'item', count: 0, isCraftable: true, recipe: { '黑曜石': 3, '玻璃': 5, '下界之星': 1 } }
     ],
     // 游戏状态
@@ -109,11 +110,15 @@ const gameData = {
     goldCube: 0,
     fiveElementCrystal: 0,
     jingCore: 0,
+    elementChip: 0,
+    matterX: 0,
+    matterY: 0,
+    matterZ: 0,
     beacon: 0,
     level: 1,
     experience: 0,
     usageBonus: 1,
-    specialBonus: 1, // 特殊增益
+    specialBonus: 1, 
     digCount: 0,
     blocksMined: 0,
     treeLevel: 1,
@@ -126,7 +131,11 @@ const gameData = {
     lastOnlineTime: Date.now(),
     currentHp: 100,
     sqrtPower: 1,
-    debugEnabled: false // 调试模式开关
+    debugEnabled: false,
+    researchInstituteActive: false,
+    energy: 0,
+    energyProductionSpeed: 1,
+    energyUpgradeCost: 100
 };
 
 // DOM元素
@@ -156,6 +165,7 @@ const elements = {
     beaconBonus: document.getElementById('beacon-bonus'),
     timeBonus: document.getElementById('time-bonus'),
     specialBonus: document.getElementById('special-bonus'),
+    energyBonus: document.getElementById('energy-bonus'),
     totalDamage: document.getElementById('total-damage'),
     level: document.getElementById('level'),
     experience: document.getElementById('experience'),
@@ -178,6 +188,10 @@ const elements = {
     goldCube: document.getElementById('gold-cube'),
     fiveElementCrystal: document.getElementById('five-element-crystal'),
     jingCore: document.getElementById('jing-core'),
+    elementChip: document.getElementById('element-chip'),
+    matterX: document.getElementById('matter-x'),
+    matterY: document.getElementById('matter-y'),
+    matterZ: document.getElementById('matter-z'),
     treeLevel: document.getElementById('tree-level'),
     treeProgressBar: document.getElementById('tree-progress-bar'),
     treeExperience: document.getElementById('tree-experience'),
@@ -192,67 +206,50 @@ const elements = {
     blocksMined: document.getElementById('blocks-mined'),
     shopItems: document.getElementById('shop-items'),
     redeemInput: document.getElementById('redeem-input'),
-    redeemBtn: document.getElementById('redeem-btn')
+    redeemBtn: document.getElementById('redeem-btn'),
+    researchInactive: document.getElementById('research-inactive'),
+    researchActive: document.getElementById('research-active'),
+    activateResearchBtn: document.getElementById('activate-research-btn'),
+    upgradeEnergyBtn: document.getElementById('upgrade-energy-btn'),
+    energyTotal: document.getElementById('energy-total'),
+    energySpeed: document.getElementById('energy-speed'),
+    energyBonusStat: document.getElementById('energy-bonus-stat'),
+    energyUsageStat: document.getElementById('energy-usage-stat'),
+    energyTreeStat: document.getElementById('energy-tree-stat')
 };
 
-// 辅助函数：更新元素显示，避免覆盖正在输入的内容
 function setStat(el, text) {
     if (!el) return;
-    if (document.activeElement === el) return; // 如果正在被编辑，不覆盖
-    if (el.tagName === 'INPUT') {
-        el.value = text;
-    } else {
-        el.textContent = text;
-    }
+    if (document.activeElement === el) return;
+    if (el.tagName === 'INPUT') { el.value = text; } else { el.textContent = text; }
 }
 
-// 单位格式化
 function formatNumber(num) {
-    if (num < 1000000) {
-        return num.toFixed(2).replace(/\.00$/, '');
-    } else if (num < 1e10) {
-        return (num / 10000).toFixed(2) + '万';
-    } else if (num < 1e14) {
-        return (num / 1e8).toFixed(2) + '亿';
-    } else if (num < 1e18) {
-        return (num / 1e12).toFixed(2) + '万亿';
-    } else if (num < 1e22) {
-        return (num / 1e16).toFixed(2) + '兆';
-    } else if (num < 1e26) {
-        return (num / 1e20).toFixed(2) + '万兆';
-    } else if (num < 1e30) {
-        return (num / 1e24).toFixed(2) + '亿兆';
-    } else if (num < 1e34) {
-        return (num / 1e28).toFixed(2) + '万亿兆';
-    } else if (num < 1e38) {
-        return (num / 1e32).toFixed(2) + '京';
-    } else if (num < 1e42) {
-        return (num / 1e36).toFixed(2) + '万京';
-    } else if (num < 1e46) {
-        return (num / 1e40).toFixed(2) + '亿京';
-    } else if (num < 1e50) {
-        return (num / 1e44).toFixed(2) + '万亿京';
-    } else if (num < 1e54) {
-        return (num / 1e48).toFixed(2) + '兆京';
-    } else if (num < 1e58) {
-        return (num / 1e52).toFixed(2) + '万兆京';
-    } else if (num < 1e62) {
-        return (num / 1e56).toFixed(2) + '亿兆京';
-    } else if (num < 1e66) {
-        return (num / 1e60).toFixed(2) + '万亿兆京';
-    } else {
-        return (num / 1e64).toFixed(2) + '垓';
-    }
+    if (num < 1000000) return num.toFixed(2).replace(/\.00$/, '');
+    if (num < 1e10) return (num / 10000).toFixed(2) + '万';
+    if (num < 1e14) return (num / 1e8).toFixed(2) + '亿';
+    if (num < 1e18) return (num / 1e12).toFixed(2) + '万亿';
+    if (num < 1e22) return (num / 1e16).toFixed(2) + '兆';
+    if (num < 1e26) return (num / 1e20).toFixed(2) + '万兆';
+    if (num < 1e30) return (num / 1e24).toFixed(2) + '亿兆';
+    if (num < 1e34) return (num / 1e28).toFixed(2) + '万亿兆';
+    if (num < 1e38) return (num / 1e32).toFixed(2) + '京';
+    if (num < 1e42) return (num / 1e36).toFixed(2) + '万京';
+    if (num < 1e46) return (num / 1e40).toFixed(2) + '亿京';
+    if (num < 1e50) return (num / 1e44).toFixed(2) + '万亿京';
+    if (num < 1e54) return (num / 1e48).toFixed(2) + '兆京';
+    if (num < 1e58) return (num / 1e52).toFixed(2) + '万兆京';
+    if (num < 1e62) return (num / 1e56).toFixed(2) + '亿兆京';
+    if (num < 1e66) return (num / 1e60).toFixed(2) + '万亿兆京';
+    return (num / 1e64).toFixed(2) + '垓';
 }
 
-// 更新方块显示
 function updateBlockDisplay() {
     const block = gameData.blocks[gameData.currentBlockIndex];
     elements.blockName.textContent = block.name;
     elements.currentHp.textContent = formatNumber(gameData.currentHp);
     elements.maxHp.textContent = formatNumber(block.hp);
-    const hpPercent = (gameData.currentHp / block.hp) * 100;
-    elements.hpBar.style.width = hpPercent + '%';
+    elements.hpBar.style.width = (gameData.currentHp / block.hp) * 100 + '%';
 
     if (block.drop) {
         const dropChance = block.dropChance || 100;
@@ -275,6 +272,10 @@ function updateBlockDisplay() {
             case 'goldCube': dropName = '金立方'; break;
             case 'fiveElementCrystal': dropName = '五行结晶'; break;
             case 'jingCore': dropName = '京核'; break;
+            case 'elementChip': dropName = '元素晶片'; break;
+            case 'matterX': dropName = '物质X'; break;
+            case 'matterY': dropName = '物质Y'; break;
+            case 'matterZ': dropName = '物质Z'; break;
             default: dropName = block.drop;
         }
         const dropAmount = block.dropAmount || 1;
@@ -286,64 +287,44 @@ function updateBlockDisplay() {
     }
 }
 
-// 获取当前开方区的方块索引数组
 function getCurrentSqrtZoneBlocks() {
     return gameData.blocks.map((block, index) => block.sqrtZone === gameData.sqrtPower ? index : null).filter(index => index !== null);
 }
 
-// 切换方块
 function changeBlock(direction) {
     const currentBlocks = getCurrentSqrtZoneBlocks();
     const currentIndex = currentBlocks.indexOf(gameData.currentBlockIndex);
     let newIndex = currentIndex + direction;
-    if (newIndex < 0) {
-        newIndex = currentBlocks.length - 1;
-    } else if (newIndex >= currentBlocks.length) {
-        newIndex = 0;
-    }
+    if (newIndex < 0) newIndex = currentBlocks.length - 1;
+    else if (newIndex >= currentBlocks.length) newIndex = 0;
     gameData.currentBlockIndex = currentBlocks[newIndex];
     gameData.currentHp = gameData.blocks[gameData.currentBlockIndex].hp;
     updateBlockDisplay();
 }
 
-// 显示伤害数字
 function showDamageText(damage) {
     const damageText = document.createElement('div');
     damageText.className = 'damage-text';
     damageText.textContent = formatNumber(damage);
-    const x = Math.random() * 200 - 100;
-    const y = Math.random() * 200 - 100;
     damageText.style.left = `50%`;
     damageText.style.top = `50%`;
-    damageText.style.transform = `translate(${x}px, ${y}px)`;
+    damageText.style.transform = `translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 - 100}px)`;
     elements.damageTextContainer.appendChild(damageText);
-    setTimeout(() => {
-        damageText.remove();
-    }, 1000);
+    setTimeout(() => damageText.remove(), 1000);
 }
 
-// 计算信标增益 (使用 gameData.beacon)
-function calculateBeaconBonus() {
-    return Math.pow(1 + gameData.beacon, 0.64);
-}
-
-// 计算时间增益 (log8)
+function calculateBeaconBonus() { return Math.pow(1 + gameData.beacon, 0.64); }
 function calculateTimeBonus() {
     const seconds = Math.max(0, Math.floor((Date.now() - gameData.originalStartTime) / 1000));
     const baseTime = 160;
-    if (seconds < baseTime) {
-        return 1;
-    }
-    const timeRatio = seconds / baseTime;
-    return Math.log(timeRatio) / Math.log(8); // 修改为 log8
+    if (seconds < baseTime) return 1;
+    return Math.log(seconds / baseTime) / Math.log(8);
 }
+function calculateTreeBonus() { return Math.pow(gameData.treeLevel, 0.4); }
+function calculateEnergyBonus() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.22) : 1; }
+function calculateEnergyUsageBonus() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.44) : 1; }
+function calculateEnergyTreeExp() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.55) : 0; }
 
-// 计算浇树增益
-function calculateTreeBonus() {
-    return Math.pow(gameData.treeLevel, 0.4);
-}
-
-// 计算总伤害
 function calculateTotalDamage() {
     const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
     const levelBonus = Math.pow(gameData.level, 0.5);
@@ -351,16 +332,13 @@ function calculateTotalDamage() {
     const beaconBonus = calculateBeaconBonus();
     const timeBonus = calculateTimeBonus();
     const treeBonus = calculateTreeBonus();
+    const energyBonus = calculateEnergyBonus();
     const bonusProduct = pickaxe.damage * gameData.usageBonus * levelBonus * trophyBonus;
-    return Math.pow(bonusProduct, 1 / gameData.sqrtPower) * beaconBonus * timeBonus * treeBonus * gameData.specialBonus;
+    return Math.pow(bonusProduct, 1 / gameData.sqrtPower) * beaconBonus * timeBonus * treeBonus * gameData.specialBonus * energyBonus;
 }
 
-// 浇树功能
 function waterTree() {
-    if (gameData.waterCube < 1) {
-        console.log('水立方不足，无法浇树');
-        return;
-    }
+    if (gameData.waterCube < 1) return;
     gameData.waterCube--;
     gameData.treeExperience++;
     const requiredExp = 10 * gameData.treeLevel;
@@ -372,12 +350,8 @@ function waterTree() {
     updateShopButtons();
 }
 
-// 一键浇树功能
 function autoWaterTree() {
-    if (gameData.waterCube < 1) {
-        console.log('水立方不足，无法浇树');
-        return;
-    }
+    if (gameData.waterCube < 1) return;
     const availableWater = gameData.waterCube;
     gameData.waterCube = 0;
     gameData.treeExperience += availableWater;
@@ -390,67 +364,66 @@ function autoWaterTree() {
     updateShopButtons();
 }
 
-// 一键合成信标功能
 function craftAllBeacons() {
     const beaconItem = gameData.pickaxes.find(p => p.name === '信标');
     if (!beaconItem) return;
-    
-    const obsidianNeed = 3;
-    const glassNeed = 5;
-    const netherStarNeed = 1;
-    
-    const maxCraft = Math.min(
-        Math.floor(gameData.obsidian / obsidianNeed),
-        Math.floor(gameData.glass / glassNeed),
-        Math.floor(gameData.netherStar / netherStarNeed)
-    );
-    
+    const maxCraft = Math.min(Math.floor(gameData.obsidian / 3), Math.floor(gameData.glass / 5), Math.floor(gameData.netherStar / 1));
     if (maxCraft > 0) {
-        gameData.obsidian -= maxCraft * obsidianNeed;
-        gameData.glass -= maxCraft * glassNeed;
-        gameData.netherStar -= maxCraft * netherStarNeed;
-        
+        gameData.obsidian -= maxCraft * 3;
+        gameData.glass -= maxCraft * 5;
+        gameData.netherStar -= maxCraft * 1;
         beaconItem.count += maxCraft;
         gameData.beacon = beaconItem.count;
-        
-        updateStats();
-        updateShopButtons();
-        saveGame();
+        updateStats(); updateShopButtons(); saveGame();
         alert(`成功合成了 ${maxCraft} 个信标！`);
     } else {
         alert('材料不足，无法合成信标！(需要3黑曜石, 5玻璃, 1下界之星)');
     }
 }
 
-// 执行挖掘
+function activateResearchInstitute() {
+    if (gameData.matterX >= 1e5 && gameData.matterY >= 1e5 && gameData.matterZ >= 1e5) {
+        gameData.matterX -= 1e5;
+        gameData.matterY -= 1e5;
+        gameData.matterZ -= 1e5;
+        gameData.researchInstituteActive = true;
+        updateStats(); saveGame();
+    } else {
+        alert('需要各10万个 X, Y, Z 物质才能开启！');
+    }
+}
+
+function upgradeEnergyProduction() {
+    if (gameData.energy >= gameData.energyUpgradeCost) {
+        gameData.energy -= gameData.energyUpgradeCost;
+        gameData.energyProductionSpeed *= 2;
+        gameData.energyUpgradeCost *= 10;
+        updateStats(); saveGame();
+    }
+}
+
 function dig(silent = false) {
     const block = gameData.blocks[gameData.currentBlockIndex];
     const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
     const damage = calculateTotalDamage();
     gameData.currentHp -= damage;
     gameData.digCount++;
-    gameData.usageBonus += pickaxe.usage;
-    
-    if (!silent) {
-        showDamageText(damage);
-    }
-    
+    const usageMult = calculateEnergyUsageBonus();
+    gameData.usageBonus += pickaxe.usage * usageMult;
+    if (!silent) showDamageText(damage);
     if (gameData.currentHp <= 0) {
         const earnedCoins = block.coins * pickaxe.coins;
         gameData.coins += earnedCoins;
         const earnedExp = earnedCoins * Math.pow(1 + Math.log(earnedCoins), 2);
         gameData.experience += earnedExp;
         gameData.blocksMined++;
-        
         if (block.drop) {
             if (block.dropChance) {
                 if (Math.random() * 100 <= block.dropChance) {
-                    const dropAmount = block.dropAmount || 1;
-                    gameData[block.drop] += dropAmount;
+                    gameData[block.drop] += (block.dropAmount || 1);
                 }
             } else {
-                const dropAmount = block.dropAmount || 1;
-                gameData[block.drop] += dropAmount;
+                gameData[block.drop] += (block.dropAmount || 1);
             }
         }
         gameData.currentHp = block.hp;
@@ -461,26 +434,15 @@ function dig(silent = false) {
     updateExchangeButton();
 }
 
-// 自动挖矿(后台兼容)
-let autoMineInterval = null;
-let lastAutoMineTime = 0;
-
+let autoMineInterval = null, lastAutoMineTime = 0;
 function autoMineTick() {
     if (!gameData.autoMine) return;
-    
     const now = Date.now();
     if (lastAutoMineTime === 0) lastAutoMineTime = now;
-    
-    const elapsed = now - lastAutoMineTime;
-    const ticks = Math.min(1000, Math.floor(elapsed / 100)); 
-    
-    for (let i = 0; i < ticks; i++) {
-        dig(i < ticks - 1); 
-    }
-    
+    const ticks = Math.min(1000, Math.floor((now - lastAutoMineTime) / 100)); 
+    for (let i = 0; i < ticks; i++) dig(i < ticks - 1); 
     lastAutoMineTime = now;
 }
-
 function updateAutoMine() {
     if (gameData.autoMine) {
         if (!autoMineInterval) {
@@ -488,119 +450,53 @@ function updateAutoMine() {
             autoMineInterval = setInterval(autoMineTick, 100);
         }
     } else {
-        if (autoMineInterval) {
-            clearInterval(autoMineInterval);
-            autoMineInterval = null;
-        }
+        if (autoMineInterval) { clearInterval(autoMineInterval); autoMineInterval = null; }
     }
 }
-
-// 切换自动挖矿
 function toggleAutoMine() {
     gameData.autoMine = !gameData.autoMine;
     elements.autoMineBtn.textContent = `自动挖矿: ${gameData.autoMine ? '开启' : '关闭'}`;
     elements.autoMineBtn.classList.toggle('active', gameData.autoMine);
     updateAutoMine();
 }
-
-// 切换自动兑换
 function toggleAutoExchange() {
     gameData.autoExchange = !gameData.autoExchange;
     elements.autoExchangeBtn.textContent = `自动兑换: ${gameData.autoExchange ? '开启' : '关闭'}`;
     elements.autoExchangeBtn.classList.toggle('active', gameData.autoExchange);
 }
-
-// 更新自动兑换阈值
 function updateAutoExchangeThreshold() {
     const threshold = parseInt(elements.autoExchangeThreshold.value);
-    if (threshold >= 100) {
-        gameData.autoExchangeThreshold = threshold;
-    } else {
-        elements.autoExchangeThreshold.value = gameData.autoExchangeThreshold;
-    }
+    gameData.autoExchangeThreshold = threshold >= 100 ? threshold : gameData.autoExchangeThreshold;
+    elements.autoExchangeThreshold.value = gameData.autoExchangeThreshold;
 }
-
-// 检查是否需要自动兑换
-function checkAutoExchange() {
-    if (gameData.autoExchange && gameData.coins >= gameData.autoExchangeThreshold) {
-        exchangeTrophies();
-    }
-}
-
-// 计算每次兑换能获得的奖杯数
-function calculateExchangeInfo() {
-    const earnedTrophies = Math.floor(Math.pow(gameData.coins / 100, 3/4));
-    return { earnedTrophies: earnedTrophies };
-}
-
-// 更新兑换奖杯按钮
+function checkAutoExchange() { if (gameData.autoExchange && gameData.coins >= gameData.autoExchangeThreshold) exchangeTrophies(); }
+function calculateExchangeInfo() { return { earnedTrophies: Math.floor(Math.pow(gameData.coins / 100, 3/4)) }; }
 function updateExchangeButton() {
     const exchangeInfo = calculateExchangeInfo();
-    if (exchangeInfo.earnedTrophies > 0) {
-        elements.exchangeBtn.textContent = `兑换奖杯 (获得: ${exchangeInfo.earnedTrophies}个)`;
-        elements.exchangeBtn.disabled = false;
-    } else {
-        elements.exchangeBtn.textContent = `兑换奖杯 (需100金币以上)`;
-        elements.exchangeBtn.disabled = true;
-    }
+    elements.exchangeBtn.textContent = exchangeInfo.earnedTrophies > 0 ? `兑换奖杯 (获得: ${exchangeInfo.earnedTrophies}个)` : `兑换奖杯 (需100金币以上)`;
+    elements.exchangeBtn.disabled = exchangeInfo.earnedTrophies <= 0;
 }
-
-// 兑换奖杯函数
 function exchangeTrophies(updateUI = true) {
     const exchangeInfo = calculateExchangeInfo();
     if (exchangeInfo.earnedTrophies > 0) {
         gameData.trophies += exchangeInfo.earnedTrophies;
         gameData.coins = 0;
-        if (updateUI) {
-            updateStats();
-            updateShopButtons();
-            updateExchangeButton();
-        }
+        if (updateUI) { updateStats(); updateShopButtons(); updateExchangeButton(); }
     }
 }
 
-// 长按挖掘(后台兼容)
-let longPressInterval = null;
-let lastLongPressTime = 0;
-
+let longPressInterval = null, lastLongPressTime = 0;
 function longPressTick() {
     const now = Date.now();
     if (lastLongPressTime === 0) lastLongPressTime = now;
-    
-    const elapsed = now - lastLongPressTime;
-    const ticks = Math.min(1000, Math.floor(elapsed / 100));
-    
-    for (let i = 0; i < ticks; i++) {
-        dig(i < ticks - 1);
-    }
-    
+    const ticks = Math.min(1000, Math.floor((now - lastLongPressTime) / 100));
+    for (let i = 0; i < ticks; i++) dig(i < ticks - 1);
     lastLongPressTime = now;
 }
+function startLongPress() { if (!gameData.autoMine) { lastLongPressTime = Date.now(); longPressInterval = setInterval(longPressTick, 100); } }
+function stopLongPress() { if (longPressInterval) { clearInterval(longPressInterval); longPressInterval = null; } }
+function levelUp() { while (gameData.experience >= Math.pow(gameData.level, 2)) { gameData.experience -= Math.pow(gameData.level, 2); gameData.level++; } }
 
-function startLongPress() {
-    if (!gameData.autoMine) {
-        lastLongPressTime = Date.now();
-        longPressInterval = setInterval(longPressTick, 100);
-    }
-}
-
-function stopLongPress() {
-    if (longPressInterval) {
-        clearInterval(longPressInterval);
-        longPressInterval = null;
-    }
-}
-
-// 升级系统
-function levelUp() {
-    const requiredExp = Math.pow(gameData.level, 2);
-    while (gameData.experience >= requiredExp) {
-        gameData.experience -= requiredExp;
-        gameData.level++;
-    }
-}
-
-// 更新统计信息
 function updateStats() {
     const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
     const levelBonus = Math.pow(gameData.level, 0.5);
@@ -608,11 +504,13 @@ function updateStats() {
     const beaconBonus = calculateBeaconBonus();
     const timeBonus = calculateTimeBonus();
     const treeBonus = calculateTreeBonus();
+    const energyBonus = calculateEnergyBonus();
+    const energyUsageBonus = calculateEnergyUsageBonus();
+    const energyTreeExp = calculateEnergyTreeExp();
     const totalDamage = calculateTotalDamage();
 
     const requiredExp = Math.pow(gameData.level, 2);
-    const expPercent = (gameData.experience / requiredExp) * 100;
-    elements.expBar.style.width = expPercent + '%';
+    elements.expBar.style.width = (gameData.experience / requiredExp) * 100 + '%';
 
     elements.pickaxeName.textContent = pickaxe.name;
     elements.pickaxeDamageValue.textContent = formatNumber(pickaxe.damage) + 'x';
@@ -623,21 +521,18 @@ function updateStats() {
     setStat(elements.usageBonus, formatNumber(gameData.usageBonus) + 'x');
     setStat(elements.levelBonus, formatNumber(levelBonus) + 'x');
     setStat(elements.trophyBonus, formatNumber(trophyBonus) + 'x');
-    
     setStat(elements.beaconBonus, formatNumber(beaconBonus) + 'x');
     elements.beaconBonus.style.color = '#2ecc71';
-    
     setStat(elements.treeBonus, formatNumber(treeBonus) + 'x');
     elements.treeBonus.style.color = '#2ecc71';
-    
     setStat(elements.timeBonus, formatNumber(timeBonus) + 'x');
     elements.timeBonus.style.color = '#2ecc71';
-
     setStat(elements.specialBonus, formatNumber(gameData.specialBonus) + 'x');
     elements.specialBonus.style.color = '#2ecc71';
+    setStat(elements.energyBonus, formatNumber(energyBonus) + 'x');
+    elements.energyBonus.style.color = '#2ecc71';
 
     elements.totalDamage.textContent = formatNumber(totalDamage);
-    
     setStat(elements.level, gameData.level);
     setStat(elements.experience, formatNumber(gameData.experience));
     setStat(elements.coins, formatNumber(gameData.coins));
@@ -659,62 +554,53 @@ function updateStats() {
     setStat(elements.goldCube, formatNumber(gameData.goldCube));
     setStat(elements.fiveElementCrystal, formatNumber(gameData.fiveElementCrystal));
     setStat(elements.jingCore, formatNumber(gameData.jingCore));
+    setStat(elements.elementChip, formatNumber(gameData.elementChip));
+    setStat(elements.matterX, formatNumber(gameData.matterX));
+    setStat(elements.matterY, formatNumber(gameData.matterY));
+    setStat(elements.matterZ, formatNumber(gameData.matterZ));
 
     const treeRequiredExp = 10 * gameData.treeLevel;
-    const treeExpPercent = (gameData.treeExperience / treeRequiredExp) * 100;
     elements.treeLevel.textContent = gameData.treeLevel;
-    elements.treeProgressBar.style.width = treeExpPercent + '%';
+    elements.treeProgressBar.style.width = (gameData.treeExperience / treeRequiredExp) * 100 + '%';
     elements.treeExperience.textContent = formatNumber(gameData.treeExperience);
     elements.treeExperienceRequired.textContent = formatNumber(treeRequiredExp);
 
     elements.digCount.textContent = formatNumber(gameData.digCount);
     elements.blocksMined.textContent = formatNumber(gameData.blocksMined);
+
+    if (gameData.researchInstituteActive) {
+        elements.researchInactive.style.display = 'none';
+        elements.researchActive.style.display = 'block';
+        setStat(elements.energyTotal, formatNumber(gameData.energy));
+        setStat(elements.energySpeed, formatNumber(gameData.energyProductionSpeed) + '/秒');
+        setStat(elements.energyBonusStat, formatNumber(energyBonus) + 'x');
+        setStat(elements.energyUsageStat, formatNumber(energyUsageBonus) + 'x');
+        setStat(elements.energyTreeStat, formatNumber(energyTreeExp) + '/秒');
+        elements.upgradeEnergyBtn.textContent = `升级产能 (消耗: ${formatNumber(gameData.energyUpgradeCost)} 能量)`;
+        elements.upgradeEnergyBtn.disabled = gameData.energy < gameData.energyUpgradeCost;
+    } else {
+        elements.researchInactive.style.display = 'block';
+        elements.researchActive.style.display = 'none';
+    }
 }
 
-// 兑换码逻辑
 function redeemCode() {
     const code = elements.redeemInput.value.trim();
     let success = false;
-    
-    if (code === '姚俊希220') {
-        gameData.specialBonus = 2.2;
-        alert('兑换成功！特殊增益变为 2.2');
-        success = true;
-    } else if (code === '七八九幺十三一六九') {
-        gameData.specialBonus = 7.8;
-        alert('兑换成功！特殊增益变为 7.8');
-        success = true;
-    } else if (code === 'dfsoft6767调试模式') {
-        gameData.debugEnabled = true;
-        toggleDebugMode(true);
-        alert('调试模式已开启！核心属性和伤害属性可直接修改。');
-        success = true;
-    } else {
-        alert('无效的兑换码！');
-    }
-    
-    if (success) {
-        elements.redeemInput.value = '';
-        updateStats();
-        saveGame();
-    }
+    if (code === '姚俊希220') { gameData.specialBonus = 2.2; alert('兑换成功！特殊增益变为 2.2'); success = true; }
+    else if (code === '七八九幺十三一六九') { gameData.specialBonus = 7.8; alert('兑换成功！特殊增益变为 7.8'); success = true; }
+    else if (code === 'dfsoft6767调试模式') { gameData.debugEnabled = true; toggleDebugMode(true); alert('调试模式已开启！'); success = true; }
+    else alert('无效的兑换码！');
+    if (success) { elements.redeemInput.value = ''; updateStats(); saveGame(); }
 }
 
-// 切换调试模式
-function toggleDebugMode(enabled) {
-    document.querySelectorAll('.editable-debug').forEach(input => {
-        input.disabled = !enabled;
-    });
-}
-
-// 调试模式输入事件绑定
+function toggleDebugMode(enabled) { document.querySelectorAll('.editable-debug').forEach(input => input.disabled = !enabled); }
 function setupDebugInputs() {
     document.querySelectorAll('.editable-debug').forEach(input => {
         input.addEventListener('change', (e) => {
             const id = e.target.id;
             let val = parseFloat(e.target.value.replace('x', '').trim());
             if (isNaN(val)) return;
-
             switch(id) {
                 case 'level': gameData.level = val; break;
                 case 'experience': gameData.experience = val; break;
@@ -737,88 +623,30 @@ function setupDebugInputs() {
                 case 'gold-cube': gameData.goldCube = val; break;
                 case 'five-element-crystal': gameData.fiveElementCrystal = val; break;
                 case 'jing-core': gameData.jingCore = val; break;
-                
-                // 伤害属性反算逻辑
-                case 'pickaxe-damage':
-                    gameData.pickaxes[gameData.currentPickaxeIndex].damage = val;
-                    break;
-                case 'usage-bonus':
-                    gameData.usageBonus = val;
-                    break;
-                case 'special-bonus':
-                    gameData.specialBonus = val;
-                    break;
-                case 'level-bonus':
-                    gameData.level = Math.pow(val, 2); 
-                    break;
-                case 'trophy-bonus':
-                    gameData.trophies = Math.max(0, Math.pow(val, 1.5) - 1); 
-                    break;
-                case 'beacon-bonus':
-                    gameData.beacon = Math.max(0, Math.pow(val, 1 / 0.64) - 1); 
-                    break;
-                case 'tree-bonus':
-                    gameData.treeLevel = Math.max(1, Math.floor(Math.pow(val, 2.5))); 
-                    break;
-                case 'time-bonus':
-                    const seconds = 160 * Math.pow(8, val);
-                    gameData.originalStartTime = Date.now() - (seconds * 1000);
-                    break;
+                case 'element-chip': gameData.elementChip = val; break;
+                case 'matter-x': gameData.matterX = val; break;
+                case 'matter-y': gameData.matterY = val; break;
+                case 'matter-z': gameData.matterZ = val; break;
+                case 'pickaxe-damage': gameData.pickaxes[gameData.currentPickaxeIndex].damage = val; break;
+                case 'usage-bonus': gameData.usageBonus = val; break;
+                case 'special-bonus': gameData.specialBonus = val; break;
+                case 'level-bonus': gameData.level = Math.pow(val, 2); break;
+                case 'trophy-bonus': gameData.trophies = Math.max(0, Math.pow(val, 1.5) - 1); break;
+                case 'beacon-bonus': gameData.beacon = Math.max(0, Math.pow(val, 1 / 0.64) - 1); break;
+                case 'tree-bonus': gameData.treeLevel = Math.max(1, Math.floor(Math.pow(val, 2.5))); break;
+                case 'time-bonus': gameData.originalStartTime = Date.now() - (160 * Math.pow(8, val) * 1000); break;
+                case 'energy-bonus': gameData.energy = Math.max(0, Math.pow(val, 1 / 0.22)); break;
             }
-            updateStats();
-            saveGame();
+            updateStats(); saveGame();
         });
     });
 }
 
-// 保存游戏数据
 function saveGame() {
-    const gameState = {
-        currentBlockIndex: gameData.currentBlockIndex,
-        currentPickaxeIndex: gameData.currentPickaxeIndex,
-        coins: gameData.coins,
-        trophies: gameData.trophies,
-        amethyst: gameData.amethyst,
-        copperIngot: gameData.copperIngot,
-        blueObsidianFragment: gameData.blueObsidianFragment,
-        redObsidianFragment: gameData.redObsidianFragment,
-        redBlueCrystal: gameData.redBlueCrystal,
-        bedrockFragment: gameData.bedrockFragment,
-        obsidian: gameData.obsidian,
-        netherStar: gameData.netherStar,
-        glass: gameData.glass,
-        kunKun: gameData.kunKun,
-        earthCore: gameData.earthCore,
-        woodCore: gameData.woodCore,
-        fireCube: gameData.fireCube,
-        waterCube: gameData.waterCube,
-        goldCube: gameData.goldCube,
-        fiveElementCrystal: gameData.fiveElementCrystal,
-        jingCore: gameData.jingCore,
-        beacon: gameData.beacon,
-        sqrtPower: gameData.sqrtPower,
-        level: gameData.level,
-        experience: gameData.experience,
-        usageBonus: gameData.usageBonus,
-        specialBonus: gameData.specialBonus,
-        debugEnabled: gameData.debugEnabled,
-        digCount: gameData.digCount,
-        blocksMined: gameData.blocksMined,
-        treeLevel: gameData.treeLevel,
-        treeExperience: gameData.treeExperience,
-        autoMine: gameData.autoMine,
-        autoExchange: gameData.autoExchange,
-        autoExchangeThreshold: gameData.autoExchangeThreshold,
-        startTime: gameData.startTime,
-        originalStartTime: gameData.originalStartTime,
-        lastOnlineTime: Date.now(),
-        currentHp: gameData.currentHp,
-        pickaxes: gameData.pickaxes
-    };
+    const gameState = { ...gameData, pickaxes: gameData.pickaxes, lastOnlineTime: Date.now() };
     localStorage.setItem('miningGameSave', JSON.stringify(gameState));
 }
 
-// 加载游戏数据
 function loadGame() {
     try {
         const savedGame = localStorage.getItem('miningGameSave');
@@ -829,177 +657,55 @@ function loadGame() {
                 gameData.currentHp = gameData.blocks[gameData.currentBlockIndex].hp;
                 return;
             }
-            Object.assign(gameData, {
-                currentBlockIndex: gameState.currentBlockIndex,
-                currentPickaxeIndex: gameState.currentPickaxeIndex,
-                coins: gameState.coins,
-                trophies: gameState.trophies,
-                amethyst: gameState.amethyst || 0,
-                copperIngot: gameState.copperIngot || 0,
-                blueObsidianFragment: gameState.blueObsidianFragment || 0,
-                redObsidianFragment: gameState.redObsidianFragment || 0,
-                redBlueCrystal: gameState.redBlueCrystal || 0,
-                bedrockFragment: gameState.bedrockFragment || 0,
-                obsidian: gameState.obsidian || 0,
-                netherStar: gameState.netherStar || 0,
-                glass: gameState.glass || 0,
-                kunKun: gameState.kunKun || 0,
-                earthCore: gameState.earthCore || 0,
-                woodCore: gameState.woodCore || 0,
-                fireCube: gameState.fireCube || 0,
-                waterCube: gameState.waterCube || 0,
-                goldCube: gameState.goldCube || 0,
-                fiveElementCrystal: gameState.fiveElementCrystal || 0,
-                jingCore: gameState.jingCore || 0,
-                beacon: gameState.beacon || 0,
-                sqrtPower: gameState.sqrtPower || 1,
-                level: gameState.level,
-                experience: gameState.experience,
-                usageBonus: gameState.usageBonus,
-                specialBonus: gameState.specialBonus || 1,
-                debugEnabled: gameState.debugEnabled || false,
-                digCount: gameState.digCount,
-                blocksMined: gameState.blocksMined,
-                treeLevel: gameState.treeLevel || 1,
-                treeExperience: gameState.treeExperience || 0,
-                autoMine: gameState.autoMine,
-                autoExchange: gameState.autoExchange || false,
-                autoExchangeThreshold: gameState.autoExchangeThreshold || 1000,
-                startTime: gameState.startTime,
-                originalStartTime: gameState.originalStartTime,
-                lastOnlineTime: gameState.lastOnlineTime,
-                currentHp: gameState.currentHp
-            });
+            Object.assign(gameData, gameState);
             if (gameState.pickaxes) {
                 gameState.pickaxes.forEach((savedPickaxe, index) => {
-                    if (gameData.pickaxes[index]) {
-                        gameData.pickaxes[index].count = savedPickaxe.count;
-                    }
+                    if (gameData.pickaxes[index]) gameData.pickaxes[index].count = savedPickaxe.count;
                 });
             }
         }
     } catch (error) {
         console.error('加载游戏数据失败:', error);
-        gameData.coins = 0;
-        gameData.trophies = 0;
-        gameData.level = 1;
-        gameData.experience = 0;
-        gameData.usageBonus = 1;
-        gameData.digCount = 0;
-        gameData.blocksMined = 0;
-        gameData.autoMine = false;
-        gameData.startTime = Date.now();
-        gameData.originalStartTime = Date.now();
-        gameData.currentHp = gameData.blocks[gameData.currentBlockIndex].hp;
+        localStorage.removeItem('miningGameSave');
     }
 
-    const defaultPickaxes = [
-        { name: '木镐', damage: 1, usage: 0.01, coins: 1, price: 1, count: 1, currency: 'trophies' },
-        { name: '石镐', damage: 2, usage: 0.02, coins: 1, price: 2, count: 0, currency: 'trophies' },
-        { name: '铁镐', damage: 5, usage: 0.03, coins: 1, price: 6, count: 0, currency: 'trophies' },
-        { name: '金镐', damage: 15, usage: 0.05, coins: 1, price: 24, count: 0, currency: 'trophies' },
-        { name: '钻石镐', damage: 50, usage: 0.1, coins: 1, price: 120, count: 0, currency: 'trophies' },
-        { name: '下界合金镐', damage: 200, usage: 0.2, coins: 1, price: 600, count: 0, currency: 'trophies' },
-        { name: '红石镐', damage: 1000, usage: 0.3, coins: 1, price: 3000, count: 0, currency: 'trophies' },
-        { name: '青金石镐', damage: 5000, usage: 0.5, coins: 1, price: 15000, count: 0, currency: 'trophies' },
-        { name: '下界石英镐', damage: 20000, usage: 0.8, coins: 1, price: 75000, count: 0, currency: 'trophies' },
-        { name: '萤石镐', damage: 80000, usage: 1, coins: 1, price: 375000, count: 0, currency: 'trophies' },
-        { name: '黑曜石镐', damage: 350000, usage: 1.2, coins: 1, price: 1875000, count: 0, currency: 'trophies' },
-        { name: '紫水晶镐I', damage: 1, usage: 2, coins: 1, price: 10, count: 0, currency: 'amethyst' },
-        { name: '紫水晶镐II', damage: 5, usage: 3, coins: 1, price: 25, count: 0, currency: 'amethyst' },
-        { name: '紫水晶镐III', damage: 25, usage: 4, coins: 1, price: 100, count: 0, currency: 'amethyst' },
-        { name: '紫水晶镐IV', damage: 125, usage: 5, coins: 1, price: 500, count: 0, currency: 'amethyst' },
-        { name: '紫水晶镐V', damage: 625, usage: 6, coins: 1, price: 2000, count: 0, currency: 'amethyst' },
-        { name: '紫水晶镐VI', damage: 3125, usage: 7, coins: 1, price: 10000, count: 0, currency: 'amethyst' },
-        { name: '铜镐I', damage: 1, usage: 1, coins: 1.5, price: 10, count: 0, currency: 'copperIngot' },
-        { name: '铜镐II', damage: 5, usage: 1, coins: 2, price: 25, count: 0, currency: 'copperIngot' },
-        { name: '铜镐III', damage: 25, usage: 1, coins: 2.5, price: 100, count: 0, currency: 'copperIngot' },
-        { name: '铜镐IV', damage: 125, usage: 1, coins: 3, price: 500, count: 0, currency: 'copperIngot' },
-        { name: '铜镐V', damage: 625, usage: 1, coins: 3.5, price: 2000, count: 0, currency: 'copperIngot' },
-        { name: '铜镐VI', damage: 3125, usage: 1, coins: 4, price: 10000, count: 0, currency: 'copperIngot' },
-        { name: '蓝曜石镐', damage: 1000000, usage: 1.5, coins: 1, count: 0, isCraftable: true, recipe: { '黑曜石镐': 1, '紫水晶镐VI': 1, '铜镐VI': 1, '蓝曜石碎片': 10 } },
-        { name: '红曜石镐', damage: 2500000, usage: 2, coins: 1, count: 0, isCraftable: true, recipe: { '蓝曜石镐': 1, '红曜石碎片': 10 } },
-        { name: '红蓝镐', damage: 6666666, usage: 3, coins: 1.5, count: 0, isCraftable: true, recipe: { '蓝曜石镐': 1, '红曜石镐': 1, '红蓝结晶': 10 } },
-        { name: '基岩镐', damage: 1.6e7, usage: 4, coins: 1.5, count: 0, isCraftable: true, recipe: { '红蓝镐': 1, '基岩碎片': 10 } },
-        { name: '坤坤镐', damage: 8e7, usage: 5, coins: 2.5, count: 0, isCraftable: true, recipe: { '基岩镐': 1, '坤坤': 25 } },
-        { name: '土核心镐', damage: 2e8, usage: 6, coins: 2.5, count: 0, isCraftable: true, recipe: { '坤坤镐': 1, '土核心': 10 } },
-        { name: '木核心镐', damage: 3e8, usage: 7, coins: 2.5, count: 0, isCraftable: true, recipe: { '土核心镐': 1, '木核心': 10 } },
-        { name: '火立方镐', damage: 1e9, usage: 8, coins: 2.5, count: 0, isCraftable: true, recipe: { '火立方': 10, '使用增益': 2.5e5 } },
-        { name: '水立方镐', damage: 2e9, usage: 9, coins: 2.5, count: 0, isCraftable: true, recipe: { '水立方': 10, '使用增益': 2.5e5 } },
-        { name: '金立方镐', damage: 5e9, usage: 10, coins: 3.5, count: 0, isCraftable: true, recipe: { '金立方': 10, '金币': 1e11 } },
-        { name: '五行镐', damage: 1e10, usage: 15, coins: 5, count: 0, isCraftable: true, recipe: { '土核心镐': 1, '木核心镐': 1, '火立方镐': 1, '水立方镐': 1, '金立方镐': 1, '五行结晶': 10 } },
-        { name: '京镐', damage: 2e10, usage: 16, coins: 5.4, count: 0, isCraftable: true, recipe: { '五行镐': 1, '京核': 32 } },
-        { name: '信标', type: 'item', count: 0, isCraftable: true, recipe: { '黑曜石': 3, '玻璃': 5, '下界之星': 1 } }
-    ];
-
-    if (!gameData.pickaxes) {
-        gameData.pickaxes = defaultPickaxes;
-    } else {
-        while (gameData.pickaxes.length < defaultPickaxes.length) {
-            const missingIndex = gameData.pickaxes.length;
-            gameData.pickaxes.push({ ...defaultPickaxes[missingIndex], count: 0 });
-        }
-        gameData.pickaxes.forEach((pickaxe, index) => {
-            const defaultPickaxe = defaultPickaxes[index];
-            const currentCount = pickaxe.count || 0;
-            Object.assign(pickaxe, defaultPickaxe);
-            pickaxe.count = currentCount;
-        });
-    }
-
-    // 兼容旧存档：如果信标物品有数量但 gameData.beacon 没有同步，则同步
     const beaconItem = gameData.pickaxes.find(p => p.name === '信标');
     if (beaconItem && beaconItem.count > gameData.beacon) {
         gameData.beacon = beaconItem.count;
     }
-
     processOfflineMining();
 }
 
-// 处理离线挖矿
 function processOfflineMining() {
     const now = Date.now();
-    const lastOnline = gameData.lastOnlineTime || now;
-    const offlineTime = now - lastOnline;
+    const offlineTime = now - (gameData.lastOnlineTime || now);
+    const beforeOffline = { ...gameData };
 
-    const beforeOffline = {
-        coins: gameData.coins,
-        experience: gameData.experience,
-        usageBonus: gameData.usageBonus,
-        trophies: gameData.trophies,
-        level: gameData.level,
-        digCount: gameData.digCount,
-        blocksMined: gameData.blocksMined,
-        amethyst: gameData.amethyst,
-        copperIngot: gameData.copperIngot,
-        blueObsidianFragment: gameData.blueObsidianFragment,
-        redObsidianFragment: gameData.redObsidianFragment,
-        redBlueCrystal: gameData.redBlueCrystal,
-        bedrockFragment: gameData.bedrockFragment,
-        obsidian: gameData.obsidian,
-        netherStar: gameData.netherStar,
-        glass: gameData.glass,
-        kunKun: gameData.kunKun,
-        earthCore: gameData.earthCore,
-        woodCore: gameData.woodCore,
-        fireCube: gameData.fireCube,
-        waterCube: gameData.waterCube,
-        goldCube: gameData.goldCube,
-        fiveElementCrystal: gameData.fiveElementCrystal,
-        jingCore: gameData.jingCore
-    };
+    // 离线产能
+    if (gameData.researchInstituteActive) {
+        const offlineSeconds = Math.floor(offlineTime / 1000);
+        const offlineEnergy = offlineSeconds * gameData.energyProductionSpeed;
+        gameData.energy += offlineEnergy;
+        const offlineTreeExp = Math.pow(gameData.energy, 0.55) * offlineSeconds; // 近似计算
+        gameData.treeExperience += offlineTreeExp;
+        const requiredExp = 10 * gameData.treeLevel;
+        while (gameData.treeExperience >= requiredExp) {
+            gameData.treeExperience -= requiredExp;
+            gameData.treeLevel++;
+        }
+    }
 
     const miningActions = Math.floor(offlineTime / 300);
     if (miningActions > 0) {
         const block = gameData.blocks[gameData.currentBlockIndex];
         const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
         let remainingHp = gameData.currentHp;
-
+        const usageMult = calculateEnergyUsageBonus();
         for (let i = 0; i < miningActions; i++) {
             const totalDamage = calculateTotalDamage();
             remainingHp -= totalDamage;
             gameData.digCount++;
-            gameData.usageBonus += pickaxe.usage;
+            gameData.usageBonus += pickaxe.usage * usageMult;
             if (remainingHp <= 0) {
                 const earnedCoins = block.coins * pickaxe.coins;
                 gameData.coins += earnedCoins;
@@ -1008,13 +714,9 @@ function processOfflineMining() {
                 gameData.blocksMined++;
                 if (block.drop) {
                     if (block.dropChance) {
-                        if (Math.random() * 100 <= block.dropChance) {
-                            const dropAmount = block.dropAmount || 1;
-                            gameData[block.drop] += dropAmount;
-                        }
+                        if (Math.random() * 100 <= block.dropChance) gameData[block.drop] += (block.dropAmount || 1);
                     } else {
-                        const dropAmount = block.dropAmount || 1;
-                        gameData[block.drop] += dropAmount;
+                        gameData[block.drop] += (block.dropAmount || 1);
                     }
                 }
                 remainingHp = block.hp;
@@ -1023,119 +725,27 @@ function processOfflineMining() {
         }
         gameData.currentHp = remainingHp;
         levelUp();
-
         checkAutoExchange();
-
-        const offlineGains = {
-            coins: gameData.coins - beforeOffline.coins,
-            experience: gameData.experience - beforeOffline.experience,
-            usageBonus: gameData.usageBonus - beforeOffline.usageBonus,
-            trophies: gameData.trophies - beforeOffline.trophies,
-            level: gameData.level - beforeOffline.level,
-            digCount: gameData.digCount - beforeOffline.digCount,
-            blocksMined: gameData.blocksMined - beforeOffline.blocksMined,
-            drops: {}
-        };
-
-        Object.keys(beforeOffline).forEach(key => {
-            if (key !== 'coins' && key !== 'experience' && key !== 'usageBonus' && key !== 'trophies' && key !== 'level' && key !== 'digCount' && key !== 'blocksMined') {
-                const gain = gameData[key] - beforeOffline[key];
-                if (gain > 0) {
-                    offlineGains.drops[key] = gain;
-                }
-            }
-        });
-
-        showOfflineGainsPopup(offlineGains, offlineTime);
+        // 简单弹出离线收益
+        if (miningActions > 10) {
+            alert(`离线收益：\n金币 +${formatNumber(gameData.coins - beforeOffline.coins)}\n经验 +${formatNumber(gameData.experience - beforeOffline.experience)}\n能量 +${formatNumber(gameData.energy - beforeOffline.energy)}`);
+        }
     }
-
     gameData.lastOnlineTime = now;
     gameData.startTime = now;
 }
 
-// 显示离线收益弹窗
-function showOfflineGainsPopup(gains, offlineTime) {
-    const popup = document.createElement('div');
-    popup.style.cssText = `
-        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.9); color: white; padding: 20px; border-radius: 10px;
-        z-index: 1000; max-width: 400px; max-height: 80vh; overflow-y: auto; font-family: Arial, sans-serif;
-    `;
-
-    const hours = Math.floor(offlineTime / (1000 * 60 * 60));
-    const minutes = Math.floor((offlineTime % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((offlineTime % (1000 * 60)) / 1000);
-    let offlineTimeStr = '';
-    if (hours > 0) offlineTimeStr += `${hours}小时`;
-    if (minutes > 0) offlineTimeStr += `${minutes}分钟`;
-    if (seconds > 0) offlineTimeStr += `${seconds}秒`;
-    if (offlineTimeStr === '') offlineTimeStr = '0秒';
-
-    popup.innerHTML = `<h2 style="margin-top: 0; text-align: center;">离线收益</h2><p style="text-align: center; color: #aaa; margin-bottom: 20px;">离线时间: ${offlineTimeStr}</p><div style="display: grid; gap: 10px;">`;
-
-    if (gains.coins > 0) popup.innerHTML += `<div style="display: flex; justify-content: space-between;"><span>金币:</span><span style="color: gold;">+${formatNumber(gains.coins)}</span></div>`;
-    if (gains.experience > 0) popup.innerHTML += `<div style="display: flex; justify-content: space-between;"><span>经验:</span><span style="color: #5cdb95;">+${formatNumber(gains.experience)}</span></div>`;
-    if (gains.usageBonus > 0) popup.innerHTML += `<div style="display: flex; justify-content: space-between;"><span>使用增益:</span><span style="color: #379683;">+${formatNumber(gains.usageBonus)}</span></div>`;
-    if (gains.trophies > 0) popup.innerHTML += `<div style="display: flex; justify-content: space-between;"><span>奖杯:</span><span style="color: #edf5e1;">+${formatNumber(gains.trophies)}</span></div>`;
-    if (gains.level > 0) popup.innerHTML += `<div style="display: flex; justify-content: space-between;"><span>等级提升:</span><span style="color: #8ee4af;">+${gains.level}</span></div>`;
-    if (gains.digCount > 0) popup.innerHTML += `<div style="display: flex; justify-content: space-between;"><span>挖掘次数:</span><span style="color: #659dbd;">+${formatNumber(gains.digCount)}</span></div>`;
-    if (gains.blocksMined > 0) popup.innerHTML += `<div style="display: flex; justify-content: space-between;"><span>挖掉方块:</span><span style="color: #daad86;">+${formatNumber(gains.blocksMined)}</span></div>`;
-
-    if (Object.keys(gains.drops).length > 0) {
-        popup.innerHTML += `<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #333;"><h3 style="margin-top: 0; margin-bottom: 10px;">掉落物品:</h3>`;
-        Object.entries(gains.drops).forEach(([drop, amount]) => {
-            let dropName = drop;
-            switch (drop) {
-                case 'amethyst': dropName = '紫水晶'; break;
-                case 'copperIngot': dropName = '铜锭'; break;
-                case 'blueObsidianFragment': dropName = '蓝曜石碎片'; break;
-                case 'redObsidianFragment': dropName = '红曜石碎片'; break;
-                case 'redBlueCrystal': dropName = '红蓝结晶'; break;
-                case 'bedrockFragment': dropName = '基岩碎片'; break;
-                case 'obsidian': dropName = '黑曜石'; break;
-                case 'netherStar': dropName = '下界之星'; break;
-                case 'glass': dropName = '玻璃'; break;
-                case 'kunKun': dropName = '坤坤'; break;
-                case 'earthCore': dropName = '土核心'; break;
-                case 'woodCore': dropName = '木核心'; break;
-                case 'fireCube': dropName = '火立方'; break;
-                case 'waterCube': dropName = '水立方'; break;
-                case 'goldCube': dropName = '金立方'; break;
-                case 'fiveElementCrystal': dropName = '五行结晶'; break;
-                case 'jingCore': dropName = '京核'; break;
-            }
-            popup.innerHTML += `<div style="display: flex; justify-content: space-between; margin-left: 10px;"><span>${dropName}:</span><span style="color: #fbeec1;">+${amount}</span></div>`;
-        });
-        popup.innerHTML += `</div>`;
-    }
-
-    popup.innerHTML += `</div><div style="text-align: center; margin-top: 20px;"><button onclick="this.parentElement.parentElement.remove()" style="padding: 10px 20px; background: #444; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">确定</button></div>`;
-    document.body.appendChild(popup);
-}
-
-// 更新在线时间
 function updatePlaytime() {
-    const now = Date.now();
-    const seconds = Math.floor((now - gameData.originalStartTime) / 1000);
-    const years = Math.floor(seconds / 31536000);
-    const days = Math.floor((seconds % 31536000) / 86400);
-    const hours = Math.floor((seconds % 86400) / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    elements.playtime.innerHTML = `${years}年${days}日${hours}时${minutes}分${secs}秒<br>合计${seconds}秒`;
+    const seconds = Math.floor((Date.now() - gameData.originalStartTime) / 1000);
+    elements.playtime.innerHTML = `${Math.floor(seconds/31536000)}年${Math.floor((seconds%31536000)/86400)}日${Math.floor((seconds%86400)/3600)}时${Math.floor((seconds%3600)/60)}分${seconds%60}秒<br>合计${seconds}秒`;
 }
 
-// 初始化商店
 function initShop() {
     elements.shopItems.innerHTML = '';
-    if (!elements.shopItems) return;
-
     gameData.pickaxes.forEach((pickaxe, index) => {
         const shopItem = document.createElement('div');
         shopItem.className = 'shop-item';
-        let buyButtonHtml = '';
-        let recipeHtml = '';
-
+        let buyButtonHtml = '', recipeHtml = '';
         if (pickaxe.isCraftable) {
             let recipeDesc = '合成材料：';
             for (const [material, required] of Object.entries(pickaxe.recipe)) {
@@ -1152,43 +762,18 @@ function initShop() {
             recipeHtml = `<div class="recipe-desc">${recipeDesc}</div>`;
             buyButtonHtml = `<button class="buy-btn craft-btn" data-index="${index}">合成</button>`;
         } else {
-            const currencyName = {
-                'trophies': '奖杯',
-                'amethyst': '紫水晶',
-                'copperIngot': '铜锭'
-            }[pickaxe.currency || 'trophies'];
+            const currencyName = { 'trophies': '奖杯', 'amethyst': '紫水晶', 'copperIngot': '铜锭' }[pickaxe.currency || 'trophies'];
             buyButtonHtml = `<button class="buy-btn" data-index="${index}">购买 (${pickaxe.price}${currencyName})</button>`;
         }
-
-        let useButtonHtml = '';
-        if (pickaxe.type !== 'item') {
-            useButtonHtml = `<button class="use-btn" data-index="${index}">使用</button>`;
-        }
-
-        shopItem.innerHTML = `
-            <div class="shop-item-info">
-                <h4>${pickaxe.name}</h4>
-                <span class="shop-item-count">数量: ${pickaxe.count}</span>
-            </div>
-            <div class="shop-buttons">
-                ${recipeHtml}${buyButtonHtml}
-                ${useButtonHtml}
-            </div>
-        `;
+        let useButtonHtml = pickaxe.type !== 'item' ? `<button class="use-btn" data-index="${index}">使用</button>` : '';
+        shopItem.innerHTML = `<div class="shop-item-info"><h4>${pickaxe.name}</h4><span class="shop-item-count">数量: ${pickaxe.count}</span></div><div class="shop-buttons">${recipeHtml}${buyButtonHtml}${useButtonHtml}</div>`;
         elements.shopItems.appendChild(shopItem);
     });
-
-    document.querySelectorAll('.buy-btn').forEach(btn => {
-        btn.addEventListener('click', buyPickaxe);
-    });
-    document.querySelectorAll('.use-btn').forEach(btn => {
-        btn.addEventListener('click', usePickaxe);
-    });
-
+    document.querySelectorAll('.buy-btn').forEach(btn => btn.addEventListener('click', buyPickaxe));
+    document.querySelectorAll('.use-btn').forEach(btn => btn.addEventListener('click', usePickaxe));
     updateShopButtons();
 }
 
-// 更新商店按钮状态
 function updateShopButtons() {
     document.querySelectorAll('.buy-btn').forEach((btn, index) => {
         const pickaxe = gameData.pickaxes[index];
@@ -1196,39 +781,38 @@ function updateShopButtons() {
             let canCraft = true;
             for (const [material, required] of Object.entries(pickaxe.recipe)) {
                 switch (material) {
-                    case '黑曜石镐': if (gameData.pickaxes[10].count < required) { canCraft = false; } break;
-                    case '紫水晶镐VI': if (gameData.pickaxes[16].count < required) { canCraft = false; } break;
-                    case '铜镐VI': if (gameData.pickaxes[22].count < required) { canCraft = false; } break;
-                    case '蓝曜石碎片': if (gameData.blueObsidianFragment < required) { canCraft = false; } break;
-                    case '红曜石碎片': if (gameData.redObsidianFragment < required) { canCraft = false; } break;
-                    case '蓝曜石镐': if (gameData.pickaxes[23].count < required) { canCraft = false; } break;
-                    case '红曜石镐': if (gameData.pickaxes[24].count < required) { canCraft = false; } break;
-                    case '红蓝结晶': if (gameData.redBlueCrystal < required) { canCraft = false; } break;
-                    case '基岩碎片': if (gameData.bedrockFragment < required) { canCraft = false; } break;
-                    case '红蓝镐': if (gameData.pickaxes[25].count < required) { canCraft = false; } break;
-                    case '黑曜石': if (gameData.obsidian < required) { canCraft = false; } break;
-                    case '玻璃': if (gameData.glass < required) { canCraft = false; } break;
-                    case '下界之星': if (gameData.netherStar < required) { canCraft = false; } break;
-                    case '坤坤': if (gameData.kunKun < required) { canCraft = false; } break;
-                    case '基岩镐': if (gameData.pickaxes[26].count < required) { canCraft = false; } break;
-                    case '坤坤镐': if (gameData.pickaxes[27].count < required) { canCraft = false; } break;
-                    case '土核心': if (gameData.earthCore < required) { canCraft = false; } break;
-                    case '土核心镐': if (gameData.pickaxes[28].count < required) { canCraft = false; } break;
-                    case '木核心': if (gameData.woodCore < required) { canCraft = false; } break;
-                    case '木核心镐': if (gameData.pickaxes[29].count < required) { canCraft = false; } break;
-                    case '火立方镐': if (gameData.pickaxes[30].count < required) { canCraft = false; } break;
-                    case '水立方镐': if (gameData.pickaxes[31].count < required) { canCraft = false; } break;
-                    case '火立方': if (gameData.fireCube < required) { canCraft = false; } break;
-                    case '水立方': if (gameData.waterCube < required) { canCraft = false; } break;
-                    case '使用增益': if (gameData.usageBonus < required) { canCraft = false; } break;
-                    case '金立方': if (gameData.goldCube < required) { canCraft = false; } break;
-                    case '金币': if (gameData.coins < required) { canCraft = false; } break;
-                    case '金立方镐': if (gameData.pickaxes[32].count < required) { canCraft = false; } break;
-                    case '五行结晶': if (gameData.fiveElementCrystal < required) { canCraft = false; } break;
-                    case '京核': if (gameData.jingCore < required) { canCraft = false; } break;
-                    // 修复：五行镐的正确索引是 33
-                    case '五行镐': 
-                        if (gameData.pickaxes[33] && gameData.pickaxes[33].count < required) { canCraft = false; } break;
+                    case '黑曜石镐': if (gameData.pickaxes[10].count < required) canCraft = false; break;
+                    case '紫水晶镐VI': if (gameData.pickaxes[16].count < required) canCraft = false; break;
+                    case '铜镐VI': if (gameData.pickaxes[22].count < required) canCraft = false; break;
+                    case '蓝曜石碎片': if (gameData.blueObsidianFragment < required) canCraft = false; break;
+                    case '红曜石碎片': if (gameData.redObsidianFragment < required) canCraft = false; break;
+                    case '蓝曜石镐': if (gameData.pickaxes[23].count < required) canCraft = false; break;
+                    case '红曜石镐': if (gameData.pickaxes[24].count < required) canCraft = false; break;
+                    case '红蓝结晶': if (gameData.redBlueCrystal < required) canCraft = false; break;
+                    case '基岩碎片': if (gameData.bedrockFragment < required) canCraft = false; break;
+                    case '红蓝镐': if (gameData.pickaxes[25].count < required) canCraft = false; break;
+                    case '黑曜石': if (gameData.obsidian < required) canCraft = false; break;
+                    case '玻璃': if (gameData.glass < required) canCraft = false; break;
+                    case '下界之星': if (gameData.netherStar < required) canCraft = false; break;
+                    case '坤坤': if (gameData.kunKun < required) canCraft = false; break;
+                    case '基岩镐': if (gameData.pickaxes[26].count < required) canCraft = false; break;
+                    case '坤坤镐': if (gameData.pickaxes[27].count < required) canCraft = false; break;
+                    case '土核心': if (gameData.earthCore < required) canCraft = false; break;
+                    case '土核心镐': if (gameData.pickaxes[28].count < required) canCraft = false; break;
+                    case '木核心': if (gameData.woodCore < required) canCraft = false; break;
+                    case '木核心镐': if (gameData.pickaxes[29].count < required) canCraft = false; break;
+                    case '火立方镐': if (gameData.pickaxes[30].count < required) canCraft = false; break;
+                    case '水立方镐': if (gameData.pickaxes[31].count < required) canCraft = false; break;
+                    case '火立方': if (gameData.fireCube < required) canCraft = false; break;
+                    case '水立方': if (gameData.waterCube < required) canCraft = false; break;
+                    case '使用增益': if (gameData.usageBonus < required) canCraft = false; break;
+                    case '金立方': if (gameData.goldCube < required) canCraft = false; break;
+                    case '金币': if (gameData.coins < required) canCraft = false; break;
+                    case '金立方镐': if (gameData.pickaxes[32].count < required) canCraft = false; break;
+                    case '五行结晶': if (gameData.fiveElementCrystal < required) canCraft = false; break;
+                    case '京核': if (gameData.jingCore < required) canCraft = false; break;
+                    case '五行镐': if (gameData.pickaxes[33] && gameData.pickaxes[33].count < required) canCraft = false; break;
+                    case '元素晶片': if (gameData.elementChip < required) canCraft = false; break;
                     default: canCraft = false;
                 }
                 if (!canCraft) break;
@@ -1244,7 +828,6 @@ function updateShopButtons() {
     });
 }
 
-// 购买或合成镐子
 function buyPickaxe(e) {
     const index = parseInt(e.target.dataset.index);
     const pickaxe = gameData.pickaxes[index];
@@ -1252,44 +835,41 @@ function buyPickaxe(e) {
         let canCraft = true;
         for (const [material, required] of Object.entries(pickaxe.recipe)) {
             switch (material) {
-                case '黑曜石镐': if (gameData.pickaxes[10].count < required) { canCraft = false; } break;
-                case '紫水晶镐VI': if (gameData.pickaxes[16].count < required) { canCraft = false; } break;
-                case '铜镐VI': if (gameData.pickaxes[22].count < required) { canCraft = false; } break;
-                case '蓝曜石碎片': if (gameData.blueObsidianFragment < required) { canCraft = false; } break;
-                case '红曜石碎片': if (gameData.redObsidianFragment < required) { canCraft = false; } break;
-                case '蓝曜石镐': if (gameData.pickaxes[23].count < required) { canCraft = false; } break;
-                case '红曜石镐': if (gameData.pickaxes[24].count < required) { canCraft = false; } break;
-                case '红蓝结晶': if (gameData.redBlueCrystal < required) { canCraft = false; } break;
-                case '基岩碎片': if (gameData.bedrockFragment < required) { canCraft = false; } break;
-                case '红蓝镐': if (gameData.pickaxes[25].count < required) { canCraft = false; } break;
-                case '黑曜石': if (gameData.obsidian < required) { canCraft = false; } break;
-                case '玻璃': if (gameData.glass < required) { canCraft = false; } break;
-                case '下界之星': if (gameData.netherStar < required) { canCraft = false; } break;
-                case '坤坤': if (gameData.kunKun < required) { canCraft = false; } break;
-                case '基岩镐': if (gameData.pickaxes[26].count < required) { canCraft = false; } break;
-                case '坤坤镐': if (gameData.pickaxes[27].count < required) { canCraft = false; } break;
-                case '土核心': if (gameData.earthCore < required) { canCraft = false; } break;
-                case '土核心镐': if (gameData.pickaxes[28].count < required) { canCraft = false; } break;
-                case '木核心': if (gameData.woodCore < required) { canCraft = false; } break;
-                case '木核心镐': if (gameData.pickaxes[29].count < required) { canCraft = false; } break;
-                case '火立方镐': if (gameData.pickaxes[30].count < required) { canCraft = false; } break;
-                case '水立方镐': if (gameData.pickaxes[31].count < required) { canCraft = false; } break;
-                case '火立方': if (gameData.fireCube < required) { canCraft = false; } break;
-                case '水立方': if (gameData.waterCube < required) { canCraft = false; } break;
-                case '使用增益': if (gameData.usageBonus < required) { canCraft = false; } break;
-                case '金立方': if (gameData.goldCube < required) { canCraft = false; } break;
-                case '金币': if (gameData.coins < required) { canCraft = false; } break;
-                case '金立方镐': if (gameData.pickaxes[32].count < required) { canCraft = false; } break;
-                case '五行结晶': if (gameData.fiveElementCrystal < required) { canCraft = false; } break;
-                case '京核': if (gameData.jingCore < required) { canCraft = false; } break;
-                // 修复检查逻辑
-                case '五行镐': 
-                    if (gameData.pickaxes[33] && gameData.pickaxes[33].count < required) { canCraft = false; } break;
+                case '黑曜石镐': if (gameData.pickaxes[10].count < required) canCraft = false; break;
+                case '紫水晶镐VI': if (gameData.pickaxes[16].count < required) canCraft = false; break;
+                case '铜镐VI': if (gameData.pickaxes[22].count < required) canCraft = false; break;
+                case '蓝曜石碎片': if (gameData.blueObsidianFragment < required) canCraft = false; break;
+                case '红曜石碎片': if (gameData.redObsidianFragment < required) canCraft = false; break;
+                case '蓝曜石镐': if (gameData.pickaxes[23].count < required) canCraft = false; break;
+                case '红曜石镐': if (gameData.pickaxes[24].count < required) canCraft = false; break;
+                case '红蓝结晶': if (gameData.redBlueCrystal < required) canCraft = false; break;
+                case '基岩碎片': if (gameData.bedrockFragment < required) canCraft = false; break;
+                case '红蓝镐': if (gameData.pickaxes[25].count < required) canCraft = false; break;
+                case '黑曜石': if (gameData.obsidian < required) canCraft = false; break;
+                case '玻璃': if (gameData.glass < required) canCraft = false; break;
+                case '下界之星': if (gameData.netherStar < required) canCraft = false; break;
+                case '坤坤': if (gameData.kunKun < required) canCraft = false; break;
+                case '基岩镐': if (gameData.pickaxes[26].count < required) canCraft = false; break;
+                case '坤坤镐': if (gameData.pickaxes[27].count < required) canCraft = false; break;
+                case '土核心': if (gameData.earthCore < required) canCraft = false; break;
+                case '土核心镐': if (gameData.pickaxes[28].count < required) canCraft = false; break;
+                case '木核心': if (gameData.woodCore < required) canCraft = false; break;
+                case '木核心镐': if (gameData.pickaxes[29].count < required) canCraft = false; break;
+                case '火立方镐': if (gameData.pickaxes[30].count < required) canCraft = false; break;
+                case '水立方镐': if (gameData.pickaxes[31].count < required) canCraft = false; break;
+                case '火立方': if (gameData.fireCube < required) canCraft = false; break;
+                case '水立方': if (gameData.waterCube < required) canCraft = false; break;
+                case '使用增益': if (gameData.usageBonus < required) canCraft = false; break;
+                case '金立方': if (gameData.goldCube < required) canCraft = false; break;
+                case '金币': if (gameData.coins < required) canCraft = false; break;
+                case '金立方镐': if (gameData.pickaxes[32].count < required) canCraft = false; break;
+                case '五行结晶': if (gameData.fiveElementCrystal < required) canCraft = false; break;
+                case '京核': if (gameData.jingCore < required) canCraft = false; break;
+                case '五行镐': if (gameData.pickaxes[33] && gameData.pickaxes[33].count < required) canCraft = false; break;
+                case '元素晶片': if (gameData.elementChip < required) canCraft = false; break;
             }
         }
-        
         if (canCraft) {
-            // 扣除合成材料
             for (const [material, required] of Object.entries(pickaxe.recipe)) {
                 switch (material) {
                     case '黑曜石镐': gameData.pickaxes[10].count -= required; break;
@@ -1322,20 +902,12 @@ function buyPickaxe(e) {
                     case '金立方镐': gameData.pickaxes[32].count -= required; break;
                     case '五行结晶': gameData.fiveElementCrystal -= required; break;
                     case '京核': gameData.jingCore -= required; break;
-                    // 修复扣除逻辑
-                    case '五行镐': 
-                        if (gameData.pickaxes[33]) {
-                            gameData.pickaxes[33].count -= required;
-                        } break;
+                    case '五行镐': if (gameData.pickaxes[33]) gameData.pickaxes[33].count -= required; break;
+                    case '元素晶片': gameData.elementChip -= required; break;
                 }
             }
             pickaxe.count++;
-            
-            // 修复信标数量同步问题
-            if (pickaxe.name === '信标') {
-                gameData.beacon = pickaxe.count;
-            }
-            
+            if (pickaxe.name === '信标') gameData.beacon = pickaxe.count;
             initShop();
             updateStats();
         }
@@ -1350,7 +922,6 @@ function buyPickaxe(e) {
     }
 }
 
-// 使用镐子
 function usePickaxe(e) {
     const index = parseInt(e.target.dataset.index);
     if (gameData.pickaxes[index].count > 0) {
@@ -1360,16 +931,11 @@ function usePickaxe(e) {
     }
 }
 
-// 键盘控制
 function handleKeyDown(e) {
-    if (e.key === '>') {
-        changeBlock(1);
-    } else if (e.key === '<') {
-        changeBlock(-1);
-    }
+    if (e.key === '>') changeBlock(1);
+    else if (e.key === '<') changeBlock(-1);
 }
 
-// 初始化游戏
 function initGame() {
     loadGame();
     elements.prevBlock.addEventListener('click', () => changeBlock(-1));
@@ -1380,6 +946,8 @@ function initGame() {
     elements.exchangeBtn.addEventListener('click', exchangeTrophies);
     elements.redeemBtn.addEventListener('click', redeemCode);
     elements.craftBeaconBtn.addEventListener('click', craftAllBeacons);
+    elements.activateResearchBtn.addEventListener('click', activateResearchInstitute);
+    elements.upgradeEnergyBtn.addEventListener('click', upgradeEnergyProduction);
 
     elements.autoExchangeBtn.textContent = `自动兑换: ${gameData.autoExchange ? '开启' : '关闭'}`;
     elements.autoExchangeBtn.classList.toggle('active', gameData.autoExchange);
@@ -1387,7 +955,7 @@ function initGame() {
 
     elements.sqrtPower.addEventListener('change', () => {
         const value = parseInt(elements.sqrtPower.value);
-        if (value === 1 || value === 2 || value === 3) {
+        if (value >= 1 && value <= 3) {
             gameData.sqrtPower = value;
             const currentBlocks = getCurrentSqrtZoneBlocks();
             if (currentBlocks.length > 0) {
@@ -1409,7 +977,6 @@ function initGame() {
         updateBlockDisplay();
     }
 
-    // 恢复调试模式状态并绑定输入事件
     toggleDebugMode(gameData.debugEnabled);
     setupDebugInputs();
 
@@ -1431,14 +998,22 @@ function initGame() {
 
     setInterval(() => {
         levelUp();
+        if (gameData.researchInstituteActive) {
+            gameData.energy += gameData.energyProductionSpeed;
+            const expGain = Math.pow(gameData.energy, 0.55);
+            gameData.treeExperience += expGain;
+            const requiredExp = 10 * gameData.treeLevel;
+            while (gameData.treeExperience >= requiredExp) {
+                gameData.treeExperience -= requiredExp;
+                gameData.treeLevel++;
+            }
+        }
         updateStats();
     }, 1000);
 
     setInterval(updatePlaytime, 1000);
     updatePlaytime();
-
     setInterval(saveGame, 5000);
 }
 
-// 启动游戏
 initGame();
