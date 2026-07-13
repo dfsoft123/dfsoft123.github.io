@@ -330,7 +330,7 @@ function calculateTimeBonus() {
         return 1;
     }
     const timeRatio = seconds / baseTime;
-    return Math.log(timeRatio) / Math.log(16);
+    return Math.log(timeRatio) / Math.log(8);
 }
 
 // 计算浇树增益
