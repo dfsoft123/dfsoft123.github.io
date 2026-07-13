@@ -127,7 +127,7 @@ const gameData = {
     lastOnlineTime: Date.now(),
     currentHp: 100,
     sqrtPower: 1, // 开方次，1、2或3
-    consoleEnabled: false // 控制台开关
+    debugEnabled: false // 调试模式开关
 };
 
 // DOM元素
@@ -192,13 +192,13 @@ const elements = {
     digCount: document.getElementById('dig-count'),
     blocksMined: document.getElementById('blocks-mined'),
     shopItems: document.getElementById('shop-items'),
-    // 兑换码与控制台元素
+    // 兑换码与调试面板元素
     redeemInput: document.getElementById('redeem-input'),
     redeemBtn: document.getElementById('redeem-btn'),
-    consolePanel: document.getElementById('console-panel'),
-    consoleAttr: document.getElementById('console-attr'),
-    consoleVal: document.getElementById('console-val'),
-    consoleApplyBtn: document.getElementById('console-apply-btn')
+    debugPanel: document.getElementById('debug-panel'),
+    debugAttr: document.getElementById('debug-attr'),
+    debugVal: document.getElementById('debug-val'),
+    debugApplyBtn: document.getElementById('debug-apply-btn')
 };
 
 // 单位格式化
@@ -338,7 +338,7 @@ function calculateTreeBonus() {
     return Math.pow(gameData.treeLevel, 0.4);
 }
 
-// 计算总伤害 (加入specialBonus)
+// 计算总伤害
 function calculateTotalDamage() {
     const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
     const levelBonus = Math.pow(gameData.level, 0.5);
@@ -347,7 +347,6 @@ function calculateTotalDamage() {
     const timeBonus = calculateTimeBonus();
     const treeBonus = calculateTreeBonus();
     const bonusProduct = pickaxe.damage * gameData.usageBonus * levelBonus * trophyBonus;
-    // specialBonus 作为外部乘数不参与开方
     return Math.pow(bonusProduct, 1 / gameData.sqrtPower) * beaconBonus * timeBonus * treeBonus * gameData.specialBonus;
 }
 
@@ -597,7 +596,6 @@ function updateStats() {
     elements.timeBonus.textContent = formatNumber(timeBonus) + 'x';
     elements.timeBonus.style.color = '#2ecc71';
 
-    // 新增特殊增益显示
     elements.specialBonus.textContent = formatNumber(gameData.specialBonus) + 'x';
     elements.specialBonus.style.color = '#2ecc71';
 
@@ -648,10 +646,10 @@ function redeemCode() {
         gameData.specialBonus = 7.8;
         alert('兑换成功！特殊增益变为 7.8');
         success = true;
-    } else if (code === 'dfsoft123控制台开关6767') {
-        gameData.consoleEnabled = true;
-        elements.consolePanel.style.display = 'block';
-        alert('开发者控制台已开启！');
+    } else if (code === 'dfsoft6767调试模式') {
+        gameData.debugEnabled = true;
+        elements.debugPanel.style.display = 'block';
+        alert('调试模式已开启！可修改核心和伤害属性。');
         success = true;
     } else {
         alert('无效的兑换码！');
@@ -664,11 +662,12 @@ function redeemCode() {
     }
 }
 
-// 控制台属性修改逻辑
-function applyConsoleChange() {
-    const attr = elements.consoleAttr.value.trim();
-    const val = elements.consoleVal.value.trim();
+// 调试模式属性修改逻辑
+function applyDebugChange() {
+    const attr = elements.debugAttr.value.trim();
+    const val = elements.debugVal.value.trim();
     if (attr && val !== '') {
+        // 检查是否是 gameData 的直接属性（包含核心属性和伤害属性等）
         if (gameData.hasOwnProperty(attr)) {
             let numVal = parseFloat(val);
             if (!isNaN(numVal)) {
@@ -715,8 +714,8 @@ function saveGame() {
         level: gameData.level,
         experience: gameData.experience,
         usageBonus: gameData.usageBonus,
-        specialBonus: gameData.specialBonus, // 保存特殊增益
-        consoleEnabled: gameData.consoleEnabled, // 保存控制台状态
+        specialBonus: gameData.specialBonus,
+        debugEnabled: gameData.debugEnabled,
         digCount: gameData.digCount,
         blocksMined: gameData.blocksMined,
         treeLevel: gameData.treeLevel,
@@ -771,8 +770,8 @@ function loadGame() {
                 level: gameState.level,
                 experience: gameState.experience,
                 usageBonus: gameState.usageBonus,
-                specialBonus: gameState.specialBonus || 1, // 读取特殊增益
-                consoleEnabled: gameState.consoleEnabled || false, // 读取控制台状态
+                specialBonus: gameState.specialBonus || 1,
+                debugEnabled: gameState.debugEnabled || false,
                 digCount: gameState.digCount,
                 blocksMined: gameState.blocksMined,
                 treeLevel: gameState.treeLevel || 1,
@@ -1279,7 +1278,7 @@ function initGame() {
     elements.autoExchangeThreshold.addEventListener('change', updateAutoExchangeThreshold);
     elements.exchangeBtn.addEventListener('click', exchangeTrophies);
     elements.redeemBtn.addEventListener('click', redeemCode);
-    elements.consoleApplyBtn.addEventListener('click', applyConsoleChange);
+    elements.debugApplyBtn.addEventListener('click', applyDebugChange);
 
     elements.autoExchangeBtn.textContent = `自动兑换: ${gameData.autoExchange ? '开启' : '关闭'}`;
     elements.autoExchangeBtn.classList.toggle('active', gameData.autoExchange);
@@ -1309,9 +1308,9 @@ function initGame() {
         updateBlockDisplay();
     }
 
-    // 控制台状态恢复
-    if (gameData.consoleEnabled) {
-        elements.consolePanel.style.display = 'block';
+    // 调试模式状态恢复
+    if (gameData.debugEnabled) {
+        elements.debugPanel.style.display = 'block';
     }
 
     elements.blockDisplay.addEventListener('mousedown', startLongPress);
