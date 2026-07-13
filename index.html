@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>深渊挖矿 - Abyss Miner</title>
+    <title>挖矿游戏</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="bg-overlay"></div>
+    <div class="bg-effects">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
     <div class="game-container">
         <div class="game-main-content">
             <!-- 左侧区域 -->
@@ -18,13 +23,14 @@
                 <!-- 方块显示区域 -->
                 <div class="panel block-area">
                     <div class="block-controls">
-                        <button id="prev-block" class="block-nav-btn">&lang;</button>
+                        <button id="prev-block" class="nav-btn">&lang;</button>
                         <h2 id="block-name">土块I</h2>
-                        <button id="next-block" class="block-nav-btn">&rang;</button>
+                        <button id="next-block" class="nav-btn">&rang;</button>
                     </div>
                     <div class="block-display" id="block-display">
-                        <div class="block-rune-circle"></div>
+                        <div class="rune-circle"></div>
                         <div class="block" id="block">
+                            <div class="block-inner-glow"></div>
                             <div class="block-content">
                                 <div class="block-hp-text">
                                     <span id="current-hp">100</span> / <span id="max-hp">100</span>
@@ -41,12 +47,12 @@
                 
                 <!-- 按钮区域 -->
                 <div class="buttons-container">
-                    <button class="action-btn auto-mine-btn" id="auto-mine-btn">
-                        <span class="btn-icon">⛏</span> 自动挖矿: 关闭
+                    <button class="btn btn-cyan auto-mine-btn" id="auto-mine-btn">
+                        <span class="btn-icon">⚙</span> 自动挖矿: 关闭
                     </button>
                     
-                    <div class="auto-exchange-container glass-input-group">
-                        <button class="action-btn auto-exchange-btn" id="auto-exchange-btn">
+                    <div class="auto-exchange-container">
+                        <button class="btn btn-gold auto-exchange-btn" id="auto-exchange-btn">
                             <span class="btn-icon">⟳</span> 自动兑换: 关闭
                         </button>
                         <div class="threshold-input">
@@ -55,7 +61,7 @@
                         </div>
                     </div>
                     
-                    <button class="action-btn exchange-btn" id="exchange-btn">
+                    <button class="btn btn-gold exchange-btn" id="exchange-btn">
                         <span class="btn-icon">🏆</span> 兑换奖杯
                     </button>
                 </div>
@@ -63,163 +69,126 @@
                 <!-- 基本属性 -->
                 <div class="panel basic-stats-area">
                     <h3 class="panel-title">核心属性</h3>
-                    <div class="basic-stats-grid">
-                        <div class="stat-item level-item">
-                            <span class="stat-label">等级</span>
-                            <span class="stat-value" id="level">1</span>
+                    <div class="basic-stats">
+                        <!-- 修复等级条位置：等级、经验条、经验上下排列 -->
+                        <div class="level-exp-block">
+                            <div class="level-info-row">
+                                <div class="stat-block">
+                                    <span class="stat-label">等级</span>
+                                    <span class="stat-value" id="level">1</span>
+                                </div>
+                                <div class="stat-block">
+                                    <span class="stat-label">经验</span>
+                                    <span class="stat-value" id="experience">0</span>
+                                </div>
+                                <div class="stat-block">
+                                    <span class="stat-label">金币</span>
+                                    <span class="stat-value" id="coins">0</span>
+                                </div>
+                                <div class="stat-block">
+                                    <span class="stat-label">奖杯</span>
+                                    <span class="stat-value" id="trophies">0</span>
+                                </div>
+                            </div>
+                            <div class="exp-bar-container">
+                                <div class="exp-bar" id="exp-bar"></div>
+                            </div>
                         </div>
-                        <div class="stat-item">
-                            <span class="stat-label">经验</span>
-                            <span class="stat-value" id="experience">0</span>
+
+                        <!-- 材料属性网格 -->
+                        <div class="materials-grid">
+                            <div class="mat-item"><span>紫水晶:</span> <span id="amethyst">0</span></div>
+                            <div class="mat-item"><span>铜锭:</span> <span id="copper-ingot">0</span></div>
+                            <div class="mat-item"><span>蓝曜碎片:</span> <span id="blue-obsidian-fragment">0</span></div>
+                            <div class="mat-item"><span>红曜碎片:</span> <span id="red-obsidian-fragment">0</span></div>
+                            <div class="mat-item"><span>红蓝结晶:</span> <span id="red-blue-crystal">0</span></div>
+                            <div class="mat-item"><span>基岩碎片:</span> <span id="bedrock-fragment">0</span></div>
+                            <div class="mat-item"><span>黑曜石:</span> <span id="obsidian">0</span></div>
+                            <div class="mat-item"><span>下界之星:</span> <span id="nether-star">0</span></div>
+                            <div class="mat-item"><span>玻璃:</span> <span id="glass">0</span></div>
+                            <div class="mat-item rare"><span>坤坤:</span> <span id="kun-kun">0</span></div>
+                            <div class="mat-item"><span>土核心:</span> <span id="earth-core">0</span></div>
+                            <div class="mat-item"><span>木核心:</span> <span id="wood-core">0</span></div>
+                            <div class="mat-item"><span>火立方:</span> <span id="fire-cube">0</span></div>
+                            <div class="mat-item"><span>水立方:</span> <span id="water-cube">0</span></div>
+                            <div class="mat-item"><span>金立方:</span> <span id="gold-cube">0</span></div>
+                            <div class="mat-item"><span>五行结晶:</span> <span id="five-element-crystal">0</span></div>
+                            <div class="mat-item rare"><span>京核:</span> <span id="jing-core">0</span></div>
                         </div>
-                        <div class="stat-item currency-gold">
-                            <span class="stat-label">金币</span>
-                            <span class="stat-value" id="coins">0</span>
+                        
+                        <div class="sqrt-control">
+                            <label for="sqrt-power">开方次:</label>
+                            <input type="number" id="sqrt-power" value="1" min="1" max="3" step="1">
                         </div>
-                        <div class="stat-item currency-trophy">
-                            <span class="stat-label">奖杯</span>
-                            <span class="stat-value" id="trophies">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">紫水晶</span>
-                            <span class="stat-value" id="amethyst">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">铜锭</span>
-                            <span class="stat-value" id="copper-ingot">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">蓝曜碎片</span>
-                            <span class="stat-value" id="blue-obsidian-fragment">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">红曜碎片</span>
-                            <span class="stat-value" id="red-obsidian-fragment">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">红蓝结晶</span>
-                            <span class="stat-value" id="red-blue-crystal">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">基岩碎片</span>
-                            <span class="stat-value" id="bedrock-fragment">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">黑曜石</span>
-                            <span class="stat-value" id="obsidian">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">下界之星</span>
-                            <span class="stat-value" id="nether-star">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">玻璃</span>
-                            <span class="stat-value" id="glass">0</span>
-                        </div>
-                        <div class="stat-item special-item">
-                            <span class="stat-label">坤坤</span>
-                            <span class="stat-value" id="kun-kun">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">土核心</span>
-                            <span class="stat-value" id="earth-core">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">木核心</span>
-                            <span class="stat-value" id="wood-core">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">火立方</span>
-                            <span class="stat-value" id="fire-cube">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">水立方</span>
-                            <span class="stat-value" id="water-cube">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">金立方</span>
-                            <span class="stat-value" id="gold-cube">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">五行结晶</span>
-                            <span class="stat-value" id="five-element-crystal">0</span>
-                        </div>
-                        <div class="stat-item special-item">
-                            <span class="stat-label">京核</span>
-                            <span class="stat-value" id="jing-core">0</span>
-                        </div>
-                    </div>
-                    <div class="exp-bar-container">
-                        <div class="exp-bar" id="exp-bar"></div>
-                    </div>
-                    <div class="sqrt-control">
-                        <label for="sqrt-power">开方次:</label>
-                        <input type="number" id="sqrt-power" value="1" min="1" max="3" step="1">
                     </div>
                 </div>
             </div>
             
             <!-- 右侧区域 -->
             <div class="right-content">
+                <!-- 镐子属性 -->
                 <div class="panel stats-section">
                     <h3 class="panel-title">当前镐子</h3>
                     <div class="current-pickaxe">
                         <p id="pickaxe-name">木镐</p>
                         <div class="pickaxe-properties">
                             <div class="prop-item">
-                                <span>伤害</span>
-                                <span id="pickaxe-damage-value">1.00x</span>
+                                <span class="prop-label">伤害</span>
+                                <span class="prop-value" id="pickaxe-damage-value">1.00x</span>
                             </div>
                             <div class="prop-item">
-                                <span>使用</span>
-                                <span id="pickaxe-usage-value">0.01x</span>
+                                <span class="prop-label">使用</span>
+                                <span class="prop-value" id="pickaxe-usage-value">0.01x</span>
                             </div>
                             <div class="prop-item">
-                                <span>金币</span>
-                                <span id="pickaxe-coins-value">1.00x</span>
+                                <span class="prop-label">金币</span>
+                                <span class="prop-value" id="pickaxe-coins-value">1.00x</span>
                             </div>
                         </div>
                     </div>
                 </div>
                 
+                <!-- 伤害属性 -->
                 <div class="panel stats-section">
                     <h3 class="panel-title">伤害属性</h3>
                     <div class="damage-stats">
-                        <div class="dmg-row"><span>镐子增益</span> <span id="pickaxe-damage">1.00x</span></div>
-                        <div class="dmg-row"><span>使用增益</span> <span id="usage-bonus">1.00x</span></div>
-                        <div class="dmg-row"><span>等级增益</span> <span id="level-bonus">1.00x</span></div>
-                        <div class="dmg-row"><span>奖杯增益</span> <span id="trophy-bonus">1.00x</span></div>
-                        <div class="dmg-row"><span>信标增益</span> <span id="beacon-bonus">1.00x</span></div>
-                        <div class="dmg-row"><span>浇树增益</span> <span id="tree-bonus">1.00x</span></div>
-                        <div class="dmg-row"><span>时间增益</span> <span id="time-bonus">1.00x</span></div>
+                        <div class="dmg-row"><span>镐子增益</span> <span class="dmg-val" id="pickaxe-damage">1.00x</span></div>
+                        <div class="dmg-row"><span>使用增益</span> <span class="dmg-val" id="usage-bonus">1.00x</span></div>
+                        <div class="dmg-row"><span>等级增益</span> <span class="dmg-val" id="level-bonus">1.00x</span></div>
+                        <div class="dmg-row"><span>奖杯增益</span> <span class="dmg-val" id="trophy-bonus">1.00x</span></div>
+                        <div class="dmg-row"><span>信标增益</span> <span class="dmg-val" id="beacon-bonus">1.00x</span></div>
+                        <div class="dmg-row green"><span>浇树增益</span> <span class="dmg-val" id="tree-bonus">1.00x</span></div>
+                        <div class="dmg-row green"><span>时间增益</span> <span class="dmg-val" id="time-bonus">1.00x</span></div>
                         <div class="dmg-row total-damage">
-                            <span>总伤害</span> <span id="total-damage">1.00x</span>
+                            <span>总伤害</span> <span class="dmg-val" id="total-damage">1.00x</span>
                         </div>
                     </div>
                 </div>
                 
+                <!-- 统计数据 -->
                 <div class="panel stats-section">
                     <h3 class="panel-title">统计数据</h3>
                     <div class="game-stats">
-                        <div class="dmg-row"><span>总在线时间</span> <span id="playtime">0秒</span></div>
-                        <div class="dmg-row"><span>挖掘次数</span> <span id="dig-count">0</span></div>
-                        <div class="dmg-row"><span>挖掉方块</span> <span id="blocks-mined">0</span></div>
-                        <p class="green-note">绿色增益表示不被开方的增益</p>
+                        <div class="dmg-row"><span>总在线时间</span> <span class="dmg-val" id="playtime">0秒</span></div>
+                        <div class="dmg-row"><span>挖掘次数</span> <span class="dmg-val" id="dig-count">0</span></div>
+                        <div class="dmg-row"><span>挖掉方块</span> <span class="dmg-val" id="blocks-mined">0</span></div>
+                        <p class="green-note">注: 绿色增益表示不被开方的增益</p>
                     </div>
                 </div>
-
+                
+                <!-- 浇树功能 -->
                 <div class="panel stats-section tree-watering">
                     <h3 class="panel-title">浇树系统</h3>
                     <div class="tree-info">
-                        <p>树等级: <span id="tree-level" class="stat-value">1</span></p>
+                        <div class="dmg-row"><span>树等级</span> <span class="dmg-val" id="tree-level">1</span></div>
                         <div class="tree-progress-container">
                             <div class="tree-progress-bar" id="tree-progress-bar"></div>
                         </div>
-                        <p>浇树经验: <span id="tree-experience" class="stat-value">0</span> / <span id="tree-experience-required" class="stat-value">10</span></p>
+                        <div class="dmg-row"><span>浇树经验</span> <span class="dmg-val"><span id="tree-experience">0</span> / <span id="tree-experience-required">10</span></span></div>
                     </div>
                     <div class="tree-buttons">
-                        <button id="water-tree-btn" class="action-btn tree-btn">浇水 (消耗1水立方)</button>
-                        <button id="auto-water-tree-btn" class="action-btn tree-btn auto">一键浇树</button>
+                        <button id="water-tree-btn" class="btn btn-green tree-btn">浇水 (消耗1水立方)</button>
+                        <button id="auto-water-tree-btn" class="btn btn-cyan tree-btn auto">一键浇树</button>
                     </div>
                 </div>
             </div>
