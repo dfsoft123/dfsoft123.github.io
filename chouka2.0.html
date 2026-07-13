@@ -34,6 +34,7 @@ body::after{
 .gold-text{background:linear-gradient(180deg,#fff7d6,#f5c842 60%,#9a6b1a);-webkit-background-clip:text;background-clip:text;color:transparent}
 .cyan-text{background:linear-gradient(180deg,#e6fdff,#00e5ff 60%,#006e7a);-webkit-background-clip:text;background-clip:text;color:transparent}
 .magenta-text{background:linear-gradient(180deg,#ffe6f3,#ff2d95 60%,#7a0f49);-webkit-background-clip:text;background-clip:text;color:transparent}
+.emerald-text{background:linear-gradient(180deg,#dcfce7,#10b981 60%,#064e3b);-webkit-background-clip:text;background-clip:text;color:transparent}
 
 /* 抽卡按钮 */
 .draw-btn{
@@ -167,6 +168,20 @@ body::after{
           <div class="flex justify-between items-center">
             <span class="text-xs text-[var(--muted)]">升级 +1 幸运</span>
             <span class="magenta-text font-bold num text-sm" id="upLuckyCost">500</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- 金币产出升级 -->
+      <div class="mb-5">
+        <div class="flex items-baseline justify-between mb-2">
+          <span class="text-sm font-bold">星辉增幅</span>
+          <span class="text-xs text-[var(--muted)]">倍率 <span class="emerald-text font-bold num" id="goldLv">1.0x</span></span>
+        </div>
+        <button class="up-btn" id="upGold" style="background:linear-gradient(180deg,rgba(16,185,129,.10),rgba(16,185,129,.02))">
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-[var(--muted)]">升级产出倍率</span>
+            <span class="emerald-text font-bold num text-sm" id="upGoldCost">1,000</span>
           </div>
         </button>
       </div>
@@ -341,6 +356,8 @@ let state = {
   multiLevel: 1,
   multiCost: 100,
   luckyCost: 500,
+  goldLevel: 1,      // 新增：金币倍率等级
+  goldCost: 1000,    // 新增：金币倍率升级花费
   cards: {},
   totalDraws: 0,
   bestTier: -1,
@@ -359,6 +376,8 @@ try {
     Object.assign(state, data);
     // 兼容旧存档
     if (!state.cutscene) state.cutscene = { t1:true, t2:true, t3:true, t4:true };
+    if (state.goldLevel === undefined) state.goldLevel = 1;
+    if (state.goldCost === undefined) state.goldCost = 1000;
     // 离线收益
     const now = Date.now();
     const offlineSec = Math.min((now - (state.lastSave||now))/1000, 86400*3);
@@ -379,7 +398,9 @@ function calcCPS(){
   for (const r of RARITIES) {
     cps += (state.cards[r.id]||0) * r.gold;
   }
-  return cps;
+  // 金币倍率：每级提升 50% (1.0x, 1.5x, 2.25x, 3.375x...)
+  const mult = Math.pow(1.5, state.goldLevel - 1);
+  return cps * mult;
 }
 
 // ============ 工具函数 ============
@@ -453,9 +474,12 @@ function renderCodex(){
 
 // ============ 渲染最新结果 ============
 let latestResults = [];
-function pushLatest(r){
-  latestResults.unshift(r);
-  if (latestResults.length > 10) latestResults.pop();
+function pushLatest(newCards){
+  // 将所有新卡推入最前
+  newCards.forEach(r => latestResults.unshift(r));
+  // 只保留最新的 10 张
+  if (latestResults.length > 10) latestResults.length = 10;
+  
   latestGrid.innerHTML = '';
   latestResults.forEach(rr => {
     const cell = document.createElement('div');
@@ -519,7 +543,9 @@ async function doDraw(){
   });
   if (bestIdx > state.bestTier) state.bestTier = bestIdx;
 
-  pushLatest(results[0]);
+  // 推入最新战利品：如果有 SP 及以上，则全部推入；否则只推入第一张作为代表
+  const highRes = results.filter(r => r.tier >= 1);
+  pushLatest(highRes.length > 0 ? highRes : [results[0]]);
   
   // 触发过场动画
   const tierKey = `t${best.tier}`;
@@ -742,8 +768,13 @@ function updateUI(){
   $('upMultiCost').textContent = formatNum(state.multiCost);
   $('upLuckyCost').textContent = formatNum(state.luckyCost);
   
+  // 金币升级状态
+  const currentGoldMult = Math.pow(1.5, state.goldLevel - 1);
+  $('goldLv').textContent = currentGoldMult.toFixed(2) + 'x';
+  $('upGoldCost').textContent = formatNum(state.goldCost);
   $('upMulti').disabled = state.coins < state.multiCost;
   $('upLucky').disabled = state.coins < state.luckyCost;
+  $('upGold').disabled = state.coins < state.goldCost;
 
   $('statTotal').textContent = formatNum(state.totalDraws);
   const collected = RARITIES.filter(r => (state.cards[r.id]||0) > 0).length;
@@ -800,6 +831,16 @@ $('upLucky').addEventListener('click', () => {
   save();
   addLog(`幸运值提升 → ${state.lucky}`, '#ff2d95');
 });
+$('upGold').addEventListener('click', () => {
+  if (state.coins < state.goldCost) return;
+  state.coins -= state.goldCost;
+  state.goldLevel++;
+  state.goldCost = Math.floor(state.goldCost * 2.2); // 金币升级成本提升较快
+  updateUI();
+  save();
+  const newMult = Math.pow(1.5, state.goldLevel - 1);
+  addLog(`星辉增幅升级 → ${newMult.toFixed(2)}x 产出`, '#10b981');
+});
 
 // ============ 自动抽卡开关 ============
 $('upAuto').addEventListener('click', () => {
@@ -845,6 +886,7 @@ setInterval(() => {
   // 更新升级按钮可用性
   $('upMulti').disabled = state.coins < state.multiCost;
   $('upLucky').disabled = state.coins < state.luckyCost;
+  $('upGold').disabled = state.coins < state.goldCost;
   $('statTime').textContent = formatTime((now - state.startTime)/1000);
 }, 200);
 
@@ -910,6 +952,8 @@ $('importSave').addEventListener('click', () => {
     const data = JSON.parse(decodeURIComponent(atob(text)));
     Object.assign(state, data);
     if (!state.cutscene) state.cutscene = { t1:true, t2:true, t3:true, t4:true };
+    if (state.goldLevel === undefined) state.goldLevel = 1;
+    if (state.goldCost === undefined) state.goldCost = 1000;
     save();
     updateUI();
     $('settingsMsg').textContent = '✓ 存档导入成功';
