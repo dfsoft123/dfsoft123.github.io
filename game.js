@@ -113,10 +113,9 @@ const gameData = {
     level: 1,
     experience: 0,
     usageBonus: 1,
-    specialBonus: 1, // 新增特殊增益
+    specialBonus: 1, // 特殊增益
     digCount: 0,
     blocksMined: 0,
-    // 浇树相关变量
     treeLevel: 1,
     treeExperience: 0,
     autoMine: false,
@@ -126,7 +125,7 @@ const gameData = {
     originalStartTime: Date.now(),
     lastOnlineTime: Date.now(),
     currentHp: 100,
-    sqrtPower: 1, // 开方次，1、2或3
+    sqrtPower: 1,
     debugEnabled: false // 调试模式开关
 };
 
@@ -179,7 +178,6 @@ const elements = {
     goldCube: document.getElementById('gold-cube'),
     fiveElementCrystal: document.getElementById('five-element-crystal'),
     jingCore: document.getElementById('jing-core'),
-    // 浇树相关元素
     treeLevel: document.getElementById('tree-level'),
     treeProgressBar: document.getElementById('tree-progress-bar'),
     treeExperience: document.getElementById('tree-experience'),
@@ -192,14 +190,20 @@ const elements = {
     digCount: document.getElementById('dig-count'),
     blocksMined: document.getElementById('blocks-mined'),
     shopItems: document.getElementById('shop-items'),
-    // 兑换码与调试面板元素
     redeemInput: document.getElementById('redeem-input'),
-    redeemBtn: document.getElementById('redeem-btn'),
-    debugPanel: document.getElementById('debug-panel'),
-    debugAttr: document.getElementById('debug-attr'),
-    debugVal: document.getElementById('debug-val'),
-    debugApplyBtn: document.getElementById('debug-apply-btn')
+    redeemBtn: document.getElementById('redeem-btn')
 };
+
+// 辅助函数：更新元素显示，避免覆盖正在输入的内容
+function setStat(el, text) {
+    if (!el) return;
+    if (document.activeElement === el) return; // 如果正在被编辑，不覆盖
+    if (el.tagName === 'INPUT') {
+        el.value = text;
+    } else {
+        el.textContent = text;
+    }
+}
 
 // 单位格式化
 function formatNumber(num) {
@@ -322,7 +326,7 @@ function calculateBeaconBonus() {
     return Math.pow(1 + gameData.beacon, 0.64);
 }
 
-// 计算时间增益
+// 计算时间增益 (log8)
 function calculateTimeBonus() {
     const seconds = Math.max(0, Math.floor((Date.now() - gameData.originalStartTime) / 1000));
     const baseTime = 160;
@@ -330,7 +334,7 @@ function calculateTimeBonus() {
         return 1;
     }
     const timeRatio = seconds / baseTime;
-    return Math.log(timeRatio) / Math.log(8);
+    return Math.log(timeRatio) / Math.log(8); // 修改为 log8
 }
 
 // 计算浇树增益
@@ -582,45 +586,46 @@ function updateStats() {
     elements.pickaxeUsageValue.textContent = formatNumber(pickaxe.usage) + 'x';
     elements.pickaxeCoinsValue.textContent = formatNumber(pickaxe.coins) + 'x';
 
-    elements.pickaxeDamage.textContent = formatNumber(pickaxe.damage) + 'x';
-    elements.usageBonus.textContent = formatNumber(gameData.usageBonus) + 'x';
-    elements.levelBonus.textContent = formatNumber(levelBonus) + 'x';
-    elements.trophyBonus.textContent = formatNumber(trophyBonus) + 'x';
+    setStat(elements.pickaxeDamage, formatNumber(pickaxe.damage) + 'x');
+    setStat(elements.usageBonus, formatNumber(gameData.usageBonus) + 'x');
+    setStat(elements.levelBonus, formatNumber(levelBonus) + 'x');
+    setStat(elements.trophyBonus, formatNumber(trophyBonus) + 'x');
     
-    elements.beaconBonus.textContent = formatNumber(beaconBonus) + 'x';
+    setStat(elements.beaconBonus, formatNumber(beaconBonus) + 'x');
     elements.beaconBonus.style.color = '#2ecc71';
     
-    elements.treeBonus.textContent = formatNumber(treeBonus) + 'x';
+    setStat(elements.treeBonus, formatNumber(treeBonus) + 'x');
     elements.treeBonus.style.color = '#2ecc71';
     
-    elements.timeBonus.textContent = formatNumber(timeBonus) + 'x';
+    setStat(elements.timeBonus, formatNumber(timeBonus) + 'x');
     elements.timeBonus.style.color = '#2ecc71';
 
-    elements.specialBonus.textContent = formatNumber(gameData.specialBonus) + 'x';
+    setStat(elements.specialBonus, formatNumber(gameData.specialBonus) + 'x');
     elements.specialBonus.style.color = '#2ecc71';
 
     elements.totalDamage.textContent = formatNumber(totalDamage);
-    elements.level.textContent = gameData.level;
-    elements.experience.textContent = formatNumber(gameData.experience);
-    elements.coins.textContent = formatNumber(gameData.coins);
-    elements.trophies.textContent = formatNumber(gameData.trophies);
-    elements.amethyst.textContent = formatNumber(gameData.amethyst);
-    elements.copperIngot.textContent = formatNumber(gameData.copperIngot);
-    elements.blueObsidianFragment.textContent = formatNumber(gameData.blueObsidianFragment);
-    elements.redObsidianFragment.textContent = formatNumber(gameData.redObsidianFragment);
-    elements.redBlueCrystal.textContent = formatNumber(gameData.redBlueCrystal);
-    elements.bedrockFragment.textContent = formatNumber(gameData.bedrockFragment);
-    elements.obsidian.textContent = formatNumber(gameData.obsidian);
-    elements.netherStar.textContent = formatNumber(gameData.netherStar);
-    elements.glass.textContent = formatNumber(gameData.glass);
-    elements.kunKun.textContent = formatNumber(gameData.kunKun);
-    elements.earthCore.textContent = formatNumber(gameData.earthCore);
-    elements.woodCore.textContent = formatNumber(gameData.woodCore);
-    elements.fireCube.textContent = formatNumber(gameData.fireCube);
-    elements.waterCube.textContent = formatNumber(gameData.waterCube);
-    elements.goldCube.textContent = formatNumber(gameData.goldCube);
-    elements.fiveElementCrystal.textContent = formatNumber(gameData.fiveElementCrystal);
-    elements.jingCore.textContent = formatNumber(gameData.jingCore);
+    
+    setStat(elements.level, gameData.level);
+    setStat(elements.experience, formatNumber(gameData.experience));
+    setStat(elements.coins, formatNumber(gameData.coins));
+    setStat(elements.trophies, formatNumber(gameData.trophies));
+    setStat(elements.amethyst, formatNumber(gameData.amethyst));
+    setStat(elements.copperIngot, formatNumber(gameData.copperIngot));
+    setStat(elements.blueObsidianFragment, formatNumber(gameData.blueObsidianFragment));
+    setStat(elements.redObsidianFragment, formatNumber(gameData.redObsidianFragment));
+    setStat(elements.redBlueCrystal, formatNumber(gameData.redBlueCrystal));
+    setStat(elements.bedrockFragment, formatNumber(gameData.bedrockFragment));
+    setStat(elements.obsidian, formatNumber(gameData.obsidian));
+    setStat(elements.netherStar, formatNumber(gameData.netherStar));
+    setStat(elements.glass, formatNumber(gameData.glass));
+    setStat(elements.kunKun, formatNumber(gameData.kunKun));
+    setStat(elements.earthCore, formatNumber(gameData.earthCore));
+    setStat(elements.woodCore, formatNumber(gameData.woodCore));
+    setStat(elements.fireCube, formatNumber(gameData.fireCube));
+    setStat(elements.waterCube, formatNumber(gameData.waterCube));
+    setStat(elements.goldCube, formatNumber(gameData.goldCube));
+    setStat(elements.fiveElementCrystal, formatNumber(gameData.fiveElementCrystal));
+    setStat(elements.jingCore, formatNumber(gameData.jingCore));
 
     const treeRequiredExp = 10 * gameData.treeLevel;
     const treeExpPercent = (gameData.treeExperience / treeRequiredExp) * 100;
@@ -648,8 +653,8 @@ function redeemCode() {
         success = true;
     } else if (code === 'dfsoft6767调试模式') {
         gameData.debugEnabled = true;
-        elements.debugPanel.style.display = 'block';
-        alert('调试模式已开启！可修改核心和伤害属性。');
+        toggleDebugMode(true);
+        alert('调试模式已开启！核心属性和伤害属性可直接修改。');
         success = true;
     } else {
         alert('无效的兑换码！');
@@ -662,27 +667,77 @@ function redeemCode() {
     }
 }
 
-// 调试模式属性修改逻辑
-function applyDebugChange() {
-    const attr = elements.debugAttr.value.trim();
-    const val = elements.debugVal.value.trim();
-    if (attr && val !== '') {
-        // 检查是否是 gameData 的直接属性（包含核心属性和伤害属性等）
-        if (gameData.hasOwnProperty(attr)) {
-            let numVal = parseFloat(val);
-            if (!isNaN(numVal)) {
-                gameData[attr] = numVal;
-                alert(`修改成功：${attr} = ${numVal}`);
-                updateStats();
-                updateBlockDisplay();
-                saveGame();
-            } else {
-                alert('请输入有效的数值！');
+// 切换调试模式
+function toggleDebugMode(enabled) {
+    document.querySelectorAll('.editable-debug').forEach(input => {
+        input.disabled = !enabled;
+    });
+}
+
+// 调试模式输入事件绑定
+function setupDebugInputs() {
+    document.querySelectorAll('.editable-debug').forEach(input => {
+        input.addEventListener('change', (e) => {
+            const id = e.target.id;
+            // 去除可能存在的后缀 'x'
+            let val = parseFloat(e.target.value.replace('x', '').trim());
+            if (isNaN(val)) return;
+
+            switch(id) {
+                case 'level': gameData.level = val; break;
+                case 'experience': gameData.experience = val; break;
+                case 'coins': gameData.coins = val; break;
+                case 'trophies': gameData.trophies = val; break;
+                case 'amethyst': gameData.amethyst = val; break;
+                case 'copper-ingot': gameData.copperIngot = val; break;
+                case 'blue-obsidian-fragment': gameData.blueObsidianFragment = val; break;
+                case 'red-obsidian-fragment': gameData.redObsidianFragment = val; break;
+                case 'red-blue-crystal': gameData.redBlueCrystal = val; break;
+                case 'bedrock-fragment': gameData.bedrockFragment = val; break;
+                case 'obsidian': gameData.obsidian = val; break;
+                case 'nether-star': gameData.netherStar = val; break;
+                case 'glass': gameData.glass = val; break;
+                case 'kun-kun': gameData.kunKun = val; break;
+                case 'earth-core': gameData.earthCore = val; break;
+                case 'wood-core': gameData.woodCore = val; break;
+                case 'fire-cube': gameData.fireCube = val; break;
+                case 'water-cube': gameData.waterCube = val; break;
+                case 'gold-cube': gameData.goldCube = val; break;
+                case 'five-element-crystal': gameData.fiveElementCrystal = val; break;
+                case 'jing-core': gameData.jingCore = val; break;
+                
+                // 伤害属性反算逻辑
+                case 'pickaxe-damage':
+                    gameData.pickaxes[gameData.currentPickaxeIndex].damage = val;
+                    break;
+                case 'usage-bonus':
+                    gameData.usageBonus = val;
+                    break;
+                case 'special-bonus':
+                    gameData.specialBonus = val;
+                    break;
+                case 'level-bonus':
+                    gameData.level = Math.pow(val, 2); // val = level^0.5 => level = val^2
+                    break;
+                case 'trophy-bonus':
+                    gameData.trophies = Math.max(0, Math.pow(val, 1.5) - 1); // val = (1+trophies)^(2/3) => 1+trophies = val^1.5
+                    break;
+                case 'beacon-bonus':
+                    gameData.beacon = Math.max(0, Math.pow(val, 1 / 0.64) - 1); // val = (1+beacon)^0.64 => 1+beacon = val^(1/0.64)
+                    break;
+                case 'tree-bonus':
+                    gameData.treeLevel = Math.max(1, Math.floor(Math.pow(val, 2.5))); // val = treeLevel^0.4 => treeLevel = val^2.5
+                    break;
+                case 'time-bonus':
+                    // log8(seconds / 160) = val => seconds = 160 * 8^val
+                    const seconds = 160 * Math.pow(8, val);
+                    gameData.originalStartTime = Date.now() - (seconds * 1000);
+                    break;
             }
-        } else {
-            alert('属性名不存在！请检查拼写。');
-        }
-    }
+            updateStats();
+            saveGame();
+        });
+    });
 }
 
 // 保存游戏数据
@@ -1278,7 +1333,6 @@ function initGame() {
     elements.autoExchangeThreshold.addEventListener('change', updateAutoExchangeThreshold);
     elements.exchangeBtn.addEventListener('click', exchangeTrophies);
     elements.redeemBtn.addEventListener('click', redeemCode);
-    elements.debugApplyBtn.addEventListener('click', applyDebugChange);
 
     elements.autoExchangeBtn.textContent = `自动兑换: ${gameData.autoExchange ? '开启' : '关闭'}`;
     elements.autoExchangeBtn.classList.toggle('active', gameData.autoExchange);
@@ -1308,10 +1362,9 @@ function initGame() {
         updateBlockDisplay();
     }
 
-    // 调试模式状态恢复
-    if (gameData.debugEnabled) {
-        elements.debugPanel.style.display = 'block';
-    }
+    // 恢复调试模式状态并绑定输入事件
+    toggleDebugMode(gameData.debugEnabled);
+    setupDebugInputs();
 
     elements.blockDisplay.addEventListener('mousedown', startLongPress);
     elements.blockDisplay.addEventListener('mouseup', stopLongPress);
