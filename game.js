@@ -46,7 +46,7 @@ const gameData = {
         { name: '方立水', hp: 1e13, coins: 4.5e8, drop: 'waterCube', dropAmount: 64, sqrtZone: 3 },
         { name: '水沝㴇淼㵘', hp: 5e14, coins: 1e9, drop: 'waterCube', dropAmount: 256, sqrtZone: 3 },
         { name: '纯金', hp: 2e15, coins: 1e10, sqrtZone: 3 },
-        { name: '元素晶片', hp: 1e13, coins: 1e6, drop: 'elementChip', sqrtZone: 3 }
+        { name: '元素晶片', hp: 1e17, coins: 1e6, drop: 'elementChip', sqrtZone: 3 }
     ],
     // 镐子属性
     pickaxes: [
