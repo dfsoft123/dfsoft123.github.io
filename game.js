@@ -184,6 +184,7 @@ const elements = {
     treeExperienceRequired: document.getElementById('tree-experience-required'),
     waterTreeBtn: document.getElementById('water-tree-btn'),
     autoWaterTreeBtn: document.getElementById('auto-water-tree-btn'),
+    craftBeaconBtn: document.getElementById('craft-beacon-btn'),
     treeBonus: document.getElementById('tree-bonus'),
     sqrtPower: document.getElementById('sqrt-power'),
     playtime: document.getElementById('playtime'),
@@ -387,6 +388,38 @@ function autoWaterTree() {
     }
     updateStats();
     updateShopButtons();
+}
+
+// 一键合成信标功能
+function craftAllBeacons() {
+    const beaconItem = gameData.pickaxes.find(p => p.name === '信标');
+    if (!beaconItem) return;
+    
+    const obsidianNeed = 3;
+    const glassNeed = 5;
+    const netherStarNeed = 1;
+    
+    const maxCraft = Math.min(
+        Math.floor(gameData.obsidian / obsidianNeed),
+        Math.floor(gameData.glass / glassNeed),
+        Math.floor(gameData.netherStar / netherStarNeed)
+    );
+    
+    if (maxCraft > 0) {
+        gameData.obsidian -= maxCraft * obsidianNeed;
+        gameData.glass -= maxCraft * glassNeed;
+        gameData.netherStar -= maxCraft * netherStarNeed;
+        
+        beaconItem.count += maxCraft;
+        gameData.beacon = beaconItem.count;
+        
+        updateStats();
+        updateShopButtons();
+        saveGame();
+        alert(`成功合成了 ${maxCraft} 个信标！`);
+    } else {
+        alert('材料不足，无法合成信标！(需要3黑曜石, 5玻璃, 1下界之星)');
+    }
 }
 
 // 执行挖掘
@@ -1193,8 +1226,9 @@ function updateShopButtons() {
                     case '金立方镐': if (gameData.pickaxes[32].count < required) { canCraft = false; } break;
                     case '五行结晶': if (gameData.fiveElementCrystal < required) { canCraft = false; } break;
                     case '京核': if (gameData.jingCore < required) { canCraft = false; } break;
+                    // 修复：五行镐的正确索引是 33
                     case '五行镐': 
-                        if (gameData.pickaxes[34] && gameData.pickaxes[34].count < required) { canCraft = false; } break;
+                        if (gameData.pickaxes[33] && gameData.pickaxes[33].count < required) { canCraft = false; } break;
                     default: canCraft = false;
                 }
                 if (!canCraft) break;
@@ -1248,13 +1282,14 @@ function buyPickaxe(e) {
                 case '金立方镐': if (gameData.pickaxes[32].count < required) { canCraft = false; } break;
                 case '五行结晶': if (gameData.fiveElementCrystal < required) { canCraft = false; } break;
                 case '京核': if (gameData.jingCore < required) { canCraft = false; } break;
-                case '五行镐':
-                    if (gameData.pickaxes[33] && gameData.pickaxes[33].count >= required) { 
-                        gameData.pickaxes[33].count -= required;
-                    } break;
+                // 修复检查逻辑
+                case '五行镐': 
+                    if (gameData.pickaxes[33] && gameData.pickaxes[33].count < required) { canCraft = false; } break;
             }
         }
+        
         if (canCraft) {
+            // 扣除合成材料
             for (const [material, required] of Object.entries(pickaxe.recipe)) {
                 switch (material) {
                     case '黑曜石镐': gameData.pickaxes[10].count -= required; break;
@@ -1287,8 +1322,9 @@ function buyPickaxe(e) {
                     case '金立方镐': gameData.pickaxes[32].count -= required; break;
                     case '五行结晶': gameData.fiveElementCrystal -= required; break;
                     case '京核': gameData.jingCore -= required; break;
+                    // 修复扣除逻辑
                     case '五行镐': 
-                        if (gameData.pickaxes[33] && gameData.pickaxes[33].count >= required) {
+                        if (gameData.pickaxes[33]) {
                             gameData.pickaxes[33].count -= required;
                         } break;
                 }
@@ -1343,6 +1379,7 @@ function initGame() {
     elements.autoExchangeThreshold.addEventListener('change', updateAutoExchangeThreshold);
     elements.exchangeBtn.addEventListener('click', exchangeTrophies);
     elements.redeemBtn.addEventListener('click', redeemCode);
+    elements.craftBeaconBtn.addEventListener('click', craftAllBeacons);
 
     elements.autoExchangeBtn.textContent = `自动兑换: ${gameData.autoExchange ? '开启' : '关闭'}`;
     elements.autoExchangeBtn.classList.toggle('active', gameData.autoExchange);
