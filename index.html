@@ -73,6 +73,10 @@
                         <div class="stat-item special-item"><span class="stat-label">金立方</span><input type="text" class="stat-value editable-debug" id="gold-cube" disabled></div>
                         <div class="stat-item special-item"><span class="stat-label">五行结晶</span><input type="text" class="stat-value editable-debug" id="five-element-crystal" disabled></div>
                         <div class="stat-item special-item"><span class="stat-label">京核</span><input type="text" class="stat-value editable-debug" id="jing-core" disabled></div>
+                        <div class="stat-item special-item"><span class="stat-label">元素晶片</span><input type="text" class="stat-value editable-debug" id="element-chip" disabled></div>
+                        <div class="stat-item special-item"><span class="stat-label">物质X</span><input type="text" class="stat-value editable-debug" id="matter-x" disabled></div>
+                        <div class="stat-item special-item"><span class="stat-label">物质Y</span><input type="text" class="stat-value editable-debug" id="matter-y" disabled></div>
+                        <div class="stat-item special-item"><span class="stat-label">物质Z</span><input type="text" class="stat-value editable-debug" id="matter-z" disabled></div>
                     </div>
                     <div class="sqrt-control">
                         开方次: <input type="number" id="sqrt-power" value="1" min="1" max="3">
@@ -131,6 +135,7 @@
                         <div class="dmg-row"><span>浇树增益</span><input type="text" class="editable-debug" id="tree-bonus" disabled></div>
                         <div class="dmg-row"><span>时间增益</span><input type="text" class="editable-debug" id="time-bonus" disabled></div>
                         <div class="dmg-row"><span>特殊增益</span><input type="text" class="editable-debug" id="special-bonus" disabled></div>
+                        <div class="dmg-row"><span>能量增益</span><input type="text" class="editable-debug" id="energy-bonus" disabled></div>
                         <div class="dmg-row total-damage"><span>总伤害</span><span id="total-damage">1.00</span></div>
                         <div class="green-note">绿色增益表示不被开方的增益</div>
                     </div>
@@ -143,6 +148,25 @@
                         <div class="dmg-row"><span>总在线时间</span><span id="playtime">0秒</span></div>
                         <div class="dmg-row"><span>挖掘次数</span><span id="dig-count">0</span></div>
                         <div class="dmg-row"><span>挖掉方块</span><span id="blocks-mined">0</span></div>
+                    </div>
+                </div>
+
+                <!-- 物质能量研究所 -->
+                <div class="panel research-panel">
+                    <div class="panel-title">物质能量研究所</div>
+                    <div id="research-inactive" class="research-inactive">
+                        <p>需要各10万个 X, Y, Z 物质开启</p>
+                        <button id="activate-research-btn" class="action-btn" style="border-color: var(--neon-purple); color: var(--neon-purple);">开启研究所</button>
+                    </div>
+                    <div id="research-active" class="research-active" style="display: none;">
+                        <div class="damage-stats">
+                            <div class="dmg-row"><span>能量总数</span><span id="energy-total">0</span></div>
+                            <div class="dmg-row"><span>产能速度</span><span id="energy-speed">1/秒</span></div>
+                            <div class="dmg-row"><span>能量增益</span><span id="energy-bonus-stat">1.00x</span></div>
+                            <div class="dmg-row"><span>使用增益获取</span><span id="energy-usage-stat">1.00x</span></div>
+                            <div class="dmg-row"><span>自动浇树经验</span><span id="energy-tree-stat">0/秒</span></div>
+                        </div>
+                        <button id="upgrade-energy-btn" class="action-btn" style="margin-top: 12px; border-color: var(--neon-gold); color: var(--neon-gold); width: 100%;">升级产能 (消耗: 100 能量)</button>
                     </div>
                 </div>
 
@@ -159,7 +183,6 @@
                     <div class="tree-buttons">
                         <button id="water-tree-btn" class="action-btn tree-btn">浇水 (消耗1水立方)</button>
                         <button id="auto-water-tree-btn" class="action-btn tree-btn auto">一键浇树</button>
-                        <!-- 新增一键合成信标按钮 -->
                         <button id="craft-beacon-btn" class="action-btn tree-btn" style="border-color: var(--neon-cyan); color: var(--neon-cyan);">一键合成信标</button>
                     </div>
                 </div>
