@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>抽卡2.0 · GENESIS DRAW</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05060f; --bg2:#0b0c1d; --bg3:#13152e;
+  --gold:#f5c842; --gold2:#ffe27a;
+  --cyan:#00e5ff; --magenta:#ff2d95; --violet:#a855f7;
+  --fg:#eef0ff; --muted:#7a7da3; --border:rgba(255,255,255,.08);
+  --card:rgba(255,255,255,.03);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:'Noto Sans SC',sans-serif;overflow-x:hidden}
+.font-display{font-family:'Cinzel',serif;letter-spacing:.05em}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-2;
+  background:
+    radial-gradient(1200px 700px at 20% -10%, rgba(245,200,66,.10), transparent 60%),
+    radial-gradient(900px 600px at 90% 10%, rgba(255,45,149,.10), transparent 60%),
+    radial-gradient(1100px 800px at 50% 110%, rgba(0,229,255,.10), transparent 60%),
+    linear-gradient(180deg,#05060f 0%,#0a0b1d 60%,#05060f 100%);
+}
+body::after{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.04 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+#stars{position:fixed;inset:0;z-index:-1;pointer-events:none}
+
+.glass{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));border:1px solid var(--border);backdrop-filter:blur(8px)}
+.gold-text{background:linear-gradient(180deg,#fff7d6,#f5c842 60%,#9a6b1a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cyan-text{background:linear-gradient(180deg,#e6fdff,#00e5ff 60%,#006e7a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.magenta-text{background:linear-gradient(180deg,#ffe6f3,#ff2d95 60%,#7a0f49);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* 抽卡按钮 */
+.draw-btn{
+  position:relative;width:280px;height:280px;border-radius:50%;cursor:pointer;border:none;
+  background:radial-gradient(circle at 50% 35%, #2a1d4a 0%, #120c28 60%, #060410 100%);
+  box-shadow:0 0 0 2px rgba(245,200,66,.35), 0 0 60px rgba(245,200,66,.35), inset 0 0 60px rgba(245,200,66,.15);
+  transition:transform .15s ease, box-shadow .3s ease;
+}
+.draw-btn:hover{transform:scale(1.04);box-shadow:0 0 0 2px rgba(245,200,66,.6),0 0 100px rgba(245,200,66,.55),inset 0 0 80px rgba(245,200,66,.25)}
+.draw-btn:active{transform:scale(.97)}
+.draw-btn::before,.draw-btn::after{
+  content:"";position:absolute;inset:-14px;border-radius:50%;border:1px dashed rgba(245,200,66,.5);
+  animation:spin 18s linear infinite;pointer-events:none
+}
+.draw-btn::after{inset:-30px;border:1px solid rgba(0,229,255,.25);animation:spin 30s linear infinite reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+.draw-btn .ring{position:absolute;inset:-50px;border-radius:50%;background:conic-gradient(from 0deg, transparent 0 70%, rgba(245,200,66,.6) 85%, transparent 100%);animation:spin 4s linear infinite;filter:blur(6px);opacity:.8}
+
+/* 卡片 */
+.card-item{
+  position:relative;border-radius:14px;padding:14px 16px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));
+  border:1px solid var(--border);overflow:hidden;transition:transform .2s,box-shadow .2s;
+}
+.card-item:hover{transform:translateY(-2px)}
+.card-item .shine{position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.15) 50%,transparent 70%);transform:translateX(-100%);transition:transform .6s}
+.card-item:hover .shine{transform:translateX(100%)}
+
+/* 图鉴项 */
+.pokeball{
+  width:48px;height:48px;border-radius:50%;position:relative;
+  background:linear-gradient(180deg,var(--rc) 0%,var(--rc) 47%,#0b0b1d 47%,#0b0b1d 53%,var(--rc) 53%,var(--rc) 100%);
+  border:2px solid rgba(255,255,255,.25);box-shadow:0 0 12px var(--rg);
+}
+.pokeball::after{content:"";position:absolute;left:50%;top:50%;width:14px;height:14px;background:#0b0b1d;border:2px solid rgba(255,255,255,.4);border-radius:50%;transform:translate(-50%,-50%)}
+.pokeball.locked{filter:grayscale(1) brightness(.35)}
+
+/* 升级按钮 */
+.up-btn{
+  width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:linear-gradient(180deg,rgba(245,200,66,.10),rgba(245,200,66,.02));
+  color:var(--fg);cursor:pointer;transition:all .2s;font-family:'Noto Sans SC';
+}
+.up-btn:hover:not(:disabled){background:linear-gradient(180deg,rgba(245,200,66,.22),rgba(245,200,66,.06));border-color:rgba(245,200,66,.5)}
+.up-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* 抽卡结果横幅 */
+.flash{position:fixed;inset:0;z-index:80;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0}
+.flash.show{opacity:1}
+.flash .card-reveal{
+  width:300px;height:420px;border-radius:18px;position:relative;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  background:linear-gradient(180deg,rgba(20,20,40,.95),rgba(8,8,20,.98));
+  border:2px solid var(--rc);box-shadow:0 0 80px var(--rg),inset 0 0 60px rgba(0,0,0,.5);
+  transform:scale(.3);opacity:0;
+}
+
+/* 历史日志 */
+.log-line{padding:6px 10px;border-left:2px solid var(--rc);background:rgba(255,255,255,.02);font-size:12px;border-radius:0 6px 6px 0}
+
+/* 滚动条 */
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:rgba(245,200,66,.3);border-radius:4px}
+::-webkit-scrollbar-track{background:transparent}
+
+.num{font-variant-numeric:tabular-nums}
+
+@keyframes float-up{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-50px)}}
+.float-coin{position:fixed;font-weight:900;pointer-events:none;animation:float-up 1.2s ease-out forwards;z-index:60}
+
+@keyframes shake{0%,100%{transform:translate(0,0)}25%{transform:translate(-4px,2px)}50%{transform:translate(4px,-2px)}75%{transform:translate(-3px,-3px)}}
+.shake{animation:shake .5s}
+
+.tier-bar{height:4px;border-radius:2px;background:linear-gradient(90deg,var(--rc),transparent)}
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+
+<!-- 顶部状态栏 -->
+<header class="glass sticky top-0 z-40 px-6 py-3 flex items-center gap-6 border-b">
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-full" style="background:radial-gradient(circle,#f5c842,#7a4a0e);box-shadow:0 0 20px rgba(245,200,66,.6)"></div>
+    <div>
+      <div class="font-display font-black text-xl gold-text leading-none">抽卡2.0</div>
+      <div class="text-[10px] tracking-[0.3em] text-[var(--muted)]">GENESIS DRAW</div>
+    </div>
+  </div>
+  <div class="flex-1"></div>
+  <div class="text-right">
+    <div class="text-[10px] text-[var(--muted)] tracking-widest">星辉石</div>
+    <div class="font-display text-2xl font-black gold-text num" id="coinDisplay">0</div>
+  </div>
+  <div class="text-right">
+    <div class="text-[10px] text-[var(--muted)] tracking-widest">每秒产出</div>
+    <div class="font-display text-xl font-bold cyan-text num" id="cpsDisplay">0</div>
+  </div>
+  <div class="text-right">
+    <div class="text-[10px] text-[var(--muted)] tracking-widest">幸运值</div>
+    <div class="font-display text-xl font-bold magenta-text num" id="luckyDisplay">0</div>
+  </div>
+  <button id="settingsBtn" class="text-xs px-3 py-2 rounded-lg border border-[var(--border)] hover:border-[#00e5ff] hover:text-[#00e5ff] transition">设置</button>
+  <button id="resetBtn" class="text-xs px-3 py-2 rounded-lg border border-[var(--border)] hover:border-[#ff2d95] hover:text-[#ff2d95] transition">重置</button>
+</header>
+
+<main class="max-w-[1400px] mx-auto px-6 py-6 grid grid-cols-12 gap-5">
+
+  <!-- 左：升级面板 -->
+  <aside class="col-span-3 space-y-4">
+    <div class="glass rounded-2xl p-5">
+      <h3 class="font-display font-bold text-sm tracking-[0.25em] text-[var(--muted)] mb-4">UPGRADE</h3>
+      
+      <div class="mb-5">
+        <div class="flex items-baseline justify-between mb-2">
+          <span class="text-sm font-bold">多重抽卡</span>
+          <span class="text-xs text-[var(--muted)]">每次 <span class="gold-text font-bold num" id="multiLv">1</span> 张</span>
+        </div>
+        <button class="up-btn" id="upMulti">
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-[var(--muted)]">升级至 +1</span>
+            <span class="gold-text font-bold num text-sm" id="upMultiCost">100</span>
+          </div>
+        </button>
+      </div>
+
+      <div class="mb-5">
+        <div class="flex items-baseline justify-between mb-2">
+          <span class="text-sm font-bold">幸运增幅</span>
+          <span class="text-xs text-[var(--muted)]">幸运 <span class="magenta-text font-bold num" id="luckyLv">0</span></span>
+        </div>
+        <button class="up-btn" id="upLucky" style="background:linear-gradient(180deg,rgba(255,45,149,.10),rgba(255,45,149,.02))">
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-[var(--muted)]">升级 +1 幸运</span>
+            <span class="magenta-text font-bold num text-sm" id="upLuckyCost">500</span>
+          </div>
+        </button>
+      </div>
+
+      <div>
+        <div class="flex items-baseline justify-between mb-2">
+          <span class="text-sm font-bold">自动抽卡</span>
+          <span class="text-xs text-[var(--muted)]" id="autoStatus">未解锁</span>
+        </div>
+        <button class="up-btn" id="upAuto" style="background:linear-gradient(180deg,rgba(0,229,255,.10),rgba(0,229,255,.02))">
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-[var(--muted)]" id="autoLabel">10M 星辉石解锁</span>
+            <span class="cyan-text font-bold text-sm" id="autoToggle">OFF</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <div class="glass rounded-2xl p-5">
+      <h3 class="font-display font-bold text-sm tracking-[0.25em] text-[var(--muted)] mb-4">STATS</h3>
+      <div class="space-y-2 text-xs">
+        <div class="flex justify-between"><span class="text-[var(--muted)]">累计抽卡</span><span class="num font-bold" id="statTotal">0</span></div>
+        <div class="flex justify-between"><span class="text-[var(--muted)]">图鉴收集</span><span class="num font-bold" id="statCollected">0 / 18</span></div>
+        <div class="flex justify-between"><span class="text-[var(--muted)]">最高稀有</span><span class="font-bold" id="statBest">—</span></div>
+        <div class="flex justify-between"><span class="text-[var(--muted)]">游玩时长</span><span class="num font-bold" id="statTime">0s</span></div>
+      </div>
+    </div>
+
+    <div class="glass rounded-2xl p-5">
+      <h3 class="font-display font-bold text-sm tracking-[0.25em] text-[var(--muted)] mb-3">RECENT LOG</h3>
+      <div id="logBox" class="space-y-1 max-h-[260px] overflow-y-auto"></div>
+    </div>
+  </aside>
+
+  <!-- 中：抽卡区 -->
+  <section class="col-span-6">
+    <div class="glass rounded-2xl p-6 relative overflow-hidden" style="min-height:560px">
+      <canvas id="fxCanvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
+      <div class="relative z-10 flex flex-col items-center">
+        <div class="text-center mb-4">
+          <div class="font-display font-black text-3xl gold-text">命 运 之 门</div>
+          <div class="text-xs tracking-[0.3em] text-[var(--muted)] mt-1">DESTINY GATE · 触发你的命运</div>
+        </div>
+
+        <div class="relative my-2">
+          <div class="ring" style="position:absolute;inset:-50px;border-radius:50%;background:conic-gradient(from 0deg, transparent 0 70%, rgba(245,200,66,.6) 85%, transparent 100%);animation:spin 4s linear infinite;filter:blur(6px)"></div>
+          <button class="draw-btn relative" id="drawBtn">
+            <div class="flex flex-col items-center justify-center h-full">
+              <div class="font-display font-black text-5xl gold-text">DRAW</div>
+              <div class="text-[10px] tracking-[0.4em] text-[var(--muted)] mt-2">x<span id="btnMulti">1</span> · 一次抽取</div>
+            </div>
+          </button>
+        </div>
+
+        <div class="text-[11px] text-[var(--muted)] tracking-wider mt-3">点击按钮，开启你的命运 · SP 及以上稀有度触发过场动画</div>
+
+        <!-- 最新结果 -->
+        <div class="mt-6 w-full">
+          <div class="text-xs tracking-[0.25em] text-[var(--muted)] mb-3 text-center">最 新 战 利 品</div>
+          <div id="latestGrid" class="grid grid-cols-5 gap-2"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 右：图鉴 -->
+  <aside class="col-span-3">
+    <div class="glass rounded-2xl p-5">
+      <h3 class="font-display font-bold text-sm tracking-[0.25em] text-[var(--muted)] mb-4">CODEX · 图鉴</h3>
+      <div id="codex" class="space-y-1.5"></div>
+    </div>
+  </aside>
+</main>
+
+<!-- 全屏过场动画层 -->
+<div id="flash" class="flash">
+  <div class="card-reveal" id="revealCard">
+    <div class="pokeball" id="revealBall" style="width:80px;height:80px"></div>
+    <div class="font-display font-black text-3xl text-center" id="revealName">—</div>
+    <div class="text-xs tracking-[0.3em] text-[var(--muted)]" id="revealTier">—</div>
+    <div class="text-xs text-center max-w-[240px]" id="revealDesc">—</div>
+    <div class="text-[10px] text-[var(--muted)]">收益：<span class="gold-text font-bold" id="revealGold">0</span> /秒</div>
+  </div>
+</div>
+
+<!-- 设置弹窗 -->
+<div id="settingsModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-sm">
+  <div class="glass rounded-2xl p-6 w-[520px] max-w-[92vw] max-h-[88vh] overflow-y-auto">
+    <div class="flex justify-between items-center mb-5">
+      <h2 class="font-display font-black text-xl gold-text">SETTINGS · 设置</h2>
+      <button id="closeSettings" class="text-2xl leading-none text-[var(--muted)] hover:text-white">×</button>
+    </div>
+
+    <!-- 过场动画设置 -->
+    <div class="mb-6">
+      <h3 class="text-sm font-bold mb-3 tracking-wider">过场动画</h3>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="flex items-center justify-between p-3 rounded-lg border border-[var(--border)] cursor-pointer hover:border-[#f5c842]">
+          <div>
+            <div class="text-sm font-bold">一级动画</div>
+            <div class="text-[10px] text-[var(--muted)]">SP ~ SEX</div>
+          </div>
+          <input type="checkbox" id="csT1" class="w-5 h-5 accent-[#f5c842]">
+        </label>
+        <label class="flex items-center justify-between p-3 rounded-lg border border-[var(--border)] cursor-pointer hover:border-[#a855f7]">
+          <div>
+            <div class="text-sm font-bold">二级动画</div>
+            <div class="text-[10px] text-[var(--muted)]">UEX ~ USPEX</div>
+          </div>
+          <input type="checkbox" id="csT2" class="w-5 h-5 accent-[#a855f7]">
+        </label>
+        <label class="flex items-center justify-between p-3 rounded-lg border border-[var(--border)] cursor-pointer hover:border-[#fde047]">
+          <div>
+            <div class="text-sm font-bold">三级动画</div>
+            <div class="text-[10px] text-[var(--muted)]">OMI</div>
+          </div>
+          <input type="checkbox" id="csT3" class="w-5 h-5 accent-[#fde047]">
+        </label>
+        <label class="flex items-center justify-between p-3 rounded-lg border border-[var(--border)] cursor-pointer hover:border-[#ffffff]">
+          <div>
+            <div class="text-sm font-bold">四级动画</div>
+            <div class="text-[10px] text-[var(--muted)]">INF</div>
+          </div>
+          <input type="checkbox" id="csT4" class="w-5 h-5 accent-[#ffffff]">
+        </label>
+      </div>
+    </div>
+
+    <!-- 存档管理 -->
+    <div class="mb-4">
+      <h3 class="text-sm font-bold mb-3 tracking-wider">存档管理</h3>
+      <div class="flex gap-2 mb-3">
+        <button id="exportSave" class="flex-1 py-2 rounded-lg border border-[var(--border)] hover:border-[#00e5ff] hover:text-[#00e5ff] transition text-sm">导出存档到剪贴板</button>
+      </div>
+      <textarea id="importArea" class="w-full h-24 p-2 rounded-lg bg-black/40 border border-[var(--border)] text-xs text-[var(--fg)] outline-none focus:border-[#00e5ff]" placeholder="在此粘贴存档数据..."></textarea>
+      <button id="importSave" class="w-full mt-2 py-2 rounded-lg border border-[#00e5ff] text-[#00e5ff] hover:bg-[#00e5ff]/10 transition text-sm">导入存档</button>
+    </div>
+
+    <div id="settingsMsg" class="text-center text-xs text-[var(--muted)] mt-2 h-4"></div>
+  </div>
+</div>
+
+<script>
+// ============ 数据定义 ============
+const RARITIES = [
+  {id:'N',     name:'凡尘',   prob:40,       color:'#9ca3af', glow:'rgba(156,163,175,.5)',  gold:1,             tier:0, desc:'宇宙尘埃中最平凡的存在'},
+  {id:'R',     name:'璀璨',   prob:30,       color:'#3b82f6', glow:'rgba(59,130,246,.6)',   gold:5,             tier:0, desc:'微微发光的星屑'},
+  {id:'SR',    name:'星辉',   prob:15,       color:'#10b981', glow:'rgba(16,185,129,.6)',   gold:25,            tier:0, desc:'凝聚星光的结晶'},
+  {id:'SSR',   name:'月华',   prob:10,       color:'#8b5cf6', glow:'rgba(139,92,246,.7)',   gold:100,           tier:0, desc:'月神遗留的光辉'},
+  {id:'UR',    name:'极光',   prob:3,        color:'#ec4899', glow:'rgba(236,72,153,.8)',   gold:500,           tier:0, desc:'极地天空的舞蹈'},
+  {id:'SUR',   name:'流光',   prob:1.5,      color:'#f43f5e', glow:'rgba(244,63,94,.8)',    gold:2000,          tier:0, desc:'划破虚空的流光'},
+  {id:'SP',    name:'金辉',   prob:0.3,      color:'#fbbf24', glow:'rgba(251,191,36,.9)',   gold:10000,         tier:1, desc:'金色命运的降临'},
+  {id:'SSP',   name:'圣金',   prob:0.15,     color:'#f59e0b', glow:'rgba(245,158,11,1)',    gold:50000,         tier:1, desc:'神圣之金，万世难求'},
+  {id:'SUP',   name:'赤焰',   prob:0.03,     color:'#ef4444', glow:'rgba(239,68,68,1)',     gold:200000,        tier:1, desc:'焚尽一切的赤色火焰'},
+  {id:'EX',    name:'幻彩',   prob:0.015,    color:'#06b6d4', glow:'rgba(6,182,212,1)',     gold:1000000,       tier:1, desc:'幻化万千色彩的奇迹'},
+  {id:'SEX',   name:'极幻',   prob:0.003,    color:'#14b8a6', glow:'rgba(20,184,166,1)',    gold:5000000,       tier:1, desc:'极致幻象的本源'},
+  {id:'UEX',   name:'超凡',   prob:0.0015,   color:'#a855f7', glow:'rgba(168,85,247,1)',    gold:20000000,      tier:2, desc:'超越凡俗的存在'},
+  {id:'SUEX',  name:'神启',   prob:0.0003,   color:'#d946ef', glow:'rgba(217,70,239,1)',    gold:100000000,     tier:2, desc:'神之启示的降临'},
+  {id:'SPEX',  name:'创世',   prob:0.00015,  color:'#e879f9', glow:'rgba(232,121,249,1)',   gold:500000000,     tier:2, desc:'参与创世的力量'},
+  {id:'SSPEX', name:'混沌',   prob:0.00003,  color:'#f0abfc', glow:'rgba(240,171,252,1)',   gold:2000000000,    tier:2, desc:'混沌未分时的余响'},
+  {id:'USPEX', name:'虚空',   prob:0.000015, color:'#22d3ee', glow:'rgba(34,211,238,1)',    gold:10000000000,   tier:2, desc:'虚空中诞生的奇迹'},
+  {id:'OMI',   name:'全能',   prob:0.000004, color:'#fde047', glow:'rgba(253,224,71,1)',    gold:50000000000,   tier:3, desc:'无所不能的全能者'},
+  {id:'INF',   name:'无限',   prob:0.000001, color:'#ffffff', glow:'rgba(255,255,255,1)',   gold:200000000000,  tier:4, desc:'超越一切的无限存在'}
+];
+
+const RARITY_MAP = Object.fromEntries(RARITIES.map(r=>[r.id,r]));
+
+// ============ 游戏状态 ============
+let state = {
+  coins: 0,
+  lucky: 0,
+  multiLevel: 1,
+  multiCost: 100,
+  luckyCost: 500,
+  cards: {},
+  totalDraws: 0,
+  bestTier: -1,
+  startTime: Date.now(),
+  lastSave: Date.now(),
+  autoUnlocked: false,
+  autoEnabled: false,
+  cutscene: { t1: true, t2: true, t3: true, t4: true }
+};
+
+// 读取存档
+try {
+  const saved = localStorage.getItem('genesisDrawSave');
+  if (saved) {
+    const data = JSON.parse(saved);
+    Object.assign(state, data);
+    // 兼容旧存档
+    if (!state.cutscene) state.cutscene = { t1:true, t2:true, t3:true, t4:true };
+    // 离线收益
+    const now = Date.now();
+    const offlineSec = Math.min((now - (state.lastSave||now))/1000, 86400*3);
+    const cps = calcCPS();
+    if (cps > 0 && offlineSec > 5) {
+      const earned = cps * offlineSec;
+      state.coins += earned;
+      setTimeout(()=>{
+        addLog(`离线 ${formatTime(offlineSec)} 收获 ${formatNum(earned)} 星辉石`, '#f5c842');
+      }, 500);
+    }
+    state.lastSave = now;
+  }
+} catch(e){ console.warn('Load failed', e); }
+
+function calcCPS(){
+  let cps = 0;
+  for (const r of RARITIES) {
+    cps += (state.cards[r.id]||0) * r.gold;
+  }
+  return cps;
+}
+
+// ============ 工具函数 ============
+function formatNum(n){
+  if (n < 1000) return Math.floor(n).toString();
+  const units = ['','K','M','B','T','Qa','Qi','Sx','Sp','Oc','No','Dc'];
+  let u = 0;
+  while (n >= 1000 && u < units.length-1) { n/=1000; u++; }
+  return n.toFixed(n<10?2:n<100?1:0) + units[u];
+}
+function formatTime(s){
+  if (s < 60) return Math.floor(s)+'s';
+  if (s < 3600) return Math.floor(s/60)+'m';
+  if (s < 86400) return Math.floor(s/3600)+'h';
+  return Math.floor(s/86400)+'d';
+}
+
+// ============ 抽卡概率（考虑幸运值） ============
+function getProbabilities(){
+  const lf = 1 + state.lucky * 0.012;
+  const weights = RARITIES.map((r,i) => r.prob * Math.pow(lf, i*0.6));
+  const sum = weights.reduce((a,b)=>a+b, 0);
+  return weights.map(w => w/sum);
+}
+
+function drawOne(){
+  const probs = getProbabilities();
+  let r = Math.random();
+  let idx = 0;
+  for (let i=0;i<probs.length;i++){
+    if (r < probs[i]) { idx = i; break; }
+    r -= probs[i];
+  }
+  return RARITIES[idx];
+}
+
+// ============ DOM ============
+const $ = id => document.getElementById(id);
+const drawBtn = $('drawBtn'), coinEl = $('coinDisplay'), cpsEl = $('cpsDisplay'), luckyEl = $('luckyDisplay');
+const latestGrid = $('latestGrid'), codex = $('codex'), logBox = $('logBox');
+
+// ============ 渲染图鉴 ============
+function renderCodex(){
+  codex.innerHTML = '';
+  RARITIES.forEach((r, i) => {
+    const count = state.cards[r.id] || 0;
+    const unlocked = count > 0;
+    const row = document.createElement('div');
+    row.className = 'card-item flex items-center gap-3';
+    row.style.setProperty('--rc', r.color);
+    row.style.setProperty('--rg', r.glow);
+    row.style.boxShadow = unlocked ? `0 0 14px ${r.glow}` : 'none';
+    row.innerHTML = `
+      <div class="shine"></div>
+      <div class="pokeball ${unlocked?'':'locked'}" style="--rc:${r.color};--rg:${r.glow}"></div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-baseline gap-2">
+          <span class="font-display font-bold text-sm" style="color:${unlocked?r.color:'#5a5a78'}">${r.id}</span>
+          <span class="text-[11px] ${unlocked?'text-[var(--fg)]':'text-[var(--muted)]'} truncate">${unlocked?r.name:'？？？'}</span>
+        </div>
+        <div class="tier-bar mt-1" style="--rc:${r.color};opacity:${unlocked?1:.2}"></div>
+        <div class="flex justify-between mt-1 text-[10px]">
+          <span class="text-[var(--muted)]">${unlocked?formatNum(r.gold)+'/s':'未发现'}</span>
+          <span class="num ${unlocked?'gold-text':'text-[var(--muted)]'}">${unlocked?'×'+formatNum(count):'0'}</span>
+        </div>
+      </div>
+    `;
+    codex.appendChild(row);
+  });
+}
+
+// ============ 渲染最新结果 ============
+let latestResults = [];
+function pushLatest(r){
+  latestResults.unshift(r);
+  if (latestResults.length > 10) latestResults.pop();
+  latestGrid.innerHTML = '';
+  latestResults.forEach(rr => {
+    const cell = document.createElement('div');
+    cell.className = 'card-item flex flex-col items-center justify-center';
+    cell.style.setProperty('--rc', rr.color);
+    cell.style.setProperty('--rg', rr.glow);
+    cell.style.minHeight = '70px';
+    cell.style.boxShadow = `0 0 12px ${rr.glow}`;
+    cell.innerHTML = `
+      <div class="shine"></div>
+      <div class="font-display font-black text-base" style="color:${rr.color}">${rr.id}</div>
+      <div class="text-[9px] text-[var(--muted)]">${formatNum(rr.gold)}/s</div>
+    `;
+    latestGrid.appendChild(cell);
+  });
+}
+
+// ============ 日志 ============
+function addLog(text, color){
+  const div = document.createElement('div');
+  div.className = 'log-line';
+  div.style.borderColor = color || 'var(--gold)';
+  div.innerHTML = text;
+  logBox.insertBefore(div, logBox.firstChild);
+  while (logBox.children.length > 30) logBox.removeChild(logBox.lastChild);
+}
+
+// ============ 飘字 ============
+function floatCoin(text, x, y, color){
+  const el = document.createElement('div');
+  el.className = 'float-coin';
+  el.textContent = text;
+  el.style.left = x+'px';
+  el.style.top = y+'px';
+  el.style.color = color || '#f5c842';
+  el.style.fontSize = '18px';
+  el.style.textShadow = `0 0 12px ${color||'#f5c842'}`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 1200);
+}
+
+// ============ 抽卡主流程 ============
+let drawing = false;
+async function doDraw(){
+  if (drawing) return;
+  drawing = true;
+  
+  const count = state.multiLevel;
+  const results = [];
+  for (let i=0;i<count;i++) results.push(drawOne());
+  
+  // 找出最高级用于过场动画
+  let bestIdx = -1;
+  results.forEach((r,i) => { if (RARITIES.indexOf(r) > bestIdx) bestIdx = RARITIES.indexOf(r); });
+  const best = RARITIES[bestIdx];
+
+  // 添加卡片
+  results.forEach(r => {
+    state.cards[r.id] = (state.cards[r.id]||0) + 1;
+    state.totalDraws++;
+  });
+  if (bestIdx > state.bestTier) state.bestTier = bestIdx;
+
+  pushLatest(results[0]);
+  
+  // 触发过场动画
+  const tierKey = `t${best.tier}`;
+  if (best.tier >= 1 && state.cutscene[tierKey]) {
+    await playCutscene(best, results.filter(r => r.tier >= 1));
+  }
+  
+  // 日志
+  const tierCounts = {};
+  results.forEach(r => { tierCounts[r.id] = (tierCounts[r.id]||0)+1; });
+  const parts = Object.entries(tierCounts).map(([id,c]) => {
+    const r = RARITY_MAP[id];
+    return `<span style="color:${r.color}">${r.id}×${c}</span>`;
+  });
+  addLog(parts.join(' · '), best.color);
+
+  // 飘字
+  const rect = drawBtn.getBoundingClientRect();
+  floatCoin(`+${count} 抽`, rect.left + rect.width/2, rect.top + 30, best.color);
+
+  drawBtn.classList.add('shake');
+  setTimeout(()=>drawBtn.classList.remove('shake'), 500);
+  
+  triggerFX(best);
+  
+  save();
+  updateUI();
+  drawing = false;
+}
+
+// ============ 过场动画 ============
+async function playCutscene(r, highCards){
+  const flash = $('flash');
+  const reveal = $('revealCard');
+  const ball = $('revealBall');
+  const name = $('revealName');
+  const tier = $('revealTier');
+  const desc = $('revealDesc');
+  const gold = $('revealGold');
+
+  reveal.style.setProperty('--rc', r.color);
+  reveal.style.setProperty('--rg', r.glow);
+  reveal.style.borderColor = r.color;
+  reveal.style.boxShadow = `0 0 100px ${r.glow}, inset 0 0 80px rgba(0,0,0,.6)`;
+  ball.style.setProperty('--rc', r.color);
+  ball.style.setProperty('--rg', r.glow);
+  ball.style.width = '80px'; ball.style.height = '80px';
+  name.style.color = r.color;
+  name.textContent = r.id + ' · ' + r.name;
+  
+  const tierNames = ['', 'TIER I · 一级过场', 'TIER II · 二级过场', 'TIER III · 三级过场', 'TIER IV · 终极过场'];
+  tier.textContent = tierNames[r.tier];
+  tier.style.color = r.color;
+  desc.textContent = r.desc;
+  gold.textContent = formatNum(r.gold);
+
+  // 背景特效层
+  let bg = document.createElement('div');
+  bg.style.cssText = `position:absolute;inset:0;z-index:-1;pointer-events:none;`;
+  flash.appendChild(bg);
+
+  // 根据等级设计不同动画
+  const designs = {
+    1: () => {
+      flash.style.background = `radial-gradient(circle at 50% 50%, ${r.glow} 0%, transparent 40%), rgba(0,0,0,.85)`;
+      bg.innerHTML = `
+        <div style="position:absolute;inset:0;background:conic-gradient(from 0deg, transparent, ${r.color}33, transparent, ${r.color}33, transparent);animation:spin 2s linear infinite;filter:blur(40px);opacity:.7"></div>
+      `;
+      return 2000;
+    },
+    2: () => {
+      flash.style.background = `radial-gradient(circle at 50% 50%, ${r.glow} 0%, transparent 30%), radial-gradient(circle at 30% 70%, ${r.glow} 0%, transparent 30%), rgba(0,0,0,.92)`;
+      bg.innerHTML = `
+        <div style="position:absolute;inset:0;background:conic-gradient(from 0deg, transparent, ${r.color}55, transparent, ${r.color}55, transparent);animation:spin 1.5s linear infinite;filter:blur(30px)"></div>
+        <div style="position:absolute;inset:0;background:conic-gradient(from 180deg, transparent, ${r.color}33, transparent);animation:spin 3s linear infinite reverse;filter:blur(50px)"></div>
+        ${Array.from({length:30}).map(()=>`<div style="position:absolute;left:${Math.random()*100}%;top:${Math.random()*100}%;width:3px;height:3px;border-radius:50%;background:${r.color};box-shadow:0 0 10px ${r.color};animation:float-up ${1+Math.random()*2}s linear infinite"></div>`).join('')}
+      `;
+      return 3200;
+    },
+    3: () => {
+      flash.style.background = `radial-gradient(circle at 50% 50%, ${r.glow} 0%, transparent 25%), radial-gradient(circle at 20% 80%, ${r.glow} 0%, transparent 25%), radial-gradient(circle at 80% 20%, ${r.glow} 0%, transparent 25%), rgba(0,0,0,.95)`;
+      bg.innerHTML = `
+        <div style="position:absolute;inset:0;background:conic-gradient(from 0deg, transparent, ${r.color}66, ${r.color}33, ${r.color}66, transparent);animation:spin 1s linear infinite;filter:blur(20px)"></div>
+        <div style="position:absolute;inset:0;background:conic-gradient(from 90deg, transparent, #ffffff44, transparent);animation:spin 2s linear infinite reverse;filter:blur(30px)"></div>
+        ${Array.from({length:60}).map(()=>`<div style="position:absolute;left:${Math.random()*100}%;top:${Math.random()*100}%;width:${2+Math.random()*4}px;height:${2+Math.random()*4}px;border-radius:50%;background:${Math.random()>.5?r.color:'#fff'};box-shadow:0 0 15px ${r.color};animation:float-up ${1+Math.random()*2}s linear infinite"></div>`).join('')}
+        <div style="position:absolute;left:50%;top:50%;width:600px;height:600px;transform:translate(-50%,-50%);border:2px solid ${r.color};border-radius:50%;opacity:.4;animation:spin 8s linear infinite"></div>
+        <div style="position:absolute;left:50%;top:50%;width:800px;height:800px;transform:translate(-50%,-50%);border:1px solid ${r.color};border-radius:50%;opacity:.3;animation:spin 12s linear infinite reverse"></div>
+      `;
+      return 5000;
+    },
+    4: () => {
+      flash.style.background = `#ffffff`;
+      bg.innerHTML = `
+        <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%, #fff 0%, ${r.color} 30%, transparent 70%);animation:spin 4s linear infinite"></div>
+        <div style="position:absolute;inset:0;background:conic-gradient(from 0deg, #ff2d95, #f5c842, #00e5ff, #a855f7, #ff2d95);animation:spin 6s linear infinite;filter:blur(60px);opacity:.6"></div>
+        ${Array.from({length:100}).map(()=>`<div style="position:absolute;left:${Math.random()*100}%;top:${Math.random()*100}%;width:${2+Math.random()*6}px;height:${2+Math.random()*6}px;border-radius:50%;background:#fff;box-shadow:0 0 20px ${r.color};animation:float-up ${1+Math.random()*3}s linear infinite"></div>`).join('')}
+        <div style="position:absolute;left:50%;top:50%;width:1000px;height:1000px;transform:translate(-50%,-50%);border:3px solid #fff;border-radius:50%;opacity:.5;animation:spin 10s linear infinite"></div>
+        <div style="position:absolute;left:50%;top:50%;width:1400px;height:1400px;transform:translate(-50%,-50%);border:2px solid ${r.color};border-radius:50%;opacity:.4;animation:spin 16s linear infinite reverse"></div>
+        <div style="position:absolute;left:50%;top:50%;width:1800px;height:1800px;transform:translate(-50%,-50%);border:1px solid #fff;border-radius:50%;opacity:.3;animation:spin 24s linear infinite"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(45deg, transparent 40%, #ffffff80 50%, transparent 60%);animation:spin 3s linear infinite"></div>
+      `;
+      // 全屏震动
+      document.body.classList.add('shake');
+      setTimeout(()=>document.body.classList.remove('shake'), 500);
+      return 7000;
+    }
+  };
+  
+  const duration = designs[r.tier]();
+  
+  flash.classList.add('show');
+  // 卡片浮现
+  reveal.style.transform = 'scale(.3) rotate(-10deg)';
+  reveal.style.opacity = '0';
+  setTimeout(()=>{
+    reveal.style.transition = 'all .8s cubic-bezier(.2,.8,.2,1.4)';
+    reveal.style.transform = 'scale(1) rotate(0)';
+    reveal.style.opacity = '1';
+  }, 100);
+
+  await new Promise(res => setTimeout(res, duration));
+
+  reveal.style.transition = 'all .4s ease';
+  reveal.style.transform = 'scale(1.4)';
+  reveal.style.opacity = '0';
+  setTimeout(()=>{
+    flash.classList.remove('show');
+    flash.style.background = '';
+    bg.remove();
+  }, 400);
+  await new Promise(res => setTimeout(res, 400));
+}
+
+// ============ 抽卡按钮特效（粒子爆发）============
+const fxCanvas = $('fxCanvas');
+const fxCtx = fxCanvas.getContext('2d');
+let fxParticles = [];
+function resizeFx(){
+  fxCanvas.width = fxCanvas.offsetWidth;
+  fxCanvas.height = fxCanvas.offsetHeight;
+}
+window.addEventListener('resize', resizeFx);
+setTimeout(resizeFx, 100);
+
+function triggerFX(r){
+  const cx = fxCanvas.width/2;
+  const cy = fxCanvas.height/2;
+  const n = 30 + r.tier * 30;
+  for (let i=0;i<n;i++){
+    const a = Math.random()*Math.PI*2;
+    const sp = 2 + Math.random()*4 + r.tier;
+    fxParticles.push({
+      x:cx, y:cy,
+      vx:Math.cos(a)*sp, vy:Math.sin(a)*sp,
+      life:1, color:r.color, size:2+Math.random()*3
+    });
+  }
+}
+function fxLoop(){
+  fxCtx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
+  fxParticles = fxParticles.filter(p => p.life > 0);
+  fxParticles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    p.vx *= 0.96; p.vy *= 0.96;
+    p.life -= 0.02;
+    fxCtx.globalAlpha = Math.max(0, p.life);
+    fxCtx.fillStyle = p.color;
+    fxCtx.shadowColor = p.color;
+    fxCtx.shadowBlur = 12;
+    fxCtx.beginPath();
+    fxCtx.arc(p.x, p.y, Math.max(0.1, p.size * p.life), 0, Math.PI*2);
+    fxCtx.fill();
+  });
+  fxCtx.globalAlpha = 1;
+  fxCtx.shadowBlur = 0;
+  requestAnimationFrame(fxLoop);
+}
+fxLoop();
+
+// ============ 星空背景 ============
+const starsCanvas = $('stars');
+const sCtx = starsCanvas.getContext('2d');
+let stars = [];
+function initStars(){
+  starsCanvas.width = innerWidth;
+  starsCanvas.height = innerHeight;
+  stars = [];
+  for (let i=0;i<150;i++){
+    stars.push({
+      x:Math.random()*innerWidth, y:Math.random()*innerHeight,
+      r:Math.random()*1.4, a:Math.random()*0.6+0.2,
+      sp:Math.random()*0.02+0.005
+    });
+  }
+}
+initStars();
+window.addEventListener('resize', initStars);
+function starLoop(){
+  sCtx.clearRect(0,0,starsCanvas.width,starsCanvas.height);
+  stars.forEach(s => {
+    s.a += s.sp;
+    const alpha = 0.3 + Math.abs(Math.sin(s.a))*0.6;
+    sCtx.fillStyle = `rgba(255,240,200,${alpha})`;
+    sCtx.beginPath();
+    sCtx.arc(s.x, s.y, Math.max(0.1, s.r), 0, Math.PI*2);
+    sCtx.fill();
+  });
+  requestAnimationFrame(starLoop);
+}
+starLoop();
+
+// ============ UI 更新 ============
+function updateUI(){
+  coinEl.textContent = formatNum(state.coins);
+  cpsEl.textContent = formatNum(calcCPS()) + '/s';
+  luckyEl.textContent = state.lucky;
+  $('multiLv').textContent = state.multiLevel;
+  $('btnMulti').textContent = state.multiLevel;
+  $('luckyLv').textContent = state.lucky;
+  $('upMultiCost').textContent = formatNum(state.multiCost);
+  $('upLuckyCost').textContent = formatNum(state.luckyCost);
+  
+  $('upMulti').disabled = state.coins < state.multiCost;
+  $('upLucky').disabled = state.coins < state.luckyCost;
+
+  $('statTotal').textContent = formatNum(state.totalDraws);
+  const collected = RARITIES.filter(r => (state.cards[r.id]||0) > 0).length;
+  $('statCollected').textContent = `${collected} / 18`;
+  $('statBest').textContent = state.bestTier >= 0 ? RARITIES[state.bestTier].id : '—';
+  if (state.bestTier >= 0) $('statBest').style.color = RARITIES[state.bestTier].color;
+  
+  const elapsed = (Date.now() - state.startTime)/1000;
+  $('statTime').textContent = formatTime(elapsed);
+
+  // 自动抽卡状态
+  if (state.coins >= 10_000_000) state.autoUnlocked = true;
+  const autoBtn = $('upAuto');
+  const autoLabel = $('autoLabel');
+  const autoToggle = $('autoToggle');
+  const autoStatus = $('autoStatus');
+  if (state.autoUnlocked) {
+    autoStatus.textContent = '已解锁';
+    autoStatus.classList.remove('text-[var(--muted)]');
+    autoStatus.style.color = '#00e5ff';
+    autoLabel.textContent = '切换开关';
+    autoToggle.textContent = state.autoEnabled ? 'ON' : 'OFF';
+    autoToggle.style.color = state.autoEnabled ? '#22c55e' : '#00e5ff';
+    autoBtn.disabled = false;
+  } else {
+    autoStatus.textContent = '未解锁';
+    autoStatus.style.color = '';
+    autoStatus.classList.add('text-[var(--muted)]');
+    autoLabel.textContent = `还需 ${formatNum(10_000_000 - state.coins)} 星辉石`;
+    autoToggle.textContent = 'OFF';
+    autoToggle.style.color = '#00e5ff';
+    autoBtn.disabled = true;
+  }
+
+  renderCodex();
+}
+
+// ============ 升级 ============
+$('upMulti').addEventListener('click', () => {
+  if (state.coins < state.multiCost) return;
+  state.coins -= state.multiCost;
+  state.multiLevel++;
+  state.multiCost = Math.floor(state.multiCost * 1.6);
+  updateUI();
+  save();
+  addLog(`多重抽卡升级 → x${state.multiLevel}`, '#f5c842');
+});
+$('upLucky').addEventListener('click', () => {
+  if (state.coins < state.luckyCost) return;
+  state.coins -= state.luckyCost;
+  state.lucky++;
+  state.luckyCost = Math.floor(state.luckyCost * 1.85);
+  updateUI();
+  save();
+  addLog(`幸运值提升 → ${state.lucky}`, '#ff2d95');
+});
+
+// ============ 自动抽卡开关 ============
+$('upAuto').addEventListener('click', () => {
+  if (!state.autoUnlocked) return;
+  state.autoEnabled = !state.autoEnabled;
+  updateUI();
+  save();
+  addLog(state.autoEnabled ? '自动抽卡已开启 · 每 0.2s 一次' : '自动抽卡已关闭', '#00e5ff');
+});
+
+// ============ 抽卡按钮 ============
+drawBtn.addEventListener('click', doDraw);
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' && !drawing) {
+    e.preventDefault();
+    doDraw();
+  }
+});
+
+// ============ 重置 ============
+$('resetBtn').addEventListener('click', () => {
+  if (!confirm('确定要重置所有进度吗？此操作不可撤销。')) return;
+  localStorage.removeItem('genesisDrawSave');
+  location.reload();
+});
+
+// ============ 自动保存 + 金币循环 ============
+function save(){
+  state.lastSave = Date.now();
+  localStorage.setItem('genesisDrawSave', JSON.stringify(state));
+}
+setInterval(save, 5000);
+window.addEventListener('beforeunload', save);
+
+let lastTick = Date.now();
+setInterval(() => {
+  const now = Date.now();
+  const dt = (now - lastTick)/1000;
+  lastTick = now;
+  state.coins += calcCPS() * dt;
+  coinEl.textContent = formatNum(state.coins);
+  cpsEl.textContent = formatNum(calcCPS()) + '/s';
+  // 更新升级按钮可用性
+  $('upMulti').disabled = state.coins < state.multiCost;
+  $('upLucky').disabled = state.coins < state.luckyCost;
+  $('statTime').textContent = formatTime((now - state.startTime)/1000);
+}, 200);
+
+// ============ 自动抽卡循环：每 0.2s 尝试一次 ============
+setInterval(() => {
+  if (!state.autoEnabled || !state.autoUnlocked || drawing) return;
+  doDraw();
+}, 200);
+
+// ============ 设置弹窗 ============
+const settingsModal = $('settingsModal');
+$('settingsBtn').addEventListener('click', () => {
+  $('csT1').checked = state.cutscene.t1;
+  $('csT2').checked = state.cutscene.t2;
+  $('csT3').checked = state.cutscene.t3;
+  $('csT4').checked = state.cutscene.t4;
+  $('settingsMsg').textContent = '';
+  settingsModal.classList.remove('hidden');
+  settingsModal.classList.add('flex');
+});
+$('closeSettings').addEventListener('click', () => {
+  settingsModal.classList.add('hidden');
+  settingsModal.classList.remove('flex');
+});
+settingsModal.addEventListener('click', (e) => {
+  if (e.target === settingsModal) {
+    settingsModal.classList.add('hidden');
+    settingsModal.classList.remove('flex');
+  }
+});
+
+['T1','T2','T3','T4'].forEach(t => {
+  $('cs'+t).addEventListener('change', (e) => {
+    state.cutscene['t'+t.slice(1)] = e.target.checked;
+    save();
+    $('settingsMsg').textContent = '设置已保存';
+    setTimeout(()=> $('settingsMsg').textContent='', 1500);
+  });
+});
+
+$('exportSave').addEventListener('click', async () => {
+  const data = btoa(encodeURIComponent(JSON.stringify(state)));
+  try {
+    await navigator.clipboard.writeText(data);
+    $('settingsMsg').textContent = '✓ 存档已复制到剪贴板';
+  } catch (err) {
+    $('importArea').value = data;
+    $('importArea').select();
+    document.execCommand('copy');
+    $('settingsMsg').textContent = '✓ 存档已复制（请手动保存）';
+  }
+  setTimeout(()=> $('settingsMsg').textContent='', 2000);
+});
+
+$('importSave').addEventListener('click', () => {
+  const text = $('importArea').value.trim();
+  if (!text) {
+    $('settingsMsg').textContent = '✗ 请粘贴存档数据';
+    setTimeout(()=> $('settingsMsg').textContent='', 2000);
+    return;
+  }
+  try {
+    const data = JSON.parse(decodeURIComponent(atob(text)));
+    Object.assign(state, data);
+    if (!state.cutscene) state.cutscene = { t1:true, t2:true, t3:true, t4:true };
+    save();
+    updateUI();
+    $('settingsMsg').textContent = '✓ 存档导入成功';
+    setTimeout(()=> {
+      settingsModal.classList.add('hidden');
+      settingsModal.classList.remove('flex');
+    }, 1000);
+  } catch (err) {
+    $('settingsMsg').textContent = '✗ 存档格式错误';
+    setTimeout(()=> $('settingsMsg').textContent='', 2500);
+  }
+});
+
+// 初始化
+updateUI();
+addLog('欢迎来到抽卡2.0 · 命运之门已开启', '#f5c842');
+if (state.totalDraws > 0) addLog(`存档已加载 · 累计抽卡 ${formatNum(state.totalDraws)}`, '#00e5ff');
+</script>
+</body>
+</html>
