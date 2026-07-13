@@ -321,7 +321,7 @@ function showDamageText(damage) {
     }, 1000);
 }
 
-// 计算信标增益
+// 计算信标增益 (使用 gameData.beacon)
 function calculateBeaconBonus() {
     return Math.pow(1 + gameData.beacon, 0.64);
 }
@@ -679,7 +679,6 @@ function setupDebugInputs() {
     document.querySelectorAll('.editable-debug').forEach(input => {
         input.addEventListener('change', (e) => {
             const id = e.target.id;
-            // 去除可能存在的后缀 'x'
             let val = parseFloat(e.target.value.replace('x', '').trim());
             if (isNaN(val)) return;
 
@@ -717,19 +716,18 @@ function setupDebugInputs() {
                     gameData.specialBonus = val;
                     break;
                 case 'level-bonus':
-                    gameData.level = Math.pow(val, 2); // val = level^0.5 => level = val^2
+                    gameData.level = Math.pow(val, 2); 
                     break;
                 case 'trophy-bonus':
-                    gameData.trophies = Math.max(0, Math.pow(val, 1.5) - 1); // val = (1+trophies)^(2/3) => 1+trophies = val^1.5
+                    gameData.trophies = Math.max(0, Math.pow(val, 1.5) - 1); 
                     break;
                 case 'beacon-bonus':
-                    gameData.beacon = Math.max(0, Math.pow(val, 1 / 0.64) - 1); // val = (1+beacon)^0.64 => 1+beacon = val^(1/0.64)
+                    gameData.beacon = Math.max(0, Math.pow(val, 1 / 0.64) - 1); 
                     break;
                 case 'tree-bonus':
-                    gameData.treeLevel = Math.max(1, Math.floor(Math.pow(val, 2.5))); // val = treeLevel^0.4 => treeLevel = val^2.5
+                    gameData.treeLevel = Math.max(1, Math.floor(Math.pow(val, 2.5))); 
                     break;
                 case 'time-bonus':
-                    // log8(seconds / 160) = val => seconds = 160 * 8^val
                     const seconds = 160 * Math.pow(8, val);
                     gameData.originalStartTime = Date.now() - (seconds * 1000);
                     break;
@@ -914,6 +912,12 @@ function loadGame() {
             Object.assign(pickaxe, defaultPickaxe);
             pickaxe.count = currentCount;
         });
+    }
+
+    // 兼容旧存档：如果信标物品有数量但 gameData.beacon 没有同步，则同步
+    const beaconItem = gameData.pickaxes.find(p => p.name === '信标');
+    if (beaconItem && beaconItem.count > gameData.beacon) {
+        gameData.beacon = beaconItem.count;
     }
 
     processOfflineMining();
@@ -1290,6 +1294,12 @@ function buyPickaxe(e) {
                 }
             }
             pickaxe.count++;
+            
+            // 修复信标数量同步问题
+            if (pickaxe.name === '信标') {
+                gameData.beacon = pickaxe.count;
+            }
+            
             initShop();
             updateStats();
         }
