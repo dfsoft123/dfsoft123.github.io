@@ -46,7 +46,7 @@ const gameData = {
         { name: '方立水', hp: 1e13, coins: 4.5e8, drop: 'waterCube', dropAmount: 64, sqrtZone: 3 },
         { name: '水沝㴇淼㵘', hp: 5e14, coins: 1e9, drop: 'waterCube', dropAmount: 256, sqrtZone: 3 },
         { name: '纯金', hp: 2e15, coins: 1e10, sqrtZone: 3 },
-        { name: '元素晶片', hp: 1e13, coins: 1e6, drop: 'elementChip', sqrtZone: 3 }
+        { name: '元素晶片', hp: 1e17, coins: 1e6, drop: 'elementChip', sqrtZone: 3 }
     ],
     // 镐子属性
     pickaxes: [
@@ -569,8 +569,8 @@ function updateStats() {
     elements.blocksMined.textContent = formatNumber(gameData.blocksMined);
 
     if (gameData.researchInstituteActive) {
-        elements.researchInactive.style.display = 'none';
-        elements.researchActive.style.display = 'block';
+        if(elements.researchInactive) elements.researchInactive.style.display = 'none';
+        if(elements.researchActive) elements.researchActive.style.display = 'block';
         setStat(elements.energyTotal, formatNumber(gameData.energy));
         setStat(elements.energySpeed, formatNumber(gameData.energyProductionSpeed) + '/秒');
         setStat(elements.energyBonusStat, formatNumber(energyBonus) + 'x');
@@ -579,8 +579,8 @@ function updateStats() {
         elements.upgradeEnergyBtn.textContent = `升级产能 (消耗: ${formatNumber(gameData.energyUpgradeCost)} 能量)`;
         elements.upgradeEnergyBtn.disabled = gameData.energy < gameData.energyUpgradeCost;
     } else {
-        elements.researchInactive.style.display = 'block';
-        elements.researchActive.style.display = 'none';
+        if(elements.researchInactive) elements.researchInactive.style.display = 'block';
+        if(elements.researchActive) elements.researchActive.style.display = 'none';
     }
 }
 
@@ -652,15 +652,23 @@ function loadGame() {
         const savedGame = localStorage.getItem('miningGameSave');
         if (savedGame) {
             const gameState = JSON.parse(savedGame);
-            if (gameState.blocks) {
+            if (gameState.blocks) { // 旧版本存档清除
                 localStorage.removeItem('miningGameSave');
-                gameData.currentHp = gameData.blocks[gameData.currentBlockIndex].hp;
                 return;
             }
-            Object.assign(gameData, gameState);
+            // 逐个属性赋值，不覆盖 pickaxes 数组
+            for (const key in gameData) {
+                if (key === 'pickaxes') continue;
+                if (gameState[key] !== undefined) {
+                    gameData[key] = gameState[key];
+                }
+            }
+            // 单独处理 pickaxes，确保新加的镐子不丢失
             if (gameState.pickaxes) {
                 gameState.pickaxes.forEach((savedPickaxe, index) => {
-                    if (gameData.pickaxes[index]) gameData.pickaxes[index].count = savedPickaxe.count;
+                    if (gameData.pickaxes[index]) {
+                        gameData.pickaxes[index].count = savedPickaxe.count || 0;
+                    }
                 });
             }
         }
@@ -669,10 +677,12 @@ function loadGame() {
         localStorage.removeItem('miningGameSave');
     }
 
+    // 兼容旧存档信标同步
     const beaconItem = gameData.pickaxes.find(p => p.name === '信标');
     if (beaconItem && beaconItem.count > gameData.beacon) {
         gameData.beacon = beaconItem.count;
     }
+
     processOfflineMining();
 }
 
@@ -686,7 +696,7 @@ function processOfflineMining() {
         const offlineSeconds = Math.floor(offlineTime / 1000);
         const offlineEnergy = offlineSeconds * gameData.energyProductionSpeed;
         gameData.energy += offlineEnergy;
-        const offlineTreeExp = Math.pow(gameData.energy, 0.55) * offlineSeconds; // 近似计算
+        const offlineTreeExp = Math.pow(gameData.energy, 0.55) * offlineSeconds; 
         gameData.treeExperience += offlineTreeExp;
         const requiredExp = 10 * gameData.treeLevel;
         while (gameData.treeExperience >= requiredExp) {
@@ -726,13 +736,39 @@ function processOfflineMining() {
         gameData.currentHp = remainingHp;
         levelUp();
         checkAutoExchange();
-        // 简单弹出离线收益
         if (miningActions > 10) {
-            alert(`离线收益：\n金币 +${formatNumber(gameData.coins - beforeOffline.coins)}\n经验 +${formatNumber(gameData.experience - beforeOffline.experience)}\n能量 +${formatNumber(gameData.energy - beforeOffline.energy)}`);
+            showOfflineGainsPopup(beforeOffline, offlineTime);
         }
     }
     gameData.lastOnlineTime = now;
     gameData.startTime = now;
+}
+
+function showOfflineGainsPopup(beforeOffline, offlineTime) {
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.9); color: white; padding: 20px; border-radius: 10px;
+        z-index: 1000; max-width: 400px; max-height: 80vh; overflow-y: auto; font-family: Arial, sans-serif;
+    `;
+    const hours = Math.floor(offlineTime / (1000 * 60 * 60));
+    const minutes = Math.floor((offlineTime % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((offlineTime % (1000 * 60)) / 1000);
+    let timeStr = hours > 0 ? `${hours}小时` : minutes > 0 ? `${minutes}分钟` : `${seconds}秒`;
+
+    let html = `<h2 style="margin-top: 0; text-align: center;">离线收益</h2><p style="text-align: center; color: #aaa; margin-bottom: 20px;">离线时间: ${timeStr}</p><div style="display: grid; gap: 10px;">`;
+    
+    const coinsGain = gameData.coins - beforeOffline.coins;
+    const expGain = gameData.experience - beforeOffline.experience;
+    const energyGain = gameData.energy - beforeOffline.energy;
+
+    if (coinsGain > 0) html += `<div style="display: flex; justify-content: space-between;"><span>金币:</span><span style="color: gold;">+${formatNumber(coinsGain)}</span></div>`;
+    if (expGain > 0) html += `<div style="display: flex; justify-content: space-between;"><span>经验:</span><span style="color: #5cdb95;">+${formatNumber(expGain)}</span></div>`;
+    if (energyGain > 0) html += `<div style="display: flex; justify-content: space-between;"><span>能量:</span><span style="color: #00f3ff;">+${formatNumber(energyGain)}</span></div>`;
+    
+    html += `</div><div style="text-align: center; margin-top: 20px;"><button onclick="this.parentElement.parentElement.remove()" style="padding: 10px 20px; background: #444; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">确定</button></div>`;
+    popup.innerHTML = html;
+    document.body.appendChild(popup);
 }
 
 function updatePlaytime() {
