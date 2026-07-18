@@ -458,540 +458,538 @@
 
     <script>
         // === 游戏数据 ===
-        const gameData = {
-            blocks: [
-                { name: '土块I', hp: 100, coins: 1, sqrtZone: 1 },
-                { name: '土块II', hp: 300, coins: 2, sqrtZone: 1 },
-                { name: '土块III', hp: 500, coins: 3, sqrtZone: 1 },
-                { name: '石块I', hp: 1000, coins: 5, sqrtZone: 1 },
-                { name: '石块II', hp: 3000, coins: 10, sqrtZone: 1 },
-                { name: '石块III', hp: 5000, coins: 15, sqrtZone: 1 },
-                { name: '铁块I', hp: 10000, coins: 20, sqrtZone: 1 },
-                { name: '铁块II', hp: 30000, coins: 30, sqrtZone: 1 },
-                { name: '铁块III', hp: 100000, coins: 50, sqrtZone: 1 },
-                { name: '金块I', hp: 5e5, coins: 100, sqrtZone: 1 },
-                { name: '金块II', hp: 1e6, coins: 150, sqrtZone: 1 },
-                { name: '金块III', hp: 3e6, coins: 200, sqrtZone: 1 },
-                { name: '钻石块I', hp: 1e7, coins: 300, sqrtZone: 1 },
-                { name: '钻石块II', hp: 8e7, coins: 500, sqrtZone: 1 },
-                { name: '钻石块III', hp: 5e8, coins: 1000, sqrtZone: 1 },
-                { name: '下界合金块I', hp: 5e9, coins: 1500, sqrtZone: 1 },
-                { name: '下界合金块II', hp: 1e11, coins: 2000, sqrtZone: 1 },
-                { name: '下界合金块III', hp: 1e12, coins: 3000, sqrtZone: 1 },
-                { name: '紫水晶块', hp: 1e13, coins: 5000, drop: 'amethyst', sqrtZone: 1 },
-                { name: '铜块', hp: 2e14, coins: 10000, drop: 'copperIngot', sqrtZone: 1 },
-                { name: '京核', hp: 1e32, coins: 6.4e8, drop: 'jingCore', dropChance: 32, sqrtZone: 1 },
-                { name: '蓝曜石碎片', hp: 3.2e9, coins: 50000, drop: 'blueObsidianFragment', sqrtZone: 2 },
-                { name: '红曜石碎片', hp: 9.6e9, coins: 100000, drop: 'redObsidianFragment', sqrtZone: 2 },
-                { name: '红蓝结晶', hp: 2.4e10, coins: 180000, drop: 'redBlueCrystal', sqrtZone: 2 },
-                { name: '基岩碎片', hp: 8e10, coins: 320000, drop: 'bedrockFragment', sqrtZone: 2 },
-                { name: '黑曜石', hp: 4.4e11, coins: 600000, drop: 'obsidian', sqrtZone: 2 },
-                { name: '下界之星', hp: 1e12, coins: 1e6, drop: 'netherStar', sqrtZone: 2 },
-                { name: '玻璃', hp: 1, coins: 1, drop: 'glass', dropChance: 0.1, sqrtZone: 2 },
-                { name: '坤坤', hp: 2.5e13, coins: 2.5e6, drop: 'kunKun', sqrtZone: 2 },
-                { name: '物质X', hp: 1e24, coins: 1e8, drop: 'matterX', sqrtZone: 2 },
-                { name: '物质Y', hp: 1e24, coins: 1e8, drop: 'matterY', sqrtZone: 2 },
-                { name: '物质Z', hp: 1e24, coins: 1e8, drop: 'matterZ', sqrtZone: 2 },
-                { name: '玻璃2.0', hp: 4e9, coins: 1e7, drop: 'glass', sqrtZone: 3 },
-                { name: '土核心', hp: 1e10, coins: 1.5e7, drop: 'earthCore', sqrtZone: 3 },
-                { name: '木核心', hp: 1.5e10, coins: 2e7, drop: 'woodCore', sqrtZone: 3 },
-                { name: '火立方', hp: 5e10, coins: 3e7, drop: 'fireCube', sqrtZone: 3 },
-                { name: '水立方', hp: 8e10, coins: 5e7, drop: 'waterCube', sqrtZone: 3 },
-                { name: '金立方', hp: 2e11, coins: 1e8, drop: 'goldCube', sqrtZone: 3 },
-                { name: '五行结晶', hp: 4e12, coins: 2e8, drop: 'fiveElementCrystal', sqrtZone: 3 },
-                { name: '方立水', hp: 1e13, coins: 4.5e8, drop: 'waterCube', dropAmount: 64, sqrtZone: 3 },
-                { name: '水沝㴇淼㵘', hp: 5e14, coins: 1e9, drop: 'waterCube', dropAmount: 256, sqrtZone: 3 },
-                { name: '纯金', hp: 2e15, coins: 1e10, sqrtZone: 3 },
-                { name: '元素晶片', hp: 1e17, coins: 1e6, drop: 'elementChip', sqrtZone: 3 }
-            ],
-            pickaxes: [
-                { name: '木镐', damage: 1, usage: 0.01, coins: 1, price: 1, count: 1, currency: 'trophies' },
-                { name: '石镐', damage: 2, usage: 0.02, coins: 1, price: 2, count: 0, currency: 'trophies' },
-                { name: '铁镐', damage: 5, usage: 0.03, coins: 1, price: 6, count: 0, currency: 'trophies' },
-                { name: '金镐', damage: 15, usage: 0.05, coins: 1, price: 24, count: 0, currency: 'trophies' },
-                { name: '钻石镐', damage: 50, usage: 0.1, coins: 1, price: 120, count: 0, currency: 'trophies' },
-                { name: '下界合金镐', damage: 200, usage: 0.2, coins: 1, price: 600, count: 0, currency: 'trophies' },
-                { name: '红石镐', damage: 1000, usage: 0.3, coins: 1, price: 3000, count: 0, currency: 'trophies' },
-                { name: '青金石镐', damage: 5000, usage: 0.5, coins: 1, price: 15000, count: 0, currency: 'trophies' },
-                { name: '下界石英镐', damage: 20000, usage: 0.8, coins: 1, price: 75000, count: 0, currency: 'trophies' },
-                { name: '萤石镐', damage: 80000, usage: 1, coins: 1, price: 375000, count: 0, currency: 'trophies' },
-                { name: '黑曜石镐', damage: 350000, usage: 1.2, coins: 1, price: 1875000, count: 0, currency: 'trophies' },
-                { name: '紫水晶镐I', damage: 1, usage: 2, coins: 1, price: 10, count: 0, currency: 'amethyst' },
-                { name: '紫水晶镐II', damage: 5, usage: 3, coins: 1, price: 25, count: 0, currency: 'amethyst' },
-                { name: '紫水晶镐III', damage: 25, usage: 4, coins: 1, price: 100, count: 0, currency: 'amethyst' },
-                { name: '紫水晶镐IV', damage: 125, usage: 5, coins: 1, price: 500, count: 0, currency: 'amethyst' },
-                { name: '紫水晶镐V', damage: 625, usage: 6, coins: 1, price: 2000, count: 0, currency: 'amethyst' },
-                { name: '紫水晶镐VI', damage: 3125, usage: 7, coins: 1, price: 10000, count: 0, currency: 'amethyst' },
-                { name: '铜镐I', damage: 1, usage: 1, coins: 1.5, price: 10, count: 0, currency: 'copperIngot' },
-                { name: '铜镐II', damage: 5, usage: 1, coins: 2, price: 25, count: 0, currency: 'copperIngot' },
-                { name: '铜镐III', damage: 25, usage: 1, coins: 2.5, price: 100, count: 0, currency: 'copperIngot' },
-                { name: '铜镐IV', damage: 125, usage: 1, coins: 3, price: 500, count: 0, currency: 'copperIngot' },
-                { name: '铜镐V', damage: 625, usage: 1, coins: 3.5, price: 2000, count: 0, currency: 'copperIngot' },
-                { name: '铜镐VI', damage: 3125, usage: 1, coins: 4, price: 10000, count: 0, currency: 'copperIngot' },
-                { name: '蓝曜石镐', damage: 1000000, usage: 1.5, coins: 1, count: 0, isCraftable: true, recipe: { '黑曜石镐': 1, '紫水晶镐VI': 1, '铜镐VI': 1, '蓝曜石碎片': 10 } },
-                { name: '红曜石镐', damage: 2500000, usage: 2, coins: 1, count: 0, isCraftable: true, recipe: { '蓝曜石镐': 1, '红曜石碎片': 10 } },
-                { name: '红蓝镐', damage: 6666666, usage: 3, coins: 1.5, count: 0, isCraftable: true, recipe: { '蓝曜石镐': 1, '红曜石镐': 1, '红蓝结晶': 10 } },
-                { name: '基岩镐', damage: 1.6e7, usage: 4, coins: 1.5, count: 0, isCraftable: true, recipe: { '红蓝镐': 1, '基岩碎片': 10 } },
-                { name: '坤坤镐', damage: 8e7, usage: 5, coins: 2.5, count: 0, isCraftable: true, recipe: { '基岩镐': 1, '坤坤': 25 } },
-                { name: '土核心镐', damage: 2e8, usage: 6, coins: 2.5, count: 0, isCraftable: true, recipe: { '坤坤镐': 1, '土核心': 10 } },
-                { name: '木核心镐', damage: 3e8, usage: 7, coins: 2.5, count: 0, isCraftable: true, recipe: { '土核心镐': 1, '木核心': 10 } },
-                { name: '火立方镐', damage: 1e9, usage: 8, coins: 2.5, count: 0, isCraftable: true, recipe: { '火立方': 10, '使用增益': 2.5e5 } },
-                { name: '水立方镐', damage: 2e9, usage: 9, coins: 2.5, count: 0, isCraftable: true, recipe: { '水立方': 10, '使用增益': 2.5e5 } },
-                { name: '金立方镐', damage: 5e9, usage: 10, coins: 3.5, count: 0, isCraftable: true, recipe: { '金立方': 10, '金币': 1e11 } },
-                { name: '五行镐', damage: 1e10, usage: 15, coins: 5, count: 0, isCraftable: true, recipe: { '土核心镐': 1, '木核心镐': 1, '火立方镐': 1, '水立方镐': 1, '金立方镐': 1, '五行结晶': 10 } },
-                { name: '京镐', damage: 2e10, usage: 16, coins: 5.4, count: 0, isCraftable: true, recipe: { '五行镐': 1, '京核': 32 } },
-                { name: '元素镐', damage: 5e10, usage: 20, coins: 6.4, count: 0, isCraftable: true, recipe: { '元素晶片': 1000 } },
-                { name: '信标', type: 'item', count: 0, isCraftable: true, recipe: { '黑曜石': 3, '玻璃': 5, '下界之星': 1 } }
-            ],
-            currentBlockIndex: 0, currentPickaxeIndex: 0, coins: 0, trophies: 0, amethyst: 0, copperIngot: 0,
-            blueObsidianFragment: 0, redObsidianFragment: 0, redBlueCrystal: 0, bedrockFragment: 0, obsidian: 0,
-            netherStar: 0, glass: 0, kunKun: 0, earthCore: 0, woodCore: 0, fireCube: 0, waterCube: 0, goldCube: 0,
-            fiveElementCrystal: 0, jingCore: 0, elementChip: 0, matterX: 0, matterY: 0, matterZ: 0, beacon: 0,
-            level: 1, experience: 0, usageBonus: 1, specialBonus: 1, digCount: 0, blocksMined: 0,
-            treeLevel: 1, treeExperience: 0, autoMine: false, autoExchange: false, autoExchangeThreshold: 1000,
-            startTime: Date.now(), originalStartTime: Date.now(), lastOnlineTime: Date.now(), currentHp: 100,
-            sqrtPower: 1, debugEnabled: false, researchInstituteActive: false, energy: 0, energyProductionSpeed: 1, energyUpgradeCost: 100
-        };
+       <script>
+    // === 游戏数据 ===
+    const gameData = {
+        blocks: [
+            { name: '土块I', hp: 100, coins: 1, sqrtZone: 1 },
+            { name: '土块II', hp: 300, coins: 2, sqrtZone: 1 },
+            { name: '土块III', hp: 500, coins: 3, sqrtZone: 1 },
+            { name: '石块I', hp: 1000, coins: 5, sqrtZone: 1 },
+            { name: '石块II', hp: 3000, coins: 10, sqrtZone: 1 },
+            { name: '石块III', hp: 5000, coins: 15, sqrtZone: 1 },
+            { name: '铁块I', hp: 10000, coins: 20, sqrtZone: 1 },
+            { name: '铁块II', hp: 30000, coins: 30, sqrtZone: 1 },
+            { name: '铁块III', hp: 100000, coins: 50, sqrtZone: 1 },
+            { name: '金块I', hp: 5e5, coins: 100, sqrtZone: 1 },
+            { name: '金块II', hp: 1e6, coins: 150, sqrtZone: 1 },
+            { name: '金块III', hp: 3e6, coins: 200, sqrtZone: 1 },
+            { name: '钻石块I', hp: 1e7, coins: 300, sqrtZone: 1 },
+            { name: '钻石块II', hp: 8e7, coins: 500, sqrtZone: 1 },
+            { name: '钻石块III', hp: 5e8, coins: 1000, sqrtZone: 1 },
+            { name: '下界合金块I', hp: 5e9, coins: 1500, sqrtZone: 1 },
+            { name: '下界合金块II', hp: 1e11, coins: 2000, sqrtZone: 1 },
+            { name: '下界合金块III', hp: 1e12, coins: 3000, sqrtZone: 1 },
+            { name: '紫水晶块', hp: 1e13, coins: 5000, drop: 'amethyst', sqrtZone: 1 },
+            { name: '铜块', hp: 2e14, coins: 10000, drop: 'copperIngot', sqrtZone: 1 },
+            { name: '京核', hp: 1e32, coins: 6.4e8, drop: 'jingCore', dropChance: 32, sqrtZone: 1 },
+            { name: '蓝曜石碎片', hp: 3.2e9, coins: 50000, drop: 'blueObsidianFragment', sqrtZone: 2 },
+            { name: '红曜石碎片', hp: 9.6e9, coins: 100000, drop: 'redObsidianFragment', sqrtZone: 2 },
+            { name: '红蓝结晶', hp: 2.4e10, coins: 180000, drop: 'redBlueCrystal', sqrtZone: 2 },
+            { name: '基岩碎片', hp: 8e10, coins: 320000, drop: 'bedrockFragment', sqrtZone: 2 },
+            { name: '黑曜石', hp: 4.4e11, coins: 600000, drop: 'obsidian', sqrtZone: 2 },
+            { name: '下界之星', hp: 1e12, coins: 1e6, drop: 'netherStar', sqrtZone: 2 },
+            { name: '玻璃', hp: 1, coins: 1, drop: 'glass', dropChance: 0.1, sqrtZone: 2 },
+            { name: '坤坤', hp: 2.5e13, coins: 2.5e6, drop: 'kunKun', sqrtZone: 2 },
+            { name: '物质X', hp: 1e24, coins: 1e8, drop: 'matterX', sqrtZone: 2 },
+            { name: '物质Y', hp: 1e24, coins: 1e8, drop: 'matterY', sqrtZone: 2 },
+            { name: '物质Z', hp: 1e24, coins: 1e8, drop: 'matterZ', sqrtZone: 2 },
+            { name: '玻璃2.0', hp: 4e9, coins: 1e7, drop: 'glass', sqrtZone: 3 },
+            { name: '土核心', hp: 1e10, coins: 1.5e7, drop: 'earthCore', sqrtZone: 3 },
+            { name: '木核心', hp: 1.5e10, coins: 2e7, drop: 'woodCore', sqrtZone: 3 },
+            { name: '火立方', hp: 5e10, coins: 3e7, drop: 'fireCube', sqrtZone: 3 },
+            { name: '水立方', hp: 8e10, coins: 5e7, drop: 'waterCube', sqrtZone: 3 },
+            { name: '金立方', hp: 2e11, coins: 1e8, drop: 'goldCube', sqrtZone: 3 },
+            { name: '五行结晶', hp: 4e12, coins: 2e8, drop: 'fiveElementCrystal', sqrtZone: 3 },
+            { name: '方立水', hp: 1e13, coins: 4.5e8, drop: 'waterCube', dropAmount: 64, sqrtZone: 3 },
+            { name: '水沝㴇淼㵘', hp: 5e14, coins: 1e9, drop: 'waterCube', dropAmount: 256, sqrtZone: 3 },
+            { name: '纯金', hp: 2e15, coins: 1e10, sqrtZone: 3 },
+            { name: '元素晶片', hp: 1e17, coins: 1e6, drop: 'elementChip', sqrtZone: 3 }
+        ],
+        pickaxes: [
+            { name: '木镐', damage: 1, usage: 0.01, coins: 1, price: 1, count: 1, currency: 'trophies' },
+            { name: '石镐', damage: 2, usage: 0.02, coins: 1, price: 2, count: 0, currency: 'trophies' },
+            { name: '铁镐', damage: 5, usage: 0.03, coins: 1, price: 6, count: 0, currency: 'trophies' },
+            { name: '金镐', damage: 15, usage: 0.05, coins: 1, price: 24, count: 0, currency: 'trophies' },
+            { name: '钻石镐', damage: 50, usage: 0.1, coins: 1, price: 120, count: 0, currency: 'trophies' },
+            { name: '下界合金镐', damage: 200, usage: 0.2, coins: 1, price: 600, count: 0, currency: 'trophies' },
+            { name: '红石镐', damage: 1000, usage: 0.3, coins: 1, price: 3000, count: 0, currency: 'trophies' },
+            { name: '青金石镐', damage: 5000, usage: 0.5, coins: 1, price: 15000, count: 0, currency: 'trophies' },
+            { name: '下界石英镐', damage: 20000, usage: 0.8, coins: 1, price: 75000, count: 0, currency: 'trophies' },
+            { name: '萤石镐', damage: 80000, usage: 1, coins: 1, price: 375000, count: 0, currency: 'trophies' },
+            { name: '黑曜石镐', damage: 350000, usage: 1.2, coins: 1, price: 1875000, count: 0, currency: 'trophies' },
+            { name: '紫水晶镐I', damage: 1, usage: 2, coins: 1, price: 10, count: 0, currency: 'amethyst' },
+            { name: '紫水晶镐II', damage: 5, usage: 3, coins: 1, price: 25, count: 0, currency: 'amethyst' },
+            { name: '紫水晶镐III', damage: 25, usage: 4, coins: 1, price: 100, count: 0, currency: 'amethyst' },
+            { name: '紫水晶镐IV', damage: 125, usage: 5, coins: 1, price: 500, count: 0, currency: 'amethyst' },
+            { name: '紫水晶镐V', damage: 625, usage: 6, coins: 1, price: 2000, count: 0, currency: 'amethyst' },
+            { name: '紫水晶镐VI', damage: 3125, usage: 7, coins: 1, price: 10000, count: 0, currency: 'amethyst' },
+            { name: '铜镐I', damage: 1, usage: 1, coins: 1.5, price: 10, count: 0, currency: 'copperIngot' },
+            { name: '铜镐II', damage: 5, usage: 1, coins: 2, price: 25, count: 0, currency: 'copperIngot' },
+            { name: '铜镐III', damage: 25, usage: 1, coins: 2.5, price: 100, count: 0, currency: 'copperIngot' },
+            { name: '铜镐IV', damage: 125, usage: 1, coins: 3, price: 500, count: 0, currency: 'copperIngot' },
+            { name: '铜镐V', damage: 625, usage: 1, coins: 3.5, price: 2000, count: 0, currency: 'copperIngot' },
+            { name: '铜镐VI', damage: 3125, usage: 1, coins: 4, price: 10000, count: 0, currency: 'copperIngot' },
+            { name: '蓝曜石镐', damage: 1000000, usage: 1.5, coins: 1, count: 0, isCraftable: true, recipe: { '黑曜石镐': 1, '紫水晶镐VI': 1, '铜镐VI': 1, '蓝曜石碎片': 10 } },
+            { name: '红曜石镐', damage: 2500000, usage: 2, coins: 1, count: 0, isCraftable: true, recipe: { '蓝曜石镐': 1, '红曜石碎片': 10 } },
+            { name: '红蓝镐', damage: 6666666, usage: 3, coins: 1.5, count: 0, isCraftable: true, recipe: { '蓝曜石镐': 1, '红曜石镐': 1, '红蓝结晶': 10 } },
+            { name: '基岩镐', damage: 1.6e7, usage: 4, coins: 1.5, count: 0, isCraftable: true, recipe: { '红蓝镐': 1, '基岩碎片': 10 } },
+            { name: '坤坤镐', damage: 8e7, usage: 5, coins: 2.5, count: 0, isCraftable: true, recipe: { '基岩镐': 1, '坤坤': 25 } },
+            { name: '土核心镐', damage: 2e8, usage: 6, coins: 2.5, count: 0, isCraftable: true, recipe: { '坤坤镐': 1, '土核心': 10 } },
+            { name: '木核心镐', damage: 3e8, usage: 7, coins: 2.5, count: 0, isCraftable: true, recipe: { '土核心镐': 1, '木核心': 10 } },
+            { name: '火立方镐', damage: 1e9, usage: 8, coins: 2.5, count: 0, isCraftable: true, recipe: { '火立方': 10, '使用增益': 2.5e5 } },
+            { name: '水立方镐', damage: 2e9, usage: 9, coins: 2.5, count: 0, isCraftable: true, recipe: { '水立方': 10, '使用增益': 2.5e5 } },
+            { name: '金立方镐', damage: 5e9, usage: 10, coins: 3.5, count: 0, isCraftable: true, recipe: { '金立方': 10, '金币': 1e11 } },
+            { name: '五行镐', damage: 1e10, usage: 15, coins: 5, count: 0, isCraftable: true, recipe: { '土核心镐': 1, '木核心镐': 1, '火立方镐': 1, '水立方镐': 1, '金立方镐': 1, '五行结晶': 10 } },
+            { name: '京镐', damage: 2e10, usage: 16, coins: 5.4, count: 0, isCraftable: true, recipe: { '五行镐': 1, '京核': 32 } },
+            { name: '元素镐', damage: 5e10, usage: 20, coins: 6.4, count: 0, isCraftable: true, recipe: { '元素晶片': 1000 } },
+            { name: '信标', type: 'item', count: 0, isCraftable: true, recipe: { '黑曜石': 3, '玻璃': 5, '下界之星': 1 } }
+        ],
+        currentBlockIndex: 0, currentPickaxeIndex: 0, coins: 0, trophies: 0, amethyst: 0, copperIngot: 0,
+        blueObsidianFragment: 0, redObsidianFragment: 0, redBlueCrystal: 0, bedrockFragment: 0, obsidian: 0,
+        netherStar: 0, glass: 0, kunKun: 0, earthCore: 0, woodCore: 0, fireCube: 0, waterCube: 0, goldCube: 0,
+        fiveElementCrystal: 0, jingCore: 0, elementChip: 0, matterX: 0, matterY: 0, matterZ: 0, beacon: 0,
+        level: 1, experience: 0, usageBonus: 1, specialBonus: 1, digCount: 0, blocksMined: 0,
+        treeLevel: 1, treeExperience: 0, autoMine: false, autoExchange: false, autoExchangeThreshold: 1000,
+        startTime: Date.now(), originalStartTime: Date.now(), lastOnlineTime: Date.now(), currentHp: 100,
+        sqrtPower: 1, debugEnabled: false, researchInstituteActive: false, energy: 0, energyProductionSpeed: 1, energyUpgradeCost: 100
+    };
 
-        const elements = {};
-        ['block-name','current-hp','max-hp','hp-bar','exp-bar','prev-block','next-block','block-display','auto-mine-btn','auto-exchange-btn','auto-exchange-threshold','exchange-btn','damage-text-container','drop-info','pickaxe-name','pickaxe-damage','pickaxe-damage-value','pickaxe-usage-value','pickaxe-coins-value','usage-bonus','level-bonus','trophy-bonus','beacon-bonus','time-bonus','special-bonus','energy-bonus','total-damage','level','experience','coins','trophies','amethyst','copper-ingot','blue-obsidian-fragment','red-obsidian-fragment','red-blue-crystal','bedrock-fragment','obsidian','nether-star','glass','kun-kun','earth-core','wood-core','fire-cube','water-cube','gold-cube','five-element-crystal','jing-core','element-chip','matter-x','matter-y','matter-z','tree-level','tree-progress-bar','tree-experience','tree-experience-required','water-tree-btn','auto-water-tree-btn','craft-beacon-btn','sqrt-power','playtime','dig-count','blocks-mined','shop-items','redeem-input','redeem-btn','research-inactive','research-active','activate-research-btn','upgrade-energy-btn','energy-total','energy-speed','energy-bonus-stat','energy-usage-stat','energy-tree-stat'].forEach(id => elements[id.replace(/-([a-z])/g, g => g[1].toUpperCase())] = document.getElementById(id));
+    const elements = {};
+    ['block-name','current-hp','max-hp','hp-bar','exp-bar','prev-block','next-block','block-display','auto-mine-btn','auto-exchange-btn','auto-exchange-threshold','exchange-btn','damage-text-container','drop-info','pickaxe-name','pickaxe-damage','pickaxe-damage-value','pickaxe-usage-value','pickaxe-coins-value','usage-bonus','level-bonus','trophy-bonus','beacon-bonus','time-bonus','special-bonus','energy-bonus','total-damage','level','experience','coins','trophies','amethyst','copper-ingot','blue-obsidian-fragment','red-obsidian-fragment','red-blue-crystal','bedrock-fragment','obsidian','nether-star','glass','kun-kun','earth-core','wood-core','fire-cube','water-cube','gold-cube','five-element-crystal','jing-core','element-chip','matter-x','matter-y','matter-z','tree-level','tree-progress-bar','tree-experience','tree-experience-required','water-tree-btn','auto-water-tree-btn','craft-beacon-btn','sqrt-power','playtime','dig-count','blocks-mined','shop-items','redeem-input','redeem-btn','research-inactive','research-active','activate-research-btn','upgrade-energy-btn','energy-total','energy-speed','energy-bonus-stat','energy-usage-stat','energy-tree-stat'].forEach(id => elements[id.replace(/-([a-z])/g, g => g[1].toUpperCase())] = document.getElementById(id));
 
-        // 缓存上次更新的值，避免不必要的 DOM 操作
-        const lastStats = {};
-        function setStat(el, text) {
-            if (!el) return;
-            if (document.activeElement === el) return;
-            if (lastStats[el.id] === text) return;
-            lastStats[el.id] = text;
-            if (el.tagName === 'INPUT') el.value = text;
-            else el.textContent = text; 
+    // 缓存上次更新的值，避免不必要的 DOM 操作
+    const lastStats = {};
+    function setStat(el, text) {
+        if (!el) return;
+        if (document.activeElement === el) return;
+        if (lastStats[el.id] === text) return;
+        lastStats[el.id] = text;
+        if (el.tagName === 'INPUT') el.value = text;
+        else el.textContent = text; 
+    }
+
+    function formatNumber(num) {
+        if (num < 1000000) return num.toFixed(2).replace(/\.00$/, '');
+        const units = ['', '万', '亿', '万亿', '兆', '万兆', '亿兆', '万亿兆', '京', '万京', '亿京', '万亿京', '兆京', '万兆京', '亿兆京', '万亿兆京', '垓'];
+        let i = 0;
+        while (num >= 10000 && i < units.length - 1) { num /= 10000; i++; }
+        return num.toFixed(2) + units[i];
+    }
+
+    function updateBlockDisplay() {
+        const block = gameData.blocks[gameData.currentBlockIndex];
+        elements.blockName.textContent = block.name;
+        elements.currentHp.textContent = formatNumber(gameData.currentHp);
+        elements.maxHp.textContent = formatNumber(block.hp);
+        elements.hpBar.style.width = (gameData.currentHp / block.hp) * 100 + '%';
+        if (block.drop) {
+            const dropName = { amethyst:'紫水晶', copperIngot:'铜锭', blueObsidianFragment:'蓝曜石碎片', redObsidianFragment:'红曜石碎片', redBlueCrystal:'红蓝结晶', bedrockFragment:'基岩碎片', obsidian:'黑曜石', netherStar:'下界之星', glass:'玻璃', kunKun:'坤坤', earthCore:'土核心', woodCore:'木核心', fireCube:'火立方', waterCube:'水立方', goldCube:'金立方', fiveElementCrystal:'五行结晶', jingCore:'京核', elementChip:'元素晶片', matterX:'物质X', matterY:'物质Y', matterZ:'物质Z' }[block.drop] || block.drop;
+            elements.dropInfo.textContent = `${block.dropChance || 100}%概率掉落${dropName} x ${block.dropAmount || 1}`;
+            elements.dropInfo.style.display = 'block';
+        } else {
+            elements.dropInfo.style.display = 'none';
         }
+    }
 
-        function formatNumber(num) {
-            if (num < 1000000) return num.toFixed(2).replace(/\.00$/, '');
-            const units = ['', '万', '亿', '万亿', '兆', '万兆', '亿兆', '万亿兆', '京', '万京', '亿京', '万亿京', '兆京', '万兆京', '亿兆京', '万亿兆京', '垓'];
-            let i = 0;
-            while (num >= 10000 && i < units.length - 1) { num /= 10000; i++; }
-            return num.toFixed(2) + units[i];
+    function getCurrentSqrtZoneBlocks() {
+        return gameData.blocks.map((b, i) => b.sqrtZone === gameData.sqrtPower ? i : null).filter(i => i !== null);
+    }
+
+    function changeBlock(direction) {
+        const currentBlocks = getCurrentSqrtZoneBlocks();
+        const currentIndex = currentBlocks.indexOf(gameData.currentBlockIndex);
+        let newIndex = currentIndex + direction;
+        if (newIndex < 0) newIndex = currentBlocks.length - 1;
+        else if (newIndex >= currentBlocks.length) newIndex = 0;
+        gameData.currentBlockIndex = currentBlocks[newIndex];
+        gameData.currentHp = gameData.blocks[gameData.currentBlockIndex].hp;
+        updateBlockDisplay();
+    }
+
+    function showDamageText(damage) {
+        if (elements.damageTextContainer.children.length > 8) {
+            elements.damageTextContainer.removeChild(elements.damageTextContainer.firstChild);
         }
+        const dt = document.createElement('div');
+        dt.className = 'damage-text';
+        dt.textContent = formatNumber(damage);
+        dt.style.left = `50%`;
+        dt.style.top = `50%`;
+        dt.style.transform = `translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 - 100}px)`;
+        elements.damageTextContainer.appendChild(dt);
+        setTimeout(() => dt.remove(), 1000);
+    }
 
-        function updateBlockDisplay() {
-            const block = gameData.blocks[gameData.currentBlockIndex];
-            elements.blockName.textContent = block.name;
-            elements.currentHp.textContent = formatNumber(gameData.currentHp);
-            elements.maxHp.textContent = formatNumber(block.hp);
-            elements.hpBar.style.width = (gameData.currentHp / block.hp) * 100 + '%';
+    function calculateBeaconBonus() { return Math.pow(1 + gameData.beacon, 0.64); }
+    function calculateTimeBonus() {
+        const seconds = Math.max(0, Math.floor((Date.now() - gameData.originalStartTime) / 1000));
+        return seconds < 160 ? 1 : Math.log(seconds / 160) / Math.log(8);
+    }
+    function calculateTreeBonus() { return Math.pow(gameData.treeLevel, 0.4); }
+    function calculateEnergyBonus() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.22) : 1; }
+    function calculateEnergyUsageBonus() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.44) : 1; }
+    function calculateEnergyTreeExp() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.55) : 0; }
+    
+    function calculateTotalDamage() {
+        const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
+        const levelBonus = Math.pow(gameData.level, 0.5);
+        const trophyBonus = Math.pow(1 + gameData.trophies, 2/3);
+        const bonusProduct = pickaxe.damage * gameData.usageBonus * levelBonus * trophyBonus;
+        return Math.pow(bonusProduct, 1 / gameData.sqrtPower) * calculateBeaconBonus() * calculateTimeBonus() * calculateTreeBonus() * gameData.specialBonus * calculateEnergyBonus();
+    }
+
+    function waterTree() {
+        if (gameData.waterCube < 1) return;
+        gameData.waterCube--;
+        gameData.treeExperience++;
+        let req = 10 * gameData.treeLevel;
+        while (gameData.treeExperience >= req) { gameData.treeLevel++; gameData.treeExperience -= req; req = 10 * gameData.treeLevel; }
+        updateStats(); updateShopButtons();
+    }
+
+    function autoWaterTree() {
+        if (gameData.waterCube < 1) return;
+        const w = gameData.waterCube;
+        gameData.waterCube = 0;
+        gameData.treeExperience += w;
+        let req = 10 * gameData.treeLevel;
+        while (gameData.treeExperience >= req) { gameData.treeLevel++; gameData.treeExperience -= req; req = 10 * gameData.treeLevel; }
+        updateStats(); updateShopButtons();
+    }
+
+    function craftAllBeacons() {
+        const beaconItem = gameData.pickaxes.find(p => p.name === '信标');
+        if (!beaconItem) return;
+        const maxCraft = Math.min(Math.floor(gameData.obsidian / 3), Math.floor(gameData.glass / 5), Math.floor(gameData.netherStar / 1));
+        if (maxCraft > 0) {
+            gameData.obsidian -= maxCraft * 3; gameData.glass -= maxCraft * 5; gameData.netherStar -= maxCraft * 1;
+            beaconItem.count += maxCraft; gameData.beacon = beaconItem.count;
+            updateStats(); updateShopButtons(); saveGame();
+            alert(`成功合成了 ${maxCraft} 个信标！`);
+        } else alert('材料不足，无法合成信标！(需要3黑曜石, 5玻璃, 1下界之星)');
+    }
+
+    function activateResearchInstitute() {
+        if (gameData.matterX >= 1e5 && gameData.matterY >= 1e5 && gameData.matterZ >= 1e5) {
+            gameData.matterX -= 1e5; gameData.matterY -= 1e5; gameData.matterZ -= 1e5;
+            gameData.researchInstituteActive = true; updateStats(); saveGame();
+        } else alert('需要各10万个 X, Y, Z 物质才能开启！');
+    }
+
+    function upgradeEnergyProduction() {
+        if (gameData.energy >= gameData.energyUpgradeCost) {
+            gameData.energy -= gameData.energyUpgradeCost;
+            gameData.energyProductionSpeed *= 2;
+            gameData.energyUpgradeCost *= 10;
+            updateStats(); saveGame();
+        }
+    }
+
+    // ★核心修复：dig 函数恢复即时 UI 更新★
+    function dig(silent = false) {
+        const block = gameData.blocks[gameData.currentBlockIndex];
+        const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
+        const damage = calculateTotalDamage();
+        gameData.currentHp -= damage;
+        gameData.digCount++;
+        const usageMult = calculateEnergyUsageBonus();
+        gameData.usageBonus += pickaxe.usage * usageMult;
+        if (!silent) showDamageText(damage);
+        if (gameData.currentHp <= 0) {
+            const earnedCoins = block.coins * pickaxe.coins;
+            gameData.coins += earnedCoins;
+            const earnedExp = earnedCoins * Math.pow(1 + Math.log(earnedCoins), 2);
+            gameData.experience += earnedExp;
+            gameData.blocksMined++;
             if (block.drop) {
-                const dropName = { amethyst:'紫水晶', copperIngot:'铜锭', blueObsidianFragment:'蓝曜石碎片', redObsidianFragment:'红曜石碎片', redBlueCrystal:'红蓝结晶', bedrockFragment:'基岩碎片', obsidian:'黑曜石', netherStar:'下界之星', glass:'玻璃', kunKun:'坤坤', earthCore:'土核心', woodCore:'木核心', fireCube:'火立方', waterCube:'水立方', goldCube:'金立方', fiveElementCrystal:'五行结晶', jingCore:'京核', elementChip:'元素晶片', matterX:'物质X', matterY:'物质Y', matterZ:'物质Z' }[block.drop] || block.drop;
-                elements.dropInfo.textContent = `${block.dropChance || 100}%概率掉落${dropName} x ${block.dropAmount || 1}`;
-                elements.dropInfo.style.display = 'block';
-            } else {
-                elements.dropInfo.style.display = 'none';
+                if (block.dropChance) {
+                    if (Math.random() * 100 <= block.dropChance) {
+                        gameData[block.drop] += (block.dropAmount || 1);
+                    }
+                } else {
+                    gameData[block.drop] += (block.dropAmount || 1);
+                }
             }
+            gameData.currentHp = block.hp;
+            checkAutoExchange();
         }
+        // ★每次挖矿都更新 UI（setStat 有缓存，值没变不会操作 DOM）★
+        updateBlockDisplay();
+        if (!silent) {
+            updateStats();
+            updateExchangeButton();
+        }
+    }
 
-        function getCurrentSqrtZoneBlocks() {
-            return gameData.blocks.map((b, i) => b.sqrtZone === gameData.sqrtPower ? i : null).filter(i => i !== null);
+    let autoMineInterval = null, lastAutoMineTime = 0;
+    function autoMineTick() {
+        if (!gameData.autoMine) return;
+        const now = Date.now();
+        if (lastAutoMineTime === 0) lastAutoMineTime = now;
+        const ticks = Math.min(1000, Math.floor((now - lastAutoMineTime) / 100));
+        for (let i = 0; i < ticks; i++) dig(i < ticks - 1);
+        lastAutoMineTime = now;
+        // 自动挖矿批量结算后统一刷新一次 UI
+        updateStats();
+        updateExchangeButton();
+    }
+    function updateAutoMine() {
+        if (gameData.autoMine) {
+            if (!autoMineInterval) { lastAutoMineTime = Date.now(); autoMineInterval = setInterval(autoMineTick, 100); }
+        } else { if (autoMineInterval) { clearInterval(autoMineInterval); autoMineInterval = null; } }
+    }
+    function toggleAutoMine() {
+        gameData.autoMine = !gameData.autoMine;
+        elements.autoMineBtn.textContent = `⚙ 自动挖矿: ${gameData.autoMine ? '开启' : '关闭'}`;
+        elements.autoMineBtn.classList.toggle('active', gameData.autoMine);
+        updateAutoMine();
+    }
+    function toggleAutoExchange() {
+        gameData.autoExchange = !gameData.autoExchange;
+        elements.autoExchangeBtn.textContent = `⟳ 自动兑换: ${gameData.autoExchange ? '开启' : '关闭'}`;
+        elements.autoExchangeBtn.classList.toggle('active', gameData.autoExchange);
+    }
+    function updateAutoExchangeThreshold() {
+        const t = parseInt(elements.autoExchangeThreshold.value);
+        gameData.autoExchangeThreshold = t >= 100 ? t : gameData.autoExchangeThreshold;
+        elements.autoExchangeThreshold.value = gameData.autoExchangeThreshold;
+    }
+    function checkAutoExchange() { if (gameData.autoExchange && gameData.coins >= gameData.autoExchangeThreshold) exchangeTrophies(false); }
+    function calculateExchangeInfo() { return { earnedTrophies: Math.floor(Math.pow(gameData.coins / 100, 3/4)) }; }
+    function updateExchangeButton() {
+        const info = calculateExchangeInfo();
+        elements.exchangeBtn.textContent = info.earnedTrophies > 0 ? `🏆 兑换奖杯 (+${info.earnedTrophies})` : `🏆 兑换奖杯 (需100金)`;
+    }
+    function exchangeTrophies(updateUI = true) {
+        const info = calculateExchangeInfo();
+        if (info.earnedTrophies > 0) {
+            gameData.trophies += info.earnedTrophies; gameData.coins = 0;
+            if (updateUI) { updateStats(); updateShopButtons(); updateExchangeButton(); }
         }
+    }
 
-        function changeBlock(direction) {
-            const currentBlocks = getCurrentSqrtZoneBlocks();
-            const currentIndex = currentBlocks.indexOf(gameData.currentBlockIndex);
-            let newIndex = currentIndex + direction;
-            if (newIndex < 0) newIndex = currentBlocks.length - 1;
-            else if (newIndex >= currentBlocks.length) newIndex = 0;
-            gameData.currentBlockIndex = currentBlocks[newIndex];
-            gameData.currentHp = gameData.blocks[gameData.currentBlockIndex].hp;
-            updateBlockDisplay();
-        }
+    let longPressInterval = null, lastLongPressTime = 0;
+    function longPressTick() {
+        const now = Date.now();
+        if (lastLongPressTime === 0) lastLongPressTime = now;
+        const ticks = Math.min(1000, Math.floor((now - lastLongPressTime) / 100));
+        for (let i = 0; i < ticks; i++) dig(i < ticks - 1);
+        lastLongPressTime = now;
+        updateStats();
+        updateExchangeButton();
+    }
+    function startLongPress() { if (!gameData.autoMine) { lastLongPressTime = Date.now(); longPressInterval = setInterval(longPressTick, 100); } }
+    function stopLongPress() { if (longPressInterval) { clearInterval(longPressInterval); longPressInterval = null; } }
 
-        function showDamageText(damage) {
-            if (elements.damageTextContainer.children.length > 8) {
-                elements.damageTextContainer.removeChild(elements.damageTextContainer.firstChild);
-            }
-            const dt = document.createElement('div');
-            dt.className = 'damage-text';
-            dt.textContent = formatNumber(damage);
-            dt.style.left = `50%`;
-            dt.style.top = `50%`;
-            dt.style.transform = `translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 - 100}px)`;
-            elements.damageTextContainer.appendChild(dt);
-            setTimeout(() => dt.remove(), 1000);
-        }
+    function levelUp() { while (gameData.experience >= Math.pow(gameData.level, 2)) { gameData.experience -= Math.pow(gameData.level, 2); gameData.level++; } }
 
-        function calculateBeaconBonus() { return Math.pow(1 + gameData.beacon, 0.64); }
-        function calculateTimeBonus() {
-            const seconds = Math.max(0, Math.floor((Date.now() - gameData.originalStartTime) / 1000));
-            return seconds < 160 ? 1 : Math.log(seconds / 160) / Math.log(8);
-        }
-        function calculateTreeBonus() { return Math.pow(gameData.treeLevel, 0.4); }
-        function calculateEnergyBonus() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.22) : 1; }
-        function calculateEnergyUsageBonus() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.44) : 1; }
-        function calculateEnergyTreeExp() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.55) : 0; }
+    function updateStats() {
+        const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
+        elements.expBar.style.width = (gameData.experience / Math.pow(gameData.level, 2)) * 100 + '%';
+        elements.pickaxeName.textContent = pickaxe.name;
+        elements.pickaxeDamageValue.textContent = formatNumber(pickaxe.damage) + 'x';
+        elements.pickaxeUsageValue.textContent = formatNumber(pickaxe.usage) + 'x';
+        elements.pickaxeCoinsValue.textContent = formatNumber(pickaxe.coins) + 'x';
+        setStat(elements.pickaxeDamage, formatNumber(pickaxe.damage) + 'x');
+        setStat(elements.usageBonus, formatNumber(gameData.usageBonus) + 'x');
+        setStat(elements.levelBonus, formatNumber(Math.pow(gameData.level, 0.5)) + 'x');
+        setStat(elements.trophyBonus, formatNumber(Math.pow(1 + gameData.trophies, 2/3)) + 'x');
+        setStat(elements.beaconBonus, formatNumber(calculateBeaconBonus()) + 'x');
+        elements.beaconBonus.style.color = '#2ecc71';
+        setStat(elements.treeBonus, formatNumber(calculateTreeBonus()) + 'x');
+        elements.treeBonus.style.color = '#2ecc71';
+        setStat(elements.timeBonus, formatNumber(calculateTimeBonus()) + 'x');
+        elements.timeBonus.style.color = '#2ecc71';
+        setStat(elements.specialBonus, formatNumber(gameData.specialBonus) + 'x');
+        elements.specialBonus.style.color = '#2ecc71';
+        setStat(elements.energyBonus, formatNumber(calculateEnergyBonus()) + 'x');
+        elements.energyBonus.style.color = '#2ecc71';
+        elements.totalDamage.textContent = formatNumber(calculateTotalDamage());
         
-        function calculateTotalDamage() {
-            const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
-            const levelBonus = Math.pow(gameData.level, 0.5);
-            const trophyBonus = Math.pow(1 + gameData.trophies, 2/3);
-            const bonusProduct = pickaxe.damage * gameData.usageBonus * levelBonus * trophyBonus;
-            return Math.pow(bonusProduct, 1 / gameData.sqrtPower) * calculateBeaconBonus() * calculateTimeBonus() * calculateTreeBonus() * gameData.specialBonus * calculateEnergyBonus();
+        const set = (el, val) => { if(el) setStat(el, formatNumber(val)); };
+        set(elements.level, gameData.level);
+        set(elements.experience, gameData.experience);
+        set(elements.coins, gameData.coins);
+        set(elements.trophies, gameData.trophies);
+        set(elements.amethyst, gameData.amethyst);
+        set(elements.copperIngot, gameData.copperIngot);
+        set(elements.blueObsidianFragment, gameData.blueObsidianFragment);
+        set(elements.redObsidianFragment, gameData.redObsidianFragment);
+        set(elements.redBlueCrystal, gameData.redBlueCrystal);
+        set(elements.bedrockFragment, gameData.bedrockFragment);
+        set(elements.obsidian, gameData.obsidian);
+        set(elements.netherStar, gameData.netherStar);
+        set(elements.glass, gameData.glass);
+        set(elements.kunKun, gameData.kunKun);
+        set(elements.earthCore, gameData.earthCore);
+        set(elements.woodCore, gameData.woodCore);
+        set(elements.fireCube, gameData.fireCube);
+        set(elements.waterCube, gameData.waterCube);
+        set(elements.goldCube, gameData.goldCube);
+        set(elements.fiveElementCrystal, gameData.fiveElementCrystal);
+        set(elements.jingCore, gameData.jingCore);
+        set(elements.elementChip, gameData.elementChip);
+        set(elements.matterX, gameData.matterX);
+        set(elements.matterY, gameData.matterY);
+        set(elements.matterZ, gameData.matterZ);
+        
+        const tReq = 10 * gameData.treeLevel;
+        elements.treeLevel.textContent = gameData.treeLevel;
+        elements.treeProgressBar.style.width = (gameData.treeExperience / tReq) * 100 + '%';
+        elements.treeExperience.textContent = formatNumber(gameData.treeExperience);
+        elements.treeExperienceRequired.textContent = formatNumber(tReq);
+        elements.digCount.textContent = formatNumber(gameData.digCount);
+        elements.blocksMined.textContent = formatNumber(gameData.blocksMined);
+        
+        if (gameData.researchInstituteActive) {
+            if(elements.researchInactive) elements.researchInactive.style.display = 'none';
+            if(elements.researchActive) elements.researchActive.style.display = 'block';
+            set(elements.energyTotal, gameData.energy);
+            set(elements.energySpeed, gameData.energyProductionSpeed + '/秒');
+            set(elements.energyBonusStat, formatNumber(calculateEnergyBonus()) + 'x');
+            set(elements.energyUsageStat, formatNumber(calculateEnergyUsageBonus()) + 'x');
+            set(elements.energyTreeStat, formatNumber(calculateEnergyTreeExp()) + '/秒');
+            elements.upgradeEnergyBtn.textContent = `升级产能 (消耗: ${formatNumber(gameData.energyUpgradeCost)} 能量)`;
+            elements.upgradeEnergyBtn.disabled = gameData.energy < gameData.energyUpgradeCost;
+        } else {
+            if(elements.researchInactive) elements.researchInactive.style.display = 'block';
+            if(elements.researchActive) elements.researchActive.style.display = 'none';
         }
+    }
 
-        function waterTree() {
-            if (gameData.waterCube < 1) return;
-            gameData.waterCube--;
-            gameData.treeExperience++;
-            let req = 10 * gameData.treeLevel;
-            while (gameData.treeExperience >= req) { gameData.treeLevel++; gameData.treeExperience -= req; req = 10 * gameData.treeLevel; }
-            updateStats(); updateShopButtons();
-        }
+    function redeemCode() {
+        const code = elements.redeemInput.value.trim();
+        let success = false;
+        if (code === '姚俊希220') { gameData.specialBonus = 2.2; alert('兑换成功！特殊增益变为 2.2'); success = true; }
+        else if (code === '七八九幺十三一六九') { gameData.specialBonus = 7.8; alert('兑换成功！特殊增益变为 7.8'); success = true; }
+        else if (code === '67676767') { gameData.specialBonus = 67.67; alert('兑换成功！特殊增益变为 67.67'); success = true; }
+        else if (code === 'dfsoft6767调试模式') { gameData.debugEnabled = true; toggleDebugMode(true); alert('调试模式已开启！'); success = true; }
+        else alert('无效的兑换码！');
+        if (success) { elements.redeemInput.value = ''; updateStats(); saveGame(); }
+    }
 
-        function autoWaterTree() {
-            if (gameData.waterCube < 1) return;
-            const w = gameData.waterCube;
-            gameData.waterCube = 0;
-            gameData.treeExperience += w;
-            let req = 10 * gameData.treeLevel;
-            while (gameData.treeExperience >= req) { gameData.treeLevel++; gameData.treeExperience -= req; req = 10 * gameData.treeLevel; }
-            updateStats(); updateShopButtons();
-        }
-
-        function craftAllBeacons() {
-            const beaconItem = gameData.pickaxes.find(p => p.name === '信标');
-            if (!beaconItem) return;
-            const maxCraft = Math.min(Math.floor(gameData.obsidian / 3), Math.floor(gameData.glass / 5), Math.floor(gameData.netherStar / 1));
-            if (maxCraft > 0) {
-                gameData.obsidian -= maxCraft * 3; gameData.glass -= maxCraft * 5; gameData.netherStar -= maxCraft * 1;
-                beaconItem.count += maxCraft; gameData.beacon = beaconItem.count;
-                updateStats(); updateShopButtons(); saveGame();
-                alert(`成功合成了 ${maxCraft} 个信标！`);
-            } else alert('材料不足，无法合成信标！(需要3黑曜石, 5玻璃, 1下界之星)');
-        }
-
-        function activateResearchInstitute() {
-            if (gameData.matterX >= 1e5 && gameData.matterY >= 1e5 && gameData.matterZ >= 1e5) {
-                gameData.matterX -= 1e5; gameData.matterY -= 1e5; gameData.matterZ -= 1e5;
-                gameData.researchInstituteActive = true; updateStats(); saveGame();
-            } else alert('需要各10万个 X, Y, Z 物质才能开启！');
-        }
-
-        function upgradeEnergyProduction() {
-            if (gameData.energy >= gameData.energyUpgradeCost) {
-                gameData.energy -= gameData.energyUpgradeCost;
-                gameData.energyProductionSpeed *= 2;
-                gameData.energyUpgradeCost *= 10;
+    function toggleDebugMode(enabled) { document.querySelectorAll('.editable-debug').forEach(input => input.disabled = !enabled); }
+    function setupDebugInputs() {
+        document.querySelectorAll('.editable-debug').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const id = e.target.id;
+                let val = parseFloat(e.target.value.replace('x', '').trim());
+                if (isNaN(val)) return;
+                const map = { 'level':'level', 'experience':'experience', 'coins':'coins', 'trophies':'trophies', 'amethyst':'amethyst', 'copper-ingot':'copperIngot', 'blue-obsidian-fragment':'blueObsidianFragment', 'red-obsidian-fragment':'redObsidianFragment', 'red-blue-crystal':'redBlueCrystal', 'bedrock-fragment':'bedrockFragment', 'obsidian':'obsidian', 'nether-star':'netherStar', 'glass':'glass', 'kun-kun':'kunKun', 'earth-core':'earthCore', 'wood-core':'woodCore', 'fire-cube':'fireCube', 'water-cube':'waterCube', 'gold-cube':'goldCube', 'five-element-crystal':'fiveElementCrystal', 'jing-core':'jingCore', 'element-chip':'elementChip', 'matter-x':'matterX', 'matter-y':'matterY', 'matter-z':'matterZ', 'pickaxe-damage':'pickaxe.damage', 'usage-bonus':'usageBonus', 'special-bonus':'specialBonus', 'level-bonus':'level=Math.pow(val,2)', 'trophy-bonus':'trophies=Math.max(0,Math.pow(val,1.5)-1)', 'beacon-bonus':'beacon=Math.max(0,Math.pow(val,1/0.64)-1)', 'tree-bonus':'treeLevel=Math.max(1,Math.floor(Math.pow(val,2.5)))', 'time-bonus':'originalStartTime=Date.now()-(160*Math.pow(8,val)*1000)', 'energy-bonus':'energy=Math.max(0,Math.pow(val,1/0.22))' };
+                if(id in map) {
+                    try { eval(`gameData.${map[id]} = val;`); } catch(e) {}
+                }
                 updateStats(); saveGame();
-            }
-        }
+            });
+        });
+    }
 
-        function dig(silent = false) {
+    // 修复存档丢失：不保存静态的 blocks 数组
+    function saveGame() {
+        const gameState = { ...gameData, pickaxes: gameData.pickaxes, lastOnlineTime: Date.now() };
+        delete gameState.blocks;
+        try {
+            localStorage.setItem('miningGameSave', JSON.stringify(gameState));
+        } catch(e) { console.error("Save error", e); }
+    }
+
+    function loadGame() {
+        try {
+            const savedGame = localStorage.getItem('miningGameSave');
+            if (savedGame) {
+                const gs = JSON.parse(savedGame);
+                if (gs.blocks) { 
+                    localStorage.removeItem('miningGameSave'); 
+                    return; 
+                }
+                for (const key in gameData) {
+                    if (key === 'pickaxes' || key === 'blocks') continue;
+                    if (gs[key] !== undefined) gameData[key] = gs[key];
+                }
+                if (gs.pickaxes) {
+                    gs.pickaxes.forEach((sp, i) => { if (gameData.pickaxes[i]) gameData.pickaxes[i].count = sp.count || 0; });
+                }
+            }
+        } catch (e) { 
+            console.error('Load error:', e); 
+            localStorage.removeItem('miningGameSave'); 
+        }
+        const beaconItem = gameData.pickaxes.find(p => p.name === '信标');
+        if (beaconItem && beaconItem.count > gameData.beacon) gameData.beacon = beaconItem.count;
+        processOfflineMining();
+    }
+
+    function processOfflineMining() {
+        const now = Date.now();
+        const offlineTime = now - (gameData.lastOnlineTime || now);
+        if (gameData.researchInstituteActive) {
+            const offSec = Math.floor(offlineTime / 1000);
+            gameData.energy += offSec * gameData.energyProductionSpeed;
+            gameData.treeExperience += Math.pow(gameData.energy, 0.55) * offSec;
+            let req = 10 * gameData.treeLevel;
+            while (gameData.treeExperience >= req) { gameData.treeExperience -= req; gameData.treeLevel++; req = 10 * gameData.treeLevel; }
+        }
+        const miningActions = Math.floor(offlineTime / 300);
+        if (miningActions > 0) {
             const block = gameData.blocks[gameData.currentBlockIndex];
             const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
-            const damage = calculateTotalDamage();
-            gameData.currentHp -= damage;
-            gameData.digCount++;
-            gameData.usageBonus += pickaxe.usage * calculateEnergyUsageBonus();
-            if (!silent) showDamageText(damage);
-            if (gameData.currentHp <= 0) {
-                const earnedCoins = block.coins * pickaxe.coins;
-                gameData.coins += earnedCoins;
-                gameData.experience += earnedCoins * Math.pow(1 + Math.log(earnedCoins), 2);
-                gameData.blocksMined++;
-                if (block.drop) {
-                    if (block.dropChance) { if (Math.random() * 100 <= block.dropChance) gameData[block.drop] += (block.dropAmount || 1); }
-                    else gameData[block.drop] += (block.dropAmount || 1);
+            let remainingHp = gameData.currentHp;
+            for (let i = 0; i < miningActions; i++) {
+                remainingHp -= calculateTotalDamage();
+                gameData.digCount++;
+                gameData.usageBonus += pickaxe.usage * calculateEnergyUsageBonus();
+                if (remainingHp <= 0) {
+                    const ec = block.coins * pickaxe.coins;
+                    gameData.coins += ec;
+                    gameData.experience += ec * Math.pow(1 + Math.log(ec), 2);
+                    gameData.blocksMined++;
+                    if (block.drop) { if (block.dropChance) { if (Math.random() * 100 <= block.dropChance) gameData[block.drop] += (block.dropAmount || 1); } else gameData[block.drop] += (block.dropAmount || 1); }
+                    remainingHp = block.hp;
+                    checkAutoExchange();
                 }
-                gameData.currentHp = block.hp;
-                checkAutoExchange();
-                updateBlockDisplay();
             }
+            gameData.currentHp = remainingHp;
+            levelUp();
+            checkAutoExchange();
         }
+        gameData.lastOnlineTime = now; gameData.startTime = now;
+    }
 
-        let autoMineInterval = null, lastAutoMineTime = 0;
-        function autoMineTick() {
-            if (!gameData.autoMine) return;
-            const now = Date.now();
-            if (lastAutoMineTime === 0) lastAutoMineTime = now;
-            const ticks = Math.min(1000, Math.floor((now - lastAutoMineTime) / 100));
-            for (let i = 0; i < ticks; i++) dig(i < ticks - 1);
-            lastAutoMineTime = now;
-        }
-        function updateAutoMine() {
-            if (gameData.autoMine) {
-                if (!autoMineInterval) { lastAutoMineTime = Date.now(); autoMineInterval = setInterval(autoMineTick, 100); }
-            } else { if (autoMineInterval) { clearInterval(autoMineInterval); autoMineInterval = null; } }
-        }
-        function toggleAutoMine() {
-            gameData.autoMine = !gameData.autoMine;
-            elements.autoMineBtn.textContent = `⚙ 自动挖矿: ${gameData.autoMine ? '开启' : '关闭'}`;
-            elements.autoMineBtn.classList.toggle('active', gameData.autoMine);
-            updateAutoMine();
-        }
-        function toggleAutoExchange() {
-            gameData.autoExchange = !gameData.autoExchange;
-            elements.autoExchangeBtn.textContent = `⟳ 自动兑换: ${gameData.autoExchange ? '开启' : '关闭'}`;
-            elements.autoExchangeBtn.classList.toggle('active', gameData.autoExchange);
-        }
-        function updateAutoExchangeThreshold() {
-            const t = parseInt(elements.autoExchangeThreshold.value);
-            gameData.autoExchangeThreshold = t >= 100 ? t : gameData.autoExchangeThreshold;
-            elements.autoExchangeThreshold.value = gameData.autoExchangeThreshold;
-        }
-        function checkAutoExchange() { if (gameData.autoExchange && gameData.coins >= gameData.autoExchangeThreshold) exchangeTrophies(false); }
-        function calculateExchangeInfo() { return { earnedTrophies: Math.floor(Math.pow(gameData.coins / 100, 3/4)) }; }
-        function updateExchangeButton() {
-            const info = calculateExchangeInfo();
-            elements.exchangeBtn.textContent = info.earnedTrophies > 0 ? `🏆 兑换奖杯 (+${info.earnedTrophies})` : `🏆 兑换奖杯 (需100金)`;
-        }
-        function exchangeTrophies(updateUI = true) {
-            const info = calculateExchangeInfo();
-            if (info.earnedTrophies > 0) {
-                gameData.trophies += info.earnedTrophies; gameData.coins = 0;
-                if (updateUI) { updateStats(); updateShopButtons(); updateExchangeButton(); }
-            }
-        }
+    function updatePlaytime() {
+        const seconds = Math.floor((Date.now() - gameData.originalStartTime) / 1000);
+        elements.playtime.innerHTML = `${Math.floor(seconds/31536000)}年${Math.floor((seconds%31536000)/86400)}日${Math.floor((seconds%86400)/3600)}时${Math.floor((seconds%3600)/60)}分${seconds%60}秒<br>合计${seconds}秒`;
+    }
 
-        let longPressInterval = null, lastLongPressTime = 0;
-        function longPressTick() {
-            const now = Date.now();
-            if (lastLongPressTime === 0) lastLongPressTime = now;
-            const ticks = Math.min(1000, Math.floor((now - lastLongPressTime) / 100));
-            for (let i = 0; i < ticks; i++) dig(i < ticks - 1);
-            lastLongPressTime = now;
-        }
-        function startLongPress() { if (!gameData.autoMine) { lastLongPressTime = Date.now(); longPressInterval = setInterval(longPressTick, 100); } }
-        function stopLongPress() { if (longPressInterval) { clearInterval(longPressInterval); longPressInterval = null; } }
-
-        function levelUp() { while (gameData.experience >= Math.pow(gameData.level, 2)) { gameData.experience -= Math.pow(gameData.level, 2); gameData.level++; } }
-
-        function updateStats() {
-            const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
-            elements.expBar.style.width = (gameData.experience / Math.pow(gameData.level, 2)) * 100 + '%';
-            elements.pickaxeName.textContent = pickaxe.name;
-            elements.pickaxeDamageValue.textContent = formatNumber(pickaxe.damage) + 'x';
-            elements.pickaxeUsageValue.textContent = formatNumber(pickaxe.usage) + 'x';
-            elements.pickaxeCoinsValue.textContent = formatNumber(pickaxe.coins) + 'x';
-            setStat(elements.pickaxeDamage, formatNumber(pickaxe.damage) + 'x');
-            setStat(elements.usageBonus, formatNumber(gameData.usageBonus) + 'x');
-            setStat(elements.levelBonus, formatNumber(Math.pow(gameData.level, 0.5)) + 'x');
-            setStat(elements.trophyBonus, formatNumber(Math.pow(1 + gameData.trophies, 2/3)) + 'x');
-            setStat(elements.beaconBonus, formatNumber(calculateBeaconBonus()) + 'x');
-            elements.beaconBonus.style.color = '#2ecc71';
-            setStat(elements.treeBonus, formatNumber(calculateTreeBonus()) + 'x');
-            elements.treeBonus.style.color = '#2ecc71';
-            setStat(elements.timeBonus, formatNumber(calculateTimeBonus()) + 'x');
-            elements.timeBonus.style.color = '#2ecc71';
-            setStat(elements.specialBonus, formatNumber(gameData.specialBonus) + 'x');
-            elements.specialBonus.style.color = '#2ecc71';
-            setStat(elements.energyBonus, formatNumber(calculateEnergyBonus()) + 'x');
-            elements.energyBonus.style.color = '#2ecc71';
-            elements.totalDamage.textContent = formatNumber(calculateTotalDamage());
-            
-            const set = (el, val) => { if(el) setStat(el, formatNumber(val)); };
-            set(elements.level, gameData.level);
-            set(elements.experience, gameData.experience);
-            set(elements.coins, gameData.coins);
-            set(elements.trophies, gameData.trophies);
-            set(elements.amethyst, gameData.amethyst);
-            set(elements.copperIngot, gameData.copperIngot);
-            set(elements.blueObsidianFragment, gameData.blueObsidianFragment);
-            set(elements.redObsidianFragment, gameData.redObsidianFragment);
-            set(elements.redBlueCrystal, gameData.redBlueCrystal);
-            set(elements.bedrockFragment, gameData.bedrockFragment);
-            set(elements.obsidian, gameData.obsidian);
-            set(elements.netherStar, gameData.netherStar);
-            set(elements.glass, gameData.glass);
-            set(elements.kunKun, gameData.kunKun);
-            set(elements.earthCore, gameData.earthCore);
-            set(elements.woodCore, gameData.woodCore);
-            set(elements.fireCube, gameData.fireCube);
-            set(elements.waterCube, gameData.waterCube);
-            set(elements.goldCube, gameData.goldCube);
-            set(elements.fiveElementCrystal, gameData.fiveElementCrystal);
-            set(elements.jingCore, gameData.jingCore);
-            set(elements.elementChip, gameData.elementChip);
-            set(elements.matterX, gameData.matterX);
-            set(elements.matterY, gameData.matterY);
-            set(elements.matterZ, gameData.matterZ);
-            
-            const tReq = 10 * gameData.treeLevel;
-            elements.treeLevel.textContent = gameData.treeLevel;
-            elements.treeProgressBar.style.width = (gameData.treeExperience / tReq) * 100 + '%';
-            elements.treeExperience.textContent = formatNumber(gameData.treeExperience);
-            elements.treeExperienceRequired.textContent = formatNumber(tReq);
-            elements.digCount.textContent = formatNumber(gameData.digCount);
-            elements.blocksMined.textContent = formatNumber(gameData.blocksMined);
-            
-            if (gameData.researchInstituteActive) {
-                if(elements.researchInactive) elements.researchInactive.style.display = 'none';
-                if(elements.researchActive) elements.researchActive.style.display = 'block';
-                set(elements.energyTotal, gameData.energy);
-                set(elements.energySpeed, gameData.energyProductionSpeed + '/秒');
-                set(elements.energyBonusStat, formatNumber(calculateEnergyBonus()) + 'x');
-                set(elements.energyUsageStat, formatNumber(calculateEnergyUsageBonus()) + 'x');
-                set(elements.energyTreeStat, formatNumber(calculateEnergyTreeExp()) + '/秒');
-                elements.upgradeEnergyBtn.textContent = `升级产能 (消耗: ${formatNumber(gameData.energyUpgradeCost)} 能量)`;
-                elements.upgradeEnergyBtn.disabled = gameData.energy < gameData.energyUpgradeCost;
+    function initShop() {
+        elements.shopItems.innerHTML = '';
+        gameData.pickaxes.forEach((pickaxe, index) => {
+            const shopItem = document.createElement('div');
+            shopItem.className = 'shop-item';
+            let buyButtonHtml = '', recipeHtml = '';
+            if (pickaxe.isCraftable) {
+                let desc = '合成材料：';
+                for (const [mat, req] of Object.entries(pickaxe.recipe)) {
+                    const name = { 'usageBonus':'使用增益', 'coins':'金币', 'trophies':'奖杯', 'amethyst':'紫水晶', 'copperIngot':'铜锭' }[mat] || mat;
+                    desc += `${formatNumber(req)}${name} `;
+                }
+                recipeHtml = `<div class="recipe-desc">${desc}</div>`;
+                buyButtonHtml = `<button class="buy-btn craft-btn" data-index="${index}">合成</button>`;
             } else {
-                if(elements.researchInactive) elements.researchInactive.style.display = 'block';
-                if(elements.researchActive) elements.researchActive.style.display = 'none';
+                const cName = { 'trophies':'奖杯', 'amethyst':'紫水晶', 'copperIngot':'铜锭' }[pickaxe.currency || 'trophies'];
+                buyButtonHtml = `<button class="buy-btn" data-index="${index}">购买 (${pickaxe.price}${cName})</button>`;
             }
-        }
+            let useButtonHtml = pickaxe.type !== 'item' ? `<button class="use-btn" data-index="${index}">使用</button>` : '';
+            shopItem.innerHTML = `<div class="shop-item-info"><h4>${pickaxe.name}</h4><span class="shop-item-count">数量: ${pickaxe.count}</span></div><div class="shop-buttons">${recipeHtml}${buyButtonHtml}${useButtonHtml}</div>`;
+            elements.shopItems.appendChild(shopItem);
+        });
+        document.querySelectorAll('.buy-btn').forEach(btn => btn.addEventListener('click', buyPickaxe));
+        document.querySelectorAll('.use-btn').forEach(btn => btn.addEventListener('click', usePickaxe));
+        updateShopButtons();
+    }
 
-        function redeemCode() {
-            const code = elements.redeemInput.value.trim();
-            let success = false;
-            if (code === '姚俊希220') { gameData.specialBonus = 2.2; alert('兑换成功！特殊增益变为 2.2'); success = true; }
-            else if (code === '七八九幺十三一六九') { gameData.specialBonus = 7.8; alert('兑换成功！特殊增益变为 7.8'); success = true; }
-            else if (code === '67676767') { gameData.specialBonus = 67.67; alert('兑换成功！特殊增益变为 67.67'); success = true; }
-            else if (code === 'dfsoft6767调试模式') { gameData.debugEnabled = true; toggleDebugMode(true); alert('调试模式已开启！'); success = true; }
-            else alert('无效的兑换码！'),
-            success && (elements.redeemInput.value = '', updateStats(), saveGame());
-        }
-
-        function toggleDebugMode(enabled) { document.querySelectorAll('.editable-debug').forEach(input => input.disabled = !enabled); }
-        function setupDebugInputs() {
-            document.querySelectorAll('.editable-debug').forEach(input => {
-                input.addEventListener('change', (e) => {
-                    const id = e.target.id;
-                    let val = parseFloat(e.target.value.replace('x', '').trim());
-                    if (isNaN(val)) return;
-                    const map = { 'level':'level', 'experience':'experience', 'coins':'coins', 'trophies':'trophies', 'amethyst':'amethyst', 'copper-ingot':'copperIngot', 'blue-obsidian-fragment':'blueObsidianFragment', 'red-obsidian-fragment':'redObsidianFragment', 'red-blue-crystal':'redBlueCrystal', 'bedrock-fragment':'bedrockFragment', 'obsidian':'obsidian', 'nether-star':'netherStar', 'glass':'glass', 'kun-kun':'kunKun', 'earth-core':'earthCore', 'wood-core':'woodCore', 'fire-cube':'fireCube', 'water-cube':'waterCube', 'gold-cube':'goldCube', 'five-element-crystal':'fiveElementCrystal', 'jing-core':'jingCore', 'element-chip':'elementChip', 'matter-x':'matterX', 'matter-y':'matterY', 'matter-z':'matterZ', 'pickaxe-damage':'pickaxe.damage', 'usage-bonus':'usageBonus', 'special-bonus':'specialBonus', 'level-bonus':'level=Math.pow(val,2)', 'trophy-bonus':'trophies=Math.max(0,Math.pow(val,1.5)-1)', 'beacon-bonus':'beacon=Math.max(0,Math.pow(val,1/0.64)-1)', 'tree-bonus':'treeLevel=Math.max(1,Math.floor(Math.pow(val,2.5)))', 'time-bonus':'originalStartTime=Date.now()-(160*Math.pow(8,val)*1000)', 'energy-bonus':'energy=Math.max(0,Math.pow(val,1/0.22))' };
-                    if(id in map) {
-                        try { eval(`gameData.${map[id]} = val;`); } catch(e) {}
-                    }
-                    updateStats(); saveGame();
-                });
-            });
-        }
-
-        // 修复存档丢失的核心 BUG：不保存静态的 blocks 数组
-        function saveGame() {
-            const gameState = { ...gameData, pickaxes: gameData.pickaxes, lastOnlineTime: Date.now() };
-            delete gameState.blocks; // 删除静态数据，防止被误判为旧版存档
-            try {
-                localStorage.setItem('miningGameSave', JSON.stringify(gameState));
-            } catch(e) { console.error("Save error", e); }
-        }
-
-        function loadGame() {
-            try {
-                const savedGame = localStorage.getItem('miningGameSave');
-                if (savedGame) {
-                    const gs = JSON.parse(savedGame);
-                    // 如果存档里包含 blocks，说明是版本极旧的废弃存档，清除
-                    if (gs.blocks) { 
-                        localStorage.removeItem('miningGameSave'); 
-                        return; 
-                    }
-                    for (const key in gameData) {
-                        if (key === 'pickaxes' || key === 'blocks') continue;
-                        if (gs[key] !== undefined) gameData[key] = gs[key];
-                    }
-                    if (gs.pickaxes) {
-                        gs.pickaxes.forEach((sp, i) => { if (gameData.pickaxes[i]) gameData.pickaxes[i].count = sp.count || 0; });
-                    }
-                }
-            } catch (e) { 
-                console.error('Load error:', e); 
-                localStorage.removeItem('miningGameSave'); 
-            }
-            const beaconItem = gameData.pickaxes.find(p => p.name === '信标');
-            if (beaconItem && beaconItem.count > gameData.beacon) gameData.beacon = beaconItem.count;
-            processOfflineMining();
-        }
-
-        function processOfflineMining() {
-            const now = Date.now();
-            const offlineTime = now - (gameData.lastOnlineTime || now);
-            const beforeOffline = { ...gameData };
-            if (gameData.researchInstituteActive) {
-                const offSec = Math.floor(offlineTime / 1000);
-                gameData.energy += offSec * gameData.energyProductionSpeed;
-                gameData.treeExperience += Math.pow(gameData.energy, 0.55) * offSec;
-                let req = 10 * gameData.treeLevel;
-                while (gameData.treeExperience >= req) { gameData.treeExperience -= req; gameData.treeLevel++; req = 10 * gameData.treeLevel; }
-            }
-            const miningActions = Math.floor(offlineTime / 300);
-            if (miningActions > 0) {
-                const block = gameData.blocks[gameData.currentBlockIndex];
-                const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
-                let remainingHp = gameData.currentHp;
-                for (let i = 0; i < miningActions; i++) {
-                    remainingHp -= calculateTotalDamage();
-                    gameData.digCount++;
-                    gameData.usageBonus += pickaxe.usage * calculateEnergyUsageBonus();
-                    if (remainingHp <= 0) {
-                        const ec = block.coins * pickaxe.coins;
-                        gameData.coins += ec;
-                        gameData.experience += ec * Math.pow(1 + Math.log(ec), 2);
-                        gameData.blocksMined++;
-                        if (block.drop) { if (block.dropChance) { if (Math.random() * 100 <= block.dropChance) gameData[block.drop] += (block.dropAmount || 1); } else gameData[block.drop] += (block.dropAmount || 1); }
-                        remainingHp = block.hp;
-                        checkAutoExchange();
-                    }
-                }
-                gameData.currentHp = remainingHp;
-                levelUp();
-                checkAutoExchange();
-            }
-            gameData.lastOnlineTime = now; gameData.startTime = now;
-        }
-
-        function updatePlaytime() {
-            const seconds = Math.floor((Date.now() - gameData.originalStartTime) / 1000);
-            elements.playtime.innerHTML = `${Math.floor(seconds/31536000)}年${Math.floor((seconds%31536000)/86400)}日${Math.floor((seconds%86400)/3600)}时${Math.floor((seconds%3600)/60)}分${seconds%60}秒<br>合计${seconds}秒`;
-        }
-
-        function initShop() {
-            elements.shopItems.innerHTML = '';
-            gameData.pickaxes.forEach((pickaxe, index) => {
-                const shopItem = document.createElement('div');
-                shopItem.className = 'shop-item';
-                let buyButtonHtml = '', recipeHtml = '';
-                if (pickaxe.isCraftable) {
-                    let desc = '合成材料：';
-                    for (const [mat, req] of Object.entries(pickaxe.recipe)) {
-                        const name = { 'usageBonus':'使用增益', 'coins':'金币', 'trophies':'奖杯', 'amethyst':'紫水晶', 'copperIngot':'铜锭' }[mat] || mat;
-                        desc += `${formatNumber(req)}${name} `;
-                    }
-                    recipeHtml = `<div class="recipe-desc">${desc}</div>`;
-                    buyButtonHtml = `<button class="buy-btn craft-btn" data-index="${index}">合成</button>`;
-                } else {
-                    const cName = { 'trophies':'奖杯', 'amethyst':'紫水晶', 'copperIngot':'铜锭' }[pickaxe.currency || 'trophies'];
-                    buyButtonHtml = `<button class="buy-btn" data-index="${index}">购买 (${pickaxe.price}${cName})</button>`;
-                }
-                let useButtonHtml = pickaxe.type !== 'item' ? `<button class="use-btn" data-index="${index}">使用</button>` : '';
-                shopItem.innerHTML = `<div class="shop-item-info"><h4>${pickaxe.name}</h4><span class="shop-item-count">数量: ${pickaxe.count}</span></div><div class="shop-buttons">${recipeHtml}${buyButtonHtml}${useButtonHtml}</div>`;
-                elements.shopItems.appendChild(shopItem);
-            });
-            document.querySelectorAll('.buy-btn').forEach(btn => btn.addEventListener('click', buyPickaxe));
-            document.querySelectorAll('.use-btn').forEach(btn => btn.addEventListener('click', usePickaxe));
-            updateShopButtons();
-        }
-
-        function updateShopButtons() {
-            document.querySelectorAll('.buy-btn').forEach((btn, index) => {
-                const pickaxe = gameData.pickaxes[index];
-                if (pickaxe.isCraftable) {
-                    let canCraft = true;
-                    for (const [mat, req] of Object.entries(pickaxe.recipe)) {
-                        const map = { '黑曜石镐':10, '紫水晶镐VI':16, '铜镐VI':22, '蓝曜石碎片':'blueObsidianFragment', '红曜石碎片':'redObsidianFragment', '蓝曜石镐':23, '红曜石镐':24, '红蓝结晶':'redBlueCrystal', '基岩碎片':'bedrockFragment', '红蓝镐':25, '黑曜石':'obsidian', '玻璃':'glass', '下界之星':'netherStar', '坤坤':'kunKun', '基岩镐':26, '坤坤镐':27, '土核心':'earthCore', '土核心镐':28, '木核心':'woodCore', '木核心镐':29, '火立方镐':30, '水立方镐':31, '火立方':'fireCube', '水立方':'waterCube', '使用增益':'usageBonus', '金立方':'goldCube', '金币':'coins', '金立方镐':32, '五行结晶':'fiveElementCrystal', '京核':'jingCore', '五行镐':33, '元素晶片':'elementChip' };
-                        const key = map[mat];
-                        if (typeof key === 'number') { if (gameData.pickaxes[key].count < req) canCraft = false; }
-                        else if (gameData[key] < req) canCraft = false;
-                        if (!canCraft) break;
-                    }
-                    btn.disabled = !canCraft;
-                } else {
-                    btn.disabled = gameData[pickaxe.currency || 'trophies'] < pickaxe.price;
-                }
-            });
-            document.querySelectorAll('.use-btn').forEach((btn, index) => { btn.classList.toggle('active', index === gameData.currentPickaxeIndex); });
-        }
-
-        function buyPickaxe(e) {
-            const index = parseInt(e.target.dataset.index);
+    function updateShopButtons() {
+        document.querySelectorAll('.buy-btn').forEach((btn, index) => {
             const pickaxe = gameData.pickaxes[index];
             if (pickaxe.isCraftable) {
                 let canCraft = true;
@@ -1000,125 +998,139 @@
                     const key = map[mat];
                     if (typeof key === 'number') { if (gameData.pickaxes[key].count < req) canCraft = false; }
                     else if (gameData[key] < req) canCraft = false;
+                    if (!canCraft) break;
                 }
-                if (canCraft) {
-                    for (const [mat, req] of Object.entries(pickaxe.recipe)) {
-                        const map = { '黑曜石镐':10, '紫水晶镐VI':16, '铜镐VI':22, '蓝曜石碎片':'blueObsidianFragment', '红曜石碎片':'redObsidianFragment', '蓝曜石镐':23, '红曜石镐':24, '红蓝结晶':'redBlueCrystal', '基岩碎片':'bedrockFragment', '红蓝镐':25, '黑曜石':'obsidian', '玻璃':'glass', '下界之星':'netherStar', '坤坤':'kunKun', '基岩镐':26, '坤坤镐':27, '土核心':'earthCore', '土核心镐':28, '木核心':'woodCore', '木核心镐':29, '火立方镐':30, '水立方镐':31, '火立方':'fireCube', '水立方':'waterCube', '使用增益':'usageBonus', '金立方':'goldCube', '金币':'coins', '金立方镐':32, '五行结晶':'fiveElementCrystal', '京核':'jingCore', '五行镐':33, '元素晶片':'elementChip' };
-                        const key = map[mat];
-                        if (typeof key === 'number') gameData.pickaxes[key].count -= req;
-                        else gameData[key] -= req;
-                    }
-                    pickaxe.count++;
-                    if (pickaxe.name === '信标') gameData.beacon = pickaxe.count;
-                    initShop(); updateStats();
-                }
+                btn.disabled = !canCraft;
             } else {
-                if (gameData[pickaxe.currency || 'trophies'] >= pickaxe.price) {
-                    gameData[pickaxe.currency || 'trophies'] -= pickaxe.price;
-                    pickaxe.count++;
-                    initShop(); updateStats();
+                btn.disabled = gameData[pickaxe.currency || 'trophies'] < pickaxe.price;
+            }
+        });
+        document.querySelectorAll('.use-btn').forEach((btn, index) => { btn.classList.toggle('active', index === gameData.currentPickaxeIndex); });
+    }
+
+    function buyPickaxe(e) {
+        const index = parseInt(e.target.dataset.index);
+        const pickaxe = gameData.pickaxes[index];
+        if (pickaxe.isCraftable) {
+            let canCraft = true;
+            for (const [mat, req] of Object.entries(pickaxe.recipe)) {
+                const map = { '黑曜石镐':10, '紫水晶镐VI':16, '铜镐VI':22, '蓝曜石碎片':'blueObsidianFragment', '红曜石碎片':'redObsidianFragment', '蓝曜石镐':23, '红曜石镐':24, '红蓝结晶':'redBlueCrystal', '基岩碎片':'bedrockFragment', '红蓝镐':25, '黑曜石':'obsidian', '玻璃':'glass', '下界之星':'netherStar', '坤坤':'kunKun', '基岩镐':26, '坤坤镐':27, '土核心':'earthCore', '土核心镐':28, '木核心':'woodCore', '木核心镐':29, '火立方镐':30, '水立方镐':31, '火立方':'fireCube', '水立方':'waterCube', '使用增益':'usageBonus', '金立方':'goldCube', '金币':'coins', '金立方镐':32, '五行结晶':'fiveElementCrystal', '京核':'jingCore', '五行镐':33, '元素晶片':'elementChip' };
+                const key = map[mat];
+                if (typeof key === 'number') { if (gameData.pickaxes[key].count < req) canCraft = false; }
+                else if (gameData[key] < req) canCraft = false;
+            }
+            if (canCraft) {
+                for (const [mat, req] of Object.entries(pickaxe.recipe)) {
+                    const map = { '黑曜石镐':10, '紫水晶镐VI':16, '铜镐VI':22, '蓝曜石碎片':'blueObsidianFragment', '红曜石碎片':'redObsidianFragment', '蓝曜石镐':23, '红曜石镐':24, '红蓝结晶':'redBlueCrystal', '基岩碎片':'bedrockFragment', '红蓝镐':25, '黑曜石':'obsidian', '玻璃':'glass', '下界之星':'netherStar', '坤坤':'kunKun', '基岩镐':26, '坤坤镐':27, '土核心':'earthCore', '土核心镐':28, '木核心':'woodCore', '木核心镐':29, '火立方镐':30, '水立方镐':31, '火立方':'fireCube', '水立方':'waterCube', '使用增益':'usageBonus', '金立方':'goldCube', '金币':'coins', '金立方镐':32, '五行结晶':'fiveElementCrystal', '京核':'jingCore', '五行镐':33, '元素晶片':'elementChip' };
+                    const key = map[mat];
+                    if (typeof key === 'number') gameData.pickaxes[key].count -= req;
+                    else gameData[key] -= req;
                 }
+                pickaxe.count++;
+                if (pickaxe.name === '信标') gameData.beacon = pickaxe.count;
+                initShop(); updateStats();
+            }
+        } else {
+            if (gameData[pickaxe.currency || 'trophies'] >= pickaxe.price) {
+                gameData[pickaxe.currency || 'trophies'] -= pickaxe.price;
+                pickaxe.count++;
+                initShop(); updateStats();
             }
         }
+    }
 
-        function usePickaxe(e) {
-            const index = parseInt(e.target.dataset.index);
-            if (gameData.pickaxes[index].count > 0) { gameData.currentPickaxeIndex = index; initShop(); updateStats(); }
-        }
+    function usePickaxe(e) {
+        const index = parseInt(e.target.dataset.index);
+        if (gameData.pickaxes[index].count > 0) { gameData.currentPickaxeIndex = index; initShop(); updateStats(); }
+    }
 
-        function handleKeyDown(e) { if (e.key === '>') changeBlock(1); else if (e.key === '<') changeBlock(-1); }
+    function handleKeyDown(e) { if (e.key === '>') changeBlock(1); else if (e.key === '<') changeBlock(-1); }
 
-        function initGame() {
-            loadGame();
-            elements.prevBlock.addEventListener('click', () => changeBlock(-1));
-            elements.nextBlock.addEventListener('click', () => changeBlock(1));
-            elements.autoMineBtn.addEventListener('click', toggleAutoMine);
-            elements.autoExchangeBtn.addEventListener('click', toggleAutoExchange);
-            elements.autoExchangeThreshold.addEventListener('change', updateAutoExchangeThreshold);
-            elements.exchangeBtn.addEventListener('click', () => exchangeTrophies(true));
-            elements.redeemBtn.addEventListener('click', redeemCode);
-            elements.craftBeaconBtn.addEventListener('click', craftAllBeacons);
-            elements.activateResearchBtn.addEventListener('click', activateResearchInstitute);
-            elements.upgradeEnergyBtn.addEventListener('click', upgradeEnergyProduction);
-            
-            elements.autoExchangeBtn.textContent = `⟳ 自动兑换: ${gameData.autoExchange ? '开启' : '关闭'}`;
-            elements.autoExchangeBtn.classList.toggle('active', gameData.autoExchange);
-            elements.autoExchangeThreshold.value = gameData.autoExchangeThreshold;
-            
-            elements.sqrtPower.addEventListener('change', () => {
-                const value = parseInt(elements.sqrtPower.value);
-                if (value >= 1 && value <= 3) {
-                    gameData.sqrtPower = value;
-                    const currentBlocks = getCurrentSqrtZoneBlocks();
-                    if (currentBlocks.length > 0) {
-                        gameData.currentBlockIndex = currentBlocks[0];
-                        gameData.currentHp = gameData.blocks[gameData.currentBlockIndex].hp;
-                        updateBlockDisplay();
-                    }
-                } else { elements.sqrtPower.value = gameData.sqrtPower; }
-            });
-            elements.sqrtPower.value = gameData.sqrtPower;
-            
-            const currentBlocks = getCurrentSqrtZoneBlocks();
-            if (!currentBlocks.includes(gameData.currentBlockIndex) && currentBlocks.length > 0) {
-                gameData.currentBlockIndex = currentBlocks[0];
-                gameData.currentHp = gameData.blocks[gameData.currentBlockIndex].hp;
-            }
-            
-            toggleDebugMode(gameData.debugEnabled);
-            setupDebugInputs();
-            
-            elements.blockDisplay.addEventListener('mousedown', startLongPress);
-            elements.blockDisplay.addEventListener('mouseup', stopLongPress);
-            elements.blockDisplay.addEventListener('mouseleave', stopLongPress);
-            elements.blockDisplay.addEventListener('touchstart', startLongPress, { passive: true });
-            elements.blockDisplay.addEventListener('touchend', stopLongPress);
-            document.addEventListener('keydown', handleKeyDown);
-            elements.waterTreeBtn.addEventListener('click', waterTree);
-            elements.autoWaterTreeBtn.addEventListener('click', autoWaterTree);
-            
-            // 初始化时立即加载一次 UI，避免等 100ms 才显示存档数据
-            updateBlockDisplay(); 
-            updateAutoMine(); 
-            initShop(); 
-            updateExchangeButton();
-            updateStats();
-
-            // 高频逻辑：每秒结算经验、能量和浇树
-            setInterval(() => {
-                levelUp();
-                if (gameData.researchInstituteActive) {
-                    gameData.energy += gameData.energyProductionSpeed;
-                    gameData.treeExperience += Math.pow(gameData.energy, 0.55);
-                    let req = 10 * gameData.treeLevel;
-                    while (gameData.treeExperience >= req) { gameData.treeExperience -= req; gameData.treeLevel++; req = 10 * gameData.treeLevel; }
-                }
-            }, 1000);
-
-            // 中频 UI 刷新：每 100 毫秒批量更新属性面板
-            setInterval(() => {
-                updateStats();
-                updateExchangeButton();
-            }, 100);
-
-            setInterval(updatePlaytime, 1000); 
-            updatePlaytime();
-            
-            // 后台切出自动保存，切入自动结算
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden) {
-                    saveGame();
-                } else {
-                    processOfflineMining();
+    function initGame() {
+        loadGame();
+        elements.prevBlock.addEventListener('click', () => changeBlock(-1));
+        elements.nextBlock.addEventListener('click', () => changeBlock(1));
+        elements.autoMineBtn.addEventListener('click', toggleAutoMine);
+        elements.autoExchangeBtn.addEventListener('click', toggleAutoExchange);
+        elements.autoExchangeThreshold.addEventListener('change', updateAutoExchangeThreshold);
+        elements.exchangeBtn.addEventListener('click', () => exchangeTrophies(true));
+        elements.redeemBtn.addEventListener('click', redeemCode);
+        elements.craftBeaconBtn.addEventListener('click', craftAllBeacons);
+        elements.activateResearchBtn.addEventListener('click', activateResearchInstitute);
+        elements.upgradeEnergyBtn.addEventListener('click', upgradeEnergyProduction);
+        
+        elements.autoExchangeBtn.textContent = `⟳ 自动兑换: ${gameData.autoExchange ? '开启' : '关闭'}`;
+        elements.autoExchangeBtn.classList.toggle('active', gameData.autoExchange);
+        elements.autoExchangeThreshold.value = gameData.autoExchangeThreshold;
+        
+        elements.sqrtPower.addEventListener('change', () => {
+            const value = parseInt(elements.sqrtPower.value);
+            if (value >= 1 && value <= 3) {
+                gameData.sqrtPower = value;
+                const currentBlocks = getCurrentSqrtZoneBlocks();
+                if (currentBlocks.length > 0) {
+                    gameData.currentBlockIndex = currentBlocks[0];
+                    gameData.currentHp = gameData.blocks[gameData.currentBlockIndex].hp;
                     updateBlockDisplay();
                 }
-            });
-
-            // 每 5 秒自动保存
-            setInterval(saveGame, 5000);
+            } else { elements.sqrtPower.value = gameData.sqrtPower; }
+        });
+        elements.sqrtPower.value = gameData.sqrtPower;
+        
+        const currentBlocks = getCurrentSqrtZoneBlocks();
+        if (!currentBlocks.includes(gameData.currentBlockIndex) && currentBlocks.length > 0) {
+            gameData.currentBlockIndex = currentBlocks[0];
+            gameData.currentHp = gameData.blocks[gameData.currentBlockIndex].hp;
         }
+        
+        toggleDebugMode(gameData.debugEnabled);
+        setupDebugInputs();
+        
+        elements.blockDisplay.addEventListener('mousedown', startLongPress);
+        elements.blockDisplay.addEventListener('mouseup', stopLongPress);
+        elements.blockDisplay.addEventListener('mouseleave', stopLongPress);
+        elements.blockDisplay.addEventListener('touchstart', startLongPress, { passive: true });
+        elements.blockDisplay.addEventListener('touchend', stopLongPress);
+        document.addEventListener('keydown', handleKeyDown);
+        elements.waterTreeBtn.addEventListener('click', waterTree);
+        elements.autoWaterTreeBtn.addEventListener('click', autoWaterTree);
+        
+        // 初始化时立即加载 UI
+        updateBlockDisplay(); 
+        updateAutoMine(); 
+        initShop(); 
+        updateExchangeButton();
+        updateStats();
 
-        initGame();
-    </script>
-</body>
-</html>
+        // 每秒结算经验、能量和浇树
+        setInterval(() => {
+            levelUp();
+            if (gameData.researchInstituteActive) {
+                gameData.energy += gameData.energyProductionSpeed;
+                gameData.treeExperience += Math.pow(gameData.energy, 0.55);
+                let req = 10 * gameData.treeLevel;
+                while (gameData.treeExperience >= req) { gameData.treeExperience -= req; gameData.treeLevel++; req = 10 * gameData.treeLevel; }
+            }
+            updateStats();
+        }, 1000);
+
+        setInterval(updatePlaytime, 1000); 
+        updatePlaytime();
+        
+        // 后台切出自动保存，切入自动结算
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                saveGame();
+            } else {
+                processOfflineMining();
+                updateBlockDisplay();
+                updateStats();
+            }
+        });
+
+        // 每 5 秒自动保存
+        setInterval(saveGame, 5000);
+    }
+
+    initGame();
+</script>
