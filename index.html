@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>挖矿游戏 - 深渊版</title>
+    <title>挖矿游戏</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
@@ -367,7 +367,7 @@
                 </div>
 
                 <div class="panel shop">
-                    <h3 class="panel-title">深渊商店</h3>
+                    <h3 class="panel-title">商店</h3>
                     <div class="shop-items" id="shop-items"></div>
                 </div>
 
@@ -606,7 +606,6 @@
         }
 
         function showDamageText(damage) {
-            // 性能优化：限制同屏伤害文字数量
             if (elements.damageTextContainer.children.length > 8) {
                 elements.damageTextContainer.removeChild(elements.damageTextContainer.firstChild);
             }
@@ -704,7 +703,7 @@
                 }
                 gameData.currentHp = block.hp;
                 checkAutoExchange();
-                updateBlockDisplay(); // 破坏方块时立即更新外观
+                updateBlockDisplay();
             }
         }
 
@@ -866,11 +865,13 @@
             });
         }
 
+        // 修复存档丢失的核心 BUG：不保存静态的 blocks 数组
         function saveGame() {
             const gameState = { ...gameData, pickaxes: gameData.pickaxes, lastOnlineTime: Date.now() };
+            delete gameState.blocks; // 删除静态数据，防止被误判为旧版存档
             try {
                 localStorage.setItem('miningGameSave', JSON.stringify(gameState));
-            } catch(e) {}
+            } catch(e) { console.error("Save error", e); }
         }
 
         function loadGame() {
@@ -878,16 +879,23 @@
                 const savedGame = localStorage.getItem('miningGameSave');
                 if (savedGame) {
                     const gs = JSON.parse(savedGame);
-                    if (gs.blocks) { localStorage.removeItem('miningGameSave'); return; }
+                    // 如果存档里包含 blocks，说明是版本极旧的废弃存档，清除
+                    if (gs.blocks) { 
+                        localStorage.removeItem('miningGameSave'); 
+                        return; 
+                    }
                     for (const key in gameData) {
-                        if (key === 'pickaxes') continue;
+                        if (key === 'pickaxes' || key === 'blocks') continue;
                         if (gs[key] !== undefined) gameData[key] = gs[key];
                     }
                     if (gs.pickaxes) {
                         gs.pickaxes.forEach((sp, i) => { if (gameData.pickaxes[i]) gameData.pickaxes[i].count = sp.count || 0; });
                     }
                 }
-            } catch (e) { console.error('Load error:', e); localStorage.removeItem('miningGameSave'); }
+            } catch (e) { 
+                console.error('Load error:', e); 
+                localStorage.removeItem('miningGameSave'); 
+            }
             const beaconItem = gameData.pickaxes.find(p => p.name === '信标');
             if (beaconItem && beaconItem.count > gameData.beacon) gameData.beacon = beaconItem.count;
             processOfflineMining();
@@ -1069,9 +1077,13 @@
             elements.waterTreeBtn.addEventListener('click', waterTree);
             elements.autoWaterTreeBtn.addEventListener('click', autoWaterTree);
             
-            updateBlockDisplay(); updateAutoMine(); initShop(); updateExchangeButton();
-            
-            // 性能优化：拆分高频计算和 UI 更新
+            // 初始化时立即加载一次 UI，避免等 100ms 才显示存档数据
+            updateBlockDisplay(); 
+            updateAutoMine(); 
+            initShop(); 
+            updateExchangeButton();
+            updateStats();
+
             // 高频逻辑：每秒结算经验、能量和浇树
             setInterval(() => {
                 levelUp();
@@ -1083,13 +1095,14 @@
                 }
             }, 1000);
 
-            // 中频 UI 刷新：每 100 毫秒批量更新属性面板，避免自动挖矿时狂刷 DOM 导致卡顿
+            // 中频 UI 刷新：每 100 毫秒批量更新属性面板
             setInterval(() => {
                 updateStats();
                 updateExchangeButton();
             }, 100);
 
-            setInterval(updatePlaytime, 1000); updatePlaytime();
+            setInterval(updatePlaytime, 1000); 
+            updatePlaytime();
             
             // 后台切出自动保存，切入自动结算
             document.addEventListener('visibilitychange', () => {
