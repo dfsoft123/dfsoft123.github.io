@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        /* 样式不变，此处省略以节省篇幅，实际请保留原样式 */
         :root {
             --bg-dark: #050510;
             --bg-panel: rgba(16, 18, 38, 0.85);
@@ -1060,6 +1061,36 @@
             }
         }
 
+        /* 一键开启按钮 */
+        .open-all-btn {
+            width: 100%;
+            margin-top: 12px;
+            padding: 12px;
+            border-color: var(--neon-gold);
+            color: var(--neon-gold);
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 1px solid var(--neon-gold);
+        }
+        .open-all-btn:hover {
+            background: var(--neon-gold);
+            color: #000;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+        }
+        .open-all-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-color: #555;
+            color: #555;
+            background: transparent;
+            box-shadow: none;
+        }
+
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -1202,7 +1233,7 @@
                     <button class="action-btn exchange-btn" id="open-chest-modal-btn" style="width:100%;">📦 查看宝箱仓库</button>
                 </div>
 
-                <!-- 商店 -->
+                <!-- 商店（名称改为“商店”） -->
                 <div class="panel shop">
                     <h3 class="panel-title">商店</h3>
                     <div class="shop-items" id="shop-items"></div>
@@ -1245,8 +1276,7 @@
                         <div class="dmg-row" style="color: #00ff9d;"><span>时间增益</span> <input type="text" id="time-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row" style="color: #00ff9d;"><span>奖励增益</span> <input type="text" id="special-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row" style="color: #00ff9d;"><span>能量增益</span> <input type="text" id="energy-bonus" class="editable-debug" value="1.00x" disabled></div>
-                        <!-- 新增：掉落倍率（蓝色） -->
-                        <div class="dmg-row" style="color: var(--neon-blue);"><span>掉落倍率</span> <input type="text" id="drop-multiplier-stat" class="editable-debug" value="1" disabled></div>
+                        <div class="dmg-row" style="color: var(--neon-blue);"><span>✨ 掉落倍率</span> <input type="text" id="drop-multiplier-stat" class="editable-debug" value="1" disabled></div>
                         <div class="dmg-row total-damage"><span>总伤害</span> <span id="total-damage">1.00</span></div>
                         <p class="green-note">绿色增益表示不被开方的增益</p>
                     </div>
@@ -1299,7 +1329,7 @@
         </div>
     </div>
 
-    <!-- ===== 宝箱仓库模态框 ===== -->
+    <!-- ===== 宝箱仓库模态框（新增一键开启按钮） ===== -->
     <div id="chest-modal" class="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeChestModal()">&times;</button>
@@ -1346,6 +1376,8 @@
                     <button class="action-btn" onclick="openChest('supreme')" id="chest-btn-supreme">开启</button>
                 </div>
             </div>
+            <!-- 一键开启全部 -->
+            <button class="open-all-btn" id="open-all-chests-btn" onclick="openAllChests()">⚡ 一键开启全部</button>
             <div id="chest-reward-text">✨ 选择一个宝箱开启 ✨</div>
         </div>
     </div>
@@ -1428,7 +1460,7 @@
             'blocks-mined', 'shop-items', 'redeem-input', 'redeem-btn', 'research-inactive', 'research-active',
             'activate-research-btn', 'upgrade-energy-btn', 'energy-total', 'energy-speed', 'energy-bonus-stat',
             'energy-usage-stat', 'energy-tree-stat', 'chest-timer', 'open-chest-modal-btn', 'energy-upgrade-cost',
-            'energy-cost-display'
+            'energy-cost-display', 'open-all-chests-btn'
         ].forEach(id => elements[id.replace(/-([a-z])/g, g => g[1].toUpperCase())] = document.getElementById(id));
 
         const lastStats = {};
@@ -1750,7 +1782,7 @@
                     gameData.level, 2);
                 gameData.level++; } }
 
-        // ===== 更新统计（包含能量可编辑） =====
+        // ===== 更新统计（包含浇树增益） =====
         function updateStats() {
             try {
                 const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
@@ -1773,8 +1805,10 @@
                     setStat(elements.beaconBonus, formatNumber(calculateBeaconBonus()) + 'x');
                     elements.beaconBonus.style.color = '#2ecc71';
                 }
+                // 浇树增益 - 直接计算并显示
                 if (elements.treeBonus) {
-                    setStat(elements.treeBonus, formatNumber(calculateTreeBonus()) + 'x');
+                    const treeBonusVal = calculateTreeBonus();
+                    setStat(elements.treeBonus, formatNumber(treeBonusVal) + 'x');
                     elements.treeBonus.style.color = '#2ecc71';
                 }
                 if (elements.timeBonus) {
@@ -1827,11 +1861,9 @@
                 if (elements.digCount) elements.digCount.textContent = formatNumber(gameData.digCount);
                 if (elements.blocksMined) elements.blocksMined.textContent = formatNumber(gameData.blocksMined);
 
-                // 研究所激活后的能量显示（可编辑）
                 if (gameData.researchInstituteActive) {
                     if (elements.researchInactive) elements.researchInactive.style.display = 'none';
                     if (elements.researchActive) elements.researchActive.style.display = 'block';
-                    // 能量总数、产能速度、升级成本通过input显示，已绑定值
                     setStat(elements.energyTotal, formatNumber(gameData.energy));
                     setStat(elements.energySpeed, formatNumber(gameData.energyProductionSpeed) + '/秒');
                     setStat(elements.energyUpgradeCost, formatNumber(gameData.energyUpgradeCost));
@@ -1884,7 +1916,6 @@
                     input.style.cursor = 'default';
                 }
             });
-            // 商店中的数量输入框也同步
             document.querySelectorAll('.shop-item-count input').forEach(inp => {
                 inp.disabled = !enabled;
                 if (enabled) {
@@ -1952,7 +1983,7 @@
             });
         }
 
-        // ===== 商店（数量可编辑） =====
+        // ===== 商店 =====
         function initShop() {
             elements.shopItems.innerHTML = '';
             gameData.pickaxes.forEach((pickaxe, index) => {
@@ -1977,7 +2008,6 @@
                 }
                 let useButtonHtml = pickaxe.type !== 'item' ? `<button class="use-btn" data-index="${index}">使用</button>` :
                     '';
-                // 数量显示为可编辑输入框（调试模式下可改）
                 shopItem.innerHTML =
                     `<div class="shop-item-info"><h4>${pickaxe.name}</h4>
                         <div class="shop-item-count">数量: <input type="text" class="shop-count-input" data-index="${index}" value="${pickaxe.count}" disabled></div>
@@ -1985,7 +2015,6 @@
                     <div class="shop-buttons">${recipeHtml}${buyButtonHtml}${useButtonHtml}</div>`;
                 elements.shopItems.appendChild(shopItem);
             });
-            // 绑定数量输入变更
             document.querySelectorAll('.shop-count-input').forEach(inp => {
                 inp.addEventListener('change', (e) => {
                     if (!gameData.debugEnabled) return;
@@ -1993,7 +2022,6 @@
                     let val = parseInt(e.target.value);
                     if (isNaN(val) || val < 0) val = 0;
                     gameData.pickaxes[idx].count = val;
-                    // 如果该物品是信标，同步beacon
                     if (gameData.pickaxes[idx].name === '信标') gameData.beacon = val;
                     updateStats();
                     updateShopButtons();
@@ -2002,7 +2030,6 @@
             });
             document.querySelectorAll('.buy-btn').forEach(btn => btn.addEventListener('click', buyPickaxe));
             document.querySelectorAll('.use-btn').forEach(btn => btn.addEventListener('click', usePickaxe));
-            // 同步调试状态
             if (gameData.debugEnabled) toggleDebugMode(true);
             updateShopButtons();
         }
@@ -2033,7 +2060,6 @@
             });
             document.querySelectorAll('.use-btn').forEach((btn, index) => { btn.classList.toggle('active', index ===
                     gameData.currentPickaxeIndex); });
-            // 更新数量输入框显示
             document.querySelectorAll('.shop-count-input').forEach(inp => {
                 const idx = parseInt(inp.dataset.index);
                 inp.value = gameData.pickaxes[idx].count;
@@ -2103,7 +2129,7 @@
 
         window.closeChestModal = () => document.getElementById('chest-modal').style.display = 'none';
 
-        // ===== 宝箱 =====
+        // ===== 宝箱系统（增加 silent 参数和 openAllChests） =====
         function updateChestUI() {
             const counts = {
                 normal: gameData.chests.normal || 0,
@@ -2119,6 +2145,10 @@
             document.getElementById('chest-btn-golden').disabled = counts.golden <= 0;
             document.getElementById('chest-btn-diamond').disabled = counts.diamond <= 0;
             document.getElementById('chest-btn-supreme').disabled = counts.supreme <= 0;
+            // 一键开启按钮状态
+            const total = counts.normal + counts.golden + counts.diamond + counts.supreme;
+            const openAllBtn = document.getElementById('open-all-chests-btn');
+            if (openAllBtn) openAllBtn.disabled = total <= 0;
         }
 
         function checkChestReward() {
@@ -2134,34 +2164,14 @@
             }
         }
 
-        function openChest(type) {
+        // 修改 openChest 支持 silent 参数
+        function openChest(type, silent = false) {
             const rewardEl = document.getElementById('chest-reward-text');
             if (gameData.chests[type] <= 0) {
-                rewardEl.innerHTML = '❌ 没有该宝箱！';
-                return;
+                if (!silent) rewardEl.innerHTML = '❌ 没有该宝箱！';
+                return null;
             }
             gameData.chests[type]--;
-            updateChestUI();
-
-            const chestItems = document.querySelectorAll('.chest-item');
-            let targetIcon = null;
-            chestItems.forEach(item => {
-                if (item.classList.contains(type)) {
-                    targetIcon = item.querySelector('.chest-icon-wrap');
-                }
-            });
-            if (targetIcon) {
-                targetIcon.classList.remove('chest-icon-open');
-                void targetIcon.offsetWidth;
-                targetIcon.classList.add('chest-icon-open');
-                const modalContent = document.querySelector('.modal-content');
-                modalContent.classList.remove('chest-open-flash');
-                void modalContent.offsetWidth;
-                modalContent.classList.add('chest-open-flash');
-                setTimeout(() => {
-                    modalContent.classList.remove('chest-open-flash');
-                }, 700);
-            }
 
             const rand = Math.random() * 100;
             let rewardText = '',
@@ -2215,18 +2225,82 @@
                     rewardIcon = '✨'; }
             }
 
-            rewardEl.className = 'reward-pop';
-            rewardEl.innerHTML = `<span class="reward-icon">${rewardIcon}</span> 恭喜获得: <span class="reward-amount">${rewardText}</span>`;
-            clearTimeout(window.chestRewardTimeout);
-            window.chestRewardTimeout = setTimeout(() => {
-                rewardEl.innerHTML = '✨ 选择一个宝箱开启 ✨';
-                rewardEl.className = '';
-            }, 5000);
+            // 非静默模式才显示动画和奖励信息
+            if (!silent) {
+                // 播放开启动画
+                const chestItems = document.querySelectorAll('.chest-item');
+                let targetIcon = null;
+                chestItems.forEach(item => {
+                    if (item.classList.contains(type)) {
+                        targetIcon = item.querySelector('.chest-icon-wrap');
+                    }
+                });
+                if (targetIcon) {
+                    targetIcon.classList.remove('chest-icon-open');
+                    void targetIcon.offsetWidth;
+                    targetIcon.classList.add('chest-icon-open');
+                    const modalContent = document.querySelector('.modal-content');
+                    modalContent.classList.remove('chest-open-flash');
+                    void modalContent.offsetWidth;
+                    modalContent.classList.add('chest-open-flash');
+                    setTimeout(() => {
+                        modalContent.classList.remove('chest-open-flash');
+                    }, 700);
+                }
+                rewardEl.className = 'reward-pop';
+                rewardEl.innerHTML =
+                `<span class="reward-icon">${rewardIcon}</span> 恭喜获得: <span class="reward-amount">${rewardText}</span>`;
+                clearTimeout(window.chestRewardTimeout);
+                window.chestRewardTimeout = setTimeout(() => {
+                    rewardEl.innerHTML = '✨ 选择一个宝箱开启 ✨';
+                    rewardEl.className = '';
+                }, 5000);
+            }
 
             updateChestUI();
             updateStats();
             updateShopButtons();
             saveGame();
+            return rewardText; // 返回奖励文本用于批量汇总
+        }
+
+        // 一键开启全部宝箱
+        function openAllChests() {
+            const rewardEl = document.getElementById('chest-reward-text');
+            const types = ['normal', 'golden', 'diamond', 'supreme'];
+            let totalOpened = 0;
+            let rewards = [];
+            // 先计算总数量
+            let total = 0;
+            types.forEach(t => total += gameData.chests[t]);
+            if (total === 0) {
+                rewardEl.innerHTML = '❌ 没有可开启的宝箱！';
+                return;
+            }
+            // 循环开启
+            for (const type of types) {
+                while (gameData.chests[type] > 0) {
+                    const reward = openChest(type, true); // 静默开启
+                    if (reward) {
+                        rewards.push(reward);
+                        totalOpened++;
+                    } else break;
+                }
+            }
+            // 显示汇总
+            rewardEl.className = 'reward-pop';
+            rewardEl.innerHTML = `🎉 共开启 ${totalOpened} 个宝箱！<br>获得: ${rewards.join('、')}`;
+            // 刷新UI（已在 openChest 中更新，但为了确保）
+            updateChestUI();
+            updateStats();
+            updateShopButtons();
+            saveGame();
+            // 自动清空提示
+            clearTimeout(window.chestRewardTimeout);
+            window.chestRewardTimeout = setTimeout(() => {
+                rewardEl.innerHTML = '✨ 选择一个宝箱开启 ✨';
+                rewardEl.className = '';
+            }, 8000);
         }
 
         // ===== 保存与加载 =====
