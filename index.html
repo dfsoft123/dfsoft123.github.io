@@ -470,8 +470,9 @@
             -webkit-text-fill-color: inherit;
         }
         input.editable-debug:not(:disabled) {
-            border-bottom: 1px dashed var(--neon-red);
+            border-bottom: 1px dashed var(--neon-blue);
             cursor: text;
+            color: var(--neon-blue);
         }
         .sqrt-control {
             margin-top: 16px;
@@ -669,6 +670,25 @@
             font-size: 14px;
             color: var(--neon-gold);
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .shop-item-count input {
+            width: 60px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--neon-blue);
+            border-radius: 4px;
+            color: var(--neon-blue);
+            padding: 2px 6px;
+            font-family: var(--font-body);
+            font-size: 14px;
+            text-align: center;
+        }
+        .shop-item-count input:disabled {
+            border-color: transparent;
+            color: var(--neon-gold);
+            background: transparent;
         }
         .recipe-desc {
             font-size: 13px;
@@ -764,7 +784,7 @@
             font-weight: 600;
         }
 
-        /* ===== 宝箱模态框 - 全新设计 ===== */
+        /* ===== 宝箱模态框 ===== */
         .modal {
             position: fixed;
             top: 0;
@@ -953,7 +973,6 @@
             box-shadow: none;
             transform: none;
         }
-        /* 宝箱颜色主题 */
         .chest-item.normal .chest-name {
             color: #ccc;
         }
@@ -993,7 +1012,6 @@
             color: #fff;
             font-size: 22px;
         }
-        /* 宝箱开启闪光动画 */
         .chest-open-flash {
             animation: chestFlash 0.6s ease;
         }
@@ -1169,8 +1187,6 @@
                         <div class="stat-item"><span class="stat-label">物质X</span><input type="text" id="matter-x" class="stat-value editable-debug" value="0" disabled></div>
                         <div class="stat-item"><span class="stat-label">物质Y</span><input type="text" id="matter-y" class="stat-value editable-debug" value="0" disabled></div>
                         <div class="stat-item"><span class="stat-label">物质Z</span><input type="text" id="matter-z" class="stat-value editable-debug" value="0" disabled></div>
-                        <!-- 新增：掉落倍率（调试可编辑） -->
-                        <div class="stat-item" style="border-color:rgba(0,255,157,0.25);"><span class="stat-label" style="color:var(--neon-green);">✨ 掉落倍率</span><input type="text" id="drop-multiplier-stat" class="stat-value editable-debug" value="1" disabled></div>
                     </div>
                     <div class="exp-bar-container"><div class="exp-bar" id="exp-bar"></div></div>
                     <div class="sqrt-control">
@@ -1229,6 +1245,8 @@
                         <div class="dmg-row" style="color: #00ff9d;"><span>时间增益</span> <input type="text" id="time-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row" style="color: #00ff9d;"><span>奖励增益</span> <input type="text" id="special-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row" style="color: #00ff9d;"><span>能量增益</span> <input type="text" id="energy-bonus" class="editable-debug" value="1.00x" disabled></div>
+                        <!-- 新增：掉落倍率（蓝色） -->
+                        <div class="dmg-row" style="color: var(--neon-blue);"><span>✨ 掉落倍率</span> <input type="text" id="drop-multiplier-stat" class="editable-debug" value="1" disabled></div>
                         <div class="dmg-row total-damage"><span>总伤害</span> <span id="total-damage">1.00</span></div>
                         <p class="green-note">绿色增益表示不被开方的增益</p>
                     </div>
@@ -1250,13 +1268,14 @@
                         <button class="action-btn exchange-btn" id="activate-research-btn">开启研究所</button>
                     </div>
                     <div id="research-active" style="display: none;">
-                        <div class="dmg-row"><span>能量总数</span> <span id="energy-total">0</span></div>
-                        <div class="dmg-row"><span>产能速度</span> <span id="energy-speed">1/秒</span></div>
+                        <div class="dmg-row"><span>能量总数</span> <input type="text" id="energy-total" class="editable-debug" value="0" disabled style="width:100px;text-align:right;"></div>
+                        <div class="dmg-row"><span>产能速度</span> <input type="text" id="energy-speed" class="editable-debug" value="1/秒" disabled style="width:100px;text-align:right;"></div>
                         <div class="dmg-row" style="color: #00ff9d;"><span>能量增益</span> <span id="energy-bonus-stat">1.00x</span></div>
                         <div class="dmg-row" style="color: #00ff9d;"><span>使用增益获取</span> <span id="energy-usage-stat">1.00x</span></div>
                         <div class="dmg-row" style="color: #00ff9d;"><span>自动浇树经验</span> <span id="energy-tree-stat">0/秒</span></div>
+                        <div class="dmg-row"><span>升级成本</span> <input type="text" id="energy-upgrade-cost" class="editable-debug" value="100" disabled style="width:100px;text-align:right;"></div>
                         <div class="buttons-container" style="margin-top: 15px;">
-                            <button class="action-btn auto-mine-btn" id="upgrade-energy-btn">升级产能 (消耗: 100 能量)</button>
+                            <button class="action-btn auto-mine-btn" id="upgrade-energy-btn">升级产能 (消耗: <span id="energy-cost-display">100</span> 能量)</button>
                         </div>
                     </div>
                 </div>
@@ -1280,7 +1299,7 @@
         </div>
     </div>
 
-    <!-- ===== 宝箱仓库模态框（全新设计） ===== -->
+    <!-- ===== 宝箱仓库模态框 ===== -->
     <div id="chest-modal" class="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeChestModal()">&times;</button>
@@ -1408,7 +1427,8 @@
             'water-tree-btn', 'auto-water-tree-btn', 'craft-beacon-btn', 'sqrt-power', 'playtime', 'dig-count',
             'blocks-mined', 'shop-items', 'redeem-input', 'redeem-btn', 'research-inactive', 'research-active',
             'activate-research-btn', 'upgrade-energy-btn', 'energy-total', 'energy-speed', 'energy-bonus-stat',
-            'energy-usage-stat', 'energy-tree-stat', 'chest-timer', 'open-chest-modal-btn'
+            'energy-usage-stat', 'energy-tree-stat', 'chest-timer', 'open-chest-modal-btn', 'energy-upgrade-cost',
+            'energy-cost-display'
         ].forEach(id => elements[id.replace(/-([a-z])/g, g => g[1].toUpperCase())] = document.getElementById(id));
 
         const lastStats = {};
@@ -1599,7 +1619,7 @@
             }
         }
 
-        // ===== 挖掘核心（优化速度：确保每秒≥10次） =====
+        // ===== 挖掘核心 =====
         function dig(silent = false) {
             const block = gameData.blocks[gameData.currentBlockIndex];
             const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
@@ -1632,16 +1652,14 @@
         let autoMineInterval = null,
             lastAutoMineTime = 0;
 
-        // 修改：确保每次至少执行1次挖掘，补偿延迟
         function autoMineTick() {
             if (!gameData.autoMine) return;
             const now = Date.now();
             if (lastAutoMineTime === 0) lastAutoMineTime = now;
             const elapsed = now - lastAutoMineTime;
-            // 每50ms一次挖掘 → 每秒20次，但用户要求每秒10次，这里用100ms保证10次
             let ticks = Math.floor(elapsed / 100);
-            if (ticks < 1) ticks = 1; // 至少执行一次
-            if (ticks > 10) ticks = 10; // 防止卡顿积压过多
+            if (ticks < 1) ticks = 1;
+            if (ticks > 10) ticks = 10;
             for (let i = 0; i < ticks; i++) {
                 dig(i < ticks - 1);
             }
@@ -1654,7 +1672,7 @@
             if (gameData.autoMine) {
                 if (!autoMineInterval) {
                     lastAutoMineTime = Date.now();
-                    autoMineInterval = setInterval(autoMineTick, 100); // 100ms → 每秒10次
+                    autoMineInterval = setInterval(autoMineTick, 100);
                 }
             } else {
                 if (autoMineInterval) { clearInterval(autoMineInterval);
@@ -1703,7 +1721,6 @@
             }
         }
 
-        // 长按挖掘（同样优化）
         let longPressInterval = null,
             lastLongPressTime = 0;
 
@@ -1733,7 +1750,7 @@
                     gameData.level, 2);
                 gameData.level++; } }
 
-        // ===== 更新统计（包含掉落倍率） =====
+        // ===== 更新统计（包含能量可编辑） =====
         function updateStats() {
             try {
                 const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
@@ -1749,7 +1766,6 @@
                 setStat(elements.pickaxeDamage, formatNumber(pickaxe.damage) + 'x');
                 setStat(elements.usageBonus, formatNumber(gameData.usageBonus) + 'x');
                 setStat(elements.usagePerDig, formatNumber(pickaxe.usage * calculateEnergyUsageBonus()) + 'x');
-                // 掉落倍率显示（同时支持调试编辑）
                 setStat(elements.dropMultiplierStat, formatNumber(gameData.dropMultiplier));
                 setStat(elements.levelBonus, formatNumber(Math.pow(gameData.level, 0.5)) + 'x');
                 setStat(elements.trophyBonus, formatNumber(Math.pow(1 + gameData.trophies, 2 / 3)) + 'x');
@@ -1811,17 +1827,20 @@
                 if (elements.digCount) elements.digCount.textContent = formatNumber(gameData.digCount);
                 if (elements.blocksMined) elements.blocksMined.textContent = formatNumber(gameData.blocksMined);
 
+                // 研究所激活后的能量显示（可编辑）
                 if (gameData.researchInstituteActive) {
                     if (elements.researchInactive) elements.researchInactive.style.display = 'none';
                     if (elements.researchActive) elements.researchActive.style.display = 'block';
-                    set(elements.energyTotal, gameData.energy);
-                    set(elements.energySpeed, gameData.energyProductionSpeed + '/秒');
-                    set(elements.energyBonusStat, formatNumber(calculateEnergyBonus()) + 'x');
-                    set(elements.energyUsageStat, formatNumber(calculateEnergyUsageBonus()) + 'x');
-                    set(elements.energyTreeStat, formatNumber(calculateEnergyTreeExp()) + '/秒');
+                    // 能量总数、产能速度、升级成本通过input显示，已绑定值
+                    setStat(elements.energyTotal, formatNumber(gameData.energy));
+                    setStat(elements.energySpeed, formatNumber(gameData.energyProductionSpeed) + '/秒');
+                    setStat(elements.energyUpgradeCost, formatNumber(gameData.energyUpgradeCost));
+                    if (elements.energyCostDisplay) elements.energyCostDisplay.textContent = formatNumber(gameData
+                        .energyUpgradeCost);
+                    setStat(elements.energyBonusStat, formatNumber(calculateEnergyBonus()) + 'x');
+                    setStat(elements.energyUsageStat, formatNumber(calculateEnergyUsageBonus()) + 'x');
+                    setStat(elements.energyTreeStat, formatNumber(calculateEnergyTreeExp()) + '/秒');
                     if (elements.upgradeEnergyBtn) {
-                        elements.upgradeEnergyBtn.textContent =
-                            `升级产能 (消耗: ${formatNumber(gameData.energyUpgradeCost)} 能量)`;
                         elements.upgradeEnergyBtn.disabled = gameData.energy < gameData.energyUpgradeCost;
                     }
                 } else {
@@ -1831,17 +1850,16 @@
             } catch (e) { console.warn('updateStats error:', e); }
         }
 
-        // ===== 兑换码（调试码已更新） =====
+        // ===== 兑换码 =====
         function redeemCode() {
             const code = elements.redeemInput.value.trim();
             const codes = { '姚俊希220': 2.2, '七八九幺十三一六九': 7.8, '67676767': 67.67 };
-            // ★ 调试模式兑换码已改为 dfsoft67676767676767676767
             if (code === 'dfsoft67676767676767676767') {
                 if (!gameData.usedRedeemCodes.includes(code)) {
                     gameData.usedRedeemCodes.push(code);
                     gameData.debugEnabled = true;
                     toggleDebugMode(true);
-                    alert('🔓 调试模式已开启！现在可编辑所有带下划线的数值，包括掉落倍率。');
+                    alert('🔓 调试模式已开启！现在可编辑所有蓝色数值，包括能量和镐子数量。');
                 } else { alert('该兑换码已使用！'); }
             } else if (codes[code]) {
                 if (!gameData.usedRedeemCodes.includes(code)) {
@@ -1856,25 +1874,36 @@
         }
 
         function toggleDebugMode(enabled) {
-            document.querySelectorAll('.editable-debug').forEach(input => input.disabled = !enabled);
-            // 调试模式下，掉落倍率输入框可编辑
-            if (elements.dropMultiplierStat) {
-                elements.dropMultiplierStat.disabled = !enabled;
+            document.querySelectorAll('.editable-debug').forEach(input => {
+                input.disabled = !enabled;
                 if (enabled) {
-                    elements.dropMultiplierStat.style.borderBottom = '1px dashed var(--neon-red)';
-                    elements.dropMultiplierStat.style.cursor = 'text';
+                    input.style.borderBottom = '1px dashed var(--neon-blue)';
+                    input.style.cursor = 'text';
                 } else {
-                    elements.dropMultiplierStat.style.borderBottom = 'none';
-                    elements.dropMultiplierStat.style.cursor = 'default';
+                    input.style.borderBottom = 'none';
+                    input.style.cursor = 'default';
                 }
-            }
+            });
+            // 商店中的数量输入框也同步
+            document.querySelectorAll('.shop-item-count input').forEach(inp => {
+                inp.disabled = !enabled;
+                if (enabled) {
+                    inp.style.border = '1px solid var(--neon-blue)';
+                    inp.style.color = 'var(--neon-blue)';
+                    inp.style.background = 'rgba(0,0,0,0.4)';
+                } else {
+                    inp.style.border = 'none';
+                    inp.style.color = 'var(--neon-gold)';
+                    inp.style.background = 'transparent';
+                }
+            });
         }
 
         function setupDebugInputs() {
             document.querySelectorAll('.editable-debug').forEach(input => {
                 input.addEventListener('change', (e) => {
                     const id = e.target.id;
-                    let val = parseFloat(e.target.value.replace('x', '').trim());
+                    let val = parseFloat(e.target.value.replace('x', '').replace('/秒', '').trim());
                     if (isNaN(val)) return;
                     const map = {
                         'level': 'level',
@@ -1905,8 +1934,10 @@
                         'pickaxe-damage': 'pickaxe.damage',
                         'usage-bonus': 'usageBonus',
                         'special-bonus': 'specialBonus',
-                        // ★ 新增：掉落倍率可编辑
                         'drop-multiplier-stat': 'dropMultiplier',
+                        'energy-total': 'energy',
+                        'energy-speed': 'energyProductionSpeed',
+                        'energy-upgrade-cost': 'energyUpgradeCost',
                         'level-bonus': 'level=Math.pow(val,2)',
                         'trophy-bonus': 'trophies=Math.max(0,Math.pow(val,1.5)-1)',
                         'beacon-bonus': 'beacon=Math.max(0,Math.pow(val,1/0.64)-1)',
@@ -1921,6 +1952,284 @@
             });
         }
 
+        // ===== 商店（数量可编辑） =====
+        function initShop() {
+            elements.shopItems.innerHTML = '';
+            gameData.pickaxes.forEach((pickaxe, index) => {
+                const shopItem = document.createElement('div');
+                shopItem.className = 'shop-item';
+                let buyButtonHtml = '',
+                    recipeHtml = '';
+                if (pickaxe.isCraftable) {
+                    let desc = '合成材料：';
+                    for (const [mat, req] of Object.entries(pickaxe.recipe)) {
+                        const name = { 'usageBonus': '使用增益', 'coins': '金币', 'trophies': '奖杯', 'amethyst': '紫水晶',
+                            'copperIngot': '铜锭' } [mat] || mat;
+                        desc += `${formatNumber(req)}${name} `;
+                    }
+                    recipeHtml = `<div class="recipe-desc">${desc}</div>`;
+                    buyButtonHtml = `<button class="buy-btn craft-btn" data-index="${index}">合成</button>`;
+                } else {
+                    const cName = { 'trophies': '奖杯', 'amethyst': '紫水晶', 'copperIngot': '铜锭' } [pickaxe.currency ||
+                        'trophies'
+                    ];
+                    buyButtonHtml = `<button class="buy-btn" data-index="${index}">购买 (${pickaxe.price}${cName})</button>`;
+                }
+                let useButtonHtml = pickaxe.type !== 'item' ? `<button class="use-btn" data-index="${index}">使用</button>` :
+                    '';
+                // 数量显示为可编辑输入框（调试模式下可改）
+                shopItem.innerHTML =
+                    `<div class="shop-item-info"><h4>${pickaxe.name}</h4>
+                        <div class="shop-item-count">数量: <input type="text" class="shop-count-input" data-index="${index}" value="${pickaxe.count}" disabled></div>
+                    </div>
+                    <div class="shop-buttons">${recipeHtml}${buyButtonHtml}${useButtonHtml}</div>`;
+                elements.shopItems.appendChild(shopItem);
+            });
+            // 绑定数量输入变更
+            document.querySelectorAll('.shop-count-input').forEach(inp => {
+                inp.addEventListener('change', (e) => {
+                    if (!gameData.debugEnabled) return;
+                    const idx = parseInt(e.target.dataset.index);
+                    let val = parseInt(e.target.value);
+                    if (isNaN(val) || val < 0) val = 0;
+                    gameData.pickaxes[idx].count = val;
+                    // 如果该物品是信标，同步beacon
+                    if (gameData.pickaxes[idx].name === '信标') gameData.beacon = val;
+                    updateStats();
+                    updateShopButtons();
+                    saveGame();
+                });
+            });
+            document.querySelectorAll('.buy-btn').forEach(btn => btn.addEventListener('click', buyPickaxe));
+            document.querySelectorAll('.use-btn').forEach(btn => btn.addEventListener('click', usePickaxe));
+            // 同步调试状态
+            if (gameData.debugEnabled) toggleDebugMode(true);
+            updateShopButtons();
+        }
+
+        function updateShopButtons() {
+            document.querySelectorAll('.buy-btn').forEach((btn, index) => {
+                const pickaxe = gameData.pickaxes[index];
+                if (pickaxe.isCraftable) {
+                    let canCraft = true;
+                    for (const [mat, req] of Object.entries(pickaxe.recipe)) {
+                        const map = { '黑曜石镐': 10, '紫水晶镐VI': 16, '铜镐VI': 22, '蓝曜石碎片': 'blueObsidianFragment',
+                            '红曜石碎片': 'redObsidianFragment', '蓝曜石镐': 23, '红曜石镐': 24,
+                            '红蓝结晶': 'redBlueCrystal', '基岩碎片': 'bedrockFragment', '红蓝镐': 25,
+                            '黑曜石': 'obsidian', '玻璃': 'glass', '下界之星': 'netherStar', '坤坤': 'kunKun',
+                            '基岩镐': 26, '坤坤镐': 27, '土核心': 'earthCore', '土核心镐': 28, '木核心': 'woodCore',
+                            '木核心镐': 29, '火立方镐': 30, '水立方镐': 31, '火立方': 'fireCube', '水立方': 'waterCube',
+                            '使用增益': 'usageBonus', '金立方': 'goldCube', '金币': 'coins', '金立方镐': 32,
+                            '五行结晶': 'fiveElementCrystal', '京核': 'jingCore', '五行镐': 33,
+                            '元素晶片': 'elementChip'
+                        };
+                        const key = map[mat];
+                        if (typeof key === 'number') { if (gameData.pickaxes[key].count < req) canCraft = false; } else
+                        if (gameData[key] < req) canCraft = false;
+                        if (!canCraft) break;
+                    }
+                    btn.disabled = !canCraft;
+                } else { btn.disabled = gameData[pickaxe.currency || 'trophies'] < pickaxe.price; }
+            });
+            document.querySelectorAll('.use-btn').forEach((btn, index) => { btn.classList.toggle('active', index ===
+                    gameData.currentPickaxeIndex); });
+            // 更新数量输入框显示
+            document.querySelectorAll('.shop-count-input').forEach(inp => {
+                const idx = parseInt(inp.dataset.index);
+                inp.value = gameData.pickaxes[idx].count;
+            });
+        }
+
+        function buyPickaxe(e) {
+            const index = parseInt(e.target.dataset.index);
+            const pickaxe = gameData.pickaxes[index];
+            if (pickaxe.isCraftable) {
+                let canCraft = true;
+                for (const [mat, req] of Object.entries(pickaxe.recipe)) {
+                    const map = { '黑曜石镐': 10, '紫水晶镐VI': 16, '铜镐VI': 22, '蓝曜石碎片': 'blueObsidianFragment',
+                        '红曜石碎片': 'redObsidianFragment', '蓝曜石镐': 23, '红曜石镐': 24,
+                        '红蓝结晶': 'redBlueCrystal', '基岩碎片': 'bedrockFragment', '红蓝镐': 25,
+                        '黑曜石': 'obsidian', '玻璃': 'glass', '下界之星': 'netherStar', '坤坤': 'kunKun',
+                        '基岩镐': 26, '坤坤镐': 27, '土核心': 'earthCore', '土核心镐': 28, '木核心': 'woodCore',
+                        '木核心镐': 29, '火立方镐': 30, '水立方镐': 31, '火立方': 'fireCube', '水立方': 'waterCube',
+                        '使用增益': 'usageBonus', '金立方': 'goldCube', '金币': 'coins', '金立方镐': 32,
+                        '五行结晶': 'fiveElementCrystal', '京核': 'jingCore', '五行镐': 33,
+                        '元素晶片': 'elementChip'
+                    };
+                    const key = map[mat];
+                    if (typeof key === 'number') { if (gameData.pickaxes[key].count < req) canCraft = false; } else if (
+                        gameData[key] < req) canCraft = false;
+                }
+                if (canCraft) {
+                    for (const [mat, req] of Object.entries(pickaxe.recipe)) {
+                        const map = { '黑曜石镐': 10, '紫水晶镐VI': 16, '铜镐VI': 22, '蓝曜石碎片': 'blueObsidianFragment',
+                            '红曜石碎片': 'redObsidianFragment', '蓝曜石镐': 23, '红曜石镐': 24,
+                            '红蓝结晶': 'redBlueCrystal', '基岩碎片': 'bedrockFragment', '红蓝镐': 25,
+                            '黑曜石': 'obsidian', '玻璃': 'glass', '下界之星': 'netherStar', '坤坤': 'kunKun',
+                            '基岩镐': 26, '坤坤镐': 27, '土核心': 'earthCore', '土核心镐': 28, '木核心': 'woodCore',
+                            '木核心镐': 29, '火立方镐': 30, '水立方镐': 31, '火立方': 'fireCube', '水立方': 'waterCube',
+                            '使用增益': 'usageBonus', '金立方': 'goldCube', '金币': 'coins', '金立方镐': 32,
+                            '五行结晶': 'fiveElementCrystal', '京核': 'jingCore', '五行镐': 33,
+                            '元素晶片': 'elementChip'
+                        };
+                        const key = map[mat];
+                        if (typeof key === 'number') gameData.pickaxes[key].count -= req;
+                        else gameData[key] -= req;
+                    }
+                    pickaxe.count++;
+                    if (pickaxe.name === '信标') gameData.beacon = pickaxe.count;
+                    initShop();
+                    updateStats();
+                }
+            } else {
+                if (gameData[pickaxe.currency || 'trophies'] >= pickaxe.price) {
+                    gameData[pickaxe.currency || 'trophies'] -= pickaxe.price;
+                    pickaxe.count++;
+                    initShop();
+                    updateStats();
+                }
+            }
+        }
+
+        function usePickaxe(e) {
+            const index = parseInt(e.target.dataset.index);
+            if (gameData.pickaxes[index].count > 0) { gameData.currentPickaxeIndex = index;
+                initShop();
+                updateStats(); }
+        }
+
+        function handleKeyDown(e) { if (e.key === '>') changeBlock(1);
+            else if (e.key === '<') changeBlock(-1); }
+
+        window.closeChestModal = () => document.getElementById('chest-modal').style.display = 'none';
+
+        // ===== 宝箱 =====
+        function updateChestUI() {
+            const counts = {
+                normal: gameData.chests.normal || 0,
+                golden: gameData.chests.golden || 0,
+                diamond: gameData.chests.diamond || 0,
+                supreme: gameData.chests.supreme || 0
+            };
+            document.getElementById('chest-normal-count').textContent = counts.normal;
+            document.getElementById('chest-golden-count').textContent = counts.golden;
+            document.getElementById('chest-diamond-count').textContent = counts.diamond;
+            document.getElementById('chest-supreme-count').textContent = counts.supreme;
+            document.getElementById('chest-btn-normal').disabled = counts.normal <= 0;
+            document.getElementById('chest-btn-golden').disabled = counts.golden <= 0;
+            document.getElementById('chest-btn-diamond').disabled = counts.diamond <= 0;
+            document.getElementById('chest-btn-supreme').disabled = counts.supreme <= 0;
+        }
+
+        function checkChestReward() {
+            let now = Date.now();
+            while (now - gameData.lastChestTime >= 300000) {
+                gameData.lastChestTime += 300000;
+                const rand = Math.random() * 100;
+                if (rand < 75) gameData.chests.normal++;
+                else if (rand < 95) gameData.chests.golden++;
+                else if (rand < 99.9) gameData.chests.diamond++;
+                else gameData.chests.supreme++;
+                updateChestUI();
+            }
+        }
+
+        function openChest(type) {
+            const rewardEl = document.getElementById('chest-reward-text');
+            if (gameData.chests[type] <= 0) {
+                rewardEl.innerHTML = '❌ 没有该宝箱！';
+                return;
+            }
+            gameData.chests[type]--;
+            updateChestUI();
+
+            const chestItems = document.querySelectorAll('.chest-item');
+            let targetIcon = null;
+            chestItems.forEach(item => {
+                if (item.classList.contains(type)) {
+                    targetIcon = item.querySelector('.chest-icon-wrap');
+                }
+            });
+            if (targetIcon) {
+                targetIcon.classList.remove('chest-icon-open');
+                void targetIcon.offsetWidth;
+                targetIcon.classList.add('chest-icon-open');
+                const modalContent = document.querySelector('.modal-content');
+                modalContent.classList.remove('chest-open-flash');
+                void modalContent.offsetWidth;
+                modalContent.classList.add('chest-open-flash');
+                setTimeout(() => {
+                    modalContent.classList.remove('chest-open-flash');
+                }, 700);
+            }
+
+            const rand = Math.random() * 100;
+            let rewardText = '',
+                rewardIcon = '🎁';
+            if (type === 'normal') {
+                if (rand < 50) { gameData.specialBonus += 0.1;
+                    rewardText = '0.1 奖励增益';
+                    rewardIcon = '📈'; } else if (rand < 80) { gameData.specialBonus += 0.5;
+                    rewardText = '0.5 奖励增益';
+                    rewardIcon = '📈'; } else if (rand < 95) { gameData.usageBonus += 1000;
+                    rewardText = '1000 次使用增益';
+                    rewardIcon = '⚡'; } else if (rand < 97.5) { gameData.beacon += 1;
+                    rewardText = '1 信标';
+                    rewardIcon = '🔮'; } else { gameData.treeLevel += 1;
+                    rewardText = '树等级 +1';
+                    rewardIcon = '🌳'; }
+            } else if (type === 'golden') {
+                if (rand < 50) { gameData.specialBonus += 0.5;
+                    rewardText = '0.5 奖励增益';
+                    rewardIcon = '📈'; } else if (rand < 75) { gameData.specialBonus += 1;
+                    rewardText = '1 奖励增益';
+                    rewardIcon = '📈'; } else if (rand < 90) { gameData.usageBonus += 3000;
+                    rewardText = '3000 次使用增益';
+                    rewardIcon = '⚡'; } else if (rand < 95) { gameData.beacon += 3;
+                    rewardText = '3 信标';
+                    rewardIcon = '🔮'; } else { gameData.treeLevel += 3;
+                    rewardText = '树等级 +3';
+                    rewardIcon = '🌳'; }
+            } else if (type === 'diamond') {
+                if (rand < 50) { gameData.specialBonus += 5;
+                    rewardText = '5 奖励增益';
+                    rewardIcon = '📈'; } else if (rand < 75) { gameData.usageBonus += 10000;
+                    rewardText = '10000 次使用增益';
+                    rewardIcon = '⚡'; } else if (rand < 85) { gameData.beacon += 25;
+                    rewardText = '25 信标';
+                    rewardIcon = '🔮'; } else if (rand < 95) { gameData.treeLevel += 25;
+                    rewardText = '树等级 +25';
+                    rewardIcon = '🌳'; } else { gameData.dropMultiplier += 1;
+                    rewardText = '掉落倍率 +1';
+                    rewardIcon = '✨'; }
+            } else if (type === 'supreme') {
+                if (rand < 40) { gameData.specialBonus += 67;
+                    rewardText = '67 奖励增益';
+                    rewardIcon = '📈'; } else if (rand < 70) { gameData.usageBonus += 67000;
+                    rewardText = '67000 次使用增益';
+                    rewardIcon = '⚡'; } else if (rand < 85) { gameData.beacon += 200;
+                    gameData.treeLevel += 200;
+                    rewardText = '200 信标 + 树等级 +200';
+                    rewardIcon = '🔮'; } else { gameData.dropMultiplier += 3;
+                    rewardText = '掉落倍率 +3';
+                    rewardIcon = '✨'; }
+            }
+
+            rewardEl.className = 'reward-pop';
+            rewardEl.innerHTML = `<span class="reward-icon">${rewardIcon}</span> 恭喜获得: <span class="reward-amount">${rewardText}</span>`;
+            clearTimeout(window.chestRewardTimeout);
+            window.chestRewardTimeout = setTimeout(() => {
+                rewardEl.innerHTML = '✨ 选择一个宝箱开启 ✨';
+                rewardEl.className = '';
+            }, 5000);
+
+            updateChestUI();
+            updateStats();
+            updateShopButtons();
+            saveGame();
+        }
+
+        // ===== 保存与加载 =====
         function saveGame() {
             try {
                 fixNanData();
@@ -2010,262 +2319,6 @@
             if (elements.chestTimer) elements.chestTimer.textContent = `${m}:${s.toString().padStart(2, '0')}`;
         }
 
-        // ===== 宝箱UI更新（含按钮状态） =====
-        function updateChestUI() {
-            const counts = {
-                normal: gameData.chests.normal || 0,
-                golden: gameData.chests.golden || 0,
-                diamond: gameData.chests.diamond || 0,
-                supreme: gameData.chests.supreme || 0
-            };
-            document.getElementById('chest-normal-count').textContent = counts.normal;
-            document.getElementById('chest-golden-count').textContent = counts.golden;
-            document.getElementById('chest-diamond-count').textContent = counts.diamond;
-            document.getElementById('chest-supreme-count').textContent = counts.supreme;
-            // 按钮禁用状态
-            document.getElementById('chest-btn-normal').disabled = counts.normal <= 0;
-            document.getElementById('chest-btn-golden').disabled = counts.golden <= 0;
-            document.getElementById('chest-btn-diamond').disabled = counts.diamond <= 0;
-            document.getElementById('chest-btn-supreme').disabled = counts.supreme <= 0;
-        }
-
-        function checkChestReward() {
-            let now = Date.now();
-            while (now - gameData.lastChestTime >= 300000) {
-                gameData.lastChestTime += 300000;
-                const rand = Math.random() * 100;
-                if (rand < 75) gameData.chests.normal++;
-                else if (rand < 95) gameData.chests.golden++;
-                else if (rand < 99.9) gameData.chests.diamond++;
-                else gameData.chests.supreme++;
-                updateChestUI();
-            }
-        }
-
-        // ===== 开启宝箱（带动画） =====
-        function openChest(type) {
-            const rewardEl = document.getElementById('chest-reward-text');
-            if (gameData.chests[type] <= 0) {
-                rewardEl.innerHTML = '❌ 没有该宝箱！';
-                return;
-            }
-            gameData.chests[type]--;
-            updateChestUI();
-
-            // 播放开启动画：找到对应的宝箱图标
-            const chestItems = document.querySelectorAll('.chest-item');
-            let targetIcon = null;
-            chestItems.forEach(item => {
-                if (item.classList.contains(type)) {
-                    targetIcon = item.querySelector('.chest-icon-wrap');
-                }
-            });
-            if (targetIcon) {
-                targetIcon.classList.remove('chest-icon-open');
-                void targetIcon.offsetWidth;
-                targetIcon.classList.add('chest-icon-open');
-                // 闪光效果
-                const modalContent = document.querySelector('.modal-content');
-                modalContent.classList.remove('chest-open-flash');
-                void modalContent.offsetWidth;
-                modalContent.classList.add('chest-open-flash');
-                setTimeout(() => {
-                    modalContent.classList.remove('chest-open-flash');
-                }, 700);
-            }
-
-            const rand = Math.random() * 100;
-            let rewardText = '',
-                rewardIcon = '🎁';
-            if (type === 'normal') {
-                if (rand < 50) { gameData.specialBonus += 0.1;
-                    rewardText = '0.1 奖励增益';
-                    rewardIcon = '📈'; } else if (rand < 80) { gameData.specialBonus += 0.5;
-                    rewardText = '0.5 奖励增益';
-                    rewardIcon = '📈'; } else if (rand < 95) { gameData.usageBonus += 1000;
-                    rewardText = '1000 次使用增益';
-                    rewardIcon = '⚡'; } else if (rand < 97.5) { gameData.beacon += 1;
-                    rewardText = '1 信标';
-                    rewardIcon = '🔮'; } else { gameData.treeLevel += 1;
-                    rewardText = '树等级 +1';
-                    rewardIcon = '🌳'; }
-            } else if (type === 'golden') {
-                if (rand < 50) { gameData.specialBonus += 0.5;
-                    rewardText = '0.5 奖励增益';
-                    rewardIcon = '📈'; } else if (rand < 75) { gameData.specialBonus += 1;
-                    rewardText = '1 奖励增益';
-                    rewardIcon = '📈'; } else if (rand < 90) { gameData.usageBonus += 3000;
-                    rewardText = '3000 次使用增益';
-                    rewardIcon = '⚡'; } else if (rand < 95) { gameData.beacon += 3;
-                    rewardText = '3 信标';
-                    rewardIcon = '🔮'; } else { gameData.treeLevel += 3;
-                    rewardText = '树等级 +3';
-                    rewardIcon = '🌳'; }
-            } else if (type === 'diamond') {
-                if (rand < 50) { gameData.specialBonus += 5;
-                    rewardText = '5 奖励增益';
-                    rewardIcon = '📈'; } else if (rand < 75) { gameData.usageBonus += 10000;
-                    rewardText = '10000 次使用增益';
-                    rewardIcon = '⚡'; } else if (rand < 85) { gameData.beacon += 25;
-                    rewardText = '25 信标';
-                    rewardIcon = '🔮'; } else if (rand < 95) { gameData.treeLevel += 25;
-                    rewardText = '树等级 +25';
-                    rewardIcon = '🌳'; } else { gameData.dropMultiplier += 1;
-                    rewardText = '掉落倍率 +1';
-                    rewardIcon = '✨'; }
-            } else if (type === 'supreme') {
-                if (rand < 40) { gameData.specialBonus += 67;
-                    rewardText = '67 奖励增益';
-                    rewardIcon = '📈'; } else if (rand < 70) { gameData.usageBonus += 67000;
-                    rewardText = '67000 次使用增益';
-                    rewardIcon = '⚡'; } else if (rand < 85) { gameData.beacon += 200;
-                    gameData.treeLevel += 200;
-                    rewardText = '200 信标 + 树等级 +200';
-                    rewardIcon = '🔮'; } else { gameData.dropMultiplier += 3;
-                    rewardText = '掉落倍率 +3';
-                    rewardIcon = '✨'; }
-            }
-
-            rewardEl.className = 'reward-pop';
-            rewardEl.innerHTML = `<span class="reward-icon">${rewardIcon}</span> 恭喜获得: <span class="reward-amount">${rewardText}</span>`;
-            // 自动淡出提示
-            clearTimeout(window.chestRewardTimeout);
-            window.chestRewardTimeout = setTimeout(() => {
-                rewardEl.innerHTML = '✨ 选择一个宝箱开启 ✨';
-                rewardEl.className = '';
-            }, 5000);
-
-            updateChestUI();
-            updateStats();
-            updateShopButtons();
-            saveGame();
-        }
-
-        // ===== 商店 =====
-        function initShop() {
-            elements.shopItems.innerHTML = '';
-            gameData.pickaxes.forEach((pickaxe, index) => {
-                const shopItem = document.createElement('div');
-                shopItem.className = 'shop-item';
-                let buyButtonHtml = '',
-                    recipeHtml = '';
-                if (pickaxe.isCraftable) {
-                    let desc = '合成材料：';
-                    for (const [mat, req] of Object.entries(pickaxe.recipe)) {
-                        const name = { 'usageBonus': '使用增益', 'coins': '金币', 'trophies': '奖杯', 'amethyst': '紫水晶',
-                            'copperIngot': '铜锭' } [mat] || mat;
-                        desc += `${formatNumber(req)}${name} `;
-                    }
-                    recipeHtml = `<div class="recipe-desc">${desc}</div>`;
-                    buyButtonHtml = `<button class="buy-btn craft-btn" data-index="${index}">合成</button>`;
-                } else {
-                    const cName = { 'trophies': '奖杯', 'amethyst': '紫水晶', 'copperIngot': '铜锭' } [pickaxe.currency ||
-                        'trophies'
-                    ];
-                    buyButtonHtml = `<button class="buy-btn" data-index="${index}">购买 (${pickaxe.price}${cName})</button>`;
-                }
-                let useButtonHtml = pickaxe.type !== 'item' ? `<button class="use-btn" data-index="${index}">使用</button>` :
-                    '';
-                shopItem.innerHTML =
-                    `<div class="shop-item-info"><h4>${pickaxe.name}</h4><span class="shop-item-count">数量: ${pickaxe.count}</span></div><div class="shop-buttons">${recipeHtml}${buyButtonHtml}${useButtonHtml}</div>`;
-                elements.shopItems.appendChild(shopItem);
-            });
-            document.querySelectorAll('.buy-btn').forEach(btn => btn.addEventListener('click', buyPickaxe));
-            document.querySelectorAll('.use-btn').forEach(btn => btn.addEventListener('click', usePickaxe));
-            updateShopButtons();
-        }
-
-        function updateShopButtons() {
-            document.querySelectorAll('.buy-btn').forEach((btn, index) => {
-                const pickaxe = gameData.pickaxes[index];
-                if (pickaxe.isCraftable) {
-                    let canCraft = true;
-                    for (const [mat, req] of Object.entries(pickaxe.recipe)) {
-                        const map = { '黑曜石镐': 10, '紫水晶镐VI': 16, '铜镐VI': 22, '蓝曜石碎片': 'blueObsidianFragment',
-                            '红曜石碎片': 'redObsidianFragment', '蓝曜石镐': 23, '红曜石镐': 24,
-                            '红蓝结晶': 'redBlueCrystal', '基岩碎片': 'bedrockFragment', '红蓝镐': 25,
-                            '黑曜石': 'obsidian', '玻璃': 'glass', '下界之星': 'netherStar', '坤坤': 'kunKun',
-                            '基岩镐': 26, '坤坤镐': 27, '土核心': 'earthCore', '土核心镐': 28, '木核心': 'woodCore',
-                            '木核心镐': 29, '火立方镐': 30, '水立方镐': 31, '火立方': 'fireCube', '水立方': 'waterCube',
-                            '使用增益': 'usageBonus', '金立方': 'goldCube', '金币': 'coins', '金立方镐': 32,
-                            '五行结晶': 'fiveElementCrystal', '京核': 'jingCore', '五行镐': 33,
-                            '元素晶片': 'elementChip'
-                        };
-                        const key = map[mat];
-                        if (typeof key === 'number') { if (gameData.pickaxes[key].count < req) canCraft = false; } else
-                        if (gameData[key] < req) canCraft = false;
-                        if (!canCraft) break;
-                    }
-                    btn.disabled = !canCraft;
-                } else { btn.disabled = gameData[pickaxe.currency || 'trophies'] < pickaxe.price; }
-            });
-            document.querySelectorAll('.use-btn').forEach((btn, index) => { btn.classList.toggle('active', index ===
-                    gameData.currentPickaxeIndex); });
-        }
-
-        function buyPickaxe(e) {
-            const index = parseInt(e.target.dataset.index);
-            const pickaxe = gameData.pickaxes[index];
-            if (pickaxe.isCraftable) {
-                let canCraft = true;
-                for (const [mat, req] of Object.entries(pickaxe.recipe)) {
-                    const map = { '黑曜石镐': 10, '紫水晶镐VI': 16, '铜镐VI': 22, '蓝曜石碎片': 'blueObsidianFragment',
-                        '红曜石碎片': 'redObsidianFragment', '蓝曜石镐': 23, '红曜石镐': 24,
-                        '红蓝结晶': 'redBlueCrystal', '基岩碎片': 'bedrockFragment', '红蓝镐': 25,
-                        '黑曜石': 'obsidian', '玻璃': 'glass', '下界之星': 'netherStar', '坤坤': 'kunKun',
-                        '基岩镐': 26, '坤坤镐': 27, '土核心': 'earthCore', '土核心镐': 28, '木核心': 'woodCore',
-                        '木核心镐': 29, '火立方镐': 30, '水立方镐': 31, '火立方': 'fireCube', '水立方': 'waterCube',
-                        '使用增益': 'usageBonus', '金立方': 'goldCube', '金币': 'coins', '金立方镐': 32,
-                        '五行结晶': 'fiveElementCrystal', '京核': 'jingCore', '五行镐': 33,
-                        '元素晶片': 'elementChip'
-                    };
-                    const key = map[mat];
-                    if (typeof key === 'number') { if (gameData.pickaxes[key].count < req) canCraft = false; } else if (
-                        gameData[key] < req) canCraft = false;
-                }
-                if (canCraft) {
-                    for (const [mat, req] of Object.entries(pickaxe.recipe)) {
-                        const map = { '黑曜石镐': 10, '紫水晶镐VI': 16, '铜镐VI': 22, '蓝曜石碎片': 'blueObsidianFragment',
-                            '红曜石碎片': 'redObsidianFragment', '蓝曜石镐': 23, '红曜石镐': 24,
-                            '红蓝结晶': 'redBlueCrystal', '基岩碎片': 'bedrockFragment', '红蓝镐': 25,
-                            '黑曜石': 'obsidian', '玻璃': 'glass', '下界之星': 'netherStar', '坤坤': 'kunKun',
-                            '基岩镐': 26, '坤坤镐': 27, '土核心': 'earthCore', '土核心镐': 28, '木核心': 'woodCore',
-                            '木核心镐': 29, '火立方镐': 30, '水立方镐': 31, '火立方': 'fireCube', '水立方': 'waterCube',
-                            '使用增益': 'usageBonus', '金立方': 'goldCube', '金币': 'coins', '金立方镐': 32,
-                            '五行结晶': 'fiveElementCrystal', '京核': 'jingCore', '五行镐': 33,
-                            '元素晶片': 'elementChip'
-                        };
-                        const key = map[mat];
-                        if (typeof key === 'number') gameData.pickaxes[key].count -= req;
-                        else gameData[key] -= req;
-                    }
-                    pickaxe.count++;
-                    if (pickaxe.name === '信标') gameData.beacon = pickaxe.count;
-                    initShop();
-                    updateStats();
-                }
-            } else {
-                if (gameData[pickaxe.currency || 'trophies'] >= pickaxe.price) {
-                    gameData[pickaxe.currency || 'trophies'] -= pickaxe.price;
-                    pickaxe.count++;
-                    initShop();
-                    updateStats();
-                }
-            }
-        }
-
-        function usePickaxe(e) {
-            const index = parseInt(e.target.dataset.index);
-            if (gameData.pickaxes[index].count > 0) { gameData.currentPickaxeIndex = index;
-                initShop();
-                updateStats(); }
-        }
-
-        function handleKeyDown(e) { if (e.key === '>') changeBlock(1);
-            else if (e.key === '<') changeBlock(-1); }
-
-        window.closeChestModal = () => document.getElementById('chest-modal').style.display = 'none';
-
         // ===== 初始化 =====
         function initGame() {
             loadGame();
@@ -2329,7 +2382,6 @@
             updateStats();
             updateChestUI();
 
-            // 主循环：每秒更新
             setInterval(() => {
                 try {
                     gameData.totalOnlineSeconds++;
