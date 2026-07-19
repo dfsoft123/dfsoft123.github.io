@@ -8,138 +8,1108 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* 样式不变，此处省略以节省篇幅，实际请保留原样式 */
-        :root { --bg-dark: #050510; --bg-panel: rgba(16, 18, 38, 0.85); --border-main: rgba(0, 243, 255, 0.25); --border-hover: rgba(0, 243, 255, 0.7); --neon-cyan: #00f3ff; --neon-purple: #bc13fe; --neon-gold: #ffd700; --neon-green: #00ff9d; --neon-red: #ff0055; --neon-blue: #1e90ff; --text-main: #e0e6ed; --text-dim: #8b9bb4; --font-title: 'Orbitron', sans-serif; --font-body: 'Rajdhani', sans-serif; }
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: var(--font-body); background: var(--bg-dark); color: var(--text-main); min-height: 100vh; overflow-y: auto; position: relative; overscroll-behavior: none; touch-action: manipulation; }
-        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 15% 15%, rgba(188, 19, 254, 0.2), transparent 40%), radial-gradient(circle at 85% 70%, rgba(0, 243, 255, 0.15), transparent 40%), linear-gradient(180deg, #050510 0%, #0a0a1a 100%); z-index: -1; animation: bgPulse 15s infinite alternate; }
-        @keyframes bgPulse { 0% { filter: hue-rotate(0deg) brightness(1); } 100% { filter: hue-rotate(30deg) brightness(1.1); } }
-        .game-container { display: flex; flex-direction: column; max-width: 1600px; margin: 0 auto; padding: 24px; gap: 24px; min-height: 100vh; width: 100%; }
-        .game-main-content { display: flex; gap: 24px; flex: 1; align-items: flex-start; }
-        .left-content { flex: 1; display: flex; flex-direction: column; gap: 24px; min-width: 0; }
-        .right-content { width: 380px; display: flex; flex-direction: column; gap: 24px; flex-shrink: 0; }
-        .panel { background: var(--bg-panel); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border: 1px solid var(--border-main); border-radius: 16px; padding: 24px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), inset 0 0 30px rgba(0, 243, 255, 0.04); position: relative; overflow: hidden; transition: border-color 0.3s ease; animation: panelGlow 4s infinite ease-in-out; }
-        @keyframes panelGlow { 0%, 100% { box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), inset 0 0 30px rgba(0, 243, 255, 0.04); } 50% { box-shadow: 0 10px 50px rgba(0, 0, 0, 0.7), inset 0 0 40px rgba(0, 243, 255, 0.08); } }
-        .panel::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent); opacity: 0.6; }
-        .panel-title { font-family: var(--font-title); font-size: 18px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--neon-cyan); text-shadow: 0 0 10px rgba(0, 243, 255, 0.6); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid rgba(0, 243, 255, 0.15); display: flex; align-items: center; gap: 10px; }
-        .panel-title::before { content: '▃'; color: var(--neon-purple); }
-        .block-controls { display: flex; align-items: center; justify-content: center; gap: 24px; margin-bottom: 24px; }
-        .block-nav-btn { background: rgba(0, 243, 255, 0.05); color: var(--neon-cyan); border: 1px solid var(--border-main); width: 48px; height: 48px; border-radius: 12px; font-size: 24px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
-        .block-nav-btn:active { background: rgba(0, 243, 255, 0.3); transform: scale(0.95); }
-        #block-name { font-family: var(--font-title); font-size: 28px; font-weight: 900; text-transform: uppercase; background: linear-gradient(90deg, #fff, var(--neon-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 20px rgba(0, 243, 255, 0.4); }
-        .block-display { position: relative; width: 100%; height: 350px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, rgba(0,0,0,0.8) 0%, transparent 70%); border-radius: 12px; overflow: hidden; }
-        .block-rune-circle { position: absolute; width: 320px; height: 320px; border: 2px dashed rgba(188, 19, 254, 0.4); border-radius: 50%; animation: spin 20s linear infinite; pointer-events: none; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .block { width: 260px; height: 260px; background: linear-gradient(135deg, #2a2a4e, #1a1a2e); border: 2px solid var(--neon-cyan); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 40px rgba(0, 243, 255, 0.3), inset 0 0 30px rgba(0, 0, 0, 0.9); cursor: pointer; transition: transform 0.05s ease, box-shadow 0.2s ease; position: relative; z-index: 2; }
-        .block:active { transform: scale(0.95); box-shadow: 0 0 60px rgba(0, 243, 255, 0.6), inset 0 0 30px rgba(0, 0, 0, 0.9); }
-        .block-content { text-align: center; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,1); width: 100%; padding: 0 20px; }
-        .block-hp-text { font-family: var(--font-title); font-size: 24px; font-weight: 700; margin-bottom: 16px; color: var(--text-main); }
-        .hp-bar-container, .exp-bar-container, .tree-progress-container { width: 100%; height: 16px; background: rgba(0, 0, 0, 0.9); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.9); margin: 8px 0; }
-        .hp-bar { height: 100%; background: linear-gradient(90deg, var(--neon-red), #ff8c00); box-shadow: 0 0 15px var(--neon-red); transition: width 0.1s ease; border-radius: 8px; }
-        .exp-bar { height: 100%; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple)); box-shadow: 0 0 15px var(--neon-cyan); transition: width 0.3s ease; border-radius: 8px; }
-        .tree-progress-bar { height: 100%; background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan)); box-shadow: 0 0 10px var(--neon-green); transition: width 0.3s ease; }
-        .drop-info { margin-top: 15px; font-size: 14px; color: var(--neon-gold); text-shadow: 0 0 8px rgba(255, 215, 0, 0.6); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-        .damage-text-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 10; }
-        .damage-text { position: absolute; font-family: var(--font-title); color: #fff; font-weight: 900; font-size: 24px; text-shadow: 0 0 10px var(--neon-red), 2px 2px 0 #000; animation: damagePopup 1s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        @keyframes damagePopup { 0% { opacity: 1; transform: translate(-50%, 0) scale(0.8); } 20% { transform: translate(-50%, -10px) scale(1.4); } 100% { opacity: 0; transform: translate(-50%, -100px) scale(1); } }
-        .buttons-container { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; align-items: center; margin-top: 20px; }
-        .action-btn { background: rgba(16, 18, 38, 0.6); color: var(--text-main); border: 1px solid var(--border-main); padding: 12px 24px; border-radius: 8px; font-family: var(--font-body); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .action-btn:hover { border-color: var(--neon-cyan); background: rgba(0, 243, 255, 0.1); box-shadow: 0 0 15px rgba(0, 243, 255, 0.4); }
-        .action-btn:active { transform: scale(0.96); }
-        .action-btn.active { background: rgba(0, 255, 157, 0.1); border-color: var(--neon-green); color: var(--neon-green); box-shadow: 0 0 15px rgba(0, 255, 157, 0.4); }
-        .exchange-btn { border-color: var(--neon-gold); color: var(--neon-gold); }
-        .exchange-btn:hover { background: rgba(255, 215, 0, 0.1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
-        .glass-input-group { display: flex; align-items: center; gap: 10px; background: rgba(16, 18, 38, 0.6); border: 1px solid var(--border-main); padding: 8px; border-radius: 8px; }
-        .threshold-input { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-dim); }
-        .threshold-input input, .sqrt-control input { width: 80px; padding: 6px 10px; border: 1px solid var(--border-main); border-radius: 4px; font-family: var(--font-body); font-size: 16px; background: rgba(0, 0, 0, 0.5); color: var(--neon-cyan); outline: none; text-align: center; }
-        .basic-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
-        .stat-item { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 8px 12px; display: flex; flex-direction: column; transition: all 0.3s ease; }
-        .stat-item:hover { border-color: var(--border-hover); background: rgba(0, 243, 255, 0.05); }
-        .stat-label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-        .stat-value { font-family: var(--font-title); font-size: 18px; font-weight: 700; color: var(--text-main); }
-        .level-item .stat-value { color: var(--neon-purple); text-shadow: 0 0 8px rgba(188, 19, 254, 0.4); }
-        .currency-gold .stat-value { color: var(--neon-gold); text-shadow: 0 0 8px rgba(255, 215, 0, 0.4); }
-        .currency-trophy .stat-value { color: var(--neon-cyan); text-shadow: 0 0 8px rgba(0, 243, 255, 0.4); }
-        .special-item { border-color: rgba(188, 19, 254, 0.3); }
-        .special-item .stat-value { color: var(--neon-purple); }
-        input.editable-debug { width: 100%; background: transparent; border: none; outline: none; color: inherit; font-family: inherit; font-size: inherit; font-weight: inherit; text-align: left; cursor: default; }
-        input.stat-value.editable-debug { font-family: var(--font-title); font-size: 18px; font-weight: 700; }
-        .dmg-row input.editable-debug { width: 90px; text-align: right; font-family: var(--font-body); font-size: 15px; font-weight: 700; }
-        input.editable-debug:disabled { opacity: 1; -webkit-text-fill-color: inherit; }
-        input.editable-debug:not(:disabled) { border-bottom: 1px dashed var(--neon-red); cursor: text; }
-        .sqrt-control { margin-top: 16px; display: flex; align-items: center; gap: 10px; justify-content: flex-end; font-size: 14px; color: var(--text-dim); }
-        .current-pickaxe { background: linear-gradient(135deg, rgba(188, 19, 254, 0.1), rgba(0, 243, 255, 0.1)); border: 1px solid rgba(188, 19, 254, 0.3); padding: 16px; border-radius: 8px; text-align: center; }
-        #pickaxe-name { font-family: var(--font-title); font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 16px; text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
-        .pickaxe-properties { display: flex; justify-content: space-around; gap: 10px; }
-        .prop-item { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--text-dim); }
-        .prop-item span:last-child { color: var(--neon-cyan); font-weight: 700; font-size: 16px; }
-        .damage-stats, .game-stats { display: flex; flex-direction: column; gap: 10px; }
-        .dmg-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(255, 255, 255, 0.02); border-radius: 6px; font-size: 15px; border: 1px solid transparent; transition: all 0.2s ease; }
-        .dmg-row:hover { border-color: var(--border-main); background: rgba(0, 243, 255, 0.05); }
-        .dmg-row span:last-child, .dmg-row input.editable-debug { color: var(--text-main); font-weight: 700; }
-        .dmg-row.total-damage { margin-top: 8px; background: linear-gradient(90deg, rgba(188, 19, 254, 0.1), rgba(0, 243, 255, 0.1)); border-color: var(--neon-cyan); box-shadow: 0 0 10px rgba(0, 243, 255, 0.1); }
-        .dmg-row.total-damage span:last-child { font-family: var(--font-title); font-size: 18px; color: #fff; }
-        .green-note { margin-top: 10px; font-size: 12px; color: var(--neon-green); text-align: center; opacity: 0.8; }
-        .research-panel .panel-title { color: var(--neon-purple); text-shadow: 0 0 10px rgba(188, 19, 254, 0.5); }
-        .research-inactive p { margin-bottom: 12px; color: var(--text-dim); text-align: center; }
-        .research-inactive button { width: 100%; }
-        .tree-watering .panel-title { color: var(--neon-green); text-shadow: 0 0 10px rgba(0, 255, 157, 0.5); }
-        .tree-watering .panel-title::before { color: var(--neon-cyan); }
-        .tree-info { margin-bottom: 16px; }
-        .tree-info p { margin-bottom: 8px; display: flex; justify-content: space-between; color: var(--text-dim); }
-        .tree-info p .stat-value { color: var(--neon-green); }
-        .tree-buttons { display: flex; gap: 12px; flex-direction: column; }
-        .tree-btn { border-color: var(--neon-green); color: var(--neon-green); }
-        .tree-btn:hover { background: rgba(0, 255, 157, 0.1); box-shadow: 0 0 15px rgba(0, 255, 157, 0.3); }
-        .tree-btn.auto { border-color: var(--neon-cyan); color: var(--neon-cyan); }
-        .tree-btn.auto:hover { background: rgba(0, 243, 255, 0.1); box-shadow: 0 0 15px rgba(0, 243, 255, 0.3); }
-        .shop { width: 100%; overflow-y: auto; }
-        .shop-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding-bottom: 10px; }
-        .shop-item { background: linear-gradient(135deg, rgba(16, 18, 38, 0.9), rgba(26, 26, 46, 0.9)); border: 1px solid var(--border-main); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px; position: relative; transition: all 0.3s ease; overflow: hidden; }
-        .shop-item::before { content: ''; position: absolute; top: -1px; left: -1px; right: -1px; bottom: -1px; border-radius: 12px; background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan)); opacity: 0.2; z-index: -1; transition: opacity 0.3s ease; }
-        .shop-item:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); }
-        .shop-item:hover::before { opacity: 0.7; }
-        .shop-item-info { display: flex; flex-direction: column; gap: 6px; }
-        .shop-item h4 { font-family: var(--font-title); font-size: 16px; margin: 0; text-transform: uppercase; color: #fff; letter-spacing: 1px; }
-        .shop-item-count { font-size: 14px; color: var(--neon-gold); font-weight: 600; }
-        .recipe-desc { font-size: 13px; color: var(--text-dim); line-height: 1.4; border-top: 1px solid rgba(255, 255, 255, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding: 8px 0; margin: 4px 0; }
-        .shop-buttons { display: flex; gap: 10px; margin-top: auto; }
-        .buy-btn, .use-btn { flex: 1; border: 1px solid transparent; padding: 8px; border-radius: 6px; font-family: var(--font-body); font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; background: rgba(0,0,0,0.3); }
-        .buy-btn { border-color: var(--neon-gold); color: var(--neon-gold); }
-        .buy-btn:hover { background: var(--neon-gold); color: #000; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
-        .buy-btn:disabled { border-color: #555; color: #555; cursor: not-allowed; background: rgba(0,0,0,0.2); box-shadow: none; }
-        .use-btn { border-color: var(--neon-cyan); color: var(--neon-cyan); }
-        .use-btn:hover { background: var(--neon-cyan); color: #000; box-shadow: 0 0 15px rgba(0, 243, 255, 0.4); }
-        .use-btn.active { background: var(--neon-green); border-color: var(--neon-green); color: #000; box-shadow: 0 0 15px rgba(0, 255, 157, 0.4); }
-        .redeem-panel .panel-title { color: var(--neon-gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-        .redeem-panel .panel-title::before { content: '🎁'; color: var(--neon-gold); }
-        .redeem-controls { display: flex; gap: 10px; }
-        .redeem-controls input { flex: 1; padding: 10px 15px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--border-main); border-radius: 8px; color: var(--text-main); outline: none; font-family: var(--font-body); font-size: 15px; }
-        .redeem-controls input:focus { border-color: var(--neon-gold); box-shadow: 0 0 8px rgba(255, 215, 0, 0.3); }
-        .chest-timer-display { text-align: center; margin-bottom: 15px; font-size: 16px; color: var(--neon-green); font-weight: 600; }
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: var(--bg-panel); border: 1px solid var(--neon-cyan); border-radius: 16px; padding: 30px; width: 90%; max-width: 500px; position: relative; box-shadow: 0 0 30px rgba(0, 243, 255, 0.3); }
-        .modal-title { font-family: var(--font-title); font-size: 24px; color: var(--neon-gold); text-align: center; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
-        .close-btn { position: absolute; top: 10px; right: 20px; font-size: 28px; cursor: pointer; color: var(--text-dim); transition: color 0.2s; }
-        .close-btn:hover { color: var(--neon-red); }
-        .chest-list { display: flex; flex-direction: column; gap: 15px; }
-        .chest-item { display: flex; align-items: center; justify-content: space-between; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid var(--border-main); }
-        .chest-item-info { display: flex; align-items: center; gap: 15px; }
-        .chest-icon { font-size: 32px; width: 40px; text-align: center; }
-        .chest-name { font-size: 18px; font-weight: 700; color: var(--text-main); }
-        .chest-count { font-size: 14px; color: var(--neon-gold); }
-        #chest-reward-text { margin-top: 20px; text-align: center; font-size: 18px; color: var(--neon-gold); min-height: 27px; font-weight: 700; text-shadow: 0 0 8px rgba(255, 215, 0, 0.5); }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
-        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--neon-purple), var(--neon-cyan)); border-radius: 4px; }
-        @media (max-width: 1200px) { .game-main-content { flex-direction: column; } .right-content { width: 100%; } .basic-stats-grid { grid-template-columns: repeat(4, 1fr); } }
-        @media (max-width: 768px) { .game-container { padding: 12px; gap: 12px; } .panel { padding: 16px; } .block { width: 200px; height: 200px; } .block-display { height: 300px; } .basic-stats-grid { grid-template-columns: repeat(2, 1fr); } .shop-items { grid-template-columns: 1fr; } }
+        :root {
+            --bg-dark: #050510;
+            --bg-panel: rgba(16, 18, 38, 0.85);
+            --border-main: rgba(0, 243, 255, 0.25);
+            --border-hover: rgba(0, 243, 255, 0.7);
+            --neon-cyan: #00f3ff;
+            --neon-purple: #bc13fe;
+            --neon-gold: #ffd700;
+            --neon-green: #00ff9d;
+            --neon-red: #ff0055;
+            --neon-blue: #1e90ff;
+            --text-main: #e0e6ed;
+            --text-dim: #8b9bb4;
+            --font-title: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-y: auto;
+            position: relative;
+            overscroll-behavior: none;
+            touch-action: manipulation;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 15% 15%, rgba(188, 19, 254, 0.2), transparent 40%),
+                radial-gradient(circle at 85% 70%, rgba(0, 243, 255, 0.15), transparent 40%),
+                linear-gradient(180deg, #050510 0%, #0a0a1a 100%);
+            z-index: -1;
+            animation: bgPulse 15s infinite alternate;
+        }
+        @keyframes bgPulse {
+            0% {
+                filter: hue-rotate(0deg) brightness(1);
+            }
+            100% {
+                filter: hue-rotate(30deg) brightness(1.1);
+            }
+        }
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 24px;
+            gap: 24px;
+            min-height: 100vh;
+            width: 100%;
+        }
+        .game-main-content {
+            display: flex;
+            gap: 24px;
+            flex: 1;
+            align-items: flex-start;
+        }
+        .left-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            min-width: 0;
+        }
+        .right-content {
+            width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            flex-shrink: 0;
+        }
+        .panel {
+            background: var(--bg-panel);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid var(--border-main);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), inset 0 0 30px rgba(0, 243, 255, 0.04);
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s ease;
+            animation: panelGlow 4s infinite ease-in-out;
+        }
+        @keyframes panelGlow {
+            0%,
+            100% {
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), inset 0 0 30px rgba(0, 243, 255, 0.04);
+            }
+            50% {
+                box-shadow: 0 10px 50px rgba(0, 0, 0, 0.7), inset 0 0 40px rgba(0, 243, 255, 0.08);
+            }
+        }
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+            opacity: 0.6;
+        }
+        .panel-title {
+            font-family: var(--font-title);
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .panel-title::before {
+            content: '▃';
+            color: var(--neon-purple);
+        }
+        .block-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        .block-nav-btn {
+            background: rgba(0, 243, 255, 0.05);
+            color: var(--neon-cyan);
+            border: 1px solid var(--border-main);
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .block-nav-btn:active {
+            background: rgba(0, 243, 255, 0.3);
+            transform: scale(0.95);
+        }
+        #block-name {
+            font-family: var(--font-title);
+            font-size: 28px;
+            font-weight: 900;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #fff, var(--neon-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+        }
+        .block-display {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, rgba(0, 0, 0, 0.8) 0%, transparent 70%);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            user-select: none;
+        }
+        .block-rune-circle {
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            border: 2px dashed rgba(188, 19, 254, 0.4);
+            border-radius: 50%;
+            animation: spin 20s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        .block {
+            width: 260px;
+            height: 260px;
+            background: linear-gradient(135deg, #2a2a4e, #1a1a2e);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.3), inset 0 0 30px rgba(0, 0, 0, 0.9);
+            cursor: pointer;
+            transition: transform 0.05s ease, box-shadow 0.2s ease;
+            position: relative;
+            z-index: 2;
+        }
+        .block:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 60px rgba(0, 243, 255, 0.6), inset 0 0 30px rgba(0, 0, 0, 0.9);
+        }
+        .block-content {
+            text-align: center;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 1);
+            width: 100%;
+            padding: 0 20px;
+        }
+        .block-hp-text {
+            font-family: var(--font-title);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-main);
+        }
+        .hp-bar-container,
+        .exp-bar-container,
+        .tree-progress-container {
+            width: 100%;
+            height: 16px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.9);
+            margin: 8px 0;
+        }
+        .hp-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-red), #ff8c00);
+            box-shadow: 0 0 15px var(--neon-red);
+            transition: width 0.1s ease;
+            border-radius: 8px;
+        }
+        .exp-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            box-shadow: 0 0 15px var(--neon-cyan);
+            transition: width 0.3s ease;
+            border-radius: 8px;
+        }
+        .tree-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan));
+            box-shadow: 0 0 10px var(--neon-green);
+            transition: width 0.3s ease;
+        }
+        .drop-info {
+            margin-top: 15px;
+            font-size: 14px;
+            color: var(--neon-gold);
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .damage-text-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 10;
+        }
+        .damage-text {
+            position: absolute;
+            font-family: var(--font-title);
+            color: #fff;
+            font-weight: 900;
+            font-size: 24px;
+            text-shadow: 0 0 10px var(--neon-red), 2px 2px 0 #000;
+            animation: damagePopup 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+        @keyframes damagePopup {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, 0) scale(0.8);
+            }
+            20% {
+                transform: translate(-50%, -10px) scale(1.4);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -100px) scale(1);
+            }
+        }
+        .buttons-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .action-btn {
+            background: rgba(16, 18, 38, 0.6);
+            color: var(--text-main);
+            border: 1px solid var(--border-main);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .action-btn:hover {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 243, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+        }
+        .action-btn:active {
+            transform: scale(0.96);
+        }
+        .action-btn.active {
+            background: rgba(0, 255, 157, 0.1);
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+            box-shadow: 0 0 15px rgba(0, 255, 157, 0.4);
+        }
+        .exchange-btn {
+            border-color: var(--neon-gold);
+            color: var(--neon-gold);
+        }
+        .exchange-btn:hover {
+            background: rgba(255, 215, 0, 0.1);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+        .glass-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(16, 18, 38, 0.6);
+            border: 1px solid var(--border-main);
+            padding: 8px;
+            border-radius: 8px;
+        }
+        .threshold-input {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-dim);
+        }
+        .threshold-input input,
+        .sqrt-control input {
+            width: 80px;
+            padding: 6px 10px;
+            border: 1px solid var(--border-main);
+            border-radius: 4px;
+            font-family: var(--font-body);
+            font-size: 16px;
+            background: rgba(0, 0, 0, 0.5);
+            color: var(--neon-cyan);
+            outline: none;
+            text-align: center;
+        }
+        .basic-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .stat-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 8px 12px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+        .stat-item:hover {
+            border-color: var(--border-hover);
+            background: rgba(0, 243, 255, 0.05);
+        }
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .stat-value {
+            font-family: var(--font-title);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .level-item .stat-value {
+            color: var(--neon-purple);
+            text-shadow: 0 0 8px rgba(188, 19, 254, 0.4);
+        }
+        .currency-gold .stat-value {
+            color: var(--neon-gold);
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+        }
+        .currency-trophy .stat-value {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 8px rgba(0, 243, 255, 0.4);
+        }
+        .special-item {
+            border-color: rgba(188, 19, 254, 0.3);
+        }
+        .special-item .stat-value {
+            color: var(--neon-purple);
+        }
+        input.editable-debug {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: inherit;
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+            text-align: left;
+            cursor: default;
+        }
+        input.stat-value.editable-debug {
+            font-family: var(--font-title);
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .dmg-row input.editable-debug {
+            width: 90px;
+            text-align: right;
+            font-family: var(--font-body);
+            font-size: 15px;
+            font-weight: 700;
+        }
+        input.editable-debug:disabled {
+            opacity: 1;
+            -webkit-text-fill-color: inherit;
+        }
+        input.editable-debug:not(:disabled) {
+            border-bottom: 1px dashed var(--neon-red);
+            cursor: text;
+        }
+        .sqrt-control {
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: flex-end;
+            font-size: 14px;
+            color: var(--text-dim);
+        }
+        .current-pickaxe {
+            background: linear-gradient(135deg, rgba(188, 19, 254, 0.1), rgba(0, 243, 255, 0.1));
+            border: 1px solid rgba(188, 19, 254, 0.3);
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        #pickaxe-name {
+            font-family: var(--font-title);
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 16px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        .pickaxe-properties {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+        }
+        .prop-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 14px;
+            color: var(--text-dim);
+        }
+        .prop-item span:last-child {
+            color: var(--neon-cyan);
+            font-weight: 700;
+            font-size: 16px;
+        }
+        .damage-stats,
+        .game-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .dmg-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 6px;
+            font-size: 15px;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+        .dmg-row:hover {
+            border-color: var(--border-main);
+            background: rgba(0, 243, 255, 0.05);
+        }
+        .dmg-row span:last-child,
+        .dmg-row input.editable-debug {
+            color: var(--text-main);
+            font-weight: 700;
+        }
+        .dmg-row.total-damage {
+            margin-top: 8px;
+            background: linear-gradient(90deg, rgba(188, 19, 254, 0.1), rgba(0, 243, 255, 0.1));
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
+        }
+        .dmg-row.total-damage span:last-child {
+            font-family: var(--font-title);
+            font-size: 18px;
+            color: #fff;
+        }
+        .green-note {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--neon-green);
+            text-align: center;
+            opacity: 0.8;
+        }
+        .research-panel .panel-title {
+            color: var(--neon-purple);
+            text-shadow: 0 0 10px rgba(188, 19, 254, 0.5);
+        }
+        .research-inactive p {
+            margin-bottom: 12px;
+            color: var(--text-dim);
+            text-align: center;
+        }
+        .research-inactive button {
+            width: 100%;
+        }
+        .tree-watering .panel-title {
+            color: var(--neon-green);
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
+        }
+        .tree-watering .panel-title::before {
+            color: var(--neon-cyan);
+        }
+        .tree-info {
+            margin-bottom: 16px;
+        }
+        .tree-info p {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-dim);
+        }
+        .tree-info p .stat-value {
+            color: var(--neon-green);
+        }
+        .tree-buttons {
+            display: flex;
+            gap: 12px;
+            flex-direction: column;
+        }
+        .tree-btn {
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+        }
+        .tree-btn:hover {
+            background: rgba(0, 255, 157, 0.1);
+            box-shadow: 0 0 15px rgba(0, 255, 157, 0.3);
+        }
+        .tree-btn.auto {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+        .tree-btn.auto:hover {
+            background: rgba(0, 243, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+        }
+        .shop {
+            width: 100%;
+            overflow-y: auto;
+        }
+        .shop-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding-bottom: 10px;
+        }
+        .shop-item {
+            background: linear-gradient(135deg, rgba(16, 18, 38, 0.9), rgba(26, 26, 46, 0.9));
+            border: 1px solid var(--border-main);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        .shop-item::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+            opacity: 0.2;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+        }
+        .shop-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        .shop-item:hover::before {
+            opacity: 0.7;
+        }
+        .shop-item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .shop-item h4 {
+            font-family: var(--font-title);
+            font-size: 16px;
+            margin: 0;
+            text-transform: uppercase;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+        .shop-item-count {
+            font-size: 14px;
+            color: var(--neon-gold);
+            font-weight: 600;
+        }
+        .recipe-desc {
+            font-size: 13px;
+            color: var(--text-dim);
+            line-height: 1.4;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 0;
+            margin: 4px 0;
+        }
+        .shop-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+        .buy-btn,
+        .use-btn {
+            flex: 1;
+            border: 1px solid transparent;
+            padding: 8px;
+            border-radius: 6px;
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        .buy-btn {
+            border-color: var(--neon-gold);
+            color: var(--neon-gold);
+        }
+        .buy-btn:hover {
+            background: var(--neon-gold);
+            color: #000;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+        .buy-btn:disabled {
+            border-color: #555;
+            color: #555;
+            cursor: not-allowed;
+            background: rgba(0, 0, 0, 0.2);
+            box-shadow: none;
+        }
+        .use-btn {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+        .use-btn:hover {
+            background: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+        }
+        .use-btn.active {
+            background: var(--neon-green);
+            border-color: var(--neon-green);
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 255, 157, 0.4);
+        }
+        .redeem-panel .panel-title {
+            color: var(--neon-gold);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        .redeem-panel .panel-title::before {
+            content: '🎁';
+            color: var(--neon-gold);
+        }
+        .redeem-controls {
+            display: flex;
+            gap: 10px;
+        }
+        .redeem-controls input {
+            flex: 1;
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-main);
+            border-radius: 8px;
+            color: var(--text-main);
+            outline: none;
+            font-family: var(--font-body);
+            font-size: 15px;
+        }
+        .redeem-controls input:focus {
+            border-color: var(--neon-gold);
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+        }
+        .chest-timer-display {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: var(--neon-green);
+            font-weight: 600;
+        }
+
+        /* ===== 宝箱模态框 - 全新设计 ===== */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.88);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(6px);
+        }
+        .modal-content {
+            background: linear-gradient(145deg, rgba(16, 18, 48, 0.95), rgba(8, 8, 28, 0.98));
+            border: 1px solid var(--neon-cyan);
+            border-radius: 20px;
+            padding: 30px 28px;
+            width: 92%;
+            max-width: 540px;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0, 243, 255, 0.25), inset 0 0 40px rgba(0, 243, 255, 0.05);
+            animation: modalFadeIn 0.3s ease;
+        }
+        @keyframes modalFadeIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.92) translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        .modal-title {
+            font-family: var(--font-title);
+            font-size: 26px;
+            color: var(--neon-gold);
+            text-align: center;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .modal-title::before {
+            content: '📦';
+            font-size: 28px;
+        }
+        .close-btn {
+            position: absolute;
+            top: 12px;
+            right: 20px;
+            font-size: 32px;
+            cursor: pointer;
+            color: var(--text-dim);
+            transition: color 0.2s, transform 0.2s;
+            line-height: 1;
+            background: none;
+            border: none;
+            font-family: inherit;
+        }
+        .close-btn:hover {
+            color: var(--neon-red);
+            transform: rotate(90deg);
+        }
+        .chest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+        .chest-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .chest-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateX(4px);
+        }
+        .chest-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 14px;
+            opacity: 0.08;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .chest-item.normal::after {
+            background: linear-gradient(135deg, #888, #444);
+        }
+        .chest-item.golden::after {
+            background: linear-gradient(135deg, #ffd700, #b8860b);
+        }
+        .chest-item.diamond::after {
+            background: linear-gradient(135deg, #00bfff, #1e90ff);
+        }
+        .chest-item.supreme::after {
+            background: linear-gradient(135deg, #bc13fe, #8b00ff);
+        }
+        .chest-item:hover::after {
+            opacity: 0.18;
+        }
+        .chest-item-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 1;
+        }
+        .chest-icon-wrap {
+            font-size: 38px;
+            width: 52px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+        }
+        .chest-item:hover .chest-icon-wrap {
+            transform: scale(1.15) rotate(-6deg);
+        }
+        .chest-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
+        }
+        .chest-name small {
+            font-weight: 400;
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-left: 6px;
+        }
+        .chest-count {
+            font-size: 15px;
+            color: var(--neon-gold);
+            font-weight: 600;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .chest-count::before {
+            content: '×';
+            font-size: 18px;
+            color: var(--text-dim);
+        }
+        .chest-item .action-btn {
+            padding: 8px 20px;
+            font-size: 14px;
+            border-radius: 10px;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.4);
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            min-width: 72px;
+            justify-content: center;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            transition: all 0.25s ease;
+        }
+        .chest-item .action-btn:hover:not(:disabled) {
+            background: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+        }
+        .chest-item .action-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            border-color: #444;
+            color: #666;
+            box-shadow: none;
+            transform: none;
+        }
+        /* 宝箱颜色主题 */
+        .chest-item.normal .chest-name {
+            color: #ccc;
+        }
+        .chest-item.golden .chest-name {
+            color: var(--neon-gold);
+        }
+        .chest-item.diamond .chest-name {
+            color: #4fc3f7;
+        }
+        .chest-item.supreme .chest-name {
+            color: #ce93d8;
+        }
+
+        #chest-reward-text {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 20px;
+            color: var(--neon-gold);
+            min-height: 36px;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        #chest-reward-text .reward-icon {
+            font-size: 28px;
+        }
+        #chest-reward-text .reward-amount {
+            color: #fff;
+            font-size: 22px;
+        }
+        /* 宝箱开启闪光动画 */
+        .chest-open-flash {
+            animation: chestFlash 0.6s ease;
+        }
+        @keyframes chestFlash {
+            0% {
+                box-shadow: 0 0 0 rgba(255, 215, 0, 0);
+            }
+            30% {
+                box-shadow: 0 0 80px rgba(255, 215, 0, 0.8), 0 0 150px rgba(255, 215, 0, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 60px rgba(255, 215, 0, 0.5), 0 0 100px rgba(255, 215, 0, 0.2);
+            }
+            100% {
+                box-shadow: 0 0 0 rgba(255, 215, 0, 0);
+            }
+        }
+        .chest-icon-open {
+            animation: chestOpenAnim 0.5s ease forwards;
+        }
+        @keyframes chestOpenAnim {
+            0% {
+                transform: scale(1) rotate(0deg);
+            }
+            30% {
+                transform: scale(1.4) rotate(-12deg);
+            }
+            60% {
+                transform: scale(0.9) rotate(6deg);
+            }
+            100% {
+                transform: scale(1.1) rotate(0deg);
+            }
+        }
+        .reward-pop {
+            animation: rewardPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes rewardPop {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--neon-purple), var(--neon-cyan));
+            border-radius: 4px;
+        }
+        @media (max-width: 1200px) {
+            .game-main-content {
+                flex-direction: column;
+            }
+            .right-content {
+                width: 100%;
+            }
+            .basic-stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 12px;
+                gap: 12px;
+            }
+            .panel {
+                padding: 16px;
+            }
+            .block {
+                width: 200px;
+                height: 200px;
+            }
+            .block-display {
+                height: 300px;
+            }
+            .basic-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .shop-items {
+                grid-template-columns: 1fr;
+            }
+            .modal-content {
+                padding: 20px 16px;
+            }
+            .chest-item {
+                padding: 12px 14px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .chest-item .action-btn {
+                min-width: 60px;
+                padding: 6px 14px;
+                font-size: 12px;
+            }
+            .chest-icon-wrap {
+                font-size: 30px;
+                width: 40px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="game-container">
         <div class="game-main-content">
             <div class="left-content">
+                <!-- 挖矿区域 -->
                 <div class="panel block-area">
                     <div class="block-controls">
                         <button id="prev-block" class="block-nav-btn">&lt;</button>
@@ -170,6 +1140,7 @@
                     </div>
                 </div>
 
+                <!-- 核心属性 -->
                 <div class="panel basic-stats-area">
                     <h3 class="panel-title">核心属性</h3>
                     <div class="basic-stats-grid">
@@ -198,6 +1169,8 @@
                         <div class="stat-item"><span class="stat-label">物质X</span><input type="text" id="matter-x" class="stat-value editable-debug" value="0" disabled></div>
                         <div class="stat-item"><span class="stat-label">物质Y</span><input type="text" id="matter-y" class="stat-value editable-debug" value="0" disabled></div>
                         <div class="stat-item"><span class="stat-label">物质Z</span><input type="text" id="matter-z" class="stat-value editable-debug" value="0" disabled></div>
+                        <!-- 新增：掉落倍率（调试可编辑） -->
+                        <div class="stat-item" style="border-color:rgba(0,255,157,0.25);"><span class="stat-label" style="color:var(--neon-green);">✨ 掉落倍率</span><input type="text" id="drop-multiplier-stat" class="stat-value editable-debug" value="1" disabled></div>
                     </div>
                     <div class="exp-bar-container"><div class="exp-bar" id="exp-bar"></div></div>
                     <div class="sqrt-control">
@@ -206,17 +1179,20 @@
                     </div>
                 </div>
 
+                <!-- 在线宝箱 -->
                 <div class="panel chest-panel">
-                    <h3 class="panel-title">在线宝箱</h3>
+                    <h3 class="panel-title">⏳ 在线宝箱</h3>
                     <div class="chest-timer-display">下次获得宝箱: <span id="chest-timer">5:00</span></div>
-                    <button class="action-btn exchange-btn" id="open-chest-modal-btn" style="width: 100%;">查看宝箱仓库</button>
+                    <button class="action-btn exchange-btn" id="open-chest-modal-btn" style="width:100%;">📦 查看宝箱仓库</button>
                 </div>
 
+                <!-- 商店 -->
                 <div class="panel shop">
                     <h3 class="panel-title">深渊商店</h3>
                     <div class="shop-items" id="shop-items"></div>
                 </div>
 
+                <!-- 兑换中心 -->
                 <div class="panel redeem-panel">
                     <h3 class="panel-title">兑换中心</h3>
                     <div class="redeem-controls">
@@ -226,6 +1202,7 @@
                 </div>
             </div>
 
+            <!-- 右侧面板 -->
             <div class="right-content">
                 <div class="panel stats-section">
                     <h3 class="panel-title">当前镐子</h3>
@@ -252,7 +1229,6 @@
                         <div class="dmg-row" style="color: #00ff9d;"><span>时间增益</span> <input type="text" id="time-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row" style="color: #00ff9d;"><span>奖励增益</span> <input type="text" id="special-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row" style="color: #00ff9d;"><span>能量增益</span> <input type="text" id="energy-bonus" class="editable-debug" value="1.00x" disabled></div>
-                        <div class="dmg-row" style="color: #1e90ff;"><span>掉落倍率</span> <span id="drop-multiplier-stat">1x</span></div>
                         <div class="dmg-row total-damage"><span>总伤害</span> <span id="total-damage">1.00</span></div>
                         <p class="green-note">绿色增益表示不被开方的增益</p>
                     </div>
@@ -304,42 +1280,54 @@
         </div>
     </div>
 
-    <!-- 宝箱仓库模态框 -->
+    <!-- ===== 宝箱仓库模态框（全新设计） ===== -->
     <div id="chest-modal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeChestModal()">&times;</span>
+            <button class="close-btn" onclick="closeChestModal()">&times;</button>
             <h3 class="modal-title">宝箱仓库</h3>
             <div class="chest-list">
-                <div class="chest-item">
+                <div class="chest-item normal">
                     <div class="chest-item-info">
-                        <div class="chest-icon">📦</div>
-                        <div><div class="chest-name">普通宝箱</div><div class="chest-count">数量: <span id="chest-normal-count">0</span></div></div>
+                        <div class="chest-icon-wrap">📦</div>
+                        <div>
+                            <div class="chest-name">普通宝箱 <small>常见</small></div>
+                            <div class="chest-count"><span id="chest-normal-count">0</span></div>
+                        </div>
                     </div>
-                    <button class="action-btn" onclick="openChest('normal')">开启</button>
+                    <button class="action-btn" onclick="openChest('normal')" id="chest-btn-normal">开启</button>
                 </div>
-                <div class="chest-item">
+                <div class="chest-item golden">
                     <div class="chest-item-info">
-                        <div class="chest-icon">✨</div>
-                        <div><div class="chest-name">黄金宝箱</div><div class="chest-count">数量: <span id="chest-golden-count">0</span></div></div>
+                        <div class="chest-icon-wrap">✨</div>
+                        <div>
+                            <div class="chest-name">黄金宝箱 <small>稀有</small></div>
+                            <div class="chest-count"><span id="chest-golden-count">0</span></div>
+                        </div>
                     </div>
-                    <button class="action-btn" onclick="openChest('golden')">开启</button>
+                    <button class="action-btn" onclick="openChest('golden')" id="chest-btn-golden">开启</button>
                 </div>
-                <div class="chest-item">
+                <div class="chest-item diamond">
                     <div class="chest-item-info">
-                        <div class="chest-icon">💎</div>
-                        <div><div class="chest-name">钻石宝箱</div><div class="chest-count">数量: <span id="chest-diamond-count">0</span></div></div>
+                        <div class="chest-icon-wrap">💎</div>
+                        <div>
+                            <div class="chest-name">钻石宝箱 <small>史诗</small></div>
+                            <div class="chest-count"><span id="chest-diamond-count">0</span></div>
+                        </div>
                     </div>
-                    <button class="action-btn" onclick="openChest('diamond')">开启</button>
+                    <button class="action-btn" onclick="openChest('diamond')" id="chest-btn-diamond">开启</button>
                 </div>
-                <div class="chest-item">
+                <div class="chest-item supreme">
                     <div class="chest-item-info">
-                        <div class="chest-icon">👑</div>
-                        <div><div class="chest-name">至尊宝箱</div><div class="chest-count">数量: <span id="chest-supreme-count">0</span></div></div>
+                        <div class="chest-icon-wrap">👑</div>
+                        <div>
+                            <div class="chest-name">至尊宝箱 <small>传说</small></div>
+                            <div class="chest-count"><span id="chest-supreme-count">0</span></div>
+                        </div>
                     </div>
-                    <button class="action-btn" onclick="openChest('supreme')">开启</button>
+                    <button class="action-btn" onclick="openChest('supreme')" id="chest-btn-supreme">开启</button>
                 </div>
             </div>
-            <div id="chest-reward-text"></div>
+            <div id="chest-reward-text">✨ 选择一个宝箱开启 ✨</div>
         </div>
     </div>
 
@@ -400,32 +1388,50 @@
             level: 1, experience: 0, usageBonus: 1, specialBonus: 1, digCount: 0, blocksMined: 0, dropMultiplier: 1,
             treeLevel: 1, treeExperience: 0, autoMine: false, autoExchange: false, autoExchangeThreshold: 1000,
             startTime: Date.now(), originalStartTime: Date.now(), lastOnlineTime: Date.now(), currentHp: 100, totalOnlineSeconds: 0,
-            sqrtPower: 1, debugEnabled: false, researchInstituteActive: false, energy: 0, energyProductionSpeed: 1, energyUpgradeCost: 100,
+            sqrtPower: 1, debugEnabled: false, researchInstituteActive: false, energy: 0, energyProductionSpeed: 1,
+            energyUpgradeCost: 100,
             chests: { normal: 0, golden: 0, diamond: 0, supreme: 0 }, lastChestTime: Date.now(), usedRedeemCodes: []
         };
 
         const gameData = JSON.parse(JSON.stringify(defaultData));
 
         const elements = {};
-        ['block-name','current-hp','max-hp','hp-bar','exp-bar','prev-block','next-block','block-display','auto-mine-btn','auto-exchange-btn','auto-exchange-threshold','exchange-btn','damage-text-container','drop-info','pickaxe-name','pickaxe-damage','pickaxe-damage-value','pickaxe-usage-value','pickaxe-coins-value','usage-bonus','usage-per-dig','drop-multiplier-stat','level-bonus','trophy-bonus','beacon-bonus','time-bonus','special-bonus','energy-bonus','total-damage','level','experience','coins','trophies','amethyst','copper-ingot','blue-obsidian-fragment','red-obsidian-fragment','red-blue-crystal','bedrock-fragment','obsidian','nether-star','glass','kun-kun','earth-core','wood-core','fire-cube','water-cube','gold-cube','five-element-crystal','jing-core','element-chip','matter-x','matter-y','matter-z','tree-level','tree-progress-bar','tree-experience','tree-experience-required','water-tree-btn','auto-water-tree-btn','craft-beacon-btn','sqrt-power','playtime','dig-count','blocks-mined','shop-items','redeem-input','redeem-btn','research-inactive','research-active','activate-research-btn','upgrade-energy-btn','energy-total','energy-speed','energy-bonus-stat','energy-usage-stat','energy-tree-stat','chest-timer','open-chest-modal-btn'].forEach(id => elements[id.replace(/-([a-z])/g, g => g[1].toUpperCase())] = document.getElementById(id));
+        ['block-name', 'current-hp', 'max-hp', 'hp-bar', 'exp-bar', 'prev-block', 'next-block', 'block-display', 'auto-mine-btn',
+            'auto-exchange-btn', 'auto-exchange-threshold', 'exchange-btn', 'damage-text-container', 'drop-info',
+            'pickaxe-name', 'pickaxe-damage', 'pickaxe-damage-value', 'pickaxe-usage-value', 'pickaxe-coins-value',
+            'usage-bonus', 'usage-per-dig', 'drop-multiplier-stat', 'level-bonus', 'trophy-bonus', 'beacon-bonus',
+            'time-bonus', 'special-bonus', 'energy-bonus', 'total-damage', 'level', 'experience', 'coins', 'trophies',
+            'amethyst', 'copper-ingot', 'blue-obsidian-fragment', 'red-obsidian-fragment', 'red-blue-crystal',
+            'bedrock-fragment', 'obsidian', 'nether-star', 'glass', 'kun-kun', 'earth-core', 'wood-core', 'fire-cube',
+            'water-cube', 'gold-cube', 'five-element-crystal', 'jing-core', 'element-chip', 'matter-x', 'matter-y',
+            'matter-z', 'tree-level', 'tree-progress-bar', 'tree-experience', 'tree-experience-required',
+            'water-tree-btn', 'auto-water-tree-btn', 'craft-beacon-btn', 'sqrt-power', 'playtime', 'dig-count',
+            'blocks-mined', 'shop-items', 'redeem-input', 'redeem-btn', 'research-inactive', 'research-active',
+            'activate-research-btn', 'upgrade-energy-btn', 'energy-total', 'energy-speed', 'energy-bonus-stat',
+            'energy-usage-stat', 'energy-tree-stat', 'chest-timer', 'open-chest-modal-btn'
+        ].forEach(id => elements[id.replace(/-([a-z])/g, g => g[1].toUpperCase())] = document.getElementById(id));
 
         const lastStats = {};
+
         function setStat(el, text) {
             if (!el) return;
             if (document.activeElement === el) return;
             if (lastStats[el.id] === text) return;
             lastStats[el.id] = text;
             if (el.tagName === 'INPUT') el.value = text;
-            else el.textContent = text; 
+            else el.textContent = text;
         }
 
         function formatNumber(num) {
             if (num === Infinity) return '∞';
             if (isNaN(num)) return '0';
             if (num < 1000000) return num.toFixed(2).replace(/\.00$/, '');
-            const units = ['', '万', '亿', '万亿', '兆', '万兆', '亿兆', '万亿兆', '京', '万京', '亿京', '万亿京', '兆京', '万兆京', '亿兆京', '万亿兆京', '垓'];
+            const units = ['', '万', '亿', '万亿', '兆', '万兆', '亿兆', '万亿兆', '京', '万京', '亿京', '万亿京', '兆京', '万兆京', '亿兆京',
+                '万亿兆京', '垓'
+            ];
             let i = 0;
-            while (num >= 10000 && i < units.length - 1) { num /= 10000; i++; }
+            while (num >= 10000 && i < units.length - 1) { num /= 10000;
+                i++; }
             return num.toFixed(2) + units[i];
         }
 
@@ -438,10 +1444,18 @@
             if (!gameData.chests) gameData.chests = { normal: 0, golden: 0, diamond: 0, supreme: 0 };
             if (!gameData.usedRedeemCodes) gameData.usedRedeemCodes = [];
             if (!gameData.dropMultiplier || isNaN(gameData.dropMultiplier)) gameData.dropMultiplier = 1;
-            if (!gameData.currentHp || isNaN(gameData.currentHp) || gameData.currentHp <= 0) gameData.currentHp = gameData.blocks[gameData.currentBlockIndex].hp;
-            const numFields = ['coins', 'trophies', 'amethyst', 'copperIngot', 'blueObsidianFragment', 'redObsidianFragment', 'redBlueCrystal', 'bedrockFragment', 'obsidian', 'netherStar', 'glass', 'kunKun', 'earthCore', 'woodCore', 'fireCube', 'waterCube', 'goldCube', 'fiveElementCrystal', 'jingCore', 'elementChip', 'matterX', 'matterY', 'matterZ', 'beacon', 'experience', 'usageBonus', 'specialBonus', 'digCount', 'blocksMined', 'treeLevel', 'treeExperience', 'energy', 'energyProductionSpeed', 'energyUpgradeCost', 'autoExchangeThreshold'];
+            if (!gameData.currentHp || isNaN(gameData.currentHp) || gameData.currentHp <= 0) gameData.currentHp = gameData
+                .blocks[gameData.currentBlockIndex].hp;
+            const numFields = ['coins', 'trophies', 'amethyst', 'copperIngot', 'blueObsidianFragment', 'redObsidianFragment',
+                'redBlueCrystal', 'bedrockFragment', 'obsidian', 'netherStar', 'glass', 'kunKun', 'earthCore',
+                'woodCore', 'fireCube', 'waterCube', 'goldCube', 'fiveElementCrystal', 'jingCore', 'elementChip',
+                'matterX', 'matterY', 'matterZ', 'beacon', 'experience', 'usageBonus', 'specialBonus', 'digCount',
+                'blocksMined', 'treeLevel', 'treeExperience', 'energy', 'energyProductionSpeed', 'energyUpgradeCost',
+                'autoExchangeThreshold'
+            ];
             numFields.forEach(field => {
-                if (isNaN(gameData[field]) || gameData[field] === undefined || gameData[field] === null) gameData[field] = defaultData[field] !== undefined ? defaultData[field] : 0;
+                if (isNaN(gameData[field]) || gameData[field] === undefined || gameData[field] === null) gameData[
+                    field] = defaultData[field] !== undefined ? defaultData[field] : 0;
             });
             gameData.autoMine = !!gameData.autoMine;
             gameData.autoExchange = !!gameData.autoExchange;
@@ -456,13 +1470,20 @@
             elements.maxHp.textContent = formatNumber(block.hp);
             elements.hpBar.style.width = (gameData.currentHp / block.hp) * 100 + '%';
             if (block.drop) {
-                const dropName = { amethyst:'紫水晶', copperIngot:'铜锭', blueObsidianFragment:'蓝曜石碎片', redObsidianFragment:'红曜石碎片', redBlueCrystal:'红蓝结晶', bedrockFragment:'基岩碎片', obsidian:'黑曜石', netherStar:'下界之星', glass:'玻璃', kunKun:'坤坤', earthCore:'土核心', woodCore:'木核心', fireCube:'火立方', waterCube:'水立方', goldCube:'金立方', fiveElementCrystal:'五行结晶', jingCore:'京核', elementChip:'元素晶片', matterX:'物质X', matterY:'物质Y', matterZ:'物质Z' }[block.drop] || block.drop;
+                const dropName = { amethyst: '紫水晶', copperIngot: '铜锭', blueObsidianFragment: '蓝曜石碎片',
+                    redObsidianFragment: '红曜石碎片', redBlueCrystal: '红蓝结晶', bedrockFragment: '基岩碎片', obsidian: '黑曜石',
+                    netherStar: '下界之星', glass: '玻璃', kunKun: '坤坤', earthCore: '土核心', woodCore: '木核心',
+                    fireCube: '火立方', waterCube: '水立方', goldCube: '金立方', fiveElementCrystal: '五行结晶',
+                    jingCore: '京核', elementChip: '元素晶片', matterX: '物质X', matterY: '物质Y', matterZ: '物质Z'
+                } [block.drop] || block.drop;
                 elements.dropInfo.textContent = `${block.dropChance || 100}%概率掉落${dropName} x ${block.dropAmount || 1}`;
                 elements.dropInfo.style.display = 'block';
             } else { elements.dropInfo.style.display = 'none'; }
         }
 
-        function getCurrentSqrtZoneBlocks() { return gameData.blocks.map((b, i) => b.sqrtZone === gameData.sqrtPower ? i : null).filter(i => i !== null); }
+        function getCurrentSqrtZoneBlocks() { return gameData.blocks.map((b, i) => b.sqrtZone === gameData.sqrtPower ? i : null)
+                .filter(i => i !== null); }
+
         function changeBlock(direction) {
             const currentBlocks = getCurrentSqrtZoneBlocks();
             const currentIndex = currentBlocks.indexOf(gameData.currentBlockIndex);
@@ -475,67 +1496,96 @@
         }
 
         function showDamageText(damage) {
-            if (elements.damageTextContainer.children.length > 8) elements.damageTextContainer.removeChild(elements.damageTextContainer.firstChild);
+            if (elements.damageTextContainer.children.length > 8) elements.damageTextContainer.removeChild(elements
+                .damageTextContainer.firstChild);
             const dt = document.createElement('div');
             dt.className = 'damage-text';
             dt.textContent = formatNumber(damage);
-            dt.style.left = `50%`; dt.style.top = `50%`;
+            dt.style.left = `50%`;
+            dt.style.top = `50%`;
             dt.style.transform = `translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 - 100}px)`;
             elements.damageTextContainer.appendChild(dt);
             setTimeout(() => dt.remove(), 1000);
         }
 
         function calculateBeaconBonus() { return Math.pow(1 + gameData.beacon, 0.64); }
+
         function calculateTimeBonus() {
             if (!gameData.totalOnlineSeconds) gameData.totalOnlineSeconds = 0;
             return gameData.totalOnlineSeconds < 160 ? 1 : Math.log(gameData.totalOnlineSeconds / 160) / Math.log(8);
         }
+
         function calculateTreeBonus() { return Math.pow(gameData.treeLevel, 0.4); }
+
         function calculateEnergyBonus() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.22) : 1; }
-        function calculateEnergyUsageBonus() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.44) : 1; }
-        function calculateEnergyTreeExp() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.55) : 0; }
-        
+
+        function calculateEnergyUsageBonus() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.44) :
+            1; }
+
+        function calculateEnergyTreeExp() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.55) :
+            0; }
+
         function calculateTotalDamage() {
             if (!gameData.sqrtPower || gameData.sqrtPower < 1) gameData.sqrtPower = 1;
             const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
             const levelBonus = Math.pow(gameData.level, 0.5);
-            const trophyBonus = Math.pow(1 + gameData.trophies, 2/3);
+            const trophyBonus = Math.pow(1 + gameData.trophies, 2 / 3);
             const bonusProduct = pickaxe.damage * gameData.usageBonus * levelBonus * trophyBonus;
-            return Math.pow(bonusProduct, 1 / gameData.sqrtPower) * calculateBeaconBonus() * calculateTimeBonus() * calculateTreeBonus() * gameData.specialBonus * calculateEnergyBonus();
+            return Math.pow(bonusProduct, 1 / gameData.sqrtPower) * calculateBeaconBonus() * calculateTimeBonus() *
+                calculateTreeBonus() * gameData.specialBonus * calculateEnergyBonus();
         }
 
         function waterTree() {
             if (gameData.waterCube < 1) return;
-            gameData.waterCube--; gameData.treeExperience++;
+            gameData.waterCube--;
+            gameData.treeExperience++;
             let req = 10 * gameData.treeLevel;
-            while (gameData.treeExperience >= req) { gameData.treeLevel++; gameData.treeExperience -= req; req = 10 * gameData.treeLevel; }
-            updateStats(); updateShopButtons();
+            while (gameData.treeExperience >= req) { gameData.treeLevel++;
+                gameData.treeExperience -= req;
+                req = 10 * gameData.treeLevel; }
+            updateStats();
+            updateShopButtons();
         }
 
         function autoWaterTree() {
             if (gameData.waterCube < 1) return;
-            const w = gameData.waterCube; gameData.waterCube = 0; gameData.treeExperience += w;
+            const w = gameData.waterCube;
+            gameData.waterCube = 0;
+            gameData.treeExperience += w;
             let req = 10 * gameData.treeLevel;
-            while (gameData.treeExperience >= req) { gameData.treeLevel++; gameData.treeExperience -= req; req = 10 * gameData.treeLevel; }
-            updateStats(); updateShopButtons();
+            while (gameData.treeExperience >= req) { gameData.treeLevel++;
+                gameData.treeExperience -= req;
+                req = 10 * gameData.treeLevel; }
+            updateStats();
+            updateShopButtons();
         }
 
         function craftAllBeacons() {
             const beaconItem = gameData.pickaxes.find(p => p.name === '信标');
             if (!beaconItem) return;
-            const maxCraft = Math.min(Math.floor(gameData.obsidian / 3), Math.floor(gameData.glass / 5), Math.floor(gameData.netherStar / 1));
+            const maxCraft = Math.min(Math.floor(gameData.obsidian / 3), Math.floor(gameData.glass / 5), Math.floor(
+                gameData.netherStar / 1));
             if (maxCraft > 0) {
-                gameData.obsidian -= maxCraft * 3; gameData.glass -= maxCraft * 5; gameData.netherStar -= maxCraft * 1;
-                beaconItem.count += maxCraft; gameData.beacon = beaconItem.count;
-                updateStats(); updateShopButtons(); saveGame();
+                gameData.obsidian -= maxCraft * 3;
+                gameData.glass -= maxCraft * 5;
+                gameData.netherStar -= maxCraft * 1;
+                beaconItem.count += maxCraft;
+                gameData.beacon = beaconItem.count;
+                updateStats();
+                updateShopButtons();
+                saveGame();
                 alert(`成功合成了 ${maxCraft} 个信标！`);
             } else alert('材料不足，无法合成信标！(需要3黑曜石, 5玻璃, 1下界之星)');
         }
 
         function activateResearchInstitute() {
             if (gameData.matterX >= 1e5 && gameData.matterY >= 1e5 && gameData.matterZ >= 1e5) {
-                gameData.matterX -= 1e5; gameData.matterY -= 1e5; gameData.matterZ -= 1e5;
-                gameData.researchInstituteActive = true; updateStats(); saveGame();
+                gameData.matterX -= 1e5;
+                gameData.matterY -= 1e5;
+                gameData.matterZ -= 1e5;
+                gameData.researchInstituteActive = true;
+                updateStats();
+                saveGame();
             } else alert('需要各10万个 X, Y, Z 物质才能开启！');
         }
 
@@ -544,10 +1594,12 @@
                 gameData.energy -= gameData.energyUpgradeCost;
                 gameData.energyProductionSpeed *= 2;
                 gameData.energyUpgradeCost *= 10;
-                updateStats(); saveGame();
+                updateStats();
+                saveGame();
             }
         }
 
+        // ===== 挖掘核心（优化速度：确保每秒≥10次） =====
         function dig(silent = false) {
             const block = gameData.blocks[gameData.currentBlockIndex];
             const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
@@ -566,89 +1618,141 @@
                 gameData.blocksMined++;
                 if (block.drop) {
                     const amount = (block.dropAmount || 1) * gameData.dropMultiplier;
-                    if (block.dropChance) { if (Math.random() * 100 <= block.dropChance) gameData[block.drop] += amount; }
-                    else gameData[block.drop] += amount;
+                    if (block.dropChance) { if (Math.random() * 100 <= block.dropChance) gameData[block.drop] += amount; } else
+                        gameData[block.drop] += amount;
                 }
                 gameData.currentHp = block.hp;
                 checkAutoExchange();
             }
             updateBlockDisplay();
-            if (!silent) { updateStats(); updateExchangeButton(); }
+            if (!silent) { updateStats();
+                updateExchangeButton(); }
         }
 
-        let autoMineInterval = null, lastAutoMineTime = 0;
+        let autoMineInterval = null,
+            lastAutoMineTime = 0;
+
+        // 修改：确保每次至少执行1次挖掘，补偿延迟
         function autoMineTick() {
             if (!gameData.autoMine) return;
             const now = Date.now();
             if (lastAutoMineTime === 0) lastAutoMineTime = now;
-            const ticks = Math.min(1000, Math.floor((now - lastAutoMineTime) / 100));
-            for (let i = 0; i < ticks; i++) dig(i < ticks - 1);
+            const elapsed = now - lastAutoMineTime;
+            // 每50ms一次挖掘 → 每秒20次，但用户要求每秒10次，这里用100ms保证10次
+            let ticks = Math.floor(elapsed / 100);
+            if (ticks < 1) ticks = 1; // 至少执行一次
+            if (ticks > 10) ticks = 10; // 防止卡顿积压过多
+            for (let i = 0; i < ticks; i++) {
+                dig(i < ticks - 1);
+            }
             lastAutoMineTime = now;
-            updateStats(); updateExchangeButton();
+            updateStats();
+            updateExchangeButton();
         }
+
         function updateAutoMine() {
-            if (gameData.autoMine) { if (!autoMineInterval) { lastAutoMineTime = Date.now(); autoMineInterval = setInterval(autoMineTick, 100); } }
-            else { if (autoMineInterval) { clearInterval(autoMineInterval); autoMineInterval = null; } }
+            if (gameData.autoMine) {
+                if (!autoMineInterval) {
+                    lastAutoMineTime = Date.now();
+                    autoMineInterval = setInterval(autoMineTick, 100); // 100ms → 每秒10次
+                }
+            } else {
+                if (autoMineInterval) { clearInterval(autoMineInterval);
+                    autoMineInterval = null; }
+            }
         }
+
         function toggleAutoMine() {
             gameData.autoMine = !gameData.autoMine;
             elements.autoMineBtn.textContent = `⚙ 自动挖矿: ${gameData.autoMine ? '开启' : '关闭'}`;
             elements.autoMineBtn.classList.toggle('active', gameData.autoMine);
             updateAutoMine();
         }
+
         function toggleAutoExchange() {
             gameData.autoExchange = !gameData.autoExchange;
             elements.autoExchangeBtn.textContent = `⟳ 自动兑换: ${gameData.autoExchange ? '开启' : '关闭'}`;
             elements.autoExchangeBtn.classList.toggle('active', gameData.autoExchange);
         }
+
         function updateAutoExchangeThreshold() {
             const t = parseInt(elements.autoExchangeThreshold.value);
             gameData.autoExchangeThreshold = t >= 100 ? t : gameData.autoExchangeThreshold;
             elements.autoExchangeThreshold.value = gameData.autoExchangeThreshold;
         }
-        function checkAutoExchange() { if (gameData.autoExchange && gameData.coins >= gameData.autoExchangeThreshold) exchangeTrophies(false); }
-        function calculateExchangeInfo() { return { earnedTrophies: Math.floor(Math.pow(gameData.coins / 100, 3/4)) }; }
+
+        function checkAutoExchange() { if (gameData.autoExchange && gameData.coins >= gameData.autoExchangeThreshold)
+                exchangeTrophies(false); }
+
+        function calculateExchangeInfo() { return { earnedTrophies: Math.floor(Math.pow(gameData.coins / 100, 3 / 4)) }; }
+
         function updateExchangeButton() {
             const info = calculateExchangeInfo();
-            elements.exchangeBtn.textContent = info.earnedTrophies > 0 ? `🏆 兑换奖杯 (+${info.earnedTrophies})` : `🏆 兑换奖杯 (需100金)`;
+            elements.exchangeBtn.textContent = info.earnedTrophies > 0 ? `🏆 兑换奖杯 (+${info.earnedTrophies})` :
+                `🏆 兑换奖杯 (需100金)`;
         }
+
         function exchangeTrophies(updateUI = true) {
             const info = calculateExchangeInfo();
             if (info.earnedTrophies > 0) {
-                gameData.trophies += info.earnedTrophies; gameData.coins = 0;
-                if (updateUI) { updateStats(); updateShopButtons(); updateExchangeButton(); }
+                gameData.trophies += info.earnedTrophies;
+                gameData.coins = 0;
+                if (updateUI) { updateStats();
+                    updateShopButtons();
+                    updateExchangeButton(); }
             }
         }
 
-        let longPressInterval = null, lastLongPressTime = 0;
+        // 长按挖掘（同样优化）
+        let longPressInterval = null,
+            lastLongPressTime = 0;
+
         function longPressTick() {
-            if (gameData.autoMine) return; // 自动挖掘开启时，长按无效
+            if (gameData.autoMine) return;
             const now = Date.now();
             if (lastLongPressTime === 0) lastLongPressTime = now;
-            const ticks = Math.min(1000, Math.floor((now - lastLongPressTime) / 100));
-            for (let i = 0; i < ticks; i++) dig(i < ticks - 1);
+            const elapsed = now - lastLongPressTime;
+            let ticks = Math.floor(elapsed / 100);
+            if (ticks < 1) ticks = 1;
+            if (ticks > 10) ticks = 10;
+            for (let i = 0; i < ticks; i++) {
+                dig(i < ticks - 1);
+            }
             lastLongPressTime = now;
-            updateStats(); updateExchangeButton();
+            updateStats();
+            updateExchangeButton();
         }
-        function startLongPress() { if (!gameData.autoMine) { lastLongPressTime = Date.now(); longPressInterval = setInterval(longPressTick, 100); } }
-        function stopLongPress() { if (longPressInterval) { clearInterval(longPressInterval); longPressInterval = null; } }
 
-        function levelUp() { while (gameData.experience >= Math.pow(gameData.level, 2)) { gameData.experience -= Math.pow(gameData.level, 2); gameData.level++; } }
+        function startLongPress() { if (!gameData.autoMine) { lastLongPressTime = Date.now();
+                longPressInterval = setInterval(longPressTick, 100); } }
 
+        function stopLongPress() { if (longPressInterval) { clearInterval(longPressInterval);
+                longPressInterval = null; } }
+
+        function levelUp() { while (gameData.experience >= Math.pow(gameData.level, 2)) { gameData.experience -= Math.pow(
+                    gameData.level, 2);
+                gameData.level++; } }
+
+        // ===== 更新统计（包含掉落倍率） =====
         function updateStats() {
             try {
                 const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
-                if (elements.expBar) elements.expBar.style.width = (gameData.experience / Math.pow(gameData.level, 2)) * 100 + '%';
+                if (elements.expBar) elements.expBar.style.width = (gameData.experience / Math.pow(gameData.level, 2)) *
+                    100 + '%';
                 if (elements.pickaxeName) elements.pickaxeName.textContent = pickaxe.name;
-                if (elements.pickaxeDamageValue) elements.pickaxeDamageValue.textContent = formatNumber(pickaxe.damage) + 'x';
-                if (elements.pickaxeUsageValue) elements.pickaxeUsageValue.textContent = formatNumber(pickaxe.usage) + 'x';
-                if (elements.pickaxeCoinsValue) elements.pickaxeCoinsValue.textContent = formatNumber(pickaxe.coins) + 'x';
+                if (elements.pickaxeDamageValue) elements.pickaxeDamageValue.textContent = formatNumber(pickaxe.damage) +
+                    'x';
+                if (elements.pickaxeUsageValue) elements.pickaxeUsageValue.textContent = formatNumber(pickaxe.usage) +
+                    'x';
+                if (elements.pickaxeCoinsValue) elements.pickaxeCoinsValue.textContent = formatNumber(pickaxe.coins) +
+                    'x';
                 setStat(elements.pickaxeDamage, formatNumber(pickaxe.damage) + 'x');
                 setStat(elements.usageBonus, formatNumber(gameData.usageBonus) + 'x');
                 setStat(elements.usagePerDig, formatNumber(pickaxe.usage * calculateEnergyUsageBonus()) + 'x');
-                setStat(elements.dropMultiplierStat, formatNumber(gameData.dropMultiplier) + 'x');
+                // 掉落倍率显示（同时支持调试编辑）
+                setStat(elements.dropMultiplierStat, formatNumber(gameData.dropMultiplier));
                 setStat(elements.levelBonus, formatNumber(Math.pow(gameData.level, 0.5)) + 'x');
-                setStat(elements.trophyBonus, formatNumber(Math.pow(1 + gameData.trophies, 2/3)) + 'x');
+                setStat(elements.trophyBonus, formatNumber(Math.pow(1 + gameData.trophies, 2 / 3)) + 'x');
                 if (elements.beaconBonus) {
                     setStat(elements.beaconBonus, formatNumber(calculateBeaconBonus()) + 'x');
                     elements.beaconBonus.style.color = '#2ecc71';
@@ -670,33 +1774,54 @@
                     elements.energyBonus.style.color = '#2ecc71';
                 }
                 if (elements.totalDamage) elements.totalDamage.textContent = formatNumber(calculateTotalDamage());
-                
-                const set = (el, val) => { if(el) setStat(el, formatNumber(val)); };
-                set(elements.level, gameData.level); set(elements.experience, gameData.experience); set(elements.coins, gameData.coins); set(elements.trophies, gameData.trophies);
-                set(elements.amethyst, gameData.amethyst); set(elements.copperIngot, gameData.copperIngot); set(elements.blueObsidianFragment, gameData.blueObsidianFragment);
-                set(elements.redObsidianFragment, gameData.redObsidianFragment); set(elements.redBlueCrystal, gameData.redBlueCrystal); set(elements.bedrockFragment, gameData.bedrockFragment);
-                set(elements.obsidian, gameData.obsidian); set(elements.netherStar, gameData.netherStar); set(elements.glass, gameData.glass); set(elements.kunKun, gameData.kunKun);
-                set(elements.earthCore, gameData.earthCore); set(elements.woodCore, gameData.woodCore); set(elements.fireCube, gameData.fireCube); set(elements.waterCube, gameData.waterCube);
-                set(elements.goldCube, gameData.goldCube); set(elements.fiveElementCrystal, gameData.fiveElementCrystal); set(elements.jingCore, gameData.jingCore); set(elements.elementChip, gameData.elementChip);
-                set(elements.matterX, gameData.matterX); set(elements.matterY, gameData.matterY); set(elements.matterZ, gameData.matterZ);
-                
+
+                const set = (el, val) => { if (el) setStat(el, formatNumber(val)); };
+                set(elements.level, gameData.level);
+                set(elements.experience, gameData.experience);
+                set(elements.coins, gameData.coins);
+                set(elements.trophies, gameData.trophies);
+                set(elements.amethyst, gameData.amethyst);
+                set(elements.copperIngot, gameData.copperIngot);
+                set(elements.blueObsidianFragment, gameData.blueObsidianFragment);
+                set(elements.redObsidianFragment, gameData.redObsidianFragment);
+                set(elements.redBlueCrystal, gameData.redBlueCrystal);
+                set(elements.bedrockFragment, gameData.bedrockFragment);
+                set(elements.obsidian, gameData.obsidian);
+                set(elements.netherStar, gameData.netherStar);
+                set(elements.glass, gameData.glass);
+                set(elements.kunKun, gameData.kunKun);
+                set(elements.earthCore, gameData.earthCore);
+                set(elements.woodCore, gameData.woodCore);
+                set(elements.fireCube, gameData.fireCube);
+                set(elements.waterCube, gameData.waterCube);
+                set(elements.goldCube, gameData.goldCube);
+                set(elements.fiveElementCrystal, gameData.fiveElementCrystal);
+                set(elements.jingCore, gameData.jingCore);
+                set(elements.elementChip, gameData.elementChip);
+                set(elements.matterX, gameData.matterX);
+                set(elements.matterY, gameData.matterY);
+                set(elements.matterZ, gameData.matterZ);
+
                 const tReq = 10 * gameData.treeLevel;
                 if (elements.treeLevel) elements.treeLevel.textContent = gameData.treeLevel;
-                if (elements.treeProgressBar) elements.treeProgressBar.style.width = (gameData.treeExperience / tReq) * 100 + '%';
+                if (elements.treeProgressBar) elements.treeProgressBar.style.width = (gameData.treeExperience / tReq) *
+                    100 + '%';
                 if (elements.treeExperience) elements.treeExperience.textContent = formatNumber(gameData.treeExperience);
                 if (elements.treeExperienceRequired) elements.treeExperienceRequired.textContent = formatNumber(tReq);
                 if (elements.digCount) elements.digCount.textContent = formatNumber(gameData.digCount);
                 if (elements.blocksMined) elements.blocksMined.textContent = formatNumber(gameData.blocksMined);
-                
+
                 if (gameData.researchInstituteActive) {
                     if (elements.researchInactive) elements.researchInactive.style.display = 'none';
                     if (elements.researchActive) elements.researchActive.style.display = 'block';
-                    set(elements.energyTotal, gameData.energy); set(elements.energySpeed, gameData.energyProductionSpeed + '/秒');
+                    set(elements.energyTotal, gameData.energy);
+                    set(elements.energySpeed, gameData.energyProductionSpeed + '/秒');
                     set(elements.energyBonusStat, formatNumber(calculateEnergyBonus()) + 'x');
                     set(elements.energyUsageStat, formatNumber(calculateEnergyUsageBonus()) + 'x');
                     set(elements.energyTreeStat, formatNumber(calculateEnergyTreeExp()) + '/秒');
                     if (elements.upgradeEnergyBtn) {
-                        elements.upgradeEnergyBtn.textContent = `升级产能 (消耗: ${formatNumber(gameData.energyUpgradeCost)} 能量)`;
+                        elements.upgradeEnergyBtn.textContent =
+                            `升级产能 (消耗: ${formatNumber(gameData.energyUpgradeCost)} 能量)`;
                         elements.upgradeEnergyBtn.disabled = gameData.energy < gameData.energyUpgradeCost;
                     }
                 } else {
@@ -706,35 +1831,92 @@
             } catch (e) { console.warn('updateStats error:', e); }
         }
 
+        // ===== 兑换码（调试码已更新） =====
         function redeemCode() {
             const code = elements.redeemInput.value.trim();
             const codes = { '姚俊希220': 2.2, '七八九幺十三一六九': 7.8, '67676767': 67.67 };
-            if (code === 'dfsoft6767调试模式') {
-                if(!gameData.usedRedeemCodes.includes(code)) {
+            // ★ 调试模式兑换码已改为 dfsoft67676767676767676767
+            if (code === 'dfsoft67676767676767676767') {
+                if (!gameData.usedRedeemCodes.includes(code)) {
                     gameData.usedRedeemCodes.push(code);
-                    gameData.debugEnabled = true; toggleDebugMode(true); alert('调试模式已开启！');
+                    gameData.debugEnabled = true;
+                    toggleDebugMode(true);
+                    alert('🔓 调试模式已开启！现在可编辑所有带下划线的数值，包括掉落倍率。');
                 } else { alert('该兑换码已使用！'); }
             } else if (codes[code]) {
-                if(!gameData.usedRedeemCodes.includes(code)) {
+                if (!gameData.usedRedeemCodes.includes(code)) {
                     gameData.usedRedeemCodes.push(code);
                     gameData.specialBonus += codes[code];
                     alert(`兑换成功！奖励增益增加 ${codes[code]}，当前为 ${gameData.specialBonus}`);
-                    updateStats(); saveGame();
+                    updateStats();
+                    saveGame();
                 } else { alert('该兑换码已使用！'); }
             } else { alert('无效的兑换码！'); }
             elements.redeemInput.value = '';
         }
 
-        function toggleDebugMode(enabled) { document.querySelectorAll('.editable-debug').forEach(input => input.disabled = !enabled); }
+        function toggleDebugMode(enabled) {
+            document.querySelectorAll('.editable-debug').forEach(input => input.disabled = !enabled);
+            // 调试模式下，掉落倍率输入框可编辑
+            if (elements.dropMultiplierStat) {
+                elements.dropMultiplierStat.disabled = !enabled;
+                if (enabled) {
+                    elements.dropMultiplierStat.style.borderBottom = '1px dashed var(--neon-red)';
+                    elements.dropMultiplierStat.style.cursor = 'text';
+                } else {
+                    elements.dropMultiplierStat.style.borderBottom = 'none';
+                    elements.dropMultiplierStat.style.cursor = 'default';
+                }
+            }
+        }
+
         function setupDebugInputs() {
             document.querySelectorAll('.editable-debug').forEach(input => {
                 input.addEventListener('change', (e) => {
                     const id = e.target.id;
                     let val = parseFloat(e.target.value.replace('x', '').trim());
                     if (isNaN(val)) return;
-                    const map = { 'level':'level', 'experience':'experience', 'coins':'coins', 'trophies':'trophies', 'amethyst':'amethyst', 'copper-ingot':'copperIngot', 'blue-obsidian-fragment':'blueObsidianFragment', 'red-obsidian-fragment':'redObsidianFragment', 'red-blue-crystal':'redBlueCrystal', 'bedrock-fragment':'bedrockFragment', 'obsidian':'obsidian', 'nether-star':'netherStar', 'glass':'glass', 'kun-kun':'kunKun', 'earth-core':'earthCore', 'wood-core':'woodCore', 'fire-cube':'fireCube', 'water-cube':'waterCube', 'gold-cube':'goldCube', 'five-element-crystal':'fiveElementCrystal', 'jing-core':'jingCore', 'element-chip':'elementChip', 'matter-x':'matterX', 'matter-y':'matterY', 'matter-z':'matterZ', 'pickaxe-damage':'pickaxe.damage', 'usage-bonus':'usageBonus', 'special-bonus':'specialBonus', 'level-bonus':'level=Math.pow(val,2)', 'trophy-bonus':'trophies=Math.max(0,Math.pow(val,1.5)-1)', 'beacon-bonus':'beacon=Math.max(0,Math.pow(val,1/0.64)-1)', 'tree-bonus':'treeLevel=Math.max(1,Math.floor(Math.pow(val,2.5)))', 'time-bonus':'originalStartTime=Date.now()-(160*Math.pow(8,val)*1000)', 'energy-bonus':'energy=Math.max(0,Math.pow(val,1/0.22))' };
-                    if(id in map) { try { eval(`gameData.${map[id]} = val;`); } catch(e) {} }
-                    updateStats(); saveGame();
+                    const map = {
+                        'level': 'level',
+                        'experience': 'experience',
+                        'coins': 'coins',
+                        'trophies': 'trophies',
+                        'amethyst': 'amethyst',
+                        'copper-ingot': 'copperIngot',
+                        'blue-obsidian-fragment': 'blueObsidianFragment',
+                        'red-obsidian-fragment': 'redObsidianFragment',
+                        'red-blue-crystal': 'redBlueCrystal',
+                        'bedrock-fragment': 'bedrockFragment',
+                        'obsidian': 'obsidian',
+                        'nether-star': 'netherStar',
+                        'glass': 'glass',
+                        'kun-kun': 'kunKun',
+                        'earth-core': 'earthCore',
+                        'wood-core': 'woodCore',
+                        'fire-cube': 'fireCube',
+                        'water-cube': 'waterCube',
+                        'gold-cube': 'goldCube',
+                        'five-element-crystal': 'fiveElementCrystal',
+                        'jing-core': 'jingCore',
+                        'element-chip': 'elementChip',
+                        'matter-x': 'matterX',
+                        'matter-y': 'matterY',
+                        'matter-z': 'matterZ',
+                        'pickaxe-damage': 'pickaxe.damage',
+                        'usage-bonus': 'usageBonus',
+                        'special-bonus': 'specialBonus',
+                        // ★ 新增：掉落倍率可编辑
+                        'drop-multiplier-stat': 'dropMultiplier',
+                        'level-bonus': 'level=Math.pow(val,2)',
+                        'trophy-bonus': 'trophies=Math.max(0,Math.pow(val,1.5)-1)',
+                        'beacon-bonus': 'beacon=Math.max(0,Math.pow(val,1/0.64)-1)',
+                        'tree-bonus': 'treeLevel=Math.max(1,Math.floor(Math.pow(val,2.5)))',
+                        'time-bonus': 'originalStartTime=Date.now()-(160*Math.pow(8,val)*1000)',
+                        'energy-bonus': 'energy=Math.max(0,Math.pow(val,1/0.22))'
+                    };
+                    if (id in map) { try { eval(`gameData.${map[id]} = val;`); } catch (e) {} }
+                    updateStats();
+                    saveGame();
                 });
             });
         }
@@ -758,9 +1940,11 @@
                         if (key === 'pickaxes' || key === 'blocks') continue;
                         if (gs[key] !== undefined) gameData[key] = gs[key];
                     }
-                    if (gs.pickaxes) gs.pickaxes.forEach((sp, i) => { if (gameData.pickaxes[i]) gameData.pickaxes[i].count = sp.count || 0; });
+                    if (gs.pickaxes) gs.pickaxes.forEach((sp, i) => { if (gameData.pickaxes[i]) gameData.pickaxes[i].count =
+                            sp.count || 0; });
                 }
-            } catch (e) { console.warn('Load error:', e); localStorage.removeItem('miningGameSave'); }
+            } catch (e) { console.warn('Load error:', e);
+                localStorage.removeItem('miningGameSave'); }
             fixNanData();
             const beaconItem = gameData.pickaxes.find(p => p.name === '信标');
             if (beaconItem && beaconItem.count > gameData.beacon) gameData.beacon = beaconItem.count;
@@ -775,7 +1959,9 @@
                 gameData.energy += offSec * gameData.energyProductionSpeed;
                 gameData.treeExperience += Math.pow(gameData.energy, 0.55) * offSec;
                 let req = 10 * gameData.treeLevel;
-                while (gameData.treeExperience >= req) { gameData.treeExperience -= req; gameData.treeLevel++; req = 10 * gameData.treeLevel; }
+                while (gameData.treeExperience >= req) { gameData.treeExperience -= req;
+                    gameData.treeLevel++;
+                    req = 10 * gameData.treeLevel; }
             }
             const miningActions = Math.floor(offlineTime / 300);
             if (miningActions > 0) {
@@ -784,27 +1970,35 @@
                 let remainingHp = gameData.currentHp;
                 for (let i = 0; i < miningActions; i++) {
                     remainingHp -= calculateTotalDamage();
-                    gameData.digCount++; gameData.usageBonus += pickaxe.usage * calculateEnergyUsageBonus();
+                    gameData.digCount++;
+                    gameData.usageBonus += pickaxe.usage * calculateEnergyUsageBonus();
                     if (remainingHp <= 0) {
                         const bc = block.coins * pickaxe.coins;
                         const ec = bc * gameData.dropMultiplier;
                         gameData.coins += ec;
                         gameData.experience += bc * Math.pow(1 + Math.log(bc), 2);
                         gameData.blocksMined++;
-                        if (block.drop) { if (block.dropChance) { if (Math.random() * 100 <= block.dropChance) gameData[block.drop] += (block.dropAmount || 1) * gameData.dropMultiplier; } else gameData[block.drop] += (block.dropAmount || 1) * gameData.dropMultiplier; }
-                        remainingHp = block.hp; checkAutoExchange();
+                        if (block.drop) { if (block.dropChance) { if (Math.random() * 100 <= block.dropChance) gameData[
+                                    block.drop] += (block.dropAmount || 1) * gameData.dropMultiplier; } else gameData[
+                                block.drop] += (block.dropAmount || 1) * gameData.dropMultiplier; }
+                        remainingHp = block.hp;
+                        checkAutoExchange();
                     }
                 }
-                gameData.currentHp = remainingHp; levelUp(); checkAutoExchange();
+                gameData.currentHp = remainingHp;
+                levelUp();
+                checkAutoExchange();
             }
-            gameData.lastOnlineTime = now; gameData.startTime = now;
-            gameData.lastChestTime = now; // 离线重置宝箱计时器，防止离线给宝箱
+            gameData.lastOnlineTime = now;
+            gameData.startTime = now;
+            gameData.lastChestTime = now;
         }
 
         function updatePlaytime() {
             const seconds = gameData.totalOnlineSeconds;
             if (elements.playtime) {
-                elements.playtime.innerHTML = `${Math.floor(seconds/31536000)}年${Math.floor((seconds%31536000)/86400)}日${Math.floor((seconds%86400)/3600)}时${Math.floor((seconds%3600)/60)}分${seconds%60}秒<br>合计${seconds}秒`;
+                elements.playtime.innerHTML =
+                    `${Math.floor(seconds/31536000)}年${Math.floor((seconds%31536000)/86400)}日${Math.floor((seconds%86400)/3600)}时${Math.floor((seconds%3600)/60)}分${seconds%60}秒<br>合计${seconds}秒`;
             }
         }
 
@@ -816,16 +2010,28 @@
             if (elements.chestTimer) elements.chestTimer.textContent = `${m}:${s.toString().padStart(2, '0')}`;
         }
 
+        // ===== 宝箱UI更新（含按钮状态） =====
         function updateChestUI() {
-            if (document.getElementById('chest-normal-count')) document.getElementById('chest-normal-count').textContent = gameData.chests.normal;
-            if (document.getElementById('chest-golden-count')) document.getElementById('chest-golden-count').textContent = gameData.chests.golden;
-            if (document.getElementById('chest-diamond-count')) document.getElementById('chest-diamond-count').textContent = gameData.chests.diamond;
-            if (document.getElementById('chest-supreme-count')) document.getElementById('chest-supreme-count').textContent = gameData.chests.supreme;
+            const counts = {
+                normal: gameData.chests.normal || 0,
+                golden: gameData.chests.golden || 0,
+                diamond: gameData.chests.diamond || 0,
+                supreme: gameData.chests.supreme || 0
+            };
+            document.getElementById('chest-normal-count').textContent = counts.normal;
+            document.getElementById('chest-golden-count').textContent = counts.golden;
+            document.getElementById('chest-diamond-count').textContent = counts.diamond;
+            document.getElementById('chest-supreme-count').textContent = counts.supreme;
+            // 按钮禁用状态
+            document.getElementById('chest-btn-normal').disabled = counts.normal <= 0;
+            document.getElementById('chest-btn-golden').disabled = counts.golden <= 0;
+            document.getElementById('chest-btn-diamond').disabled = counts.diamond <= 0;
+            document.getElementById('chest-btn-supreme').disabled = counts.supreme <= 0;
         }
 
         function checkChestReward() {
             let now = Date.now();
-            while(now - gameData.lastChestTime >= 300000) {
+            while (now - gameData.lastChestTime >= 300000) {
                 gameData.lastChestTime += 300000;
                 const rand = Math.random() * 100;
                 if (rand < 75) gameData.chests.normal++;
@@ -836,63 +2042,132 @@
             }
         }
 
+        // ===== 开启宝箱（带动画） =====
         function openChest(type) {
-            if(gameData.chests[type] <= 0) {
-                document.getElementById('chest-reward-text').textContent = '没有该宝箱！';
+            const rewardEl = document.getElementById('chest-reward-text');
+            if (gameData.chests[type] <= 0) {
+                rewardEl.innerHTML = '❌ 没有该宝箱！';
                 return;
             }
             gameData.chests[type]--;
-            const rand = Math.random() * 100;
-            let rewardText = '';
-            if (type === 'normal') {
-                if (rand < 50) { gameData.specialBonus += 0.1; rewardText = '0.1 奖励增益'; }
-                else if (rand < 80) { gameData.specialBonus += 0.5; rewardText = '0.5 奖励增益'; }
-                else if (rand < 95) { gameData.usageBonus += 1000; rewardText = '1000 次挖掘的使用增益'; }
-                else if (rand < 97.5) { gameData.beacon += 1; rewardText = '1 信标'; }
-                else { gameData.treeLevel += 1; rewardText = '树等级 +1'; }
-            } else if (type === 'golden') {
-                if (rand < 50) { gameData.specialBonus += 0.5; rewardText = '0.5 奖励增益'; }
-                else if (rand < 75) { gameData.specialBonus += 1; rewardText = '1 奖励增益'; }
-                else if (rand < 90) { gameData.usageBonus += 3000; rewardText = '3000 次挖掘的使用增益'; }
-                else if (rand < 95) { gameData.beacon += 3; rewardText = '3 信标'; }
-                else { gameData.treeLevel += 3; rewardText = '树等级 +3'; }
-            } else if (type === 'diamond') {
-                if (rand < 50) { gameData.specialBonus += 5; rewardText = '5 奖励增益'; }
-                else if (rand < 75) { gameData.usageBonus += 10000; rewardText = '10000 次挖掘的使用增益'; }
-                else if (rand < 85) { gameData.beacon += 25; rewardText = '25 信标'; }
-                else if (rand < 95) { gameData.treeLevel += 25; rewardText = '树等级 +25'; }
-                else { gameData.dropMultiplier += 1; rewardText = '掉落倍率 +1'; }
-            } else if (type === 'supreme') {
-                if (rand < 40) { gameData.specialBonus += 67; rewardText = '67 奖励增益'; }
-                else if (rand < 70) { gameData.usageBonus += 67000; rewardText = '67000 次挖掘的使用增益'; }
-                else if (rand < 85) { gameData.beacon += 200; gameData.treeLevel += 200; rewardText = '200 信标 + 树等级 +200'; }
-                else { gameData.dropMultiplier += 3; rewardText = '掉落倍率 +3'; }
-            }
-            document.getElementById('chest-reward-text').textContent = `恭喜获得: ${rewardText}`;
             updateChestUI();
-            updateStats(); updateShopButtons(); saveGame();
+
+            // 播放开启动画：找到对应的宝箱图标
+            const chestItems = document.querySelectorAll('.chest-item');
+            let targetIcon = null;
+            chestItems.forEach(item => {
+                if (item.classList.contains(type)) {
+                    targetIcon = item.querySelector('.chest-icon-wrap');
+                }
+            });
+            if (targetIcon) {
+                targetIcon.classList.remove('chest-icon-open');
+                void targetIcon.offsetWidth;
+                targetIcon.classList.add('chest-icon-open');
+                // 闪光效果
+                const modalContent = document.querySelector('.modal-content');
+                modalContent.classList.remove('chest-open-flash');
+                void modalContent.offsetWidth;
+                modalContent.classList.add('chest-open-flash');
+                setTimeout(() => {
+                    modalContent.classList.remove('chest-open-flash');
+                }, 700);
+            }
+
+            const rand = Math.random() * 100;
+            let rewardText = '',
+                rewardIcon = '🎁';
+            if (type === 'normal') {
+                if (rand < 50) { gameData.specialBonus += 0.1;
+                    rewardText = '0.1 奖励增益';
+                    rewardIcon = '📈'; } else if (rand < 80) { gameData.specialBonus += 0.5;
+                    rewardText = '0.5 奖励增益';
+                    rewardIcon = '📈'; } else if (rand < 95) { gameData.usageBonus += 1000;
+                    rewardText = '1000 次使用增益';
+                    rewardIcon = '⚡'; } else if (rand < 97.5) { gameData.beacon += 1;
+                    rewardText = '1 信标';
+                    rewardIcon = '🔮'; } else { gameData.treeLevel += 1;
+                    rewardText = '树等级 +1';
+                    rewardIcon = '🌳'; }
+            } else if (type === 'golden') {
+                if (rand < 50) { gameData.specialBonus += 0.5;
+                    rewardText = '0.5 奖励增益';
+                    rewardIcon = '📈'; } else if (rand < 75) { gameData.specialBonus += 1;
+                    rewardText = '1 奖励增益';
+                    rewardIcon = '📈'; } else if (rand < 90) { gameData.usageBonus += 3000;
+                    rewardText = '3000 次使用增益';
+                    rewardIcon = '⚡'; } else if (rand < 95) { gameData.beacon += 3;
+                    rewardText = '3 信标';
+                    rewardIcon = '🔮'; } else { gameData.treeLevel += 3;
+                    rewardText = '树等级 +3';
+                    rewardIcon = '🌳'; }
+            } else if (type === 'diamond') {
+                if (rand < 50) { gameData.specialBonus += 5;
+                    rewardText = '5 奖励增益';
+                    rewardIcon = '📈'; } else if (rand < 75) { gameData.usageBonus += 10000;
+                    rewardText = '10000 次使用增益';
+                    rewardIcon = '⚡'; } else if (rand < 85) { gameData.beacon += 25;
+                    rewardText = '25 信标';
+                    rewardIcon = '🔮'; } else if (rand < 95) { gameData.treeLevel += 25;
+                    rewardText = '树等级 +25';
+                    rewardIcon = '🌳'; } else { gameData.dropMultiplier += 1;
+                    rewardText = '掉落倍率 +1';
+                    rewardIcon = '✨'; }
+            } else if (type === 'supreme') {
+                if (rand < 40) { gameData.specialBonus += 67;
+                    rewardText = '67 奖励增益';
+                    rewardIcon = '📈'; } else if (rand < 70) { gameData.usageBonus += 67000;
+                    rewardText = '67000 次使用增益';
+                    rewardIcon = '⚡'; } else if (rand < 85) { gameData.beacon += 200;
+                    gameData.treeLevel += 200;
+                    rewardText = '200 信标 + 树等级 +200';
+                    rewardIcon = '🔮'; } else { gameData.dropMultiplier += 3;
+                    rewardText = '掉落倍率 +3';
+                    rewardIcon = '✨'; }
+            }
+
+            rewardEl.className = 'reward-pop';
+            rewardEl.innerHTML = `<span class="reward-icon">${rewardIcon}</span> 恭喜获得: <span class="reward-amount">${rewardText}</span>`;
+            // 自动淡出提示
+            clearTimeout(window.chestRewardTimeout);
+            window.chestRewardTimeout = setTimeout(() => {
+                rewardEl.innerHTML = '✨ 选择一个宝箱开启 ✨';
+                rewardEl.className = '';
+            }, 5000);
+
+            updateChestUI();
+            updateStats();
+            updateShopButtons();
+            saveGame();
         }
 
+        // ===== 商店 =====
         function initShop() {
             elements.shopItems.innerHTML = '';
             gameData.pickaxes.forEach((pickaxe, index) => {
                 const shopItem = document.createElement('div');
                 shopItem.className = 'shop-item';
-                let buyButtonHtml = '', recipeHtml = '';
+                let buyButtonHtml = '',
+                    recipeHtml = '';
                 if (pickaxe.isCraftable) {
                     let desc = '合成材料：';
                     for (const [mat, req] of Object.entries(pickaxe.recipe)) {
-                        const name = { 'usageBonus':'使用增益', 'coins':'金币', 'trophies':'奖杯', 'amethyst':'紫水晶', 'copperIngot':'铜锭' }[mat] || mat;
+                        const name = { 'usageBonus': '使用增益', 'coins': '金币', 'trophies': '奖杯', 'amethyst': '紫水晶',
+                            'copperIngot': '铜锭' } [mat] || mat;
                         desc += `${formatNumber(req)}${name} `;
                     }
                     recipeHtml = `<div class="recipe-desc">${desc}</div>`;
                     buyButtonHtml = `<button class="buy-btn craft-btn" data-index="${index}">合成</button>`;
                 } else {
-                    const cName = { 'trophies':'奖杯', 'amethyst':'紫水晶', 'copperIngot':'铜锭' }[pickaxe.currency || 'trophies'];
+                    const cName = { 'trophies': '奖杯', 'amethyst': '紫水晶', 'copperIngot': '铜锭' } [pickaxe.currency ||
+                        'trophies'
+                    ];
                     buyButtonHtml = `<button class="buy-btn" data-index="${index}">购买 (${pickaxe.price}${cName})</button>`;
                 }
-                let useButtonHtml = pickaxe.type !== 'item' ? `<button class="use-btn" data-index="${index}">使用</button>` : '';
-                shopItem.innerHTML = `<div class="shop-item-info"><h4>${pickaxe.name}</h4><span class="shop-item-count">数量: ${pickaxe.count}</span></div><div class="shop-buttons">${recipeHtml}${buyButtonHtml}${useButtonHtml}</div>`;
+                let useButtonHtml = pickaxe.type !== 'item' ? `<button class="use-btn" data-index="${index}">使用</button>` :
+                    '';
+                shopItem.innerHTML =
+                    `<div class="shop-item-info"><h4>${pickaxe.name}</h4><span class="shop-item-count">数量: ${pickaxe.count}</span></div><div class="shop-buttons">${recipeHtml}${buyButtonHtml}${useButtonHtml}</div>`;
                 elements.shopItems.appendChild(shopItem);
             });
             document.querySelectorAll('.buy-btn').forEach(btn => btn.addEventListener('click', buyPickaxe));
@@ -906,16 +2181,26 @@
                 if (pickaxe.isCraftable) {
                     let canCraft = true;
                     for (const [mat, req] of Object.entries(pickaxe.recipe)) {
-                        const map = { '黑曜石镐':10, '紫水晶镐VI':16, '铜镐VI':22, '蓝曜石碎片':'blueObsidianFragment', '红曜石碎片':'redObsidianFragment', '蓝曜石镐':23, '红曜石镐':24, '红蓝结晶':'redBlueCrystal', '基岩碎片':'bedrockFragment', '红蓝镐':25, '黑曜石':'obsidian', '玻璃':'glass', '下界之星':'netherStar', '坤坤':'kunKun', '基岩镐':26, '坤坤镐':27, '土核心':'earthCore', '土核心镐':28, '木核心':'woodCore', '木核心镐':29, '火立方镐':30, '水立方镐':31, '火立方':'fireCube', '水立方':'waterCube', '使用增益':'usageBonus', '金立方':'goldCube', '金币':'coins', '金立方镐':32, '五行结晶':'fiveElementCrystal', '京核':'jingCore', '五行镐':33, '元素晶片':'elementChip' };
+                        const map = { '黑曜石镐': 10, '紫水晶镐VI': 16, '铜镐VI': 22, '蓝曜石碎片': 'blueObsidianFragment',
+                            '红曜石碎片': 'redObsidianFragment', '蓝曜石镐': 23, '红曜石镐': 24,
+                            '红蓝结晶': 'redBlueCrystal', '基岩碎片': 'bedrockFragment', '红蓝镐': 25,
+                            '黑曜石': 'obsidian', '玻璃': 'glass', '下界之星': 'netherStar', '坤坤': 'kunKun',
+                            '基岩镐': 26, '坤坤镐': 27, '土核心': 'earthCore', '土核心镐': 28, '木核心': 'woodCore',
+                            '木核心镐': 29, '火立方镐': 30, '水立方镐': 31, '火立方': 'fireCube', '水立方': 'waterCube',
+                            '使用增益': 'usageBonus', '金立方': 'goldCube', '金币': 'coins', '金立方镐': 32,
+                            '五行结晶': 'fiveElementCrystal', '京核': 'jingCore', '五行镐': 33,
+                            '元素晶片': 'elementChip'
+                        };
                         const key = map[mat];
-                        if (typeof key === 'number') { if (gameData.pickaxes[key].count < req) canCraft = false; }
-                        else if (gameData[key] < req) canCraft = false;
+                        if (typeof key === 'number') { if (gameData.pickaxes[key].count < req) canCraft = false; } else
+                        if (gameData[key] < req) canCraft = false;
                         if (!canCraft) break;
                     }
                     btn.disabled = !canCraft;
                 } else { btn.disabled = gameData[pickaxe.currency || 'trophies'] < pickaxe.price; }
             });
-            document.querySelectorAll('.use-btn').forEach((btn, index) => { btn.classList.toggle('active', index === gameData.currentPickaxeIndex); });
+            document.querySelectorAll('.use-btn').forEach((btn, index) => { btn.classList.toggle('active', index ===
+                    gameData.currentPickaxeIndex); });
         }
 
         function buyPickaxe(e) {
@@ -924,39 +2209,64 @@
             if (pickaxe.isCraftable) {
                 let canCraft = true;
                 for (const [mat, req] of Object.entries(pickaxe.recipe)) {
-                    const map = { '黑曜石镐':10, '紫水晶镐VI':16, '铜镐VI':22, '蓝曜石碎片':'blueObsidianFragment', '红曜石碎片':'redObsidianFragment', '蓝曜石镐':23, '红曜石镐':24, '红蓝结晶':'redBlueCrystal', '基岩碎片':'bedrockFragment', '红蓝镐':25, '黑曜石':'obsidian', '玻璃':'glass', '下界之星':'netherStar', '坤坤':'kunKun', '基岩镐':26, '坤坤镐':27, '土核心':'earthCore', '土核心镐':28, '木核心':'woodCore', '木核心镐':29, '火立方镐':30, '水立方镐':31, '火立方':'fireCube', '水立方':'waterCube', '使用增益':'usageBonus', '金立方':'goldCube', '金币':'coins', '金立方镐':32, '五行结晶':'fiveElementCrystal', '京核':'jingCore', '五行镐':33, '元素晶片':'elementChip' };
+                    const map = { '黑曜石镐': 10, '紫水晶镐VI': 16, '铜镐VI': 22, '蓝曜石碎片': 'blueObsidianFragment',
+                        '红曜石碎片': 'redObsidianFragment', '蓝曜石镐': 23, '红曜石镐': 24,
+                        '红蓝结晶': 'redBlueCrystal', '基岩碎片': 'bedrockFragment', '红蓝镐': 25,
+                        '黑曜石': 'obsidian', '玻璃': 'glass', '下界之星': 'netherStar', '坤坤': 'kunKun',
+                        '基岩镐': 26, '坤坤镐': 27, '土核心': 'earthCore', '土核心镐': 28, '木核心': 'woodCore',
+                        '木核心镐': 29, '火立方镐': 30, '水立方镐': 31, '火立方': 'fireCube', '水立方': 'waterCube',
+                        '使用增益': 'usageBonus', '金立方': 'goldCube', '金币': 'coins', '金立方镐': 32,
+                        '五行结晶': 'fiveElementCrystal', '京核': 'jingCore', '五行镐': 33,
+                        '元素晶片': 'elementChip'
+                    };
                     const key = map[mat];
-                    if (typeof key === 'number') { if (gameData.pickaxes[key].count < req) canCraft = false; }
-                    else if (gameData[key] < req) canCraft = false;
+                    if (typeof key === 'number') { if (gameData.pickaxes[key].count < req) canCraft = false; } else if (
+                        gameData[key] < req) canCraft = false;
                 }
                 if (canCraft) {
                     for (const [mat, req] of Object.entries(pickaxe.recipe)) {
-                        const map = { '黑曜石镐':10, '紫水晶镐VI':16, '铜镐VI':22, '蓝曜石碎片':'blueObsidianFragment', '红曜石碎片':'redObsidianFragment', '蓝曜石镐':23, '红曜石镐':24, '红蓝结晶':'redBlueCrystal', '基岩碎片':'bedrockFragment', '红蓝镐':25, '黑曜石':'obsidian', '玻璃':'glass', '下界之星':'netherStar', '坤坤':'kunKun', '基岩镐':26, '坤坤镐':27, '土核心':'earthCore', '土核心镐':28, '木核心':'woodCore', '木核心镐':29, '火立方镐':30, '水立方镐':31, '火立方':'fireCube', '水立方':'waterCube', '使用增益':'usageBonus', '金立方':'goldCube', '金币':'coins', '金立方镐':32, '五行结晶':'fiveElementCrystal', '京核':'jingCore', '五行镐':33, '元素晶片':'elementChip' };
+                        const map = { '黑曜石镐': 10, '紫水晶镐VI': 16, '铜镐VI': 22, '蓝曜石碎片': 'blueObsidianFragment',
+                            '红曜石碎片': 'redObsidianFragment', '蓝曜石镐': 23, '红曜石镐': 24,
+                            '红蓝结晶': 'redBlueCrystal', '基岩碎片': 'bedrockFragment', '红蓝镐': 25,
+                            '黑曜石': 'obsidian', '玻璃': 'glass', '下界之星': 'netherStar', '坤坤': 'kunKun',
+                            '基岩镐': 26, '坤坤镐': 27, '土核心': 'earthCore', '土核心镐': 28, '木核心': 'woodCore',
+                            '木核心镐': 29, '火立方镐': 30, '水立方镐': 31, '火立方': 'fireCube', '水立方': 'waterCube',
+                            '使用增益': 'usageBonus', '金立方': 'goldCube', '金币': 'coins', '金立方镐': 32,
+                            '五行结晶': 'fiveElementCrystal', '京核': 'jingCore', '五行镐': 33,
+                            '元素晶片': 'elementChip'
+                        };
                         const key = map[mat];
                         if (typeof key === 'number') gameData.pickaxes[key].count -= req;
                         else gameData[key] -= req;
                     }
                     pickaxe.count++;
                     if (pickaxe.name === '信标') gameData.beacon = pickaxe.count;
-                    initShop(); updateStats();
+                    initShop();
+                    updateStats();
                 }
             } else {
                 if (gameData[pickaxe.currency || 'trophies'] >= pickaxe.price) {
                     gameData[pickaxe.currency || 'trophies'] -= pickaxe.price;
                     pickaxe.count++;
-                    initShop(); updateStats();
+                    initShop();
+                    updateStats();
                 }
             }
         }
 
         function usePickaxe(e) {
             const index = parseInt(e.target.dataset.index);
-            if (gameData.pickaxes[index].count > 0) { gameData.currentPickaxeIndex = index; initShop(); updateStats(); }
+            if (gameData.pickaxes[index].count > 0) { gameData.currentPickaxeIndex = index;
+                initShop();
+                updateStats(); }
         }
 
-        function handleKeyDown(e) { if (e.key === '>') changeBlock(1); else if (e.key === '<') changeBlock(-1); }
+        function handleKeyDown(e) { if (e.key === '>') changeBlock(1);
+            else if (e.key === '<') changeBlock(-1); }
+
         window.closeChestModal = () => document.getElementById('chest-modal').style.display = 'none';
 
+        // ===== 初始化 =====
         function initGame() {
             loadGame();
             elements.prevBlock.addEventListener('click', () => changeBlock(-1));
@@ -969,12 +2279,17 @@
             elements.craftBeaconBtn.addEventListener('click', craftAllBeacons);
             elements.activateResearchBtn.addEventListener('click', activateResearchInstitute);
             elements.upgradeEnergyBtn.addEventListener('click', upgradeEnergyProduction);
-            elements.openChestModalBtn.addEventListener('click', () => { document.getElementById('chest-modal').style.display = 'flex'; document.getElementById('chest-reward-text').textContent = ''; });
-            
+            elements.openChestModalBtn.addEventListener('click', () => {
+                document.getElementById('chest-modal').style.display = 'flex';
+                document.getElementById('chest-reward-text').innerHTML = '✨ 选择一个宝箱开启 ✨';
+                document.getElementById('chest-reward-text').className = '';
+                updateChestUI();
+            });
+
             elements.autoExchangeBtn.textContent = `⟳ 自动兑换: ${gameData.autoExchange ? '开启' : '关闭'}`;
             elements.autoExchangeBtn.classList.toggle('active', gameData.autoExchange);
             elements.autoExchangeThreshold.value = gameData.autoExchangeThreshold;
-            
+
             elements.sqrtPower.addEventListener('change', () => {
                 const value = parseInt(elements.sqrtPower.value);
                 if (value >= 1 && value <= 3) {
@@ -988,16 +2303,16 @@
                 } else { elements.sqrtPower.value = gameData.sqrtPower; }
             });
             elements.sqrtPower.value = gameData.sqrtPower;
-            
+
             const currentBlocks = getCurrentSqrtZoneBlocks();
             if (!currentBlocks.includes(gameData.currentBlockIndex) && currentBlocks.length > 0) {
                 gameData.currentBlockIndex = currentBlocks[0];
                 gameData.currentHp = gameData.blocks[gameData.currentBlockIndex].hp;
             }
-            
+
             toggleDebugMode(gameData.debugEnabled);
             setupDebugInputs();
-            
+
             elements.blockDisplay.addEventListener('mousedown', startLongPress);
             elements.blockDisplay.addEventListener('mouseup', stopLongPress);
             elements.blockDisplay.addEventListener('mouseleave', stopLongPress);
@@ -1006,10 +2321,15 @@
             document.addEventListener('keydown', handleKeyDown);
             elements.waterTreeBtn.addEventListener('click', waterTree);
             elements.autoWaterTreeBtn.addEventListener('click', autoWaterTree);
-            
-            updateBlockDisplay(); updateAutoMine(); initShop(); updateExchangeButton(); updateStats(); updateChestUI();
 
-            // 每秒更新在线时间、等级、宝箱、能量等，并捕获错误防止中断
+            updateBlockDisplay();
+            updateAutoMine();
+            initShop();
+            updateExchangeButton();
+            updateStats();
+            updateChestUI();
+
+            // 主循环：每秒更新
             setInterval(() => {
                 try {
                     gameData.totalOnlineSeconds++;
@@ -1029,17 +2349,19 @@
                 } catch (e) { console.warn('Main loop error:', e); }
             }, 1000);
 
-            // 每秒更新时间显示和宝箱计时器
             setInterval(() => {
                 try {
                     updatePlaytime();
                     updateChestTimer();
                 } catch (e) { console.warn('UI update error:', e); }
-            }, 1000); 
-            
+            }, 1000);
+
             document.addEventListener('visibilitychange', () => {
-                if (document.hidden) { saveGame(); } 
-                else { processOfflineMining(); updateBlockDisplay(); updateStats(); updateChestUI(); checkChestReward(); }
+                if (document.hidden) { saveGame(); } else { processOfflineMining();
+                    updateBlockDisplay();
+                    updateStats();
+                    updateChestUI();
+                    checkChestReward(); }
             });
 
             setInterval(saveGame, 5000);
