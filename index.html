@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>升级你的镐子</title>
+    <title>升级你的镐子 - 三存档</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* 样式完整保留，与用户原代码一致 */
         :root {
             --bg-dark: #050510;
             --bg-panel: rgba(16, 18, 38, 0.85);
@@ -55,12 +54,8 @@
             animation: bgPulse 15s infinite alternate;
         }
         @keyframes bgPulse {
-            0% {
-                filter: hue-rotate(0deg) brightness(1);
-            }
-            100% {
-                filter: hue-rotate(30deg) brightness(1.1);
-            }
+            0% { filter: hue-rotate(0deg) brightness(1); }
+            100% { filter: hue-rotate(30deg) brightness(1.1); }
         }
         .game-container {
             display: flex;
@@ -72,6 +67,73 @@
             min-height: 100vh;
             width: 100%;
         }
+        /* ---- 存档栏 ---- */
+        .slot-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            background: var(--bg-panel);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid var(--border-main);
+            border-radius: 16px;
+            padding: 12px 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        .slot-label {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-right: 6px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        .slot-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .slot-btn {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-main);
+            color: var(--text-dim);
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.5px;
+        }
+        .slot-btn:hover {
+            border-color: var(--neon-cyan);
+            color: var(--text-main);
+        }
+        .slot-btn.active {
+            background: rgba(0, 243, 255, 0.15);
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+        }
+        .slot-reset-btn {
+            background: rgba(255, 0, 85, 0.1);
+            border: 1px solid var(--neon-red);
+            color: var(--neon-red);
+            padding: 2px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 700;
+            font-family: var(--font-body);
+        }
+        .slot-reset-btn:hover {
+            background: var(--neon-red);
+            color: #000;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+        }
+        /* ---- 原有样式 ---- */
         .game-main-content {
             display: flex;
             gap: 24px;
@@ -106,13 +168,8 @@
             animation: panelGlow 4s infinite ease-in-out;
         }
         @keyframes panelGlow {
-            0%,
-            100% {
-                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), inset 0 0 30px rgba(0, 243, 255, 0.04);
-            }
-            50% {
-                box-shadow: 0 10px 50px rgba(0, 0, 0, 0.7), inset 0 0 40px rgba(0, 243, 255, 0.08);
-            }
+            0%,100% { box-shadow: 0 10px 40px rgba(0,0,0,0.6), inset 0 0 30px rgba(0,243,255,0.04); }
+            50% { box-shadow: 0 10px 50px rgba(0,0,0,0.7), inset 0 0 40px rgba(0,243,255,0.08); }
         }
         .panel::before {
             content: '';
@@ -139,10 +196,7 @@
             align-items: center;
             gap: 10px;
         }
-        .panel-title::before {
-            content: '▃';
-            color: var(--neon-purple);
-        }
+        .panel-title::before { content: '▃'; color: var(--neon-purple); }
         .block-controls {
             display: flex;
             align-items: center;
@@ -200,14 +254,7 @@
             animation: spin 20s linear infinite;
             pointer-events: none;
         }
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .block {
             width: 260px;
             height: 260px;
@@ -242,9 +289,7 @@
             margin-bottom: 16px;
             color: var(--text-main);
         }
-        .hp-bar-container,
-        .exp-bar-container,
-        .tree-progress-container {
+        .hp-bar-container, .exp-bar-container, .tree-progress-container {
             width: 100%;
             height: 16px;
             background: rgba(0, 0, 0, 0.9);
@@ -303,17 +348,9 @@
             animation: damagePopup 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
         @keyframes damagePopup {
-            0% {
-                opacity: 1;
-                transform: translate(-50%, 0) scale(0.8);
-            }
-            20% {
-                transform: translate(-50%, -10px) scale(1.4);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(-50%, -100px) scale(1);
-            }
+            0% { opacity: 1; transform: translate(-50%, 0) scale(0.8); }
+            20% { transform: translate(-50%, -10px) scale(1.4); }
+            100% { opacity: 0; transform: translate(-50%, -100px) scale(1); }
         }
         .buttons-container {
             display: flex;
@@ -346,9 +383,7 @@
             background: rgba(0, 243, 255, 0.1);
             box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
         }
-        .action-btn:active {
-            transform: scale(0.96);
-        }
+        .action-btn:active { transform: scale(0.96); }
         .action-btn.active {
             background: rgba(0, 255, 157, 0.1);
             border-color: var(--neon-green);
@@ -379,8 +414,7 @@
             font-size: 14px;
             color: var(--text-dim);
         }
-        .threshold-input input,
-        .sqrt-control input {
+        .threshold-input input, .sqrt-control input {
             width: 80px;
             padding: 6px 10px;
             border: 1px solid var(--border-main);
@@ -424,24 +458,11 @@
             font-weight: 700;
             color: var(--text-main);
         }
-        .level-item .stat-value {
-            color: var(--neon-purple);
-            text-shadow: 0 0 8px rgba(188, 19, 254, 0.4);
-        }
-        .currency-gold .stat-value {
-            color: var(--neon-gold);
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
-        }
-        .currency-trophy .stat-value {
-            color: var(--neon-cyan);
-            text-shadow: 0 0 8px rgba(0, 243, 255, 0.4);
-        }
-        .special-item {
-            border-color: rgba(188, 19, 254, 0.3);
-        }
-        .special-item .stat-value {
-            color: var(--neon-purple);
-        }
+        .level-item .stat-value { color: var(--neon-purple); text-shadow: 0 0 8px rgba(188,19,254,0.4); }
+        .currency-gold .stat-value { color: var(--neon-gold); text-shadow: 0 0 8px rgba(255,215,0,0.4); }
+        .currency-trophy .stat-value { color: var(--neon-cyan); text-shadow: 0 0 8px rgba(0,243,255,0.4); }
+        .special-item { border-color: rgba(188, 19, 254, 0.3); }
+        .special-item .stat-value { color: var(--neon-purple); }
         input.editable-debug {
             width: 100%;
             background: transparent;
@@ -466,10 +487,7 @@
             font-size: 15px;
             font-weight: 700;
         }
-        input.editable-debug:disabled {
-            opacity: 1;
-            -webkit-text-fill-color: inherit;
-        }
+        input.editable-debug:disabled { opacity: 1; -webkit-text-fill-color: inherit; }
         input.editable-debug:not(:disabled) {
             border-bottom: 1px dashed var(--neon-blue);
             cursor: text;
@@ -516,8 +534,7 @@
             font-weight: 700;
             font-size: 16px;
         }
-        .damage-stats,
-        .game-stats {
+        .damage-stats, .game-stats {
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -537,8 +554,7 @@
             border-color: var(--border-main);
             background: rgba(0, 243, 255, 0.05);
         }
-        .dmg-row span:last-child,
-        .dmg-row input.editable-debug {
+        .dmg-row span:last-child, .dmg-row input.editable-debug {
             color: var(--text-main);
             font-weight: 700;
         }
@@ -569,28 +585,20 @@
             color: var(--text-dim);
             text-align: center;
         }
-        .research-inactive button {
-            width: 100%;
-        }
+        .research-inactive button { width: 100%; }
         .tree-watering .panel-title {
             color: var(--neon-green);
             text-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
         }
-        .tree-watering .panel-title::before {
-            color: var(--neon-cyan);
-        }
-        .tree-info {
-            margin-bottom: 16px;
-        }
+        .tree-watering .panel-title::before { color: var(--neon-cyan); }
+        .tree-info { margin-bottom: 16px; }
         .tree-info p {
             margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             color: var(--text-dim);
         }
-        .tree-info p .stat-value {
-            color: var(--neon-green);
-        }
+        .tree-info p .stat-value { color: var(--neon-green); }
         .tree-buttons {
             display: flex;
             gap: 12px;
@@ -612,10 +620,7 @@
             background: rgba(0, 243, 255, 0.1);
             box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
         }
-        .shop {
-            width: 100%;
-            overflow-y: auto;
-        }
+        .shop { width: 100%; overflow-y: auto; }
         .shop-items {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -651,9 +656,7 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
         }
-        .shop-item:hover::before {
-            opacity: 0.7;
-        }
+        .shop-item:hover::before { opacity: 0.7; }
         .shop-item-info {
             display: flex;
             flex-direction: column;
@@ -705,8 +708,7 @@
             gap: 10px;
             margin-top: auto;
         }
-        .buy-btn,
-        .use-btn {
+        .buy-btn, .use-btn {
             flex: 1;
             border: 1px solid transparent;
             padding: 8px;
@@ -754,10 +756,7 @@
             color: var(--neon-gold);
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
-        .redeem-panel .panel-title::before {
-            content: '🎁';
-            color: var(--neon-gold);
-        }
+        .redeem-panel .panel-title::before { content: '🎁'; color: var(--neon-gold); }
         .redeem-controls {
             display: flex;
             gap: 10px;
@@ -784,8 +783,7 @@
             color: var(--neon-green);
             font-weight: 600;
         }
-
-        /* ===== 宝箱模态框 ===== */
+        /* 宝箱模态框 */
         .modal {
             position: fixed;
             top: 0;
@@ -811,14 +809,8 @@
             animation: modalFadeIn 0.3s ease;
         }
         @keyframes modalFadeIn {
-            0% {
-                opacity: 0;
-                transform: scale(0.92) translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
+            0% { opacity: 0; transform: scale(0.92) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
         }
         .modal-title {
             font-family: var(--font-title);
@@ -834,10 +826,7 @@
             justify-content: center;
             gap: 12px;
         }
-        .modal-title::before {
-            content: '📦';
-            font-size: 28px;
-        }
+        .modal-title::before { content: '📦'; font-size: 28px; }
         .close-btn {
             position: absolute;
             top: 12px;
@@ -890,21 +879,11 @@
             transition: opacity 0.3s;
             pointer-events: none;
         }
-        .chest-item.normal::after {
-            background: linear-gradient(135deg, #888, #444);
-        }
-        .chest-item.golden::after {
-            background: linear-gradient(135deg, #ffd700, #b8860b);
-        }
-        .chest-item.diamond::after {
-            background: linear-gradient(135deg, #00bfff, #1e90ff);
-        }
-        .chest-item.supreme::after {
-            background: linear-gradient(135deg, #bc13fe, #8b00ff);
-        }
-        .chest-item:hover::after {
-            opacity: 0.18;
-        }
+        .chest-item.normal::after { background: linear-gradient(135deg, #888, #444); }
+        .chest-item.golden::after { background: linear-gradient(135deg, #ffd700, #b8860b); }
+        .chest-item.diamond::after { background: linear-gradient(135deg, #00bfff, #1e90ff); }
+        .chest-item.supreme::after { background: linear-gradient(135deg, #bc13fe, #8b00ff); }
+        .chest-item:hover::after { opacity: 0.18; }
         .chest-item-info {
             display: flex;
             align-items: center;
@@ -942,11 +921,7 @@
             align-items: center;
             gap: 4px;
         }
-        .chest-count::before {
-            content: '×';
-            font-size: 18px;
-            color: var(--text-dim);
-        }
+        .chest-count::before { content: '×'; font-size: 18px; color: var(--text-dim); }
         .chest-item .action-btn {
             padding: 8px 20px;
             font-size: 14px;
@@ -974,19 +949,10 @@
             box-shadow: none;
             transform: none;
         }
-        .chest-item.normal .chest-name {
-            color: #ccc;
-        }
-        .chest-item.golden .chest-name {
-            color: var(--neon-gold);
-        }
-        .chest-item.diamond .chest-name {
-            color: #4fc3f7;
-        }
-        .chest-item.supreme .chest-name {
-            color: #ce93d8;
-        }
-
+        .chest-item.normal .chest-name { color: #ccc; }
+        .chest-item.golden .chest-name { color: var(--neon-gold); }
+        .chest-item.diamond .chest-name { color: #4fc3f7; }
+        .chest-item.supreme .chest-name { color: #ce93d8; }
         #chest-reward-text {
             margin-top: 16px;
             text-align: center;
@@ -1006,62 +972,33 @@
             gap: 10px;
             flex-wrap: wrap;
         }
-        #chest-reward-text .reward-icon {
-            font-size: 28px;
-        }
-        #chest-reward-text .reward-amount {
-            color: #fff;
-            font-size: 22px;
-        }
+        #chest-reward-text .reward-icon { font-size: 28px; }
+        #chest-reward-text .reward-amount { color: #fff; font-size: 22px; }
         .chest-open-flash {
             animation: chestFlash 0.6s ease;
         }
         @keyframes chestFlash {
-            0% {
-                box-shadow: 0 0 0 rgba(255, 215, 0, 0);
-            }
-            30% {
-                box-shadow: 0 0 80px rgba(255, 215, 0, 0.8), 0 0 150px rgba(255, 215, 0, 0.4);
-            }
-            70% {
-                box-shadow: 0 0 60px rgba(255, 215, 0, 0.5), 0 0 100px rgba(255, 215, 0, 0.2);
-            }
-            100% {
-                box-shadow: 0 0 0 rgba(255, 215, 0, 0);
-            }
+            0% { box-shadow: 0 0 0 rgba(255, 215, 0, 0); }
+            30% { box-shadow: 0 0 80px rgba(255, 215, 0, 0.8), 0 0 150px rgba(255, 215, 0, 0.4); }
+            70% { box-shadow: 0 0 60px rgba(255, 215, 0, 0.5), 0 0 100px rgba(255, 215, 0, 0.2); }
+            100% { box-shadow: 0 0 0 rgba(255, 215, 0, 0); }
         }
         .chest-icon-open {
             animation: chestOpenAnim 0.5s ease forwards;
         }
         @keyframes chestOpenAnim {
-            0% {
-                transform: scale(1) rotate(0deg);
-            }
-            30% {
-                transform: scale(1.4) rotate(-12deg);
-            }
-            60% {
-                transform: scale(0.9) rotate(6deg);
-            }
-            100% {
-                transform: scale(1.1) rotate(0deg);
-            }
+            0% { transform: scale(1) rotate(0deg); }
+            30% { transform: scale(1.4) rotate(-12deg); }
+            60% { transform: scale(0.9) rotate(6deg); }
+            100% { transform: scale(1.1) rotate(0deg); }
         }
         .reward-pop {
             animation: rewardPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
         @keyframes rewardPop {
-            0% {
-                opacity: 0;
-                transform: scale(0.5);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
         }
-
-        /* 一键开启按钮 */
         .open-all-btn {
             width: 100%;
             margin-top: 12px;
@@ -1090,72 +1027,52 @@
             background: transparent;
             box-shadow: none;
         }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.3);
-        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
         ::-webkit-scrollbar-thumb {
             background: linear-gradient(180deg, var(--neon-purple), var(--neon-cyan));
             border-radius: 4px;
         }
         @media (max-width: 1200px) {
-            .game-main-content {
-                flex-direction: column;
-            }
-            .right-content {
-                width: 100%;
-            }
-            .basic-stats-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
+            .game-main-content { flex-direction: column; }
+            .right-content { width: 100%; }
+            .basic-stats-grid { grid-template-columns: repeat(4, 1fr); }
         }
         @media (max-width: 768px) {
-            .game-container {
-                padding: 12px;
-                gap: 12px;
-            }
-            .panel {
-                padding: 16px;
-            }
-            .block {
-                width: 200px;
-                height: 200px;
-            }
-            .block-display {
-                height: 300px;
-            }
-            .basic-stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .shop-items {
-                grid-template-columns: 1fr;
-            }
-            .modal-content {
-                padding: 20px 16px;
-            }
-            .chest-item {
-                padding: 12px 14px;
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-            .chest-item .action-btn {
-                min-width: 60px;
-                padding: 6px 14px;
-                font-size: 12px;
-            }
-            .chest-icon-wrap {
-                font-size: 30px;
-                width: 40px;
-            }
+            .game-container { padding: 12px; gap: 12px; }
+            .panel { padding: 16px; }
+            .block { width: 200px; height: 200px; }
+            .block-display { height: 300px; }
+            .slot-bar { flex-direction: column; align-items: stretch; }
+            .slot-group { justify-content: space-between; }
+            .basic-stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .shop-items { grid-template-columns: 1fr; }
+            .modal-content { padding: 20px 16px; }
+            .chest-item { padding: 12px 14px; flex-wrap: wrap; gap: 8px; }
+            .chest-item .action-btn { min-width: 60px; padding: 6px 14px; font-size: 12px; }
+            .chest-icon-wrap { font-size: 30px; width: 40px; }
         }
     </style>
 </head>
 <body>
     <div class="game-container">
+        <!-- ===== 存档栏 ===== -->
+        <div class="slot-bar" id="slot-bar">
+            <span class="slot-label">📁 存档</span>
+            <div class="slot-group" id="slot-group-1">
+                <button class="slot-btn active" data-slot="1">存档1</button>
+                <button class="slot-reset-btn" data-slot="1">重置</button>
+            </div>
+            <div class="slot-group" id="slot-group-2">
+                <button class="slot-btn" data-slot="2">存档2</button>
+                <button class="slot-reset-btn" data-slot="2">重置</button>
+            </div>
+            <div class="slot-group" id="slot-group-3">
+                <button class="slot-btn" data-slot="3">存档3</button>
+                <button class="slot-reset-btn" data-slot="3">重置</button>
+            </div>
+        </div>
+
         <div class="game-main-content">
             <div class="left-content">
                 <!-- 挖矿区域 -->
@@ -1272,7 +1189,6 @@
                         <div class="dmg-row"><span>等级增益</span> <input type="text" id="level-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row"><span>奖杯增益</span> <input type="text" id="trophy-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row"><span>信标增益</span> <input type="text" id="beacon-bonus" class="editable-debug" value="1.00x" disabled></div>
-                        <!-- ★ 修改：浇树增益使用 id="tree-bonus" 并强制刷新 -->
                         <div class="dmg-row" style="color: #00ff9d;"><span>浇树增益</span> <input type="text" id="tree-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row" style="color: #00ff9d;"><span>时间增益</span> <input type="text" id="time-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row" style="color: #00ff9d;"><span>奖励增益</span> <input type="text" id="special-bonus" class="editable-debug" value="1.00x" disabled></div>
@@ -1330,7 +1246,7 @@
         </div>
     </div>
 
-    <!-- 宝箱仓库模态框 -->
+    <!-- 宝箱模态框 -->
     <div id="chest-modal" class="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeChestModal()">&times;</button>
@@ -1405,7 +1321,7 @@
                 { name: '火立方', hp: 5e10, coins: 3e7, drop: 'fireCube', sqrtZone: 3 }, { name: '水立方', hp: 8e10, coins: 5e7, drop: 'waterCube', sqrtZone: 3 }, { name: '金立方', hp: 2e11, coins: 1e8, drop: 'goldCube', sqrtZone: 3 },
                 { name: '五行结晶', hp: 4e12, coins: 2e8, drop: 'fiveElementCrystal', sqrtZone: 3 }, { name: '方立水', hp: 1e13, coins: 4.5e8, drop: 'waterCube', dropAmount: 64, sqrtZone: 3 },
                 { name: '水沝㴇淼㵘', hp: 5e14, coins: 1e9, drop: 'waterCube', dropAmount: 256, sqrtZone: 3 }, { name: '纯金', hp: 2e15, coins: 1e10, sqrtZone: 3 },
-                { name: '元素晶片', hp: 1e17, coins: 1e10, drop: 'elementChip', sqrtZone: 3 }
+                { name: '元素晶片', hp: 1e17, coins: 1e6, drop: 'elementChip', sqrtZone: 3 }
             ],
             pickaxes: [
                 { name: '木镐', damage: 1, usage: 0.01, coins: 1, price: 1, count: 1, currency: 'trophies' }, { name: '石镐', damage: 2, usage: 0.02, coins: 1, price: 2, count: 0, currency: 'trophies' },
@@ -1447,9 +1363,130 @@
             chests: { normal: 0, golden: 0, diamond: 0, supreme: 0 }, lastChestTime: Date.now(), usedRedeemCodes: []
         };
 
-        const gameData = JSON.parse(JSON.stringify(defaultData));
+        // ============================================================
+        // 三存档管理
+        // ============================================================
+        let currentSlot = 1;
+        let gameData = null;
+        const SLOT_KEY_PREFIX = 'miningGameSave_slot';
 
+        function getSlotKey(slot) { return SLOT_KEY_PREFIX + slot; }
+
+        function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
+
+        function fixNanData() {
+            const now = Date.now();
+            if (!gameData) return;
+            if (!gameData.sqrtPower || gameData.sqrtPower < 1) gameData.sqrtPower = 1;
+            if (!gameData.level || gameData.level < 1) gameData.level = 1;
+            if (typeof gameData.totalOnlineSeconds !== 'number' || isNaN(gameData.totalOnlineSeconds)) gameData.totalOnlineSeconds = 0;
+            if (!gameData.totalOnlineSeconds) gameData.totalOnlineSeconds = 0;
+            if (!gameData.lastChestTime || isNaN(gameData.lastChestTime)) gameData.lastChestTime = now;
+            if (!gameData.chests) gameData.chests = { normal: 0, golden: 0, diamond: 0, supreme: 0 };
+            if (!gameData.usedRedeemCodes) gameData.usedRedeemCodes = [];
+            if (!gameData.dropMultiplier || isNaN(gameData.dropMultiplier)) gameData.dropMultiplier = 1;
+            if (!gameData.currentHp || isNaN(gameData.currentHp) || gameData.currentHp <= 0) gameData.currentHp = gameData.blocks[gameData.currentBlockIndex].hp;
+            const numFields = ['coins', 'trophies', 'amethyst', 'copperIngot', 'blueObsidianFragment', 'redObsidianFragment',
+                'redBlueCrystal', 'bedrockFragment', 'obsidian', 'netherStar', 'glass', 'kunKun', 'earthCore',
+                'woodCore', 'fireCube', 'waterCube', 'goldCube', 'fiveElementCrystal', 'jingCore', 'elementChip',
+                'matterX', 'matterY', 'matterZ', 'beacon', 'experience', 'usageBonus', 'specialBonus', 'digCount',
+                'blocksMined', 'treeLevel', 'treeExperience', 'energy', 'energyProductionSpeed', 'energyUpgradeCost',
+                'autoExchangeThreshold'
+            ];
+            numFields.forEach(field => {
+                if (isNaN(gameData[field]) || gameData[field] === undefined || gameData[field] === null) gameData[field] = defaultData[field] !== undefined ? defaultData[field] : 0;
+            });
+            gameData.autoMine = !!gameData.autoMine;
+            gameData.autoExchange = !!gameData.autoExchange;
+            gameData.debugEnabled = !!gameData.debugEnabled;
+            gameData.researchInstituteActive = !!gameData.researchInstituteActive;
+        }
+
+        function saveGame() {
+            if (!gameData) return;
+            try {
+                fixNanData();
+                const gameState = { ...gameData, pickaxes: gameData.pickaxes, lastOnlineTime: Date.now() };
+                delete gameState.blocks;
+                localStorage.setItem(getSlotKey(currentSlot), JSON.stringify(gameState));
+            } catch (e) { console.warn('Save error:', e); }
+        }
+
+        function loadSlotData(slot) {
+            try {
+                const raw = localStorage.getItem(getSlotKey(slot));
+                if (!raw) return null;
+                const gs = JSON.parse(raw);
+                if (gs.blocks) { localStorage.removeItem(getSlotKey(slot)); return null; }
+                const merged = deepClone(defaultData);
+                for (const key in merged) {
+                    if (key === 'pickaxes' || key === 'blocks') continue;
+                    if (gs[key] !== undefined) merged[key] = gs[key];
+                }
+                if (gs.pickaxes) {
+                    gs.pickaxes.forEach((sp, i) => {
+                        if (merged.pickaxes[i]) merged.pickaxes[i].count = sp.count || 0;
+                    });
+                }
+                const beaconItem = merged.pickaxes.find(p => p.name === '信标');
+                if (beaconItem && beaconItem.count > merged.beacon) merged.beacon = beaconItem.count;
+                return merged;
+            } catch (e) { console.warn('Load slot error:', e); return null; }
+        }
+
+        function resetSlot(slot) {
+            if (!confirm(`确定要重置存档${slot}吗？所有进度将丢失！`)) return;
+            const freshData = deepClone(defaultData);
+            freshData.startTime = Date.now();
+            freshData.originalStartTime = Date.now();
+            freshData.lastOnlineTime = Date.now();
+            freshData.lastChestTime = Date.now();
+            freshData.currentHp = freshData.blocks[freshData.currentBlockIndex].hp;
+            localStorage.setItem(getSlotKey(slot), JSON.stringify(freshData));
+            if (slot === currentSlot) {
+                loadSlot(slot);
+                updateAllUI();
+            }
+            updateSlotButtons();
+            alert(`存档${slot}已重置！`);
+        }
+
+        function loadSlot(slot) {
+            const data = loadSlotData(slot);
+            if (data) {
+                gameData = data;
+            } else {
+                gameData = deepClone(defaultData);
+                gameData.startTime = Date.now();
+                gameData.originalStartTime = Date.now();
+                gameData.lastOnlineTime = Date.now();
+                gameData.lastChestTime = Date.now();
+                gameData.currentHp = gameData.blocks[gameData.currentBlockIndex].hp;
+                localStorage.setItem(getSlotKey(slot), JSON.stringify(gameData));
+            }
+            currentSlot = slot;
+            fixNanData();
+            processOfflineMining();
+            updateAllUI();
+            updateSlotButtons();
+        }
+
+        function switchSlot(slot) {
+            if (slot === currentSlot) return;
+            saveGame();
+            loadSlot(slot);
+        }
+
+        function updateSlotButtons() {
+            document.querySelectorAll('.slot-btn').forEach(btn => {
+                const s = parseInt(btn.dataset.slot);
+                btn.classList.toggle('active', s === currentSlot);
+            });
+        }
+
+        // ============================================================
         // DOM 引用
+        // ============================================================
         const elements = {};
         ['block-name', 'current-hp', 'max-hp', 'hp-bar', 'exp-bar', 'prev-block', 'next-block', 'block-display', 'auto-mine-btn',
             'auto-exchange-btn', 'auto-exchange-threshold', 'exchange-btn', 'damage-text-container', 'drop-info',
@@ -1485,63 +1522,24 @@
             if (num === Infinity) return '∞';
             if (isNaN(num)) return '0';
             if (num < 1000000) return num.toFixed(2).replace(/\.00$/, '');
-            const units = ['', '万', '亿', '万亿', '兆', '万兆', '亿兆', '万亿兆', '京', '万京', '亿京', '万亿京', '兆京', '万兆京', '亿兆京',
-                '万亿兆京', '垓'
-            ];
+            const units = ['', '万', '亿', '万亿', '兆', '万兆', '亿兆', '万亿兆', '京', '万京', '亿京', '万亿京', '兆京', '万兆京', '亿兆京', '万亿兆京', '垓'];
             let i = 0;
-            while (num >= 10000 && i < units.length - 1) { num /= 10000;
-                i++; }
+            while (num >= 10000 && i < units.length - 1) { num /= 10000; i++; }
             return num.toFixed(2) + units[i];
-        }
-
-        function fixNanData() {
-            const now = Date.now();
-            if (!gameData.sqrtPower || gameData.sqrtPower < 1) gameData.sqrtPower = 1;
-            if (!gameData.level || gameData.level < 1) gameData.level = 1;
-            if (typeof gameData.totalOnlineSeconds !== 'number' || isNaN(gameData.totalOnlineSeconds)) gameData.totalOnlineSeconds = 0;
-            if (!gameData.totalOnlineSeconds) gameData.totalOnlineSeconds = 0;
-            if (!gameData.lastChestTime || isNaN(gameData.lastChestTime)) gameData.lastChestTime = now;
-            if (!gameData.chests) gameData.chests = { normal: 0, golden: 0, diamond: 0, supreme: 0 };
-            if (!gameData.usedRedeemCodes) gameData.usedRedeemCodes = [];
-            if (!gameData.dropMultiplier || isNaN(gameData.dropMultiplier)) gameData.dropMultiplier = 1;
-            if (!gameData.currentHp || isNaN(gameData.currentHp) || gameData.currentHp <= 0) gameData.currentHp = gameData
-                .blocks[gameData.currentBlockIndex].hp;
-            const numFields = ['coins', 'trophies', 'amethyst', 'copperIngot', 'blueObsidianFragment', 'redObsidianFragment',
-                'redBlueCrystal', 'bedrockFragment', 'obsidian', 'netherStar', 'glass', 'kunKun', 'earthCore',
-                'woodCore', 'fireCube', 'waterCube', 'goldCube', 'fiveElementCrystal', 'jingCore', 'elementChip',
-                'matterX', 'matterY', 'matterZ', 'beacon', 'experience', 'usageBonus', 'specialBonus', 'digCount',
-                'blocksMined', 'treeLevel', 'treeExperience', 'energy', 'energyProductionSpeed', 'energyUpgradeCost',
-                'autoExchangeThreshold'
-            ];
-            numFields.forEach(field => {
-                if (isNaN(gameData[field]) || gameData[field] === undefined || gameData[field] === null) gameData[
-                    field] = defaultData[field] !== undefined ? defaultData[field] : 0;
-            });
-            gameData.autoMine = !!gameData.autoMine;
-            gameData.autoExchange = !!gameData.autoExchange;
-            gameData.debugEnabled = !!gameData.debugEnabled;
-            gameData.researchInstituteActive = !!gameData.researchInstituteActive;
         }
 
         // ============================================================
         // 核心计算
         // ============================================================
         function calculateBeaconBonus() { return Math.pow(1 + gameData.beacon, 0.64); }
-
         function calculateTimeBonus() {
             if (!gameData.totalOnlineSeconds) gameData.totalOnlineSeconds = 0;
             return gameData.totalOnlineSeconds < 160 ? 1 : Math.log(gameData.totalOnlineSeconds / 160) / Math.log(8);
         }
-
-        // ★ 浇树增益公式（用户可在此修改）
         function calculateTreeBonus() { return Math.pow(gameData.treeLevel, 0.4); }
-
         function calculateEnergyBonus() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.22) : 1; }
-
         function calculateEnergyUsageBonus() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.44) : 1; }
-
         function calculateEnergyTreeExp() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.55) : 0; }
-
         function calculateTotalDamage() {
             if (!gameData.sqrtPower || gameData.sqrtPower < 1) gameData.sqrtPower = 1;
             const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
@@ -1553,7 +1551,7 @@
         }
 
         // ============================================================
-        // 界面更新（★ 修复浇树增益显示）
+        // 界面更新
         // ============================================================
         function updateBlockDisplay() {
             const block = gameData.blocks[gameData.currentBlockIndex];
@@ -1573,8 +1571,9 @@
             } else { elements.dropInfo.style.display = 'none'; }
         }
 
-        function getCurrentSqrtZoneBlocks() { return gameData.blocks.map((b, i) => b.sqrtZone === gameData.sqrtPower ? i : null)
-                .filter(i => i !== null); }
+        function getCurrentSqrtZoneBlocks() {
+            return gameData.blocks.map((b, i) => b.sqrtZone === gameData.sqrtPower ? i : null).filter(i => i !== null);
+        }
 
         function changeBlock(direction) {
             const currentBlocks = getCurrentSqrtZoneBlocks();
@@ -1588,31 +1587,25 @@
         }
 
         function showDamageText(damage) {
-            if (elements.damageTextContainer.children.length > 8) elements.damageTextContainer.removeChild(elements
-                .damageTextContainer.firstChild);
+            if (elements.damageTextContainer.children.length > 8) elements.damageTextContainer.removeChild(elements.damageTextContainer.firstChild);
             const dt = document.createElement('div');
             dt.className = 'damage-text';
             dt.textContent = formatNumber(damage);
-            dt.style.left = `50%`;
-            dt.style.top = `50%`;
+            dt.style.left = '50%';
+            dt.style.top = '50%';
             dt.style.transform = `translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 - 100}px)`;
             elements.damageTextContainer.appendChild(dt);
             setTimeout(() => dt.remove(), 1000);
         }
 
-        // ★ 更新统计（强制刷新浇树增益）
         function updateStats() {
             try {
                 const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
-                if (elements.expBar) elements.expBar.style.width = (gameData.experience / Math.pow(gameData.level, 2)) *
-                    100 + '%';
+                if (elements.expBar) elements.expBar.style.width = (gameData.experience / Math.pow(gameData.level, 2)) * 100 + '%';
                 if (elements.pickaxeName) elements.pickaxeName.textContent = pickaxe.name;
-                if (elements.pickaxeDamageValue) elements.pickaxeDamageValue.textContent = formatNumber(pickaxe.damage) +
-                    'x';
-                if (elements.pickaxeUsageValue) elements.pickaxeUsageValue.textContent = formatNumber(pickaxe.usage) +
-                    'x';
-                if (elements.pickaxeCoinsValue) elements.pickaxeCoinsValue.textContent = formatNumber(pickaxe.coins) +
-                    'x';
+                if (elements.pickaxeDamageValue) elements.pickaxeDamageValue.textContent = formatNumber(pickaxe.damage) + 'x';
+                if (elements.pickaxeUsageValue) elements.pickaxeUsageValue.textContent = formatNumber(pickaxe.usage) + 'x';
+                if (elements.pickaxeCoinsValue) elements.pickaxeCoinsValue.textContent = formatNumber(pickaxe.coins) + 'x';
                 setStat(elements.pickaxeDamage, formatNumber(pickaxe.damage) + 'x');
                 setStat(elements.usageBonus, formatNumber(gameData.usageBonus) + 'x');
                 setStat(elements.usagePerDig, formatNumber(pickaxe.usage * calculateEnergyUsageBonus()) + 'x');
@@ -1623,22 +1616,18 @@
                     setStat(elements.beaconBonus, formatNumber(calculateBeaconBonus()) + 'x');
                     elements.beaconBonus.style.color = '#2ecc71';
                 }
-
-                // ★★★ 关键修复：浇树增益直接强制刷新，绕过缓存 ★★★
+                // 强制刷新浇树增益
                 if (elements.treeBonus) {
                     const treeVal = calculateTreeBonus();
                     const displayText = formatNumber(treeVal) + 'x';
-                    // 直接操作 DOM，不经过 setStat 缓存
                     if (elements.treeBonus.tagName === 'INPUT') {
                         elements.treeBonus.value = displayText;
                     } else {
                         elements.treeBonus.textContent = displayText;
                     }
                     elements.treeBonus.style.color = '#2ecc71';
-                    // 同时更新 lastStats 防止下一次 setStat 覆盖
                     lastStats['tree-bonus'] = displayText;
                 }
-
                 if (elements.timeBonus) {
                     setStat(elements.timeBonus, formatNumber(calculateTimeBonus()) + 'x');
                     elements.timeBonus.style.color = '#2ecc71';
@@ -1682,8 +1671,7 @@
 
                 const tReq = 10 * gameData.treeLevel;
                 if (elements.treeLevel) elements.treeLevel.textContent = gameData.treeLevel;
-                if (elements.treeProgressBar) elements.treeProgressBar.style.width = (gameData.treeExperience / tReq) *
-                    100 + '%';
+                if (elements.treeProgressBar) elements.treeProgressBar.style.width = (gameData.treeExperience / tReq) * 100 + '%';
                 if (elements.treeExperience) elements.treeExperience.textContent = formatNumber(gameData.treeExperience);
                 if (elements.treeExperienceRequired) elements.treeExperienceRequired.textContent = formatNumber(tReq);
                 if (elements.digCount) elements.digCount.textContent = formatNumber(gameData.digCount);
@@ -1695,8 +1683,7 @@
                     setStat(elements.energyTotal, formatNumber(gameData.energy));
                     setStat(elements.energySpeed, formatNumber(gameData.energyProductionSpeed) + '/秒');
                     setStat(elements.energyUpgradeCost, formatNumber(gameData.energyUpgradeCost));
-                    if (elements.energyCostDisplay) elements.energyCostDisplay.textContent = formatNumber(gameData
-                        .energyUpgradeCost);
+                    if (elements.energyCostDisplay) elements.energyCostDisplay.textContent = formatNumber(gameData.energyUpgradeCost);
                     setStat(elements.energyBonusStat, formatNumber(calculateEnergyBonus()) + 'x');
                     setStat(elements.energyUsageStat, formatNumber(calculateEnergyUsageBonus()) + 'x');
                     setStat(elements.energyTreeStat, formatNumber(calculateEnergyTreeExp()) + '/秒');
@@ -1711,16 +1698,14 @@
         }
 
         // ============================================================
-        // 浇树与合成
+        // 浇树、合成、研究所
         // ============================================================
         function waterTree() {
             if (gameData.waterCube < 1) return;
             gameData.waterCube--;
             gameData.treeExperience++;
             let req = 10 * gameData.treeLevel;
-            while (gameData.treeExperience >= req) { gameData.treeLevel++;
-                gameData.treeExperience -= req;
-                req = 10 * gameData.treeLevel; }
+            while (gameData.treeExperience >= req) { gameData.treeLevel++; gameData.treeExperience -= req; req = 10 * gameData.treeLevel; }
             updateStats();
             updateShopButtons();
         }
@@ -1731,9 +1716,7 @@
             gameData.waterCube = 0;
             gameData.treeExperience += w;
             let req = 10 * gameData.treeLevel;
-            while (gameData.treeExperience >= req) { gameData.treeLevel++;
-                gameData.treeExperience -= req;
-                req = 10 * gameData.treeLevel; }
+            while (gameData.treeExperience >= req) { gameData.treeLevel++; gameData.treeExperience -= req; req = 10 * gameData.treeLevel; }
             updateStats();
             updateShopButtons();
         }
@@ -1741,8 +1724,7 @@
         function craftAllBeacons() {
             const beaconItem = gameData.pickaxes.find(p => p.name === '信标');
             if (!beaconItem) return;
-            const maxCraft = Math.min(Math.floor(gameData.obsidian / 3), Math.floor(gameData.glass / 5), Math.floor(
-                gameData.netherStar / 1));
+            const maxCraft = Math.min(Math.floor(gameData.obsidian / 3), Math.floor(gameData.glass / 5), Math.floor(gameData.netherStar / 1));
             if (maxCraft > 0) {
                 gameData.obsidian -= maxCraft * 3;
                 gameData.glass -= maxCraft * 5;
@@ -1778,7 +1760,7 @@
         }
 
         // ============================================================
-        // 挖矿核心
+        // 挖矿
         // ============================================================
         function dig(silent = false) {
             const block = gameData.blocks[gameData.currentBlockIndex];
@@ -1798,20 +1780,16 @@
                 gameData.blocksMined++;
                 if (block.drop) {
                     const amount = (block.dropAmount || 1) * gameData.dropMultiplier;
-                    if (block.dropChance) { if (Math.random() * 100 <= block.dropChance) gameData[block.drop] += amount; } else
-                        gameData[block.drop] += amount;
+                    if (block.dropChance) { if (Math.random() * 100 <= block.dropChance) gameData[block.drop] += amount; } else gameData[block.drop] += amount;
                 }
                 gameData.currentHp = block.hp;
                 checkAutoExchange();
             }
             updateBlockDisplay();
-            if (!silent) { updateStats();
-                updateExchangeButton(); }
+            if (!silent) { updateStats(); updateExchangeButton(); }
         }
 
-        let autoMineInterval = null,
-            lastAutoMineTime = 0;
-
+        let autoMineInterval = null, lastAutoMineTime = 0;
         function autoMineTick() {
             if (!gameData.autoMine) return;
             const now = Date.now();
@@ -1820,26 +1798,18 @@
             let ticks = Math.floor(elapsed / 100);
             if (ticks < 1) ticks = 1;
             if (ticks > 10) ticks = 10;
-            for (let i = 0; i < ticks; i++) {
-                dig(i < ticks - 1);
-            }
+            for (let i = 0; i < ticks; i++) { dig(i < ticks - 1); }
             lastAutoMineTime = now;
             updateStats();
             updateExchangeButton();
         }
-
         function updateAutoMine() {
             if (gameData.autoMine) {
-                if (!autoMineInterval) {
-                    lastAutoMineTime = Date.now();
-                    autoMineInterval = setInterval(autoMineTick, 100);
-                }
+                if (!autoMineInterval) { lastAutoMineTime = Date.now(); autoMineInterval = setInterval(autoMineTick, 100); }
             } else {
-                if (autoMineInterval) { clearInterval(autoMineInterval);
-                    autoMineInterval = null; }
+                if (autoMineInterval) { clearInterval(autoMineInterval); autoMineInterval = null; }
             }
         }
-
         function toggleAutoMine() {
             gameData.autoMine = !gameData.autoMine;
             elements.autoMineBtn.textContent = `⚙ 自动挖矿: ${gameData.autoMine ? '开启' : '关闭'}`;
@@ -1852,38 +1822,27 @@
             elements.autoExchangeBtn.textContent = `⟳ 自动兑换: ${gameData.autoExchange ? '开启' : '关闭'}`;
             elements.autoExchangeBtn.classList.toggle('active', gameData.autoExchange);
         }
-
         function updateAutoExchangeThreshold() {
             const t = parseInt(elements.autoExchangeThreshold.value);
             gameData.autoExchangeThreshold = t >= 100 ? t : gameData.autoExchangeThreshold;
             elements.autoExchangeThreshold.value = gameData.autoExchangeThreshold;
         }
-
-        function checkAutoExchange() { if (gameData.autoExchange && gameData.coins >= gameData.autoExchangeThreshold)
-                exchangeTrophies(false); }
-
+        function checkAutoExchange() { if (gameData.autoExchange && gameData.coins >= gameData.autoExchangeThreshold) exchangeTrophies(false); }
         function calculateExchangeInfo() { return { earnedTrophies: Math.floor(Math.pow(gameData.coins / 100, 3 / 4)) }; }
-
         function updateExchangeButton() {
             const info = calculateExchangeInfo();
-            elements.exchangeBtn.textContent = info.earnedTrophies > 0 ? `🏆 兑换奖杯 (+${info.earnedTrophies})` :
-                `🏆 兑换奖杯 (需100金)`;
+            elements.exchangeBtn.textContent = info.earnedTrophies > 0 ? `🏆 兑换奖杯 (+${info.earnedTrophies})` : `🏆 兑换奖杯 (需100金)`;
         }
-
         function exchangeTrophies(updateUI = true) {
             const info = calculateExchangeInfo();
             if (info.earnedTrophies > 0) {
                 gameData.trophies += info.earnedTrophies;
                 gameData.coins = 0;
-                if (updateUI) { updateStats();
-                    updateShopButtons();
-                    updateExchangeButton(); }
+                if (updateUI) { updateStats(); updateShopButtons(); updateExchangeButton(); }
             }
         }
 
-        let longPressInterval = null,
-            lastLongPressTime = 0;
-
+        let longPressInterval = null, lastLongPressTime = 0;
         function longPressTick() {
             if (gameData.autoMine) return;
             const now = Date.now();
@@ -1892,23 +1851,15 @@
             let ticks = Math.floor(elapsed / 100);
             if (ticks < 1) ticks = 1;
             if (ticks > 10) ticks = 10;
-            for (let i = 0; i < ticks; i++) {
-                dig(i < ticks - 1);
-            }
+            for (let i = 0; i < ticks; i++) { dig(i < ticks - 1); }
             lastLongPressTime = now;
             updateStats();
             updateExchangeButton();
         }
+        function startLongPress() { if (!gameData.autoMine) { lastLongPressTime = Date.now(); longPressInterval = setInterval(longPressTick, 100); } }
+        function stopLongPress() { if (longPressInterval) { clearInterval(longPressInterval); longPressInterval = null; } }
 
-        function startLongPress() { if (!gameData.autoMine) { lastLongPressTime = Date.now();
-                longPressInterval = setInterval(longPressTick, 100); } }
-
-        function stopLongPress() { if (longPressInterval) { clearInterval(longPressInterval);
-                longPressInterval = null; } }
-
-        function levelUp() { while (gameData.experience >= Math.pow(gameData.level, 2)) { gameData.experience -= Math.pow(
-                    gameData.level, 2);
-                gameData.level++; } }
+        function levelUp() { while (gameData.experience >= Math.pow(gameData.level, 2)) { gameData.experience -= Math.pow(gameData.level, 2); gameData.level++; } }
 
         // ============================================================
         // 商店
@@ -1918,25 +1869,20 @@
             gameData.pickaxes.forEach((pickaxe, index) => {
                 const shopItem = document.createElement('div');
                 shopItem.className = 'shop-item';
-                let buyButtonHtml = '',
-                    recipeHtml = '';
+                let buyButtonHtml = '', recipeHtml = '';
                 if (pickaxe.isCraftable) {
                     let desc = '合成材料：';
                     for (const [mat, req] of Object.entries(pickaxe.recipe)) {
-                        const name = { 'usageBonus': '使用增益', 'coins': '金币', 'trophies': '奖杯', 'amethyst': '紫水晶',
-                            'copperIngot': '铜锭' } [mat] || mat;
+                        const name = { 'usageBonus': '使用增益', 'coins': '金币', 'trophies': '奖杯', 'amethyst': '紫水晶', 'copperIngot': '铜锭' } [mat] || mat;
                         desc += `${formatNumber(req)}${name} `;
                     }
                     recipeHtml = `<div class="recipe-desc">${desc}</div>`;
                     buyButtonHtml = `<button class="buy-btn craft-btn" data-index="${index}">合成</button>`;
                 } else {
-                    const cName = { 'trophies': '奖杯', 'amethyst': '紫水晶', 'copperIngot': '铜锭' } [pickaxe.currency ||
-                        'trophies'
-                    ];
+                    const cName = { 'trophies': '奖杯', 'amethyst': '紫水晶', 'copperIngot': '铜锭' } [pickaxe.currency || 'trophies'];
                     buyButtonHtml = `<button class="buy-btn" data-index="${index}">购买 (${pickaxe.price}${cName})</button>`;
                 }
-                let useButtonHtml = pickaxe.type !== 'item' ? `<button class="use-btn" data-index="${index}">使用</button>` :
-                    '';
+                let useButtonHtml = pickaxe.type !== 'item' ? `<button class="use-btn" data-index="${index}">使用</button>` : '';
                 shopItem.innerHTML =
                     `<div class="shop-item-info"><h4>${pickaxe.name}</h4>
                         <div class="shop-item-count">数量: <input type="text" class="shop-count-input" data-index="${index}" value="${pickaxe.count}" disabled></div>
@@ -1980,15 +1926,13 @@
                             '元素晶片': 'elementChip'
                         };
                         const key = map[mat];
-                        if (typeof key === 'number') { if (gameData.pickaxes[key].count < req) canCraft = false; } else
-                        if (gameData[key] < req) canCraft = false;
+                        if (typeof key === 'number') { if (gameData.pickaxes[key].count < req) canCraft = false; } else if (gameData[key] < req) canCraft = false;
                         if (!canCraft) break;
                     }
                     btn.disabled = !canCraft;
                 } else { btn.disabled = gameData[pickaxe.currency || 'trophies'] < pickaxe.price; }
             });
-            document.querySelectorAll('.use-btn').forEach((btn, index) => { btn.classList.toggle('active', index ===
-                    gameData.currentPickaxeIndex); });
+            document.querySelectorAll('.use-btn').forEach((btn, index) => { btn.classList.toggle('active', index === gameData.currentPickaxeIndex); });
             document.querySelectorAll('.shop-count-input').forEach(inp => {
                 const idx = parseInt(inp.dataset.index);
                 inp.value = gameData.pickaxes[idx].count;
@@ -2012,8 +1956,7 @@
                         '元素晶片': 'elementChip'
                     };
                     const key = map[mat];
-                    if (typeof key === 'number') { if (gameData.pickaxes[key].count < req) canCraft = false; } else if (
-                        gameData[key] < req) canCraft = false;
+                    if (typeof key === 'number') { if (gameData.pickaxes[key].count < req) canCraft = false; } else if (gameData[key] < req) canCraft = false;
                 }
                 if (canCraft) {
                     for (const [mat, req] of Object.entries(pickaxe.recipe)) {
@@ -2048,26 +1991,17 @@
 
         function usePickaxe(e) {
             const index = parseInt(e.target.dataset.index);
-            if (gameData.pickaxes[index].count > 0) { gameData.currentPickaxeIndex = index;
-                initShop();
-                updateStats(); }
+            if (gameData.pickaxes[index].count > 0) { gameData.currentPickaxeIndex = index; initShop(); updateStats(); }
         }
 
-        function handleKeyDown(e) { if (e.key === '>') changeBlock(1);
-            else if (e.key === '<') changeBlock(-1); }
-
+        function handleKeyDown(e) { if (e.key === '>') changeBlock(1); else if (e.key === '<') changeBlock(-1); }
         window.closeChestModal = () => document.getElementById('chest-modal').style.display = 'none';
 
         // ============================================================
-        // 宝箱系统（★ 修改返回值结构，支持汇总）
+        // 宝箱系统
         // ============================================================
         function updateChestUI() {
-            const counts = {
-                normal: gameData.chests.normal || 0,
-                golden: gameData.chests.golden || 0,
-                diamond: gameData.chests.diamond || 0,
-                supreme: gameData.chests.supreme || 0
-            };
+            const counts = { normal: gameData.chests.normal || 0, golden: gameData.chests.golden || 0, diamond: gameData.chests.diamond || 0, supreme: gameData.chests.supreme || 0 };
             document.getElementById('chest-normal-count').textContent = counts.normal;
             document.getElementById('chest-golden-count').textContent = counts.golden;
             document.getElementById('chest-diamond-count').textContent = counts.diamond;
@@ -2094,7 +2028,6 @@
             }
         }
 
-        // ★ 返回结构化奖励对象 { category, amount, display }
         function openChest(type, silent = false) {
             const rewardEl = document.getElementById('chest-reward-text');
             if (gameData.chests[type] <= 0) {
@@ -2102,61 +2035,32 @@
                 return null;
             }
             gameData.chests[type]--;
-
             const rand = Math.random() * 100;
             let reward = { category: '', amount: 0, display: '' };
-
             if (type === 'normal') {
-                if (rand < 50) { gameData.specialBonus += 0.1;
-                    reward = { category: 'specialBonus', amount: 0.1, display: '奖励增益 +0.1' }; } else if (rand < 80) {
-                    gameData.specialBonus += 0.5;
-                    reward = { category: 'specialBonus', amount: 0.5, display: '奖励增益 +0.5' }; } else if (rand < 95) {
-                    gameData.usageBonus += 1000;
-                    reward = { category: 'usageBonus', amount: 1000, display: '使用增益 +1000' }; } else if (rand < 97.5) {
-                    gameData.beacon += 1;
-                    reward = { category: 'beacon', amount: 1, display: '信标 +1' }; } else { gameData.treeLevel += 1;
-                    reward = { category: 'treeLevel', amount: 1, display: '树等级 +1' }; }
+                if (rand < 50) { gameData.specialBonus += 0.1; reward = { category: 'specialBonus', amount: 0.1, display: '奖励增益 +0.1' }; } else if (rand < 80) {
+                    gameData.specialBonus += 0.5; reward = { category: 'specialBonus', amount: 0.5, display: '奖励增益 +0.5' }; } else if (rand < 95) {
+                    gameData.usageBonus += 1000; reward = { category: 'usageBonus', amount: 1000, display: '使用增益 +1000' }; } else if (rand < 97.5) {
+                    gameData.beacon += 1; reward = { category: 'beacon', amount: 1, display: '信标 +1' }; } else { gameData.treeLevel += 1; reward = { category: 'treeLevel', amount: 1, display: '树等级 +1' }; }
             } else if (type === 'golden') {
-                if (rand < 50) { gameData.specialBonus += 0.5;
-                    reward = { category: 'specialBonus', amount: 0.5, display: '奖励增益 +0.5' }; } else if (rand < 75) {
-                    gameData.specialBonus += 1;
-                    reward = { category: 'specialBonus', amount: 1, display: '奖励增益 +1' }; } else if (rand < 90) {
-                    gameData.usageBonus += 3000;
-                    reward = { category: 'usageBonus', amount: 3000, display: '使用增益 +3000' }; } else if (rand < 95) {
-                    gameData.beacon += 3;
-                    reward = { category: 'beacon', amount: 3, display: '信标 +3' }; } else { gameData.treeLevel += 3;
-                    reward = { category: 'treeLevel', amount: 3, display: '树等级 +3' }; }
+                if (rand < 50) { gameData.specialBonus += 0.5; reward = { category: 'specialBonus', amount: 0.5, display: '奖励增益 +0.5' }; } else if (rand < 75) {
+                    gameData.specialBonus += 1; reward = { category: 'specialBonus', amount: 1, display: '奖励增益 +1' }; } else if (rand < 90) {
+                    gameData.usageBonus += 3000; reward = { category: 'usageBonus', amount: 3000, display: '使用增益 +3000' }; } else if (rand < 95) {
+                    gameData.beacon += 3; reward = { category: 'beacon', amount: 3, display: '信标 +3' }; } else { gameData.treeLevel += 3; reward = { category: 'treeLevel', amount: 3, display: '树等级 +3' }; }
             } else if (type === 'diamond') {
-                if (rand < 50) { gameData.specialBonus += 5;
-                    reward = { category: 'specialBonus', amount: 5, display: '奖励增益 +5' }; } else if (rand < 75) {
-                    gameData.usageBonus += 10000;
-                    reward = { category: 'usageBonus', amount: 10000, display: '使用增益 +10000' }; } else if (rand < 85) {
-                    gameData.beacon += 25;
-                    reward = { category: 'beacon', amount: 25, display: '信标 +25' }; } else if (rand < 95) { gameData
-                        .treeLevel += 25;
-                    reward = { category: 'treeLevel', amount: 25, display: '树等级 +25' }; } else { gameData.dropMultiplier +=
-                        1;
-                    reward = { category: 'dropMultiplier', amount: 1, display: '掉落倍率 +1' }; }
+                if (rand < 50) { gameData.specialBonus += 5; reward = { category: 'specialBonus', amount: 5, display: '奖励增益 +5' }; } else if (rand < 75) {
+                    gameData.usageBonus += 10000; reward = { category: 'usageBonus', amount: 10000, display: '使用增益 +10000' }; } else if (rand < 85) {
+                    gameData.beacon += 25; reward = { category: 'beacon', amount: 25, display: '信标 +25' }; } else if (rand < 95) {
+                    gameData.treeLevel += 25; reward = { category: 'treeLevel', amount: 25, display: '树等级 +25' }; } else { gameData.dropMultiplier += 1; reward = { category: 'dropMultiplier', amount: 1, display: '掉落倍率 +1' }; }
             } else if (type === 'supreme') {
-                if (rand < 40) { gameData.specialBonus += 67;
-                    reward = { category: 'specialBonus', amount: 67, display: '奖励增益 +67' }; } else if (rand < 70) {
-                    gameData.usageBonus += 67000;
-                    reward = { category: 'usageBonus', amount: 67000, display: '使用增益 +67000' }; } else if (rand < 85) {
-                    gameData.beacon += 200;
-                    gameData.treeLevel += 200;
-                    reward = { category: 'beacon_tree', amount: 200, display: '信标 +200 树等级 +200' }; } else { gameData
-                        .dropMultiplier += 3;
-                    reward = { category: 'dropMultiplier', amount: 3, display: '掉落倍率 +3' }; }
+                if (rand < 40) { gameData.specialBonus += 67; reward = { category: 'specialBonus', amount: 67, display: '奖励增益 +67' }; } else if (rand < 70) {
+                    gameData.usageBonus += 67000; reward = { category: 'usageBonus', amount: 67000, display: '使用增益 +67000' }; } else if (rand < 85) {
+                    gameData.beacon += 200; gameData.treeLevel += 200; reward = { category: 'beacon_tree', amount: 200, display: '信标 +200 树等级 +200' }; } else { gameData.dropMultiplier += 3; reward = { category: 'dropMultiplier', amount: 3, display: '掉落倍率 +3' }; }
             }
-
             if (!silent) {
                 const chestItems = document.querySelectorAll('.chest-item');
                 let targetIcon = null;
-                chestItems.forEach(item => {
-                    if (item.classList.contains(type)) {
-                        targetIcon = item.querySelector('.chest-icon-wrap');
-                    }
-                });
+                chestItems.forEach(item => { if (item.classList.contains(type)) { targetIcon = item.querySelector('.chest-icon-wrap'); } });
                 if (targetIcon) {
                     targetIcon.classList.remove('chest-icon-open');
                     void targetIcon.offsetWidth;
@@ -2165,20 +2069,13 @@
                     modalContent.classList.remove('chest-open-flash');
                     void modalContent.offsetWidth;
                     modalContent.classList.add('chest-open-flash');
-                    setTimeout(() => {
-                        modalContent.classList.remove('chest-open-flash');
-                    }, 700);
+                    setTimeout(() => { modalContent.classList.remove('chest-open-flash'); }, 700);
                 }
                 rewardEl.className = 'reward-pop';
-                rewardEl.innerHTML =
-                    `<span class="reward-icon">🎁</span> 恭喜获得: <span class="reward-amount">${reward.display}</span>`;
+                rewardEl.innerHTML = `<span class="reward-icon">🎁</span> 恭喜获得: <span class="reward-amount">${reward.display}</span>`;
                 clearTimeout(window.chestRewardTimeout);
-                window.chestRewardTimeout = setTimeout(() => {
-                    rewardEl.innerHTML = '✨ 选择一个宝箱开启 ✨';
-                    rewardEl.className = '';
-                }, 5000);
+                window.chestRewardTimeout = setTimeout(() => { rewardEl.innerHTML = '✨ 选择一个宝箱开启 ✨'; rewardEl.className = ''; }, 5000);
             }
-
             updateChestUI();
             updateStats();
             updateShopButtons();
@@ -2186,69 +2083,42 @@
             return reward;
         }
 
-        // ★ 一键开启全部宝箱 —— 汇总显示每种奖励的总量
         function openAllChests() {
             const rewardEl = document.getElementById('chest-reward-text');
             const types = ['normal', 'golden', 'diamond', 'supreme'];
-
-            // 统计总数量
             let total = 0;
             types.forEach(t => total += gameData.chests[t]);
-            if (total === 0) {
-                rewardEl.innerHTML = '❌ 没有可开启的宝箱！';
-                return;
-            }
-
-            // 汇总容器
-            const totals = {
-                specialBonus: 0,
-                usageBonus: 0,
-                beacon: 0,
-                treeLevel: 0,
-                dropMultiplier: 0
-            };
-
+            if (total === 0) { rewardEl.innerHTML = '❌ 没有可开启的宝箱！'; return; }
+            const totals = { specialBonus: 0, usageBonus: 0, beacon: 0, treeLevel: 0, dropMultiplier: 0 };
             let totalOpened = 0;
             for (const type of types) {
                 while (gameData.chests[type] > 0) {
                     const r = openChest(type, true);
                     if (r && r.category) {
                         totalOpened++;
-                        // 累加汇总
                         if (r.category === 'specialBonus') totals.specialBonus += r.amount;
                         else if (r.category === 'usageBonus') totals.usageBonus += r.amount;
                         else if (r.category === 'beacon') totals.beacon += r.amount;
                         else if (r.category === 'treeLevel') totals.treeLevel += r.amount;
                         else if (r.category === 'dropMultiplier') totals.dropMultiplier += r.amount;
-                        else if (r.category === 'beacon_tree') {
-                            totals.beacon += r.amount;
-                            totals.treeLevel += r.amount;
-                        }
+                        else if (r.category === 'beacon_tree') { totals.beacon += r.amount; totals.treeLevel += r.amount; }
                     } else break;
                 }
             }
-
-            // 生成汇总文本（只显示有获得的部分）
             const parts = [];
             if (totals.specialBonus > 0) parts.push(`奖励增益 +${formatNumber(totals.specialBonus)}`);
             if (totals.usageBonus > 0) parts.push(`使用增益 +${formatNumber(totals.usageBonus)}`);
             if (totals.beacon > 0) parts.push(`信标 +${formatNumber(totals.beacon)}`);
             if (totals.treeLevel > 0) parts.push(`树等级 +${formatNumber(totals.treeLevel)}`);
             if (totals.dropMultiplier > 0) parts.push(`掉落倍率 +${formatNumber(totals.dropMultiplier)}`);
-
             rewardEl.className = 'reward-pop';
             rewardEl.innerHTML = `🎉 共开启 ${totalOpened} 个宝箱！<br>获得：${parts.join('、')}`;
-
             updateChestUI();
             updateStats();
             updateShopButtons();
             saveGame();
-
             clearTimeout(window.chestRewardTimeout);
-            window.chestRewardTimeout = setTimeout(() => {
-                rewardEl.innerHTML = '✨ 选择一个宝箱开启 ✨';
-                rewardEl.className = '';
-            }, 8000);
+            window.chestRewardTimeout = setTimeout(() => { rewardEl.innerHTML = '✨ 选择一个宝箱开启 ✨'; rewardEl.className = ''; }, 8000);
         }
 
         // ============================================================
@@ -2279,25 +2149,11 @@
         function toggleDebugMode(enabled) {
             document.querySelectorAll('.editable-debug').forEach(input => {
                 input.disabled = !enabled;
-                if (enabled) {
-                    input.style.borderBottom = '1px dashed var(--neon-blue)';
-                    input.style.cursor = 'text';
-                } else {
-                    input.style.borderBottom = 'none';
-                    input.style.cursor = 'default';
-                }
+                if (enabled) { input.style.borderBottom = '1px dashed var(--neon-blue)'; input.style.cursor = 'text'; } else { input.style.borderBottom = 'none'; input.style.cursor = 'default'; }
             });
             document.querySelectorAll('.shop-item-count input').forEach(inp => {
                 inp.disabled = !enabled;
-                if (enabled) {
-                    inp.style.border = '1px solid var(--neon-blue)';
-                    inp.style.color = 'var(--neon-blue)';
-                    inp.style.background = 'rgba(0,0,0,0.4)';
-                } else {
-                    inp.style.border = 'none';
-                    inp.style.color = 'var(--neon-gold)';
-                    inp.style.background = 'transparent';
-                }
+                if (enabled) { inp.style.border = '1px solid var(--neon-blue)'; inp.style.color = 'var(--neon-blue)'; inp.style.background = 'rgba(0,0,0,0.4)'; } else { inp.style.border = 'none'; inp.style.color = 'var(--neon-gold)'; inp.style.background = 'transparent'; }
             });
         }
 
@@ -2308,39 +2164,17 @@
                     let val = parseFloat(e.target.value.replace('x', '').replace('/秒', '').trim());
                     if (isNaN(val)) return;
                     const map = {
-                        'level': 'level',
-                        'experience': 'experience',
-                        'coins': 'coins',
-                        'trophies': 'trophies',
-                        'amethyst': 'amethyst',
-                        'copper-ingot': 'copperIngot',
-                        'blue-obsidian-fragment': 'blueObsidianFragment',
-                        'red-obsidian-fragment': 'redObsidianFragment',
-                        'red-blue-crystal': 'redBlueCrystal',
-                        'bedrock-fragment': 'bedrockFragment',
-                        'obsidian': 'obsidian',
-                        'nether-star': 'netherStar',
-                        'glass': 'glass',
-                        'kun-kun': 'kunKun',
-                        'earth-core': 'earthCore',
-                        'wood-core': 'woodCore',
-                        'fire-cube': 'fireCube',
-                        'water-cube': 'waterCube',
-                        'gold-cube': 'goldCube',
-                        'five-element-crystal': 'fiveElementCrystal',
-                        'jing-core': 'jingCore',
-                        'element-chip': 'elementChip',
-                        'matter-x': 'matterX',
-                        'matter-y': 'matterY',
-                        'matter-z': 'matterZ',
-                        'pickaxe-damage': 'pickaxe.damage',
-                        'usage-bonus': 'usageBonus',
-                        'special-bonus': 'specialBonus',
-                        'drop-multiplier-stat': 'dropMultiplier',
-                        'energy-total': 'energy',
-                        'energy-speed': 'energyProductionSpeed',
-                        'energy-upgrade-cost': 'energyUpgradeCost',
-                        'level-bonus': 'level=Math.pow(val,2)',
+                        'level': 'level', 'experience': 'experience', 'coins': 'coins', 'trophies': 'trophies',
+                        'amethyst': 'amethyst', 'copper-ingot': 'copperIngot', 'blue-obsidian-fragment': 'blueObsidianFragment',
+                        'red-obsidian-fragment': 'redObsidianFragment', 'red-blue-crystal': 'redBlueCrystal',
+                        'bedrock-fragment': 'bedrockFragment', 'obsidian': 'obsidian', 'nether-star': 'netherStar',
+                        'glass': 'glass', 'kun-kun': 'kunKun', 'earth-core': 'earthCore', 'wood-core': 'woodCore',
+                        'fire-cube': 'fireCube', 'water-cube': 'waterCube', 'gold-cube': 'goldCube',
+                        'five-element-crystal': 'fiveElementCrystal', 'jing-core': 'jingCore', 'element-chip': 'elementChip',
+                        'matter-x': 'matterX', 'matter-y': 'matterY', 'matter-z': 'matterZ',
+                        'pickaxe-damage': 'pickaxe.damage', 'usage-bonus': 'usageBonus', 'special-bonus': 'specialBonus',
+                        'drop-multiplier-stat': 'dropMultiplier', 'energy-total': 'energy', 'energy-speed': 'energyProductionSpeed',
+                        'energy-upgrade-cost': 'energyUpgradeCost', 'level-bonus': 'level=Math.pow(val,2)',
                         'trophy-bonus': 'trophies=Math.max(0,Math.pow(val,1.5)-1)',
                         'beacon-bonus': 'beacon=Math.max(0,Math.pow(val,1/0.64)-1)',
                         'tree-bonus': 'treeLevel=Math.max(1,Math.floor(Math.pow(val,2.5)))',
@@ -2355,38 +2189,8 @@
         }
 
         // ============================================================
-        // 保存 & 加载
+        // 离线 & 时间
         // ============================================================
-        function saveGame() {
-            try {
-                fixNanData();
-                const gameState = { ...gameData, pickaxes: gameData.pickaxes, lastOnlineTime: Date.now() };
-                delete gameState.blocks;
-                localStorage.setItem('miningGameSave', JSON.stringify(gameState));
-            } catch (e) { console.warn('Save error:', e); }
-        }
-
-        function loadGame() {
-            try {
-                const savedGame = localStorage.getItem('miningGameSave');
-                if (savedGame) {
-                    const gs = JSON.parse(savedGame);
-                    if (gs.blocks) { localStorage.removeItem('miningGameSave'); return; }
-                    for (const key in gameData) {
-                        if (key === 'pickaxes' || key === 'blocks') continue;
-                        if (gs[key] !== undefined) gameData[key] = gs[key];
-                    }
-                    if (gs.pickaxes) gs.pickaxes.forEach((sp, i) => { if (gameData.pickaxes[i]) gameData.pickaxes[i].count =
-                            sp.count || 0; });
-                }
-            } catch (e) { console.warn('Load error:', e);
-                localStorage.removeItem('miningGameSave'); }
-            fixNanData();
-            const beaconItem = gameData.pickaxes.find(p => p.name === '信标');
-            if (beaconItem && beaconItem.count > gameData.beacon) gameData.beacon = beaconItem.count;
-            processOfflineMining();
-        }
-
         function processOfflineMining() {
             const now = Date.now();
             const offlineTime = now - (gameData.lastOnlineTime || now);
@@ -2395,9 +2199,7 @@
                 gameData.energy += offSec * gameData.energyProductionSpeed;
                 gameData.treeExperience += Math.pow(gameData.energy, 0.55) * offSec;
                 let req = 10 * gameData.treeLevel;
-                while (gameData.treeExperience >= req) { gameData.treeExperience -= req;
-                    gameData.treeLevel++;
-                    req = 10 * gameData.treeLevel; }
+                while (gameData.treeExperience >= req) { gameData.treeExperience -= req; gameData.treeLevel++; req = 10 * gameData.treeLevel; }
             }
             const miningActions = Math.floor(offlineTime / 300);
             if (miningActions > 0) {
@@ -2414,9 +2216,7 @@
                         gameData.coins += ec;
                         gameData.experience += bc * Math.pow(1 + Math.log(bc), 2);
                         gameData.blocksMined++;
-                        if (block.drop) { if (block.dropChance) { if (Math.random() * 100 <= block.dropChance) gameData[
-                                    block.drop] += (block.dropAmount || 1) * gameData.dropMultiplier; } else gameData[
-                                block.drop] += (block.dropAmount || 1) * gameData.dropMultiplier; }
+                        if (block.drop) { if (block.dropChance) { if (Math.random() * 100 <= block.dropChance) gameData[block.drop] += (block.dropAmount || 1) * gameData.dropMultiplier; } else gameData[block.drop] += (block.dropAmount || 1) * gameData.dropMultiplier; }
                         remainingHp = block.hp;
                         checkAutoExchange();
                     }
@@ -2450,11 +2250,44 @@
             } catch (e) { console.warn('updateChestTimer error:', e); }
         }
 
+        function updateAllUI() {
+            if (!gameData) return;
+            updateBlockDisplay();
+            updateStats();
+            updateExchangeButton();
+            updateShopButtons();
+            updateChestUI();
+            updatePlaytime();
+            updateChestTimer();
+            updateAutoMine();
+            elements.autoMineBtn.textContent = `⚙ 自动挖矿: ${gameData.autoMine ? '开启' : '关闭'}`;
+            elements.autoMineBtn.classList.toggle('active', gameData.autoMine);
+            elements.autoExchangeBtn.textContent = `⟳ 自动兑换: ${gameData.autoExchange ? '开启' : '关闭'}`;
+            elements.autoExchangeBtn.classList.toggle('active', gameData.autoExchange);
+            elements.autoExchangeThreshold.value = gameData.autoExchangeThreshold;
+            const tReq = 10 * gameData.treeLevel;
+            if (elements.treeLevel) elements.treeLevel.textContent = gameData.treeLevel;
+            if (elements.treeProgressBar) elements.treeProgressBar.style.width = (gameData.treeExperience / tReq) * 100 + '%';
+            if (elements.treeExperience) elements.treeExperience.textContent = formatNumber(gameData.treeExperience);
+            if (elements.treeExperienceRequired) elements.treeExperienceRequired.textContent = formatNumber(tReq);
+        }
+
         // ============================================================
         // 初始化
         // ============================================================
         function initGame() {
-            loadGame();
+            // 绑定存档事件
+            document.querySelectorAll('.slot-btn').forEach(btn => {
+                btn.addEventListener('click', function() { switchSlot(parseInt(this.dataset.slot)); });
+            });
+            document.querySelectorAll('.slot-reset-btn').forEach(btn => {
+                btn.addEventListener('click', function() { resetSlot(parseInt(this.dataset.slot)); });
+            });
+
+            // 加载存档1
+            loadSlot(1);
+
+            // 绑定UI事件
             elements.prevBlock.addEventListener('click', () => changeBlock(-1));
             elements.nextBlock.addEventListener('click', () => changeBlock(1));
             elements.autoMineBtn.addEventListener('click', toggleAutoMine);
@@ -2471,10 +2304,6 @@
                 document.getElementById('chest-reward-text').className = '';
                 updateChestUI();
             });
-
-            elements.autoExchangeBtn.textContent = `⟳ 自动兑换: ${gameData.autoExchange ? '开启' : '关闭'}`;
-            elements.autoExchangeBtn.classList.toggle('active', gameData.autoExchange);
-            elements.autoExchangeThreshold.value = gameData.autoExchangeThreshold;
 
             elements.sqrtPower.addEventListener('change', () => {
                 const value = parseInt(elements.sqrtPower.value);
@@ -2508,13 +2337,9 @@
             elements.waterTreeBtn.addEventListener('click', waterTree);
             elements.autoWaterTreeBtn.addEventListener('click', autoWaterTree);
 
-            updateBlockDisplay();
-            updateAutoMine();
-            initShop();
-            updateExchangeButton();
-            updateStats();
-            updateChestUI();
+            updateAllUI();
 
+            // 主循环
             setInterval(() => {
                 try {
                     gameData.totalOnlineSeconds++;
@@ -2533,19 +2358,13 @@
                     updateStats();
                     updatePlaytime();
                     updateChestTimer();
-                } catch (e) {
-                    console.warn('Main loop error:', e);
-                }
+                } catch (e) { console.warn('Main loop error:', e); }
             }, 1000);
 
             setInterval(saveGame, 5000);
 
             document.addEventListener('visibilitychange', () => {
-                if (document.hidden) { saveGame(); } else { processOfflineMining();
-                    updateBlockDisplay();
-                    updateStats();
-                    updateChestUI();
-                    checkChestReward(); }
+                if (document.hidden) { saveGame(); } else { processOfflineMining(); updateAllUI(); checkChestReward(); }
             });
         }
 
