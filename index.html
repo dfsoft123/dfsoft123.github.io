@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>挖矿游戏</title>
+    <title>升级你的镐子</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* 样式不变，此处省略以节省篇幅，实际请保留原样式 */
+        /* 样式完全保留原样，此处省略以节省篇幅，实际请保留完整样式 */
         :root {
             --bg-dark: #050510;
             --bg-panel: rgba(16, 18, 38, 0.85);
@@ -1276,7 +1276,7 @@
                         <div class="dmg-row" style="color: #00ff9d;"><span>时间增益</span> <input type="text" id="time-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row" style="color: #00ff9d;"><span>奖励增益</span> <input type="text" id="special-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row" style="color: #00ff9d;"><span>能量增益</span> <input type="text" id="energy-bonus" class="editable-debug" value="1.00x" disabled></div>
-                        <div class="dmg-row" style="color: var(--neon-blue);"><span>✨ 掉落倍率</span> <input type="text" id="drop-multiplier-stat" class="editable-debug" value="1" disabled></div>
+                        <div class="dmg-row" style="color: var(--neon-blue);"><span>掉落倍率</span> <input type="text" id="drop-multiplier-stat" class="editable-debug" value="1" disabled></div>
                         <div class="dmg-row total-damage"><span>总伤害</span> <span id="total-damage">1.00</span></div>
                         <p class="green-note">绿色增益表示不被开方的增益</p>
                     </div>
@@ -1491,7 +1491,9 @@
             const now = Date.now();
             if (!gameData.sqrtPower || gameData.sqrtPower < 1) gameData.sqrtPower = 1;
             if (!gameData.level || gameData.level < 1) gameData.level = 1;
-            if (!gameData.totalOnlineSeconds || isNaN(gameData.totalOnlineSeconds)) gameData.totalOnlineSeconds = 0;
+            // 强制确保 totalOnlineSeconds 为数字
+            if (typeof gameData.totalOnlineSeconds !== 'number' || isNaN(gameData.totalOnlineSeconds)) gameData.totalOnlineSeconds = 0;
+            if (!gameData.totalOnlineSeconds) gameData.totalOnlineSeconds = 0;
             if (!gameData.lastChestTime || isNaN(gameData.lastChestTime)) gameData.lastChestTime = now;
             if (!gameData.chests) gameData.chests = { normal: 0, golden: 0, diamond: 0, supreme: 0 };
             if (!gameData.usedRedeemCodes) gameData.usedRedeemCodes = [];
@@ -1805,7 +1807,6 @@
                     setStat(elements.beaconBonus, formatNumber(calculateBeaconBonus()) + 'x');
                     elements.beaconBonus.style.color = '#2ecc71';
                 }
-                // 浇树增益 - 直接计算并显示
                 if (elements.treeBonus) {
                     const treeBonusVal = calculateTreeBonus();
                     setStat(elements.treeBonus, formatNumber(treeBonusVal) + 'x');
@@ -2145,7 +2146,6 @@
             document.getElementById('chest-btn-golden').disabled = counts.golden <= 0;
             document.getElementById('chest-btn-diamond').disabled = counts.diamond <= 0;
             document.getElementById('chest-btn-supreme').disabled = counts.supreme <= 0;
-            // 一键开启按钮状态
             const total = counts.normal + counts.golden + counts.diamond + counts.supreme;
             const openAllBtn = document.getElementById('open-all-chests-btn');
             if (openAllBtn) openAllBtn.disabled = total <= 0;
@@ -2164,7 +2164,6 @@
             }
         }
 
-        // 修改 openChest 支持 silent 参数
         function openChest(type, silent = false) {
             const rewardEl = document.getElementById('chest-reward-text');
             if (gameData.chests[type] <= 0) {
@@ -2225,9 +2224,7 @@
                     rewardIcon = '✨'; }
             }
 
-            // 非静默模式才显示动画和奖励信息
             if (!silent) {
-                // 播放开启动画
                 const chestItems = document.querySelectorAll('.chest-item');
                 let targetIcon = null;
                 chestItems.forEach(item => {
@@ -2261,41 +2258,35 @@
             updateStats();
             updateShopButtons();
             saveGame();
-            return rewardText; // 返回奖励文本用于批量汇总
+            return rewardText;
         }
 
-        // 一键开启全部宝箱
         function openAllChests() {
             const rewardEl = document.getElementById('chest-reward-text');
             const types = ['normal', 'golden', 'diamond', 'supreme'];
             let totalOpened = 0;
             let rewards = [];
-            // 先计算总数量
             let total = 0;
             types.forEach(t => total += gameData.chests[t]);
             if (total === 0) {
                 rewardEl.innerHTML = '❌ 没有可开启的宝箱！';
                 return;
             }
-            // 循环开启
             for (const type of types) {
                 while (gameData.chests[type] > 0) {
-                    const reward = openChest(type, true); // 静默开启
+                    const reward = openChest(type, true);
                     if (reward) {
                         rewards.push(reward);
                         totalOpened++;
                     } else break;
                 }
             }
-            // 显示汇总
             rewardEl.className = 'reward-pop';
             rewardEl.innerHTML = `🎉 共开启 ${totalOpened} 个宝箱！<br>获得: ${rewards.join('、')}`;
-            // 刷新UI（已在 openChest 中更新，但为了确保）
             updateChestUI();
             updateStats();
             updateShopButtons();
             saveGame();
-            // 自动清空提示
             clearTimeout(window.chestRewardTimeout);
             window.chestRewardTimeout = setTimeout(() => {
                 rewardEl.innerHTML = '✨ 选择一个宝箱开启 ✨';
@@ -2378,19 +2369,23 @@
         }
 
         function updatePlaytime() {
-            const seconds = gameData.totalOnlineSeconds;
-            if (elements.playtime) {
-                elements.playtime.innerHTML =
-                    `${Math.floor(seconds/31536000)}年${Math.floor((seconds%31536000)/86400)}日${Math.floor((seconds%86400)/3600)}时${Math.floor((seconds%3600)/60)}分${seconds%60}秒<br>合计${seconds}秒`;
-            }
+            try {
+                const seconds = gameData.totalOnlineSeconds;
+                if (elements.playtime) {
+                    elements.playtime.innerHTML =
+                        `${Math.floor(seconds/31536000)}年${Math.floor((seconds%31536000)/86400)}日${Math.floor((seconds%86400)/3600)}时${Math.floor((seconds%3600)/60)}分${seconds%60}秒<br>合计${seconds}秒`;
+                }
+            } catch (e) { console.warn('updatePlaytime error:', e); }
         }
 
         function updateChestTimer() {
-            let remaining = 300 - Math.floor((Date.now() - gameData.lastChestTime) / 1000);
-            if (remaining < 0) remaining = 0;
-            const m = Math.floor(remaining / 60);
-            const s = remaining % 60;
-            if (elements.chestTimer) elements.chestTimer.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+            try {
+                let remaining = 300 - Math.floor((Date.now() - gameData.lastChestTime) / 1000);
+                if (remaining < 0) remaining = 0;
+                const m = Math.floor(remaining / 60);
+                const s = remaining % 60;
+                if (elements.chestTimer) elements.chestTimer.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+            } catch (e) { console.warn('updateChestTimer error:', e); }
         }
 
         // ===== 初始化 =====
@@ -2456,6 +2451,7 @@
             updateStats();
             updateChestUI();
 
+            // ★ 合并后的主循环（每秒执行一次，包含所有更新）
             setInterval(() => {
                 try {
                     gameData.totalOnlineSeconds++;
@@ -2472,15 +2468,15 @@
                         }
                     }
                     updateStats();
-                } catch (e) { console.warn('Main loop error:', e); }
-            }, 1000);
-
-            setInterval(() => {
-                try {
                     updatePlaytime();
                     updateChestTimer();
-                } catch (e) { console.warn('UI update error:', e); }
+                } catch (e) {
+                    console.warn('Main loop error:', e);
+                }
             }, 1000);
+
+            // 保留单独的保存定时器（每5秒）
+            setInterval(saveGame, 5000);
 
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) { saveGame(); } else { processOfflineMining();
@@ -2489,8 +2485,6 @@
                     updateChestUI();
                     checkChestReward(); }
             });
-
-            setInterval(saveGame, 5000);
         }
 
         initGame();
