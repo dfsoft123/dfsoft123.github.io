@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* 样式完全保留原样，此处省略以节省篇幅，实际请保留完整样式 */
+        /* 样式完整保留，与用户原代码一致 */
         :root {
             --bg-dark: #050510;
             --bg-panel: rgba(16, 18, 38, 0.85);
@@ -1233,7 +1233,7 @@
                     <button class="action-btn exchange-btn" id="open-chest-modal-btn" style="width:100%;">📦 查看宝箱仓库</button>
                 </div>
 
-                <!-- 商店（名称改为“商店”） -->
+                <!-- 商店 -->
                 <div class="panel shop">
                     <h3 class="panel-title">商店</h3>
                     <div class="shop-items" id="shop-items"></div>
@@ -1272,6 +1272,7 @@
                         <div class="dmg-row"><span>等级增益</span> <input type="text" id="level-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row"><span>奖杯增益</span> <input type="text" id="trophy-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row"><span>信标增益</span> <input type="text" id="beacon-bonus" class="editable-debug" value="1.00x" disabled></div>
+                        <!-- ★ 修改：浇树增益使用 id="tree-bonus" 并强制刷新 -->
                         <div class="dmg-row" style="color: #00ff9d;"><span>浇树增益</span> <input type="text" id="tree-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row" style="color: #00ff9d;"><span>时间增益</span> <input type="text" id="time-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row" style="color: #00ff9d;"><span>奖励增益</span> <input type="text" id="special-bonus" class="editable-debug" value="1.00x" disabled></div>
@@ -1329,7 +1330,7 @@
         </div>
     </div>
 
-    <!-- ===== 宝箱仓库模态框（新增一键开启按钮） ===== -->
+    <!-- 宝箱仓库模态框 -->
     <div id="chest-modal" class="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeChestModal()">&times;</button>
@@ -1376,13 +1377,15 @@
                     <button class="action-btn" onclick="openChest('supreme')" id="chest-btn-supreme">开启</button>
                 </div>
             </div>
-            <!-- 一键开启全部 -->
             <button class="open-all-btn" id="open-all-chests-btn" onclick="openAllChests()">⚡ 一键开启全部</button>
             <div id="chest-reward-text">✨ 选择一个宝箱开启 ✨</div>
         </div>
     </div>
 
     <script>
+        // ============================================================
+        // 默认数据
+        // ============================================================
         const defaultData = {
             blocks: [
                 { name: '土块I', hp: 100, coins: 1, sqrtZone: 1 }, { name: '土块II', hp: 300, coins: 2, sqrtZone: 1 }, { name: '土块III', hp: 500, coins: 3, sqrtZone: 1 },
@@ -1446,6 +1449,7 @@
 
         const gameData = JSON.parse(JSON.stringify(defaultData));
 
+        // DOM 引用
         const elements = {};
         ['block-name', 'current-hp', 'max-hp', 'hp-bar', 'exp-bar', 'prev-block', 'next-block', 'block-display', 'auto-mine-btn',
             'auto-exchange-btn', 'auto-exchange-threshold', 'exchange-btn', 'damage-text-container', 'drop-info',
@@ -1460,11 +1464,14 @@
             'blocks-mined', 'shop-items', 'redeem-input', 'redeem-btn', 'research-inactive', 'research-active',
             'activate-research-btn', 'upgrade-energy-btn', 'energy-total', 'energy-speed', 'energy-bonus-stat',
             'energy-usage-stat', 'energy-tree-stat', 'chest-timer', 'open-chest-modal-btn', 'energy-upgrade-cost',
-            'energy-cost-display', 'open-all-chests-btn'
+            'energy-cost-display', 'open-all-chests-btn', 'tree-bonus'
         ].forEach(id => elements[id.replace(/-([a-z])/g, g => g[1].toUpperCase())] = document.getElementById(id));
 
         const lastStats = {};
 
+        // ============================================================
+        // 工具函数
+        // ============================================================
         function setStat(el, text) {
             if (!el) return;
             if (document.activeElement === el) return;
@@ -1491,7 +1498,6 @@
             const now = Date.now();
             if (!gameData.sqrtPower || gameData.sqrtPower < 1) gameData.sqrtPower = 1;
             if (!gameData.level || gameData.level < 1) gameData.level = 1;
-            // 强制确保 totalOnlineSeconds 为数字
             if (typeof gameData.totalOnlineSeconds !== 'number' || isNaN(gameData.totalOnlineSeconds)) gameData.totalOnlineSeconds = 0;
             if (!gameData.totalOnlineSeconds) gameData.totalOnlineSeconds = 0;
             if (!gameData.lastChestTime || isNaN(gameData.lastChestTime)) gameData.lastChestTime = now;
@@ -1517,6 +1523,38 @@
             gameData.researchInstituteActive = !!gameData.researchInstituteActive;
         }
 
+        // ============================================================
+        // 核心计算
+        // ============================================================
+        function calculateBeaconBonus() { return Math.pow(1 + gameData.beacon, 0.64); }
+
+        function calculateTimeBonus() {
+            if (!gameData.totalOnlineSeconds) gameData.totalOnlineSeconds = 0;
+            return gameData.totalOnlineSeconds < 160 ? 1 : Math.log(gameData.totalOnlineSeconds / 160) / Math.log(8);
+        }
+
+        // ★ 浇树增益公式（用户可在此修改）
+        function calculateTreeBonus() { return Math.pow(gameData.treeLevel, 0.4); }
+
+        function calculateEnergyBonus() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.22) : 1; }
+
+        function calculateEnergyUsageBonus() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.44) : 1; }
+
+        function calculateEnergyTreeExp() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.55) : 0; }
+
+        function calculateTotalDamage() {
+            if (!gameData.sqrtPower || gameData.sqrtPower < 1) gameData.sqrtPower = 1;
+            const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
+            const levelBonus = Math.pow(gameData.level, 0.5);
+            const trophyBonus = Math.pow(1 + gameData.trophies, 2 / 3);
+            const bonusProduct = pickaxe.damage * gameData.usageBonus * levelBonus * trophyBonus;
+            return Math.pow(bonusProduct, 1 / gameData.sqrtPower) * calculateBeaconBonus() * calculateTimeBonus() *
+                calculateTreeBonus() * gameData.specialBonus * calculateEnergyBonus();
+        }
+
+        // ============================================================
+        // 界面更新（★ 修复浇树增益显示）
+        // ============================================================
         function updateBlockDisplay() {
             const block = gameData.blocks[gameData.currentBlockIndex];
             elements.blockName.textContent = block.name;
@@ -1562,33 +1600,119 @@
             setTimeout(() => dt.remove(), 1000);
         }
 
-        function calculateBeaconBonus() { return Math.pow(1 + gameData.beacon, 0.64); }
+        // ★ 更新统计（强制刷新浇树增益）
+        function updateStats() {
+            try {
+                const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
+                if (elements.expBar) elements.expBar.style.width = (gameData.experience / Math.pow(gameData.level, 2)) *
+                    100 + '%';
+                if (elements.pickaxeName) elements.pickaxeName.textContent = pickaxe.name;
+                if (elements.pickaxeDamageValue) elements.pickaxeDamageValue.textContent = formatNumber(pickaxe.damage) +
+                    'x';
+                if (elements.pickaxeUsageValue) elements.pickaxeUsageValue.textContent = formatNumber(pickaxe.usage) +
+                    'x';
+                if (elements.pickaxeCoinsValue) elements.pickaxeCoinsValue.textContent = formatNumber(pickaxe.coins) +
+                    'x';
+                setStat(elements.pickaxeDamage, formatNumber(pickaxe.damage) + 'x');
+                setStat(elements.usageBonus, formatNumber(gameData.usageBonus) + 'x');
+                setStat(elements.usagePerDig, formatNumber(pickaxe.usage * calculateEnergyUsageBonus()) + 'x');
+                setStat(elements.dropMultiplierStat, formatNumber(gameData.dropMultiplier));
+                setStat(elements.levelBonus, formatNumber(Math.pow(gameData.level, 0.5)) + 'x');
+                setStat(elements.trophyBonus, formatNumber(Math.pow(1 + gameData.trophies, 2 / 3)) + 'x');
+                if (elements.beaconBonus) {
+                    setStat(elements.beaconBonus, formatNumber(calculateBeaconBonus()) + 'x');
+                    elements.beaconBonus.style.color = '#2ecc71';
+                }
 
-        function calculateTimeBonus() {
-            if (!gameData.totalOnlineSeconds) gameData.totalOnlineSeconds = 0;
-            return gameData.totalOnlineSeconds < 160 ? 1 : Math.log(gameData.totalOnlineSeconds / 160) / Math.log(8);
+                // ★★★ 关键修复：浇树增益直接强制刷新，绕过缓存 ★★★
+                if (elements.treeBonus) {
+                    const treeVal = calculateTreeBonus();
+                    const displayText = formatNumber(treeVal) + 'x';
+                    // 直接操作 DOM，不经过 setStat 缓存
+                    if (elements.treeBonus.tagName === 'INPUT') {
+                        elements.treeBonus.value = displayText;
+                    } else {
+                        elements.treeBonus.textContent = displayText;
+                    }
+                    elements.treeBonus.style.color = '#2ecc71';
+                    // 同时更新 lastStats 防止下一次 setStat 覆盖
+                    lastStats['tree-bonus'] = displayText;
+                }
+
+                if (elements.timeBonus) {
+                    setStat(elements.timeBonus, formatNumber(calculateTimeBonus()) + 'x');
+                    elements.timeBonus.style.color = '#2ecc71';
+                }
+                if (elements.specialBonus) {
+                    setStat(elements.specialBonus, formatNumber(gameData.specialBonus) + 'x');
+                    elements.specialBonus.style.color = '#2ecc71';
+                }
+                if (elements.energyBonus) {
+                    setStat(elements.energyBonus, formatNumber(calculateEnergyBonus()) + 'x');
+                    elements.energyBonus.style.color = '#2ecc71';
+                }
+                if (elements.totalDamage) elements.totalDamage.textContent = formatNumber(calculateTotalDamage());
+
+                const set = (el, val) => { if (el) setStat(el, formatNumber(val)); };
+                set(elements.level, gameData.level);
+                set(elements.experience, gameData.experience);
+                set(elements.coins, gameData.coins);
+                set(elements.trophies, gameData.trophies);
+                set(elements.amethyst, gameData.amethyst);
+                set(elements.copperIngot, gameData.copperIngot);
+                set(elements.blueObsidianFragment, gameData.blueObsidianFragment);
+                set(elements.redObsidianFragment, gameData.redObsidianFragment);
+                set(elements.redBlueCrystal, gameData.redBlueCrystal);
+                set(elements.bedrockFragment, gameData.bedrockFragment);
+                set(elements.obsidian, gameData.obsidian);
+                set(elements.netherStar, gameData.netherStar);
+                set(elements.glass, gameData.glass);
+                set(elements.kunKun, gameData.kunKun);
+                set(elements.earthCore, gameData.earthCore);
+                set(elements.woodCore, gameData.woodCore);
+                set(elements.fireCube, gameData.fireCube);
+                set(elements.waterCube, gameData.waterCube);
+                set(elements.goldCube, gameData.goldCube);
+                set(elements.fiveElementCrystal, gameData.fiveElementCrystal);
+                set(elements.jingCore, gameData.jingCore);
+                set(elements.elementChip, gameData.elementChip);
+                set(elements.matterX, gameData.matterX);
+                set(elements.matterY, gameData.matterY);
+                set(elements.matterZ, gameData.matterZ);
+
+                const tReq = 10 * gameData.treeLevel;
+                if (elements.treeLevel) elements.treeLevel.textContent = gameData.treeLevel;
+                if (elements.treeProgressBar) elements.treeProgressBar.style.width = (gameData.treeExperience / tReq) *
+                    100 + '%';
+                if (elements.treeExperience) elements.treeExperience.textContent = formatNumber(gameData.treeExperience);
+                if (elements.treeExperienceRequired) elements.treeExperienceRequired.textContent = formatNumber(tReq);
+                if (elements.digCount) elements.digCount.textContent = formatNumber(gameData.digCount);
+                if (elements.blocksMined) elements.blocksMined.textContent = formatNumber(gameData.blocksMined);
+
+                if (gameData.researchInstituteActive) {
+                    if (elements.researchInactive) elements.researchInactive.style.display = 'none';
+                    if (elements.researchActive) elements.researchActive.style.display = 'block';
+                    setStat(elements.energyTotal, formatNumber(gameData.energy));
+                    setStat(elements.energySpeed, formatNumber(gameData.energyProductionSpeed) + '/秒');
+                    setStat(elements.energyUpgradeCost, formatNumber(gameData.energyUpgradeCost));
+                    if (elements.energyCostDisplay) elements.energyCostDisplay.textContent = formatNumber(gameData
+                        .energyUpgradeCost);
+                    setStat(elements.energyBonusStat, formatNumber(calculateEnergyBonus()) + 'x');
+                    setStat(elements.energyUsageStat, formatNumber(calculateEnergyUsageBonus()) + 'x');
+                    setStat(elements.energyTreeStat, formatNumber(calculateEnergyTreeExp()) + '/秒');
+                    if (elements.upgradeEnergyBtn) {
+                        elements.upgradeEnergyBtn.disabled = gameData.energy < gameData.energyUpgradeCost;
+                    }
+                } else {
+                    if (elements.researchInactive) elements.researchInactive.style.display = 'block';
+                    if (elements.researchActive) elements.researchActive.style.display = 'none';
+                }
+            } catch (e) { console.warn('updateStats error:', e); }
         }
 
-        function calculateTreeBonus() { return Math.pow(gameData.treeLevel, 0.4); }
-
-        function calculateEnergyBonus() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.22) : 1; }
-
-        function calculateEnergyUsageBonus() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.44) :
-            1; }
-
-        function calculateEnergyTreeExp() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.55) :
-            0; }
-
-        function calculateTotalDamage() {
-            if (!gameData.sqrtPower || gameData.sqrtPower < 1) gameData.sqrtPower = 1;
-            const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
-            const levelBonus = Math.pow(gameData.level, 0.5);
-            const trophyBonus = Math.pow(1 + gameData.trophies, 2 / 3);
-            const bonusProduct = pickaxe.damage * gameData.usageBonus * levelBonus * trophyBonus;
-            return Math.pow(bonusProduct, 1 / gameData.sqrtPower) * calculateBeaconBonus() * calculateTimeBonus() *
-                calculateTreeBonus() * gameData.specialBonus * calculateEnergyBonus();
-        }
-
+        // ============================================================
+        // 浇树与合成
+        // ============================================================
         function waterTree() {
             if (gameData.waterCube < 1) return;
             gameData.waterCube--;
@@ -1653,7 +1777,9 @@
             }
         }
 
-        // ===== 挖掘核心 =====
+        // ============================================================
+        // 挖矿核心
+        // ============================================================
         function dig(silent = false) {
             const block = gameData.blocks[gameData.currentBlockIndex];
             const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
@@ -1784,207 +1910,9 @@
                     gameData.level, 2);
                 gameData.level++; } }
 
-        // ===== 更新统计（包含浇树增益） =====
-        function updateStats() {
-            try {
-                const pickaxe = gameData.pickaxes[gameData.currentPickaxeIndex];
-                if (elements.expBar) elements.expBar.style.width = (gameData.experience / Math.pow(gameData.level, 2)) *
-                    100 + '%';
-                if (elements.pickaxeName) elements.pickaxeName.textContent = pickaxe.name;
-                if (elements.pickaxeDamageValue) elements.pickaxeDamageValue.textContent = formatNumber(pickaxe.damage) +
-                    'x';
-                if (elements.pickaxeUsageValue) elements.pickaxeUsageValue.textContent = formatNumber(pickaxe.usage) +
-                    'x';
-                if (elements.pickaxeCoinsValue) elements.pickaxeCoinsValue.textContent = formatNumber(pickaxe.coins) +
-                    'x';
-                setStat(elements.pickaxeDamage, formatNumber(pickaxe.damage) + 'x');
-                setStat(elements.usageBonus, formatNumber(gameData.usageBonus) + 'x');
-                setStat(elements.usagePerDig, formatNumber(pickaxe.usage * calculateEnergyUsageBonus()) + 'x');
-                setStat(elements.dropMultiplierStat, formatNumber(gameData.dropMultiplier));
-                setStat(elements.levelBonus, formatNumber(Math.pow(gameData.level, 0.5)) + 'x');
-                setStat(elements.trophyBonus, formatNumber(Math.pow(1 + gameData.trophies, 2 / 3)) + 'x');
-                if (elements.beaconBonus) {
-                    setStat(elements.beaconBonus, formatNumber(calculateBeaconBonus()) + 'x');
-                    elements.beaconBonus.style.color = '#2ecc71';
-                }
-                if (elements.treeBonus) {
-                    const treeBonusVal = calculateTreeBonus();
-                    setStat(elements.treeBonus, formatNumber(treeBonusVal) + 'x');
-                    elements.treeBonus.style.color = '#2ecc71';
-                }
-                if (elements.timeBonus) {
-                    setStat(elements.timeBonus, formatNumber(calculateTimeBonus()) + 'x');
-                    elements.timeBonus.style.color = '#2ecc71';
-                }
-                if (elements.specialBonus) {
-                    setStat(elements.specialBonus, formatNumber(gameData.specialBonus) + 'x');
-                    elements.specialBonus.style.color = '#2ecc71';
-                }
-                if (elements.energyBonus) {
-                    setStat(elements.energyBonus, formatNumber(calculateEnergyBonus()) + 'x');
-                    elements.energyBonus.style.color = '#2ecc71';
-                }
-                if (elements.totalDamage) elements.totalDamage.textContent = formatNumber(calculateTotalDamage());
-
-                const set = (el, val) => { if (el) setStat(el, formatNumber(val)); };
-                set(elements.level, gameData.level);
-                set(elements.experience, gameData.experience);
-                set(elements.coins, gameData.coins);
-                set(elements.trophies, gameData.trophies);
-                set(elements.amethyst, gameData.amethyst);
-                set(elements.copperIngot, gameData.copperIngot);
-                set(elements.blueObsidianFragment, gameData.blueObsidianFragment);
-                set(elements.redObsidianFragment, gameData.redObsidianFragment);
-                set(elements.redBlueCrystal, gameData.redBlueCrystal);
-                set(elements.bedrockFragment, gameData.bedrockFragment);
-                set(elements.obsidian, gameData.obsidian);
-                set(elements.netherStar, gameData.netherStar);
-                set(elements.glass, gameData.glass);
-                set(elements.kunKun, gameData.kunKun);
-                set(elements.earthCore, gameData.earthCore);
-                set(elements.woodCore, gameData.woodCore);
-                set(elements.fireCube, gameData.fireCube);
-                set(elements.waterCube, gameData.waterCube);
-                set(elements.goldCube, gameData.goldCube);
-                set(elements.fiveElementCrystal, gameData.fiveElementCrystal);
-                set(elements.jingCore, gameData.jingCore);
-                set(elements.elementChip, gameData.elementChip);
-                set(elements.matterX, gameData.matterX);
-                set(elements.matterY, gameData.matterY);
-                set(elements.matterZ, gameData.matterZ);
-
-                const tReq = 10 * gameData.treeLevel;
-                if (elements.treeLevel) elements.treeLevel.textContent = gameData.treeLevel;
-                if (elements.treeProgressBar) elements.treeProgressBar.style.width = (gameData.treeExperience / tReq) *
-                    100 + '%';
-                if (elements.treeExperience) elements.treeExperience.textContent = formatNumber(gameData.treeExperience);
-                if (elements.treeExperienceRequired) elements.treeExperienceRequired.textContent = formatNumber(tReq);
-                if (elements.digCount) elements.digCount.textContent = formatNumber(gameData.digCount);
-                if (elements.blocksMined) elements.blocksMined.textContent = formatNumber(gameData.blocksMined);
-
-                if (gameData.researchInstituteActive) {
-                    if (elements.researchInactive) elements.researchInactive.style.display = 'none';
-                    if (elements.researchActive) elements.researchActive.style.display = 'block';
-                    setStat(elements.energyTotal, formatNumber(gameData.energy));
-                    setStat(elements.energySpeed, formatNumber(gameData.energyProductionSpeed) + '/秒');
-                    setStat(elements.energyUpgradeCost, formatNumber(gameData.energyUpgradeCost));
-                    if (elements.energyCostDisplay) elements.energyCostDisplay.textContent = formatNumber(gameData
-                        .energyUpgradeCost);
-                    setStat(elements.energyBonusStat, formatNumber(calculateEnergyBonus()) + 'x');
-                    setStat(elements.energyUsageStat, formatNumber(calculateEnergyUsageBonus()) + 'x');
-                    setStat(elements.energyTreeStat, formatNumber(calculateEnergyTreeExp()) + '/秒');
-                    if (elements.upgradeEnergyBtn) {
-                        elements.upgradeEnergyBtn.disabled = gameData.energy < gameData.energyUpgradeCost;
-                    }
-                } else {
-                    if (elements.researchInactive) elements.researchInactive.style.display = 'block';
-                    if (elements.researchActive) elements.researchActive.style.display = 'none';
-                }
-            } catch (e) { console.warn('updateStats error:', e); }
-        }
-
-        // ===== 兑换码 =====
-        function redeemCode() {
-            const code = elements.redeemInput.value.trim();
-            const codes = { '姚俊希220': 2.2, '七八九幺十三一六九': 7.8, '67676767': 67.67 };
-            if (code === 'dfsoft67676767676767676767') {
-                if (!gameData.usedRedeemCodes.includes(code)) {
-                    gameData.usedRedeemCodes.push(code);
-                    gameData.debugEnabled = true;
-                    toggleDebugMode(true);
-                    alert('🔓 调试模式已开启！现在可编辑所有蓝色数值，包括能量和镐子数量。');
-                } else { alert('该兑换码已使用！'); }
-            } else if (codes[code]) {
-                if (!gameData.usedRedeemCodes.includes(code)) {
-                    gameData.usedRedeemCodes.push(code);
-                    gameData.specialBonus += codes[code];
-                    alert(`兑换成功！奖励增益增加 ${codes[code]}，当前为 ${gameData.specialBonus}`);
-                    updateStats();
-                    saveGame();
-                } else { alert('该兑换码已使用！'); }
-            } else { alert('无效的兑换码！'); }
-            elements.redeemInput.value = '';
-        }
-
-        function toggleDebugMode(enabled) {
-            document.querySelectorAll('.editable-debug').forEach(input => {
-                input.disabled = !enabled;
-                if (enabled) {
-                    input.style.borderBottom = '1px dashed var(--neon-blue)';
-                    input.style.cursor = 'text';
-                } else {
-                    input.style.borderBottom = 'none';
-                    input.style.cursor = 'default';
-                }
-            });
-            document.querySelectorAll('.shop-item-count input').forEach(inp => {
-                inp.disabled = !enabled;
-                if (enabled) {
-                    inp.style.border = '1px solid var(--neon-blue)';
-                    inp.style.color = 'var(--neon-blue)';
-                    inp.style.background = 'rgba(0,0,0,0.4)';
-                } else {
-                    inp.style.border = 'none';
-                    inp.style.color = 'var(--neon-gold)';
-                    inp.style.background = 'transparent';
-                }
-            });
-        }
-
-        function setupDebugInputs() {
-            document.querySelectorAll('.editable-debug').forEach(input => {
-                input.addEventListener('change', (e) => {
-                    const id = e.target.id;
-                    let val = parseFloat(e.target.value.replace('x', '').replace('/秒', '').trim());
-                    if (isNaN(val)) return;
-                    const map = {
-                        'level': 'level',
-                        'experience': 'experience',
-                        'coins': 'coins',
-                        'trophies': 'trophies',
-                        'amethyst': 'amethyst',
-                        'copper-ingot': 'copperIngot',
-                        'blue-obsidian-fragment': 'blueObsidianFragment',
-                        'red-obsidian-fragment': 'redObsidianFragment',
-                        'red-blue-crystal': 'redBlueCrystal',
-                        'bedrock-fragment': 'bedrockFragment',
-                        'obsidian': 'obsidian',
-                        'nether-star': 'netherStar',
-                        'glass': 'glass',
-                        'kun-kun': 'kunKun',
-                        'earth-core': 'earthCore',
-                        'wood-core': 'woodCore',
-                        'fire-cube': 'fireCube',
-                        'water-cube': 'waterCube',
-                        'gold-cube': 'goldCube',
-                        'five-element-crystal': 'fiveElementCrystal',
-                        'jing-core': 'jingCore',
-                        'element-chip': 'elementChip',
-                        'matter-x': 'matterX',
-                        'matter-y': 'matterY',
-                        'matter-z': 'matterZ',
-                        'pickaxe-damage': 'pickaxe.damage',
-                        'usage-bonus': 'usageBonus',
-                        'special-bonus': 'specialBonus',
-                        'drop-multiplier-stat': 'dropMultiplier',
-                        'energy-total': 'energy',
-                        'energy-speed': 'energyProductionSpeed',
-                        'energy-upgrade-cost': 'energyUpgradeCost',
-                        'level-bonus': 'level=Math.pow(val,2)',
-                        'trophy-bonus': 'trophies=Math.max(0,Math.pow(val,1.5)-1)',
-                        'beacon-bonus': 'beacon=Math.max(0,Math.pow(val,1/0.64)-1)',
-                        'tree-bonus': 'treeLevel=Math.max(1,Math.floor(Math.pow(val,2.5)))',
-                        'time-bonus': 'originalStartTime=Date.now()-(160*Math.pow(8,val)*1000)',
-                        'energy-bonus': 'energy=Math.max(0,Math.pow(val,1/0.22))'
-                    };
-                    if (id in map) { try { eval(`gameData.${map[id]} = val;`); } catch (e) {} }
-                    updateStats();
-                    saveGame();
-                });
-            });
-        }
-
-        // ===== 商店 =====
+        // ============================================================
+        // 商店
+        // ============================================================
         function initShop() {
             elements.shopItems.innerHTML = '';
             gameData.pickaxes.forEach((pickaxe, index) => {
@@ -2130,7 +2058,9 @@
 
         window.closeChestModal = () => document.getElementById('chest-modal').style.display = 'none';
 
-        // ===== 宝箱系统（增加 silent 参数和 openAllChests） =====
+        // ============================================================
+        // 宝箱系统（★ 修改返回值结构，支持汇总）
+        // ============================================================
         function updateChestUI() {
             const counts = {
                 normal: gameData.chests.normal || 0,
@@ -2164,6 +2094,7 @@
             }
         }
 
+        // ★ 返回结构化奖励对象 { category, amount, display }
         function openChest(type, silent = false) {
             const rewardEl = document.getElementById('chest-reward-text');
             if (gameData.chests[type] <= 0) {
@@ -2173,55 +2104,49 @@
             gameData.chests[type]--;
 
             const rand = Math.random() * 100;
-            let rewardText = '',
-                rewardIcon = '🎁';
+            let reward = { category: '', amount: 0, display: '' };
+
             if (type === 'normal') {
                 if (rand < 50) { gameData.specialBonus += 0.1;
-                    rewardText = '0.1 奖励增益';
-                    rewardIcon = '📈'; } else if (rand < 80) { gameData.specialBonus += 0.5;
-                    rewardText = '0.5 奖励增益';
-                    rewardIcon = '📈'; } else if (rand < 95) { gameData.usageBonus += 1000;
-                    rewardText = '1000 次使用增益';
-                    rewardIcon = '⚡'; } else if (rand < 97.5) { gameData.beacon += 1;
-                    rewardText = '1 信标';
-                    rewardIcon = '🔮'; } else { gameData.treeLevel += 1;
-                    rewardText = '树等级 +1';
-                    rewardIcon = '🌳'; }
+                    reward = { category: 'specialBonus', amount: 0.1, display: '奖励增益 +0.1' }; } else if (rand < 80) {
+                    gameData.specialBonus += 0.5;
+                    reward = { category: 'specialBonus', amount: 0.5, display: '奖励增益 +0.5' }; } else if (rand < 95) {
+                    gameData.usageBonus += 1000;
+                    reward = { category: 'usageBonus', amount: 1000, display: '使用增益 +1000' }; } else if (rand < 97.5) {
+                    gameData.beacon += 1;
+                    reward = { category: 'beacon', amount: 1, display: '信标 +1' }; } else { gameData.treeLevel += 1;
+                    reward = { category: 'treeLevel', amount: 1, display: '树等级 +1' }; }
             } else if (type === 'golden') {
                 if (rand < 50) { gameData.specialBonus += 0.5;
-                    rewardText = '0.5 奖励增益';
-                    rewardIcon = '📈'; } else if (rand < 75) { gameData.specialBonus += 1;
-                    rewardText = '1 奖励增益';
-                    rewardIcon = '📈'; } else if (rand < 90) { gameData.usageBonus += 3000;
-                    rewardText = '3000 次使用增益';
-                    rewardIcon = '⚡'; } else if (rand < 95) { gameData.beacon += 3;
-                    rewardText = '3 信标';
-                    rewardIcon = '🔮'; } else { gameData.treeLevel += 3;
-                    rewardText = '树等级 +3';
-                    rewardIcon = '🌳'; }
+                    reward = { category: 'specialBonus', amount: 0.5, display: '奖励增益 +0.5' }; } else if (rand < 75) {
+                    gameData.specialBonus += 1;
+                    reward = { category: 'specialBonus', amount: 1, display: '奖励增益 +1' }; } else if (rand < 90) {
+                    gameData.usageBonus += 3000;
+                    reward = { category: 'usageBonus', amount: 3000, display: '使用增益 +3000' }; } else if (rand < 95) {
+                    gameData.beacon += 3;
+                    reward = { category: 'beacon', amount: 3, display: '信标 +3' }; } else { gameData.treeLevel += 3;
+                    reward = { category: 'treeLevel', amount: 3, display: '树等级 +3' }; }
             } else if (type === 'diamond') {
                 if (rand < 50) { gameData.specialBonus += 5;
-                    rewardText = '5 奖励增益';
-                    rewardIcon = '📈'; } else if (rand < 75) { gameData.usageBonus += 10000;
-                    rewardText = '10000 次使用增益';
-                    rewardIcon = '⚡'; } else if (rand < 85) { gameData.beacon += 25;
-                    rewardText = '25 信标';
-                    rewardIcon = '🔮'; } else if (rand < 95) { gameData.treeLevel += 25;
-                    rewardText = '树等级 +25';
-                    rewardIcon = '🌳'; } else { gameData.dropMultiplier += 1;
-                    rewardText = '掉落倍率 +1';
-                    rewardIcon = '✨'; }
+                    reward = { category: 'specialBonus', amount: 5, display: '奖励增益 +5' }; } else if (rand < 75) {
+                    gameData.usageBonus += 10000;
+                    reward = { category: 'usageBonus', amount: 10000, display: '使用增益 +10000' }; } else if (rand < 85) {
+                    gameData.beacon += 25;
+                    reward = { category: 'beacon', amount: 25, display: '信标 +25' }; } else if (rand < 95) { gameData
+                        .treeLevel += 25;
+                    reward = { category: 'treeLevel', amount: 25, display: '树等级 +25' }; } else { gameData.dropMultiplier +=
+                        1;
+                    reward = { category: 'dropMultiplier', amount: 1, display: '掉落倍率 +1' }; }
             } else if (type === 'supreme') {
                 if (rand < 40) { gameData.specialBonus += 67;
-                    rewardText = '67 奖励增益';
-                    rewardIcon = '📈'; } else if (rand < 70) { gameData.usageBonus += 67000;
-                    rewardText = '67000 次使用增益';
-                    rewardIcon = '⚡'; } else if (rand < 85) { gameData.beacon += 200;
+                    reward = { category: 'specialBonus', amount: 67, display: '奖励增益 +67' }; } else if (rand < 70) {
+                    gameData.usageBonus += 67000;
+                    reward = { category: 'usageBonus', amount: 67000, display: '使用增益 +67000' }; } else if (rand < 85) {
+                    gameData.beacon += 200;
                     gameData.treeLevel += 200;
-                    rewardText = '200 信标 + 树等级 +200';
-                    rewardIcon = '🔮'; } else { gameData.dropMultiplier += 3;
-                    rewardText = '掉落倍率 +3';
-                    rewardIcon = '✨'; }
+                    reward = { category: 'beacon_tree', amount: 200, display: '信标 +200 树等级 +200' }; } else { gameData
+                        .dropMultiplier += 3;
+                    reward = { category: 'dropMultiplier', amount: 3, display: '掉落倍率 +3' }; }
             }
 
             if (!silent) {
@@ -2246,7 +2171,7 @@
                 }
                 rewardEl.className = 'reward-pop';
                 rewardEl.innerHTML =
-                `<span class="reward-icon">${rewardIcon}</span> 恭喜获得: <span class="reward-amount">${rewardText}</span>`;
+                    `<span class="reward-icon">🎁</span> 恭喜获得: <span class="reward-amount">${reward.display}</span>`;
                 clearTimeout(window.chestRewardTimeout);
                 window.chestRewardTimeout = setTimeout(() => {
                     rewardEl.innerHTML = '✨ 选择一个宝箱开启 ✨';
@@ -2258,35 +2183,67 @@
             updateStats();
             updateShopButtons();
             saveGame();
-            return rewardText;
+            return reward;
         }
 
+        // ★ 一键开启全部宝箱 —— 汇总显示每种奖励的总量
         function openAllChests() {
             const rewardEl = document.getElementById('chest-reward-text');
             const types = ['normal', 'golden', 'diamond', 'supreme'];
-            let totalOpened = 0;
-            let rewards = [];
+
+            // 统计总数量
             let total = 0;
             types.forEach(t => total += gameData.chests[t]);
             if (total === 0) {
                 rewardEl.innerHTML = '❌ 没有可开启的宝箱！';
                 return;
             }
+
+            // 汇总容器
+            const totals = {
+                specialBonus: 0,
+                usageBonus: 0,
+                beacon: 0,
+                treeLevel: 0,
+                dropMultiplier: 0
+            };
+
+            let totalOpened = 0;
             for (const type of types) {
                 while (gameData.chests[type] > 0) {
-                    const reward = openChest(type, true);
-                    if (reward) {
-                        rewards.push(reward);
+                    const r = openChest(type, true);
+                    if (r && r.category) {
                         totalOpened++;
+                        // 累加汇总
+                        if (r.category === 'specialBonus') totals.specialBonus += r.amount;
+                        else if (r.category === 'usageBonus') totals.usageBonus += r.amount;
+                        else if (r.category === 'beacon') totals.beacon += r.amount;
+                        else if (r.category === 'treeLevel') totals.treeLevel += r.amount;
+                        else if (r.category === 'dropMultiplier') totals.dropMultiplier += r.amount;
+                        else if (r.category === 'beacon_tree') {
+                            totals.beacon += r.amount;
+                            totals.treeLevel += r.amount;
+                        }
                     } else break;
                 }
             }
+
+            // 生成汇总文本（只显示有获得的部分）
+            const parts = [];
+            if (totals.specialBonus > 0) parts.push(`奖励增益 +${formatNumber(totals.specialBonus)}`);
+            if (totals.usageBonus > 0) parts.push(`使用增益 +${formatNumber(totals.usageBonus)}`);
+            if (totals.beacon > 0) parts.push(`信标 +${formatNumber(totals.beacon)}`);
+            if (totals.treeLevel > 0) parts.push(`树等级 +${formatNumber(totals.treeLevel)}`);
+            if (totals.dropMultiplier > 0) parts.push(`掉落倍率 +${formatNumber(totals.dropMultiplier)}`);
+
             rewardEl.className = 'reward-pop';
-            rewardEl.innerHTML = `🎉 共开启 ${totalOpened} 个宝箱！<br>获得: ${rewards.join('、')}`;
+            rewardEl.innerHTML = `🎉 共开启 ${totalOpened} 个宝箱！<br>获得：${parts.join('、')}`;
+
             updateChestUI();
             updateStats();
             updateShopButtons();
             saveGame();
+
             clearTimeout(window.chestRewardTimeout);
             window.chestRewardTimeout = setTimeout(() => {
                 rewardEl.innerHTML = '✨ 选择一个宝箱开启 ✨';
@@ -2294,7 +2251,112 @@
             }, 8000);
         }
 
-        // ===== 保存与加载 =====
+        // ============================================================
+        // 兑换码 & 调试
+        // ============================================================
+        function redeemCode() {
+            const code = elements.redeemInput.value.trim();
+            const codes = { '姚俊希220': 2.2, '七八九幺十三一六九': 7.8, '67676767': 67.67 };
+            if (code === 'dfsoft67676767676767676767') {
+                if (!gameData.usedRedeemCodes.includes(code)) {
+                    gameData.usedRedeemCodes.push(code);
+                    gameData.debugEnabled = true;
+                    toggleDebugMode(true);
+                    alert('🔓 调试模式已开启！现在可编辑所有蓝色数值，包括能量和镐子数量。');
+                } else { alert('该兑换码已使用！'); }
+            } else if (codes[code]) {
+                if (!gameData.usedRedeemCodes.includes(code)) {
+                    gameData.usedRedeemCodes.push(code);
+                    gameData.specialBonus += codes[code];
+                    alert(`兑换成功！奖励增益增加 ${codes[code]}，当前为 ${gameData.specialBonus}`);
+                    updateStats();
+                    saveGame();
+                } else { alert('该兑换码已使用！'); }
+            } else { alert('无效的兑换码！'); }
+            elements.redeemInput.value = '';
+        }
+
+        function toggleDebugMode(enabled) {
+            document.querySelectorAll('.editable-debug').forEach(input => {
+                input.disabled = !enabled;
+                if (enabled) {
+                    input.style.borderBottom = '1px dashed var(--neon-blue)';
+                    input.style.cursor = 'text';
+                } else {
+                    input.style.borderBottom = 'none';
+                    input.style.cursor = 'default';
+                }
+            });
+            document.querySelectorAll('.shop-item-count input').forEach(inp => {
+                inp.disabled = !enabled;
+                if (enabled) {
+                    inp.style.border = '1px solid var(--neon-blue)';
+                    inp.style.color = 'var(--neon-blue)';
+                    inp.style.background = 'rgba(0,0,0,0.4)';
+                } else {
+                    inp.style.border = 'none';
+                    inp.style.color = 'var(--neon-gold)';
+                    inp.style.background = 'transparent';
+                }
+            });
+        }
+
+        function setupDebugInputs() {
+            document.querySelectorAll('.editable-debug').forEach(input => {
+                input.addEventListener('change', (e) => {
+                    const id = e.target.id;
+                    let val = parseFloat(e.target.value.replace('x', '').replace('/秒', '').trim());
+                    if (isNaN(val)) return;
+                    const map = {
+                        'level': 'level',
+                        'experience': 'experience',
+                        'coins': 'coins',
+                        'trophies': 'trophies',
+                        'amethyst': 'amethyst',
+                        'copper-ingot': 'copperIngot',
+                        'blue-obsidian-fragment': 'blueObsidianFragment',
+                        'red-obsidian-fragment': 'redObsidianFragment',
+                        'red-blue-crystal': 'redBlueCrystal',
+                        'bedrock-fragment': 'bedrockFragment',
+                        'obsidian': 'obsidian',
+                        'nether-star': 'netherStar',
+                        'glass': 'glass',
+                        'kun-kun': 'kunKun',
+                        'earth-core': 'earthCore',
+                        'wood-core': 'woodCore',
+                        'fire-cube': 'fireCube',
+                        'water-cube': 'waterCube',
+                        'gold-cube': 'goldCube',
+                        'five-element-crystal': 'fiveElementCrystal',
+                        'jing-core': 'jingCore',
+                        'element-chip': 'elementChip',
+                        'matter-x': 'matterX',
+                        'matter-y': 'matterY',
+                        'matter-z': 'matterZ',
+                        'pickaxe-damage': 'pickaxe.damage',
+                        'usage-bonus': 'usageBonus',
+                        'special-bonus': 'specialBonus',
+                        'drop-multiplier-stat': 'dropMultiplier',
+                        'energy-total': 'energy',
+                        'energy-speed': 'energyProductionSpeed',
+                        'energy-upgrade-cost': 'energyUpgradeCost',
+                        'level-bonus': 'level=Math.pow(val,2)',
+                        'trophy-bonus': 'trophies=Math.max(0,Math.pow(val,1.5)-1)',
+                        'beacon-bonus': 'beacon=Math.max(0,Math.pow(val,1/0.64)-1)',
+                        'tree-bonus': 'treeLevel=Math.max(1,Math.floor(Math.pow(val,2.5)))',
+                        'time-bonus': 'originalStartTime=Date.now()-(160*Math.pow(8,val)*1000)',
+                        'energy-bonus': 'energy=Math.max(0,Math.pow(val,1/0.22))'
+                    };
+                    if (id in map) { try { eval(`gameData.${map[id]} = val;`); } catch (e) {} }
+                    updateStats();
+                    saveGame();
+                });
+            });
+        }
+
+        // ============================================================
+        // 保存 & 加载
+        // ============================================================
         function saveGame() {
             try {
                 fixNanData();
@@ -2388,7 +2450,9 @@
             } catch (e) { console.warn('updateChestTimer error:', e); }
         }
 
-        // ===== 初始化 =====
+        // ============================================================
+        // 初始化
+        // ============================================================
         function initGame() {
             loadGame();
             elements.prevBlock.addEventListener('click', () => changeBlock(-1));
@@ -2451,7 +2515,6 @@
             updateStats();
             updateChestUI();
 
-            // ★ 合并后的主循环（每秒执行一次，包含所有更新）
             setInterval(() => {
                 try {
                     gameData.totalOnlineSeconds++;
@@ -2475,7 +2538,6 @@
                 }
             }, 1000);
 
-            // 保留单独的保存定时器（每5秒）
             setInterval(saveGame, 5000);
 
             document.addEventListener('visibilitychange', () => {
