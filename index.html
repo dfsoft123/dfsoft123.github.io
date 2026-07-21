@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>升级你的镐子 α0.4</title>
+    <title>升级你的镐子 α0.41</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
@@ -199,7 +199,7 @@
     <div class="game-container">
         <div class="top-bar">
             <span class="game-title">⚡ 升级你的镐子</span>
-            <span class="game-version">α0.4</span>
+            <span class="game-version">α0.41</span>
             <div class="slot-bar">
                 <span class="slot-label">📁 存档</span>
                 <div class="slot-group" id="slot-group-1">
@@ -275,6 +275,10 @@
                         <div class="stat-item"><span class="stat-label">物质X</span><input type="text" id="matter-x" class="stat-value editable-debug" value="0" disabled></div>
                         <div class="stat-item"><span class="stat-label">物质Y</span><input type="text" id="matter-y" class="stat-value editable-debug" value="0" disabled></div>
                         <div class="stat-item"><span class="stat-label">物质Z</span><input type="text" id="matter-z" class="stat-value editable-debug" value="0" disabled></div>
+                        <!-- ★ 机械零件 -->
+                        <div class="stat-item special-item"><span class="stat-label">机械零件</span><input type="text" id="mechanical-parts" class="stat-value editable-debug" value="0" disabled></div>
+                        <!-- ★ 机械镐等级 -->
+                        <div class="stat-item special-item"><span class="stat-label">机械镐等级</span><input type="text" id="mechanical-pickaxe-level" class="stat-value editable-debug" value="0" disabled></div>
                     </div>
                     <div class="exp-bar-container"><div class="exp-bar" id="exp-bar"></div></div>
                     <div class="sqrt-control">
@@ -317,7 +321,6 @@
                         <div class="dmg-row"><span>镐子增益</span> <input type="text" id="pickaxe-damage" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row"><span>使用增益</span> <input type="text" id="usage-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row" style="color:#bc13fe;"><span>每镐使用</span> <span id="usage-per-dig">0.00x</span></div>
-                        <!-- ★ 使用倍率改为可编辑输入框（调试模式可修改） -->
                         <div class="dmg-row usage-multiplier-row" style="color:var(--neon-blue);"><span>使用倍率</span> <input type="text" id="usage-multiplier-display" class="editable-debug" value="1.00x" disabled style="color:var(--neon-blue);width:90px;text-align:right;font-weight:700;background:transparent;border:none;outline:none;"></div>
                         <div class="dmg-row"><span>等级增益</span> <input type="text" id="level-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row"><span>奖杯增益</span> <input type="text" id="trophy-bonus" class="editable-debug" value="1.00x" disabled></div>
@@ -429,7 +432,7 @@
     </div>
     <script>
         // ============================================================
-        // 默认数据
+        // 默认数据（包含机械零件和机械镐）
         // ============================================================
         const defaultData = {
             blocks: [
@@ -465,6 +468,8 @@
                 { name:'物质X', hp:1e24, coins:1e8, drop:'matterX', sqrtZone:2 },
                 { name:'物质Y', hp:1e24, coins:1e8, drop:'matterY', sqrtZone:2 },
                 { name:'物质Z', hp:1e24, coins:1e8, drop:'matterZ', sqrtZone:2 },
+                // ★ 新增：机械零件
+                { name:'机械零件', hp:1e28, coins:1e9, drop:'mechanicalParts', dropAmount:1, dropChance:100, sqrtZone:2 },
                 { name:'玻璃2.0', hp:4e9, coins:1e7, drop:'glass', sqrtZone:3 },
                 { name:'土核心', hp:1e10, coins:1.5e7, drop:'earthCore', sqrtZone:3 },
                 { name:'木核心', hp:1.5e10, coins:2e7, drop:'woodCore', sqrtZone:3 },
@@ -514,12 +519,17 @@
                 { name:'五行镐', damage:1e10, usage:15, coins:5, count:0, isCraftable:true, recipe:{'土核心镐':1,'木核心镐':1,'火立方镐':1,'水立方镐':1,'金立方镐':1,'五行结晶':10} },
                 { name:'京镐', damage:2e10, usage:16, coins:5.4, count:0, isCraftable:true, recipe:{'五行镐':1,'京核':32} },
                 { name:'元素镐', damage:5e10, usage:20, coins:6.4, count:0, isCraftable:true, recipe:{'元素晶片':1000} },
-                { name:'信标', type:'item', count:0, isCraftable:true, recipe:{'黑曜石':3,'玻璃':5,'下界之星':1} }
+                { name:'信标', type:'item', count:0, isCraftable:true, recipe:{'黑曜石':3,'玻璃':5,'下界之星':1} },
+                // ★ 机械镐（占位，属性动态计算）
+                { name:'机械镐', damage:0, usage:0, coins:0, count:0, isMechanical:true, isCraftable:false }
             ],
             currentBlockIndex:0, currentPickaxeIndex:0, coins:0, trophies:0, amethyst:0, copperIngot:0,
             blueObsidianFragment:0, redObsidianFragment:0, redBlueCrystal:0, bedrockFragment:0, obsidian:0,
             netherStar:0, glass:0, kunKun:0, earthCore:0, woodCore:0, fireCube:0, waterCube:0, goldCube:0,
             fiveElementCrystal:0, jingCore:0, elementChip:0, matterX:0, matterY:0, matterZ:0, beacon:0,
+            mechanicalParts:0,
+            mechanicalPickaxeLevel:0,
+            mechanicalPickaxeUpgradeCost:1,
             level:1, experience:0, usageBonus:1, specialBonus:1, digCount:0, blocksMined:0, dropMultiplier:1,
             treeLevel:1, treeExperience:0, autoMine:false, autoExchange:false, autoExchangeThreshold:1000,
             startTime:Date.now(), originalStartTime:Date.now(), lastOnlineTime:Date.now(), currentHp:100, totalOnlineSeconds:0,
@@ -537,6 +547,37 @@
         function getSlotKey(s){ return SLOT_KEY_PREFIX+s; }
         function deepClone(o){ return JSON.parse(JSON.stringify(o)); }
 
+        // 机械镐属性函数
+        function getMechanicalDamage(){
+            if(!gameData) return 0;
+            const lv=gameData.mechanicalPickaxeLevel||0;
+            return (lv+1)*5e10;
+        }
+        function getMechanicalUsage(){
+            if(!gameData) return 0;
+            const lv=gameData.mechanicalPickaxeLevel||0;
+            return (lv+5)*5;
+        }
+        function getMechanicalCoins(){
+            if(!gameData) return 0;
+            const lv=gameData.mechanicalPickaxeLevel||0;
+            return (lv+7)*1;
+        }
+        function getMechanicalUpgradeCost(){
+            if(!gameData) return 1;
+            const lv=gameData.mechanicalPickaxeLevel||0;
+            if(lv===0) return 1;
+            if(lv===1) return 10;
+            if(lv===2) return 100;
+            if(lv===3) return 1000;
+            return 2000 + (lv-4)*1000;
+        }
+        function getMechanicalDisplayName(){
+            const lv=gameData?.mechanicalPickaxeLevel||0;
+            if(lv===0) return '机械镐 (未合成)';
+            return `机械镐 Lv.${lv}`;
+        }
+
         function fixNanData(){
             const now=Date.now();
             if(!gameData) return;
@@ -550,10 +591,25 @@
             if(!gameData.dropMultiplier||isNaN(gameData.dropMultiplier)) gameData.dropMultiplier=1;
             if(!gameData.currentHp||isNaN(gameData.currentHp)||gameData.currentHp<=0) gameData.currentHp=gameData.blocks[gameData.currentBlockIndex].hp;
             if(typeof gameData.usageMultiplier!=='number'||isNaN(gameData.usageMultiplier)||gameData.usageMultiplier<1) gameData.usageMultiplier=1;
+            if(typeof gameData.mechanicalParts!=='number'||isNaN(gameData.mechanicalParts)||gameData.mechanicalParts<0) gameData.mechanicalParts=0;
+            if(typeof gameData.mechanicalPickaxeLevel!=='number'||isNaN(gameData.mechanicalPickaxeLevel)||gameData.mechanicalPickaxeLevel<0) gameData.mechanicalPickaxeLevel=0;
+            if(typeof gameData.mechanicalPickaxeUpgradeCost!=='number'||isNaN(gameData.mechanicalPickaxeUpgradeCost)||gameData.mechanicalPickaxeUpgradeCost<1) gameData.mechanicalPickaxeUpgradeCost=1;
             const fields=['coins','trophies','amethyst','copperIngot','blueObsidianFragment','redObsidianFragment','redBlueCrystal','bedrockFragment','obsidian','netherStar','glass','kunKun','earthCore','woodCore','fireCube','waterCube','goldCube','fiveElementCrystal','jingCore','elementChip','matterX','matterY','matterZ','beacon','experience','usageBonus','specialBonus','digCount','blocksMined','treeLevel','treeExperience','energy','energyProductionSpeed','energyUpgradeCost','autoExchangeThreshold'];
             fields.forEach(f=>{ if(isNaN(gameData[f])||gameData[f]===undefined||gameData[f]===null) gameData[f]=defaultData[f]!==undefined?defaultData[f]:0; });
             gameData.autoMine=!!gameData.autoMine; gameData.autoExchange=!!gameData.autoExchange; gameData.debugEnabled=!!gameData.debugEnabled; gameData.researchInstituteActive=!!gameData.researchInstituteActive;
             syncBeaconCount();
+            // 同步机械镐在 pickaxes 中的占位（仅用于显示）
+            const mechIdx=gameData.pickaxes.findIndex(p=>p.isMechanical);
+            if(mechIdx!==-1){
+                const lv=gameData.mechanicalPickaxeLevel||0;
+                gameData.pickaxes[mechIdx].damage=getMechanicalDamage();
+                gameData.pickaxes[mechIdx].usage=getMechanicalUsage();
+                gameData.pickaxes[mechIdx].coins=getMechanicalCoins();
+                gameData.pickaxes[mechIdx].name=getMechanicalDisplayName();
+                // 只有当等级>0时才能使用
+                if(lv>0 && gameData.pickaxes[mechIdx].count===0) gameData.pickaxes[mechIdx].count=1;
+                else if(lv===0) gameData.pickaxes[mechIdx].count=0;
+            }
         }
         function syncBeaconCount(){
             if(!gameData) return;
@@ -578,6 +634,9 @@
                 const bi=merged.pickaxes.find(p=>p.name==='信标');
                 if(bi){ if(bi.count>merged.beacon) merged.beacon=bi.count; else if(merged.beacon>bi.count) bi.count=merged.beacon; }
                 if(typeof merged.usageMultiplier!=='number'||isNaN(merged.usageMultiplier)||merged.usageMultiplier<1) merged.usageMultiplier=1;
+                if(typeof merged.mechanicalParts!=='number'||isNaN(merged.mechanicalParts)||merged.mechanicalParts<0) merged.mechanicalParts=0;
+                if(typeof merged.mechanicalPickaxeLevel!=='number'||isNaN(merged.mechanicalPickaxeLevel)||merged.mechanicalPickaxeLevel<0) merged.mechanicalPickaxeLevel=0;
+                if(typeof merged.mechanicalPickaxeUpgradeCost!=='number'||isNaN(merged.mechanicalPickaxeUpgradeCost)||merged.mechanicalPickaxeUpgradeCost<1) merged.mechanicalPickaxeUpgradeCost=1;
                 return merged;
             }catch(e){ console.warn('Load slot error:',e); return null; }
         }
@@ -606,7 +665,7 @@
         // DOM 引用
         // ============================================================
         const elements={};
-        ['block-name','current-hp','max-hp','hp-bar','exp-bar','prev-block','next-block','block-display','auto-mine-btn','auto-exchange-btn','auto-exchange-threshold','exchange-btn','damage-text-container','drop-info','pickaxe-name','pickaxe-damage','pickaxe-damage-value','pickaxe-usage-value','pickaxe-coins-value','usage-bonus','usage-per-dig','drop-multiplier-stat','level-bonus','trophy-bonus','beacon-bonus','time-bonus','special-bonus','energy-bonus','total-damage','level','experience','coins','trophies','amethyst','copper-ingot','blue-obsidian-fragment','red-obsidian-fragment','red-blue-crystal','bedrock-fragment','obsidian','nether-star','glass','kun-kun','earth-core','wood-core','fire-cube','water-cube','gold-cube','five-element-crystal','jing-core','element-chip','matter-x','matter-y','matter-z','tree-level','tree-progress-bar','tree-experience','tree-experience-required','water-tree-btn','auto-water-tree-btn','craft-beacon-btn','sqrt-power','playtime','dig-count','blocks-mined','shop-items','redeem-input','redeem-btn','research-inactive','research-active','activate-research-btn','upgrade-energy-btn','energy-total','energy-speed','energy-bonus-stat','energy-usage-stat','energy-tree-stat','chest-timer','open-chest-modal-btn','energy-upgrade-cost','energy-cost-display','open-all-chests-btn','tree-bonus','offline-duration','usage-multiplier-display'
+        ['block-name','current-hp','max-hp','hp-bar','exp-bar','prev-block','next-block','block-display','auto-mine-btn','auto-exchange-btn','auto-exchange-threshold','exchange-btn','damage-text-container','drop-info','pickaxe-name','pickaxe-damage','pickaxe-damage-value','pickaxe-usage-value','pickaxe-coins-value','usage-bonus','usage-per-dig','drop-multiplier-stat','level-bonus','trophy-bonus','beacon-bonus','time-bonus','special-bonus','energy-bonus','total-damage','level','experience','coins','trophies','amethyst','copper-ingot','blue-obsidian-fragment','red-obsidian-fragment','red-blue-crystal','bedrock-fragment','obsidian','nether-star','glass','kun-kun','earth-core','wood-core','fire-cube','water-cube','gold-cube','five-element-crystal','jing-core','element-chip','matter-x','matter-y','matter-z','tree-level','tree-progress-bar','tree-experience','tree-experience-required','water-tree-btn','auto-water-tree-btn','craft-beacon-btn','sqrt-power','playtime','dig-count','blocks-mined','shop-items','redeem-input','redeem-btn','research-inactive','research-active','activate-research-btn','upgrade-energy-btn','energy-total','energy-speed','energy-bonus-stat','energy-usage-stat','energy-tree-stat','chest-timer','open-chest-modal-btn','energy-upgrade-cost','energy-cost-display','open-all-chests-btn','tree-bonus','offline-duration','usage-multiplier-display','mechanical-parts','mechanical-pickaxe-level'
         ].forEach(id=>elements[id.replace(/-([a-z])/g,g=>g[1].toUpperCase())]=document.getElementById(id));
 
         const lastStats={};
@@ -648,7 +707,7 @@
             elements.currentHp.textContent=formatNumber(gameData.currentHp);
             elements.maxHp.textContent=formatNumber(block.hp);
             elements.hpBar.style.width=(gameData.currentHp/block.hp)*100+'%';
-            if(block.drop){ const dn={ amethyst:'紫水晶', copperIngot:'铜锭', blueObsidianFragment:'蓝曜石碎片', redObsidianFragment:'红曜石碎片', redBlueCrystal:'红蓝结晶', bedrockFragment:'基岩碎片', obsidian:'黑曜石', netherStar:'下界之星', glass:'玻璃', kunKun:'坤坤', earthCore:'土核心', woodCore:'木核心', fireCube:'火立方', waterCube:'水立方', goldCube:'金立方', fiveElementCrystal:'五行结晶', jingCore:'京核', elementChip:'元素晶片', matterX:'物质X', matterY:'物质Y', matterZ:'物质Z' }[block.drop]||block.drop;
+            if(block.drop){ const dn={ amethyst:'紫水晶', copperIngot:'铜锭', blueObsidianFragment:'蓝曜石碎片', redObsidianFragment:'红曜石碎片', redBlueCrystal:'红蓝结晶', bedrockFragment:'基岩碎片', obsidian:'黑曜石', netherStar:'下界之星', glass:'玻璃', kunKun:'坤坤', earthCore:'土核心', woodCore:'木核心', fireCube:'火立方', waterCube:'水立方', goldCube:'金立方', fiveElementCrystal:'五行结晶', jingCore:'京核', elementChip:'元素晶片', matterX:'物质X', matterY:'物质Y', matterZ:'物质Z', mechanicalParts:'机械零件' }[block.drop]||block.drop;
                 elements.dropInfo.textContent=`${block.dropChance||100}%概率掉落${dn} x ${block.dropAmount||1}`;
                 elements.dropInfo.style.display='block';
             }else{ elements.dropInfo.style.display='none'; }
@@ -675,6 +734,8 @@
 
         function updateStats(){
             try{
+                // 先同步机械镐属性
+                fixNanData();
                 const pk=gameData.pickaxes[gameData.currentPickaxeIndex];
                 if(elements.expBar) elements.expBar.style.width=(gameData.experience/Math.pow(gameData.level,2))*100+'%';
                 if(elements.pickaxeName) elements.pickaxeName.textContent=pk.name;
@@ -685,7 +746,6 @@
                 setStat(elements.usageBonus, formatNumber(gameData.usageBonus)+'x');
                 const usagePerDig=calculateUsagePerDig();
                 if(elements.usagePerDig) elements.usagePerDig.textContent=formatNumber(usagePerDig)+'x';
-                // 使用倍率显示（可编辑）
                 if(elements.usageMultiplierDisplay){
                     const val=gameData.usageMultiplier;
                     const txt=formatNumber(val)+'x';
@@ -730,6 +790,9 @@
                 set(elements.fireCube, gameData.fireCube); set(elements.waterCube, gameData.waterCube); set(elements.goldCube, gameData.goldCube);
                 set(elements.fiveElementCrystal, gameData.fiveElementCrystal); set(elements.jingCore, gameData.jingCore); set(elements.elementChip, gameData.elementChip);
                 set(elements.matterX, gameData.matterX); set(elements.matterY, gameData.matterY); set(elements.matterZ, gameData.matterZ);
+                // 机械零件和机械镐等级
+                setStat(elements.mechanicalParts, gameData.mechanicalParts);
+                setStat(elements.mechanicalPickaxeLevel, gameData.mechanicalPickaxeLevel);
 
                 const tReq=10*gameData.treeLevel;
                 if(elements.treeLevel) elements.treeLevel.textContent=gameData.treeLevel;
@@ -758,7 +821,7 @@
         }
 
         // ============================================================
-        // 浇树、合成、研究所
+        // 浇树、合成、研究所（与之前相同）
         // ============================================================
         function waterTree(){
             if(gameData.waterCube<1) return;
@@ -789,7 +852,7 @@
         }
 
         // ============================================================
-        // 挖矿
+        // 挖矿（含机械零件掉落）
         // ============================================================
         function dig(silent=false){
             const block=gameData.blocks[gameData.currentBlockIndex];
@@ -806,7 +869,19 @@
                 gameData.coins+=earnedCoins;
                 const earnedExp=baseCoins*Math.pow(1+Math.log(baseCoins),2);
                 gameData.experience+=earnedExp; gameData.blocksMined++;
-                if(block.drop){ const amount=(block.dropAmount||1)*gameData.dropMultiplier; if(block.dropChance){ if(Math.random()*100<=block.dropChance) gameData[block.drop]+=amount; }else gameData[block.drop]+=amount; }
+                if(block.drop){
+                    const amount=(block.dropAmount||1)*gameData.dropMultiplier;
+                    if(block.dropChance){
+                        if(Math.random()*100<=block.dropChance){
+                            // 处理机械零件特殊字段
+                            if(block.drop==='mechanicalParts') gameData.mechanicalParts=(gameData.mechanicalParts||0)+amount;
+                            else gameData[block.drop]+=amount;
+                        }
+                    }else{
+                        if(block.drop==='mechanicalParts') gameData.mechanicalParts=(gameData.mechanicalParts||0)+amount;
+                        else gameData[block.drop]+=amount;
+                    }
+                }
                 gameData.currentHp=block.hp;
                 checkAutoExchange();
             }
@@ -854,11 +929,15 @@
         function levelUp(){ while(gameData.experience>=Math.pow(gameData.level,2)){ gameData.experience-=Math.pow(gameData.level,2); gameData.level++; } }
 
         // ============================================================
-        // 商店
+        // 商店（含机械镐合成/升级）
         // ============================================================
         function initShop(){
+            // 先同步机械镐属性
+            fixNanData();
             elements.shopItems.innerHTML='';
+            // 先遍历所有普通镐子（非机械）
             gameData.pickaxes.forEach((pk,idx)=>{
+                if(pk.isMechanical) return; // 跳过机械镐，单独处理
                 const item=document.createElement('div'); item.className='shop-item';
                 let buy='', recipe='';
                 if(pk.isCraftable){
@@ -877,6 +956,33 @@
                 item.innerHTML=`<div class="shop-item-info"><h4>${pk.name}</h4><div class="shop-item-count">数量: <input type="text" class="shop-count-input" data-index="${idx}" value="${pk.count}" disabled></div></div><div class="shop-buttons">${recipe}${buy}${use}</div>`;
                 elements.shopItems.appendChild(item);
             });
+
+            // ★ 机械镐单独处理
+            const mechIdx=gameData.pickaxes.findIndex(p=>p.isMechanical);
+            if(mechIdx!==-1){
+                const pk=gameData.pickaxes[mechIdx];
+                const item=document.createElement('div'); item.className='shop-item';
+                const lv=gameData.mechanicalPickaxeLevel||0;
+                let btnText='合成 (消耗1机械零件)';
+                let canAfford=false;
+                if(lv===0){
+                    canAfford=(gameData.mechanicalParts||0)>=1;
+                    btnText='合成 (消耗1机械零件)';
+                }else{
+                    const cost=getMechanicalUpgradeCost();
+                    canAfford=(gameData.mechanicalParts||0)>=cost;
+                    btnText=`升级 (消耗${formatNumber(cost)}机械零件)`;
+                }
+                const buyBtn=`<button class="buy-btn mechanical-btn" id="mechanical-buy-btn" ${canAfford?'':'disabled'}>${btnText}</button>`;
+                const useBtn=lv>0?`<button class="use-btn" data-index="${mechIdx}">使用</button>`:'';
+                const recipeDesc=`<div class="recipe-desc">当前等级: ${lv} | 伤害: ${formatNumber(getMechanicalDamage())}x | 使用: ${formatNumber(getMechanicalUsage())}x | 金币: ${formatNumber(getMechanicalCoins())}x</div>`;
+                item.innerHTML=`<div class="shop-item-info"><h4>${pk.name}</h4><div class="shop-item-count">数量: <input type="text" class="shop-count-input" data-index="${mechIdx}" value="${pk.count}" disabled></div></div><div class="shop-buttons">${recipeDesc}${buyBtn}${useBtn}</div>`;
+                elements.shopItems.appendChild(item);
+                // 绑定机械镐按钮事件
+                const btn=document.getElementById('mechanical-buy-btn');
+                if(btn) btn.addEventListener('click', handleMechanicalBuy);
+            }
+
             document.querySelectorAll('.shop-count-input').forEach(inp=>{
                 inp.addEventListener('change',(e)=>{
                     if(!gameData.debugEnabled) return;
@@ -888,15 +994,60 @@
                     updateStats(); updateShopButtons(); saveGame();
                 });
             });
-            document.querySelectorAll('.buy-btn').forEach(b=>b.addEventListener('click', buyPickaxe));
+            document.querySelectorAll('.buy-btn:not(.mechanical-btn)').forEach(b=>b.addEventListener('click', buyPickaxe));
             document.querySelectorAll('.use-btn').forEach(b=>b.addEventListener('click', usePickaxe));
             if(gameData.debugEnabled) toggleDebugMode(true);
             updateShopButtons();
         }
 
+        // ★ 机械镐合成/升级处理
+        function handleMechanicalBuy(){
+            const lv=gameData.mechanicalPickaxeLevel||0;
+            if(lv===0){
+                // 合成
+                if((gameData.mechanicalParts||0)>=1){
+                    gameData.mechanicalParts-=1;
+                    gameData.mechanicalPickaxeLevel=1;
+                    gameData.mechanicalPickaxeUpgradeCost=10;
+                    // 将机械镐数量设为1
+                    const idx=gameData.pickaxes.findIndex(p=>p.isMechanical);
+                    if(idx!==-1) gameData.pickaxes[idx].count=1;
+                    fixNanData();
+                    updateStats(); updateShopButtons(); saveGame();
+                    alert('机械镐合成成功！等级1');
+                }else{
+                    alert('机械零件不足！需要1个');
+                }
+            }else{
+                // 升级
+                const cost=getMechanicalUpgradeCost();
+                if((gameData.mechanicalParts||0)>=cost){
+                    gameData.mechanicalParts-=cost;
+                    gameData.mechanicalPickaxeLevel++;
+                    gameData.mechanicalPickaxeUpgradeCost=getMechanicalUpgradeCost();
+                    fixNanData();
+                    updateStats(); updateShopButtons(); saveGame();
+                    alert(`机械镐升级成功！当前等级 ${gameData.mechanicalPickaxeLevel}`);
+                }else{
+                    alert(`机械零件不足！需要 ${formatNumber(cost)} 个`);
+                }
+            }
+        }
+
         function updateShopButtons(){
-            document.querySelectorAll('.buy-btn').forEach((btn,idx)=>{
-                const pk=gameData.pickaxes[idx];
+            // 普通镐子
+            document.querySelectorAll('.buy-btn:not(.mechanical-btn)').forEach((btn,idx)=>{
+                // 由于机械镐不在循环中，需要用索引过滤
+                const allPickaxes=gameData.pickaxes;
+                let realIdx=0;
+                // 找到该按钮对应的实际索引
+                // 因为机械镐被跳过，所以这里简单处理：查找与按钮绑定的数据索引
+                // 更好的方式是通过 data-index 属性，但可能不准确
+                // 这里使用遍历查找
+                const btnIdx=parseInt(btn.dataset.index);
+                if(isNaN(btnIdx)) return;
+                const pk=gameData.pickaxes[btnIdx];
+                if(!pk || pk.isMechanical) return;
                 if(pk.isCraftable){
                     let can=true;
                     for(const [mat,req] of Object.entries(pk.recipe)){
@@ -908,13 +1059,37 @@
                     btn.disabled=!can;
                 }else{ btn.disabled=gameData[pk.currency||'trophies']<pk.price; }
             });
-            document.querySelectorAll('.use-btn').forEach((btn,idx)=>{ btn.classList.toggle('active', idx===gameData.currentPickaxeIndex); });
-            document.querySelectorAll('.shop-count-input').forEach(inp=>{ const idx=parseInt(inp.dataset.index); inp.value=gameData.pickaxes[idx].count; });
+            document.querySelectorAll('.use-btn').forEach((btn,idx)=>{
+                // 找到实际索引
+                const btnIdx=parseInt(btn.dataset.index);
+                if(isNaN(btnIdx)) return;
+                btn.classList.toggle('active', btnIdx===gameData.currentPickaxeIndex);
+            });
+            document.querySelectorAll('.shop-count-input').forEach(inp=>{
+                const idx=parseInt(inp.dataset.index);
+                if(!isNaN(idx) && gameData.pickaxes[idx]) inp.value=gameData.pickaxes[idx].count;
+            });
+            // 机械镐按钮更新
+            const mechBtn=document.getElementById('mechanical-buy-btn');
+            if(mechBtn){
+                const lv=gameData.mechanicalPickaxeLevel||0;
+                if(lv===0){
+                    const can=(gameData.mechanicalParts||0)>=1;
+                    mechBtn.textContent='合成 (消耗1机械零件)';
+                    mechBtn.disabled=!can;
+                }else{
+                    const cost=getMechanicalUpgradeCost();
+                    const can=(gameData.mechanicalParts||0)>=cost;
+                    mechBtn.textContent=`升级 (消耗${formatNumber(cost)}机械零件)`;
+                    mechBtn.disabled=!can;
+                }
+            }
         }
 
         function buyPickaxe(e){
             const idx=parseInt(e.target.dataset.index);
             const pk=gameData.pickaxes[idx];
+            if(!pk || pk.isMechanical) return;
             if(pk.isCraftable){
                 let can=true;
                 for(const [mat,req] of Object.entries(pk.recipe)){
@@ -951,7 +1126,7 @@
         window.closeChestModal=()=>document.getElementById('chest-modal').style.display='none';
 
         // ============================================================
-        // 宝箱系统
+        // 宝箱系统（与之前相同）
         // ============================================================
         function updateChestUI(){
             const c=gameData.chests;
@@ -1066,7 +1241,7 @@
         }
 
         // ============================================================
-        // 离线挖矿
+        // 离线挖矿（包含机械零件和宝箱时间修复）
         // ============================================================
         function processOfflineMining(){
             const now=Date.now();
@@ -1102,7 +1277,17 @@
                         gameData.blocksMined++; gainedBlocks++;
                         if(block.drop){
                             const amount=(block.dropAmount||1)*gameData.dropMultiplier;
-                            if(block.dropChance){ if(Math.random()*100<=block.dropChance){ gameData[block.drop]+=amount; gainedDrops[block.drop]=(gainedDrops[block.drop]||0)+amount; } }else{ gameData[block.drop]+=amount; gainedDrops[block.drop]=(gainedDrops[block.drop]||0)+amount; }
+                            if(block.dropChance){
+                                if(Math.random()*100<=block.dropChance){
+                                    if(block.drop==='mechanicalParts') gameData.mechanicalParts=(gameData.mechanicalParts||0)+amount;
+                                    else gameData[block.drop]+=amount;
+                                    gainedDrops[block.drop]=(gainedDrops[block.drop]||0)+amount;
+                                }
+                            }else{
+                                if(block.drop==='mechanicalParts') gameData.mechanicalParts=(gameData.mechanicalParts||0)+amount;
+                                else gameData[block.drop]+=amount;
+                                gainedDrops[block.drop]=(gainedDrops[block.drop]||0)+amount;
+                            }
                         }
                         remainingHp=block.hp;
                         if(gameData.autoExchange && gameData.coins>=gameData.autoExchangeThreshold){
@@ -1117,15 +1302,28 @@
                     const info=calculateExchangeInfo();
                     if(info.earnedTrophies>0){ gameData.trophies+=info.earnedTrophies; gainedTrophies+=info.earnedTrophies; gameData.coins=0; }
                 }
+                // 离线宝箱：20%
                 const onlineChests=Math.floor(offlineSec/300);
                 let offlineChests=0;
-                if(onlineChests>0){ offlineChests=Math.floor(onlineChests*0.2);
-                    if(offlineChests>0){ for(let i=0;i<offlineChests;i++){ const r=Math.random()*100; if(r<75) gameData.chests.normal=(gameData.chests.normal||0)+1; else if(r<95) gameData.chests.golden=(gameData.chests.golden||0)+1; else if(r<99.9) gameData.chests.diamond=(gameData.chests.diamond||0)+1; else gameData.chests.supreme=(gameData.chests.supreme||0)+1; } } }
+                if(onlineChests>0){
+                    offlineChests=Math.floor(onlineChests*0.2);
+                    if(offlineChests>0){
+                        for(let i=0;i<offlineChests;i++){
+                            const r=Math.random()*100;
+                            if(r<75) gameData.chests.normal=(gameData.chests.normal||0)+1;
+                            else if(r<95) gameData.chests.golden=(gameData.chests.golden||0)+1;
+                            else if(r<99.9) gameData.chests.diamond=(gameData.chests.diamond||0)+1;
+                            else gameData.chests.supreme=(gameData.chests.supreme||0)+1;
+                        }
+                    }
+                    // 推进 lastChestTime 防止重置
+                    gameData.lastChestTime += onlineChests * 300000;
+                }
                 showOfflineSummary(offlineSec, gainedCoins, gainedExp, gainedTrophies, gainedUsage, gainedBlocks, gainedDrops, offlineChests);
             }
-            gameData.lastOnlineTime=now;
-            gameData.startTime=now;
-            gameData.lastChestTime=Math.max(gameData.lastChestTime, now);
+            gameData.lastOnlineTime = now;
+            gameData.startTime = now;
+            // 不重置 lastChestTime
         }
 
         function showOfflineSummary(sec, coins, exp, trophies, usage, blocks, drops, chests){
@@ -1139,7 +1337,7 @@
             if(Object.keys(drops).length>0){
                 msg+=`📦 物品掉落：\n`;
                 for(const [key,val] of Object.entries(drops)){
-                    const nameMap={ amethyst:'紫水晶', copperIngot:'铜锭', blueObsidianFragment:'蓝曜石碎片', redObsidianFragment:'红曜石碎片', redBlueCrystal:'红蓝结晶', bedrockFragment:'基岩碎片', obsidian:'黑曜石', netherStar:'下界之星', glass:'玻璃', kunKun:'坤坤', earthCore:'土核心', woodCore:'木核心', fireCube:'火立方', waterCube:'水立方', goldCube:'金立方', fiveElementCrystal:'五行结晶', jingCore:'京核', elementChip:'元素晶片', matterX:'物质X', matterY:'物质Y', matterZ:'物质Z' };
+                    const nameMap={ amethyst:'紫水晶', copperIngot:'铜锭', blueObsidianFragment:'蓝曜石碎片', redObsidianFragment:'红曜石碎片', redBlueCrystal:'红蓝结晶', bedrockFragment:'基岩碎片', obsidian:'黑曜石', netherStar:'下界之星', glass:'玻璃', kunKun:'坤坤', earthCore:'土核心', woodCore:'木核心', fireCube:'火立方', waterCube:'水立方', goldCube:'金立方', fiveElementCrystal:'五行结晶', jingCore:'京核', elementChip:'元素晶片', matterX:'物质X', matterY:'物质Y', matterZ:'物质Z', mechanicalParts:'机械零件' };
                     msg+=`  ${nameMap[key]||key} +${formatNumber(val)}\n`;
                 }
             }
@@ -1151,12 +1349,11 @@
         }
 
         // ============================================================
-        // ★ 兑换码（新增「姚俊希专属兑换码」）
+        // 兑换码（包含姚俊希专属）
         // ============================================================
         function redeemCode(){
             const code=elements.redeemInput.value.trim();
             const codes={'姚俊希220':2.2,'七八九幺十三一六九':7.8,'67676767':67.67};
-            // ★ 新增专属兑换码
             if(code==='姚俊希专属兑换码'){
                 if(!gameData.usedRedeemCodes.includes(code)){
                     gameData.usedRedeemCodes.push(code);
@@ -1166,9 +1363,7 @@
                     alert(`✅ 兑换成功！\n奖励增益 +220（当前 ${gameData.specialBonus}）\n掉落倍率 +2（当前 ${gameData.dropMultiplier}）\n使用倍率 +2.2（当前 ${gameData.usageMultiplier}）`);
                     updateStats();
                     saveGame();
-                }else{
-                    alert('该兑换码已使用！');
-                }
+                }else{ alert('该兑换码已使用！'); }
             }
             else if(code==='dfsoft67676767676767676767'){
                 if(!gameData.usedRedeemCodes.includes(code)){ gameData.usedRedeemCodes.push(code); gameData.debugEnabled=true; toggleDebugMode(true); alert('🔓 调试模式已开启！'); }else alert('该兑换码已使用！');
@@ -1195,9 +1390,10 @@
                     const id=e.target.id;
                     let val=parseFloat(e.target.value.replace('x','').replace('/秒','').trim());
                     if(isNaN(val)) return;
-                    const map={ 'level':'level','experience':'experience','coins':'coins','trophies':'trophies','amethyst':'amethyst','copper-ingot':'copperIngot','blue-obsidian-fragment':'blueObsidianFragment','red-obsidian-fragment':'redObsidianFragment','red-blue-crystal':'redBlueCrystal','bedrock-fragment':'bedrockFragment','obsidian':'obsidian','nether-star':'netherStar','glass':'glass','kun-kun':'kunKun','earth-core':'earthCore','wood-core':'woodCore','fire-cube':'fireCube','water-cube':'waterCube','gold-cube':'goldCube','five-element-crystal':'fiveElementCrystal','jing-core':'jingCore','element-chip':'elementChip','matter-x':'matterX','matter-y':'matterY','matter-z':'matterZ','pickaxe-damage':'pickaxe.damage','usage-bonus':'usageBonus','special-bonus':'specialBonus','drop-multiplier-stat':'dropMultiplier','energy-total':'energy','energy-speed':'energyProductionSpeed','energy-upgrade-cost':'energyUpgradeCost','level-bonus':'level=Math.pow(val,2)','trophy-bonus':'trophies=Math.max(0,Math.pow(val,1.5)-1)','beacon-bonus':'beacon=Math.max(0,Math.pow(val,1/0.64)-1)','tree-bonus':'treeLevel=Math.max(1,Math.floor(Math.pow(val,2.5)))','time-bonus':'originalStartTime=Date.now()-(160*Math.pow(8,val)*1000)','energy-bonus':'energy=Math.max(0,Math.pow(val,1/0.22))',
-                        // ★ 使用倍率调试映射
-                        'usage-multiplier-display':'usageMultiplier=val'
+                    const map={ 'level':'level','experience':'experience','coins':'coins','trophies':'trophies','amethyst':'amethyst','copper-ingot':'copperIngot','blue-obsidian-fragment':'blueObsidianFragment','red-obsidian-fragment':'redObsidianFragment','red-blue-crystal':'redBlueCrystal','bedrock-fragment':'bedrockFragment','obsidian':'obsidian','nether-star':'netherStar','glass':'glass','kun-kun':'kunKun','earth-core':'earthCore','wood-core':'woodCore','fire-cube':'fireCube','water-cube':'waterCube','gold-cube':'goldCube','five-element-crystal':'fiveElementCrystal','jing-core':'jingCore','element-chip':'elementChip','matter-x':'matterX','matter-y':'matterY','matter-z':'matterZ','pickaxe-damage':'pickaxe.damage','usage-bonus':'usageBonus','special-bonus':'specialBonus','drop-multiplier-stat':'dropMultiplier','energy-total':'energy','energy-speed':'energyProductionSpeed','energy-upgrade-cost':'energyUpgradeCost','level-bonus':'level=Math.pow(val,2)','trophy-bonus':'trophies=Math.max(0,Math.pow(val,1.5)-1)','beacon-bonus':'beacon=Math.max(0,Math.pow(val,1/0.64)-1)','tree-bonus':'treeLevel=Math.max(1,Math.floor(Math.pow(val,2.5)))','time-bonus':'originalStartTime=Date.now()-(160*Math.pow(8,val)*1000)','energy-bonus':'energy=Math.max(0,Math.pow(val,1/0.22))','usage-multiplier-display':'usageMultiplier=val',
+                        // 机械零件和机械镐等级调试
+                        'mechanical-parts':'mechanicalParts=val',
+                        'mechanical-pickaxe-level':'mechanicalPickaxeLevel=Math.max(0,Math.floor(val))'
                     };
                     if(id in map){ try{ eval(`gameData.${map[id]}=val;`); }catch(e){} }
                     updateStats(); saveGame();
