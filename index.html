@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ===== 完整样式（与之前一致，仅增加使用倍率相关样式） ===== */
+        /* ===== 完整样式 ===== */
         :root {
             --bg-dark: #050510;
             --bg-panel: rgba(16,18,38,0.85);
@@ -105,7 +105,7 @@
         .dmg-row span:last-child, .dmg-row input.editable-debug { color:var(--text-main); font-weight:700; }
         .dmg-row.total-damage { margin-top:8px; background:linear-gradient(90deg,rgba(188,19,254,0.1),rgba(0,243,255,0.1)); border-color:var(--neon-cyan); box-shadow:0 0 10px rgba(0,243,255,0.1); }
         .dmg-row.total-damage span:last-child { font-family:var(--font-title); font-size:18px; color:#fff; }
-        .dmg-row.usage-multiplier-row span:last-child { color:var(--neon-blue); font-weight:700; }
+        .dmg-row.usage-multiplier-row input.editable-debug { color:var(--neon-blue); }
         .green-note { margin-top:10px; font-size:12px; color:var(--neon-green); text-align:center; opacity:0.8; }
         .research-panel .panel-title { color:var(--neon-purple); text-shadow:0 0 10px rgba(188,19,254,0.5); }
         .research-inactive p { margin-bottom:12px; color:var(--text-dim); text-align:center; }
@@ -316,10 +316,9 @@
                     <div class="damage-stats">
                         <div class="dmg-row"><span>镐子增益</span> <input type="text" id="pickaxe-damage" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row"><span>使用增益</span> <input type="text" id="usage-bonus" class="editable-debug" value="1.00x" disabled></div>
-                        <!-- ★ 每镐使用 = 镐子使用 × 使用倍率 × 能量使用倍率 -->
                         <div class="dmg-row" style="color:#bc13fe;"><span>每镐使用</span> <span id="usage-per-dig">0.00x</span></div>
-                        <!-- ★ 新增：使用倍率（蓝色文字，无图标） -->
-                        <div class="dmg-row usage-multiplier-row" style="color:var(--neon-blue);"><span>使用倍率</span> <span id="usage-multiplier-display">1.00x</span></div>
+                        <!-- ★ 使用倍率改为可编辑输入框（调试模式可修改） -->
+                        <div class="dmg-row usage-multiplier-row" style="color:var(--neon-blue);"><span>使用倍率</span> <input type="text" id="usage-multiplier-display" class="editable-debug" value="1.00x" disabled style="color:var(--neon-blue);width:90px;text-align:right;font-weight:700;background:transparent;border:none;outline:none;"></div>
                         <div class="dmg-row"><span>等级增益</span> <input type="text" id="level-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row"><span>奖杯增益</span> <input type="text" id="trophy-bonus" class="editable-debug" value="1.00x" disabled></div>
                         <div class="dmg-row" style="color:#00f3ff;"><span>信标增益</span> <input type="text" id="beacon-bonus" class="editable-debug" value="1.00x" disabled style="color:#00f3ff;"></div>
@@ -430,7 +429,7 @@
     </div>
     <script>
         // ============================================================
-        // 默认数据（新增 usageMultiplier）
+        // 默认数据
         // ============================================================
         const defaultData = {
             blocks: [
@@ -527,7 +526,6 @@
             sqrtPower:1, debugEnabled:false, researchInstituteActive:false, energy:0, energyProductionSpeed:1,
             energyUpgradeCost:100,
             chests:{ normal:0, golden:0, diamond:0, supreme:0 }, lastChestTime:Date.now(), usedRedeemCodes:[],
-            // ★ 新增：使用倍率，初始为1
             usageMultiplier:1
         };
 
@@ -551,7 +549,6 @@
             if(!gameData.usedRedeemCodes) gameData.usedRedeemCodes=[];
             if(!gameData.dropMultiplier||isNaN(gameData.dropMultiplier)) gameData.dropMultiplier=1;
             if(!gameData.currentHp||isNaN(gameData.currentHp)||gameData.currentHp<=0) gameData.currentHp=gameData.blocks[gameData.currentBlockIndex].hp;
-            // ★ 确保使用倍率存在
             if(typeof gameData.usageMultiplier!=='number'||isNaN(gameData.usageMultiplier)||gameData.usageMultiplier<1) gameData.usageMultiplier=1;
             const fields=['coins','trophies','amethyst','copperIngot','blueObsidianFragment','redObsidianFragment','redBlueCrystal','bedrockFragment','obsidian','netherStar','glass','kunKun','earthCore','woodCore','fireCube','waterCube','goldCube','fiveElementCrystal','jingCore','elementChip','matterX','matterY','matterZ','beacon','experience','usageBonus','specialBonus','digCount','blocksMined','treeLevel','treeExperience','energy','energyProductionSpeed','energyUpgradeCost','autoExchangeThreshold'];
             fields.forEach(f=>{ if(isNaN(gameData[f])||gameData[f]===undefined||gameData[f]===null) gameData[f]=defaultData[f]!==undefined?defaultData[f]:0; });
@@ -580,7 +577,6 @@
                 if(gs.pickaxes){ gs.pickaxes.forEach((sp,i)=>{ if(merged.pickaxes[i]) merged.pickaxes[i].count=sp.count||0; }); }
                 const bi=merged.pickaxes.find(p=>p.name==='信标');
                 if(bi){ if(bi.count>merged.beacon) merged.beacon=bi.count; else if(merged.beacon>bi.count) bi.count=merged.beacon; }
-                // ★ 确保使用倍率存在
                 if(typeof merged.usageMultiplier!=='number'||isNaN(merged.usageMultiplier)||merged.usageMultiplier<1) merged.usageMultiplier=1;
                 return merged;
             }catch(e){ console.warn('Load slot error:',e); return null; }
@@ -633,8 +629,6 @@
         function calculateTreeBonus(){ return Math.pow(gameData.treeLevel,0.4); }
         function calculateEnergyBonus(){ return gameData.researchInstituteActive?Math.pow(gameData.energy,0.22):1; }
         function calculateEnergyUsageBonus(){ return gameData.researchInstituteActive?Math.pow(gameData.energy,0.44):1; }
-        function calculateEnergyTreeExp(){ return gameData.researchInstituteActive?Math.pow(gameData.energy,0.55):0; }
-        // ★ 每镐使用 = 镐子使用 × 使用倍率 × 能量使用倍率
         function calculateUsagePerDig(){ return gameData.pickaxes[gameData.currentPickaxeIndex].usage * gameData.usageMultiplier * calculateEnergyUsageBonus(); }
         function calculateTotalDamage(){
             if(!gameData.sqrtPower||gameData.sqrtPower<1) gameData.sqrtPower=1;
@@ -689,18 +683,23 @@
                 if(elements.pickaxeCoinsValue) elements.pickaxeCoinsValue.textContent=formatNumber(pk.coins)+'x';
                 setStat(elements.pickaxeDamage, formatNumber(pk.damage)+'x');
                 setStat(elements.usageBonus, formatNumber(gameData.usageBonus)+'x');
-                // ★ 每镐使用 = 镐子使用 × 使用倍率 × 能量使用倍率
                 const usagePerDig=calculateUsagePerDig();
                 if(elements.usagePerDig) elements.usagePerDig.textContent=formatNumber(usagePerDig)+'x';
-                // ★ 显示使用倍率（蓝色）
+                // 使用倍率显示（可编辑）
                 if(elements.usageMultiplierDisplay){
-                    elements.usageMultiplierDisplay.textContent=formatNumber(gameData.usageMultiplier)+'x';
+                    const val=gameData.usageMultiplier;
+                    const txt=formatNumber(val)+'x';
+                    if(elements.usageMultiplierDisplay.tagName==='INPUT'){
+                        elements.usageMultiplierDisplay.value=txt;
+                    }else{
+                        elements.usageMultiplierDisplay.textContent=txt;
+                    }
                     elements.usageMultiplierDisplay.style.color='var(--neon-blue)';
+                    lastStats['usage-multiplier-display']=txt;
                 }
                 setStat(elements.dropMultiplierStat, formatNumber(gameData.dropMultiplier));
                 setStat(elements.levelBonus, formatNumber(Math.pow(gameData.level,0.5))+'x');
                 setStat(elements.trophyBonus, formatNumber(Math.pow(1+gameData.trophies,2/3))+'x');
-                // 信标增益强制青色
                 if(elements.beaconBonus){
                     const bv=calculateBeaconBonus();
                     const txt=formatNumber(bv)+'x';
@@ -709,7 +708,6 @@
                     elements.beaconBonus.style.color='#00f3ff';
                     lastStats['beacon-bonus']=txt;
                 }
-                // 浇树增益
                 if(elements.treeBonus){
                     const tv=calculateTreeBonus();
                     const txt=formatNumber(tv)+'x';
@@ -791,14 +789,13 @@
         }
 
         // ============================================================
-        // 挖矿（使用倍率已加入 usageBonus 增长）
+        // 挖矿
         // ============================================================
         function dig(silent=false){
             const block=gameData.blocks[gameData.currentBlockIndex];
             const pk=gameData.pickaxes[gameData.currentPickaxeIndex];
             const dmg=calculateTotalDamage();
             gameData.currentHp-=dmg; gameData.digCount++;
-            // ★ 使用增益增加 = 镐子使用 × 使用倍率 × 能量使用倍率
             const usageMult=calculateEnergyUsageBonus();
             const usageGain=pk.usage * gameData.usageMultiplier * usageMult;
             gameData.usageBonus+=usageGain;
@@ -954,7 +951,7 @@
         window.closeChestModal=()=>document.getElementById('chest-modal').style.display='none';
 
         // ============================================================
-        // 宝箱系统（修改概率，加入使用倍率）
+        // 宝箱系统
         // ============================================================
         function updateChestUI(){
             const c=gameData.chests;
@@ -990,7 +987,6 @@
             const rand=Math.random()*100;
             let reward={ category:'', amount:0, display:'' };
             if(type==='normal'){
-                // 40% +0.1 奖励增益, 25% +0.2 奖励增益, 5% +0.5 奖励增益, 10% +0.05 使用倍率, 20% 其他
                 if(rand<40){ gameData.specialBonus+=0.1; reward={category:'specialBonus', amount:0.1, display:'奖励增益 +0.1'}; }
                 else if(rand<65){ gameData.specialBonus+=0.2; reward={category:'specialBonus', amount:0.2, display:'奖励增益 +0.2'}; }
                 else if(rand<70){ gameData.specialBonus+=0.5; reward={category:'specialBonus', amount:0.5, display:'奖励增益 +0.5'}; }
@@ -999,7 +995,6 @@
                 else if(rand<97.5){ gameData.beacon+=1; syncBeaconCount(); reward={category:'beacon', amount:1, display:'信标 +1'}; }
                 else{ gameData.treeLevel+=1; reward={category:'treeLevel', amount:1, display:'树等级 +1'}; }
             }else if(type==='golden'){
-                // 40% +0.5 奖励增益, 25% +1 奖励增益, 10% +0.15 使用倍率, 15% 使用增益3000, 10% 其他
                 if(rand<40){ gameData.specialBonus+=0.5; reward={category:'specialBonus', amount:0.5, display:'奖励增益 +0.5'}; }
                 else if(rand<65){ gameData.specialBonus+=1; reward={category:'specialBonus', amount:1, display:'奖励增益 +1'}; }
                 else if(rand<75){ gameData.usageMultiplier+=0.15; reward={category:'usageMultiplier', amount:0.15, display:'使用倍率 +0.15'}; }
@@ -1007,7 +1002,6 @@
                 else if(rand<95){ gameData.beacon+=3; syncBeaconCount(); reward={category:'beacon', amount:3, display:'信标 +3'}; }
                 else{ gameData.treeLevel+=3; reward={category:'treeLevel', amount:3, display:'树等级 +3'}; }
             }else if(type==='diamond'){
-                // 40% +5 奖励增益, 25% +10000使用增益, 10% +0.5 使用倍率, 15% 信标/树等级, 10% 掉落倍率
                 if(rand<40){ gameData.specialBonus+=5; reward={category:'specialBonus', amount:5, display:'奖励增益 +5'}; }
                 else if(rand<65){ gameData.usageBonus+=10000; reward={category:'usageBonus', amount:10000, display:'使用增益 +10000'}; }
                 else if(rand<75){ gameData.usageMultiplier+=0.5; reward={category:'usageMultiplier', amount:0.5, display:'使用倍率 +0.5'}; }
@@ -1015,7 +1009,6 @@
                 else if(rand<95){ gameData.treeLevel+=25; reward={category:'treeLevel', amount:25, display:'树等级 +25'}; }
                 else{ gameData.dropMultiplier+=1; reward={category:'dropMultiplier', amount:1, display:'掉落倍率 +1'}; }
             }else if(type==='supreme'){
-                // 30% +67 奖励增益, 30% +67000使用增益, 10% +6.7 使用倍率, 20% 200信标+树等级, 10% 掉落倍率+3
                 if(rand<30){ gameData.specialBonus+=67; reward={category:'specialBonus', amount:67, display:'奖励增益 +67'}; }
                 else if(rand<60){ gameData.usageBonus+=67000; reward={category:'usageBonus', amount:67000, display:'使用增益 +67000'}; }
                 else if(rand<70){ gameData.usageMultiplier+=6.7; reward={category:'usageMultiplier', amount:6.7, display:'使用倍率 +6.7'}; }
@@ -1073,14 +1066,13 @@
         }
 
         // ============================================================
-        // 离线挖矿（使用倍率已加入）
+        // 离线挖矿
         // ============================================================
         function processOfflineMining(){
             const now=Date.now();
             const offlineMs=now-(gameData.lastOnlineTime||now);
             if(offlineMs<1000) return;
             const offlineSec=Math.floor(offlineMs/1000);
-            let offlineDisplay=offlineSec;
             if(gameData.researchInstituteActive){
                 gameData.energy+=offlineSec*gameData.energyProductionSpeed;
                 gameData.treeExperience+=Math.pow(gameData.energy,0.55)*offlineSec;
@@ -1098,7 +1090,6 @@
                     const dmg=calculateTotalDamage();
                     remainingHp-=dmg;
                     gameData.digCount++;
-                    // ★ 离线也使用新的使用倍率计算
                     const usageGain=pk.usage * gameData.usageMultiplier * usageMult;
                     gameData.usageBonus+=usageGain;
                     gainedUsage+=usageGain;
@@ -1160,12 +1151,26 @@
         }
 
         // ============================================================
-        // 兑换码 & 调试
+        // ★ 兑换码（新增「姚俊希专属兑换码」）
         // ============================================================
         function redeemCode(){
             const code=elements.redeemInput.value.trim();
             const codes={'姚俊希220':2.2,'七八九幺十三一六九':7.8,'67676767':67.67};
-            if(code==='dfsoft67676767676767676767'){
+            // ★ 新增专属兑换码
+            if(code==='姚俊希专属兑换码'){
+                if(!gameData.usedRedeemCodes.includes(code)){
+                    gameData.usedRedeemCodes.push(code);
+                    gameData.specialBonus += 220;
+                    gameData.dropMultiplier += 2;
+                    gameData.usageMultiplier += 2.2;
+                    alert(`✅ 兑换成功！\n奖励增益 +220（当前 ${gameData.specialBonus}）\n掉落倍率 +2（当前 ${gameData.dropMultiplier}）\n使用倍率 +2.2（当前 ${gameData.usageMultiplier}）`);
+                    updateStats();
+                    saveGame();
+                }else{
+                    alert('该兑换码已使用！');
+                }
+            }
+            else if(code==='dfsoft67676767676767676767'){
                 if(!gameData.usedRedeemCodes.includes(code)){ gameData.usedRedeemCodes.push(code); gameData.debugEnabled=true; toggleDebugMode(true); alert('🔓 调试模式已开启！'); }else alert('该兑换码已使用！');
             }else if(codes[code]){
                 if(!gameData.usedRedeemCodes.includes(code)){ gameData.usedRedeemCodes.push(code); gameData.specialBonus+=codes[code]; alert(`兑换成功！奖励增益增加 ${codes[code]}，当前为 ${gameData.specialBonus}`); updateStats(); saveGame(); }else alert('该兑换码已使用！');
@@ -1190,7 +1195,10 @@
                     const id=e.target.id;
                     let val=parseFloat(e.target.value.replace('x','').replace('/秒','').trim());
                     if(isNaN(val)) return;
-                    const map={ 'level':'level','experience':'experience','coins':'coins','trophies':'trophies','amethyst':'amethyst','copper-ingot':'copperIngot','blue-obsidian-fragment':'blueObsidianFragment','red-obsidian-fragment':'redObsidianFragment','red-blue-crystal':'redBlueCrystal','bedrock-fragment':'bedrockFragment','obsidian':'obsidian','nether-star':'netherStar','glass':'glass','kun-kun':'kunKun','earth-core':'earthCore','wood-core':'woodCore','fire-cube':'fireCube','water-cube':'waterCube','gold-cube':'goldCube','five-element-crystal':'fiveElementCrystal','jing-core':'jingCore','element-chip':'elementChip','matter-x':'matterX','matter-y':'matterY','matter-z':'matterZ','pickaxe-damage':'pickaxe.damage','usage-bonus':'usageBonus','special-bonus':'specialBonus','drop-multiplier-stat':'dropMultiplier','energy-total':'energy','energy-speed':'energyProductionSpeed','energy-upgrade-cost':'energyUpgradeCost','level-bonus':'level=Math.pow(val,2)','trophy-bonus':'trophies=Math.max(0,Math.pow(val,1.5)-1)','beacon-bonus':'beacon=Math.max(0,Math.pow(val,1/0.64)-1)','tree-bonus':'treeLevel=Math.max(1,Math.floor(Math.pow(val,2.5)))','time-bonus':'originalStartTime=Date.now()-(160*Math.pow(8,val)*1000)','energy-bonus':'energy=Math.max(0,Math.pow(val,1/0.22))' };
+                    const map={ 'level':'level','experience':'experience','coins':'coins','trophies':'trophies','amethyst':'amethyst','copper-ingot':'copperIngot','blue-obsidian-fragment':'blueObsidianFragment','red-obsidian-fragment':'redObsidianFragment','red-blue-crystal':'redBlueCrystal','bedrock-fragment':'bedrockFragment','obsidian':'obsidian','nether-star':'netherStar','glass':'glass','kun-kun':'kunKun','earth-core':'earthCore','wood-core':'woodCore','fire-cube':'fireCube','water-cube':'waterCube','gold-cube':'goldCube','five-element-crystal':'fiveElementCrystal','jing-core':'jingCore','element-chip':'elementChip','matter-x':'matterX','matter-y':'matterY','matter-z':'matterZ','pickaxe-damage':'pickaxe.damage','usage-bonus':'usageBonus','special-bonus':'specialBonus','drop-multiplier-stat':'dropMultiplier','energy-total':'energy','energy-speed':'energyProductionSpeed','energy-upgrade-cost':'energyUpgradeCost','level-bonus':'level=Math.pow(val,2)','trophy-bonus':'trophies=Math.max(0,Math.pow(val,1.5)-1)','beacon-bonus':'beacon=Math.max(0,Math.pow(val,1/0.64)-1)','tree-bonus':'treeLevel=Math.max(1,Math.floor(Math.pow(val,2.5)))','time-bonus':'originalStartTime=Date.now()-(160*Math.pow(8,val)*1000)','energy-bonus':'energy=Math.max(0,Math.pow(val,1/0.22))',
+                        // ★ 使用倍率调试映射
+                        'usage-multiplier-display':'usageMultiplier=val'
+                    };
                     if(id in map){ try{ eval(`gameData.${map[id]}=val;`); }catch(e){} }
                     updateStats(); saveGame();
                 });
