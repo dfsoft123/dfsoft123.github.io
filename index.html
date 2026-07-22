@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        /* ===== 样式保持不变（与之前完全相同） ===== */
         :root{--bg-dark:#050510;--bg-panel:rgba(16,18,38,0.85);--border-main:rgba(0,243,255,0.25);--border-hover:rgba(0,243,255,0.7);--neon-cyan:#00f3ff;--neon-purple:#bc13fe;--neon-gold:#ffd700;--neon-green:#00ff9d;--neon-red:#ff0055;--neon-blue:#1e90ff;--text-main:#e0e6ed;--text-dim:#8b9bb4;--font-title:'Orbitron',sans-serif;--font-body:'Rajdhani',sans-serif;}
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
         body{font-family:var(--font-body);background:var(--bg-dark);color:var(--text-main);min-height:100vh;overflow-y:auto;position:relative;overscroll-behavior:none;touch-action:manipulation;}
@@ -338,7 +339,7 @@
 </div>
 <script>
 // ============================================================
-// 完整 JavaScript（所有功能）
+// 完整 JavaScript（包含修复）
 // ============================================================
 const defaultData={
     blocks:[
@@ -430,6 +431,7 @@ function getMechanicalCoins(){const lv=gameData?.mechanicalPickaxeLevel||0;retur
 function getMechanicalUpgradeCost(){const lv=gameData?.mechanicalPickaxeLevel||0;if(lv===0)return 10;if(lv===1)return 100;if(lv===2)return 1000;if(lv===3)return 10000;return 10000+(lv-3)*10000;}
 function getMechanicalDisplayName(){const lv=gameData?.mechanicalPickaxeLevel||0;return lv===0?'机械镐 (未合成)':'机械镐 Lv.'+lv;}
 
+// ★ 修复：增加 lastChestTime 异常检测
 function fixNanData(){
     const now=Date.now();if(!gameData)return;
     if(!gameData.sqrtPower||gameData.sqrtPower<1)gameData.sqrtPower=1;
@@ -437,6 +439,8 @@ function fixNanData(){
     if(typeof gameData.totalOnlineSeconds!=='number'||isNaN(gameData.totalOnlineSeconds))gameData.totalOnlineSeconds=0;
     if(!gameData.totalOnlineSeconds)gameData.totalOnlineSeconds=0;
     if(!gameData.lastChestTime||isNaN(gameData.lastChestTime))gameData.lastChestTime=now;
+    // ★ 如果 lastChestTime 比当前时间大超过5分钟，重置为当前时间
+    if(gameData.lastChestTime > now + 300000) gameData.lastChestTime = now;
     if(!gameData.chests)gameData.chests={normal:0,golden:0,diamond:0,supreme:0};
     if(!gameData.usedRedeemCodes)gameData.usedRedeemCodes=[];
     if(!gameData.dropMultiplier||isNaN(gameData.dropMultiplier))gameData.dropMultiplier=1;
@@ -567,7 +571,6 @@ function dig(silent=false){
     gameData.usageBonus+=usageGain;
     if(!silent)showDamageText(dmg);
     if(gameData.currentHp<=0){
-        // 混沌镐 → 量子镐 转化（薛定谔方块）
         if(pk.isChaos && block.name==='薛定谔的方块'){
             if(Math.random()<0.0001){
                 const chaosIdx=gameData.pickaxes.findIndex(p=>p.isChaos);
@@ -920,7 +923,20 @@ function setupDebugInputs(){
     });
 }
 function updatePlaytime(){try{const sec=gameData.totalOnlineSeconds;if(elements.playtime)elements.playtime.innerHTML=Math.floor(sec/31536000)+'年'+Math.floor((sec%31536000)/86400)+'日'+Math.floor((sec%86400)/3600)+'时'+Math.floor((sec%3600)/60)+'分'+sec%60+'秒<br>合计'+sec+'秒';}catch(e){}}
-function updateChestTimer(){try{let rem=300-Math.floor((Date.now()-gameData.lastChestTime)/1000);if(rem<0)rem=0;const m=Math.floor(rem/60),s=rem%60;if(elements.chestTimer)elements.chestTimer.textContent=m+':'+s.toString().padStart(2,'0');}catch(e){}}
+
+// ★ 修复：updateChestTimer 增加防御性修正
+function updateChestTimer(){
+    try{
+        let now=Date.now();
+        // 如果 lastChestTime 大于当前时间，修正为当前时间
+        if(gameData.lastChestTime > now) gameData.lastChestTime = now;
+        let rem=300-Math.floor((now-gameData.lastChestTime)/1000);
+        if(rem<0)rem=0;
+        const m=Math.floor(rem/60),s=rem%60;
+        if(elements.chestTimer)elements.chestTimer.textContent=m+':'+s.toString().padStart(2,'0');
+    }catch(e){console.warn('updateChestTimer error:',e);}
+}
+
 function updateAllUI(){if(!gameData)return;initShop();updateBlockDisplay();updateStats();updateExchangeButton();updateChestUI();updatePlaytime();updateChestTimer();updateAutoMine();elements.autoMineBtn.textContent='⚙ 自动挖矿: '+(gameData.autoMine?'开启':'关闭');elements.autoMineBtn.classList.toggle('active',gameData.autoMine);elements.autoExchangeBtn.textContent='⟳ 自动兑换: '+(gameData.autoExchange?'开启':'关闭');elements.autoExchangeBtn.classList.toggle('active',gameData.autoExchange);elements.autoExchangeThreshold.value=gameData.autoExchangeThreshold;const tReq=10*gameData.treeLevel;if(elements.treeLevel)elements.treeLevel.textContent=gameData.treeLevel;if(elements.treeProgressBar)elements.treeProgressBar.style.width=(gameData.treeExperience/tReq)*100+'%';if(elements.treeExperience)elements.treeExperience.textContent=formatNumber(gameData.treeExperience);if(elements.treeExperienceRequired)elements.treeExperienceRequired.textContent=formatNumber(tReq);}
 
 function initGame(){
