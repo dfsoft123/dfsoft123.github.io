@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ===== 样式保持不变（与之前完全相同） ===== */
         :root{--bg-dark:#050510;--bg-panel:rgba(16,18,38,0.85);--border-main:rgba(0,243,255,0.25);--border-hover:rgba(0,243,255,0.7);--neon-cyan:#00f3ff;--neon-purple:#bc13fe;--neon-gold:#ffd700;--neon-green:#00ff9d;--neon-red:#ff0055;--neon-blue:#1e90ff;--text-main:#e0e6ed;--text-dim:#8b9bb4;--font-title:'Orbitron',sans-serif;--font-body:'Rajdhani',sans-serif;}
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
         body{font-family:var(--font-body);background:var(--bg-dark);color:var(--text-main);min-height:100vh;overflow-y:auto;position:relative;overscroll-behavior:none;touch-action:manipulation;}
@@ -245,7 +244,7 @@
                     <div class="stat-item special-item"><span class="stat-label">机械镐等级</span><input type="text" id="mechanical-pickaxe-level" class="stat-value editable-debug" value="0" disabled></div>
                 </div>
                 <div class="exp-bar-container"><div class="exp-bar" id="exp-bar"></div></div>
-                <div class="sqrt-control"><label for="sqrt-power">开方次:</label><input type="number" id="sqrt-power" value="1" min="1" max="3" step="1"></div>
+                <div class="sqrt-control"><label for="sqrt-power">开方次:</label><input type="number" id="sqrt-power" value="1" min="1" max="4" step="1"></div>
             </div>
             <div class="panel chest-panel">
                 <h3 class="panel-title">⏳ 在线宝箱</h3>
@@ -280,6 +279,8 @@
                     <div class="dmg-row" style="color:#00ff9d;"><span>时间增益</span><input type="text" id="time-bonus" class="editable-debug" value="1.00x" disabled></div>
                     <div class="dmg-row" style="color:#00ff9d;"><span>奖励增益</span><input type="text" id="special-bonus" class="editable-debug" value="1.00x" disabled></div>
                     <div class="dmg-row" style="color:#00ff9d;"><span>能量增益</span><input type="text" id="energy-bonus" class="editable-debug" value="1.00x" disabled></div>
+                    <!-- ★ 量子增益（白色文字） -->
+                    <div class="dmg-row"><span>量子增益</span><input type="text" id="quantum-bonus" class="editable-debug" value="1.00x" disabled style="color:var(--text-main);"></div>
                     <div class="dmg-row" style="color:var(--neon-blue);"><span>掉落倍率</span><input type="text" id="drop-multiplier-stat" class="editable-debug" value="1" disabled></div>
                     <div class="dmg-row total-damage"><span>总伤害</span><span id="total-damage">1.00</span></div>
                     <p class="green-note">绿色增益表示不被开方的增益</p>
@@ -339,7 +340,7 @@
 </div>
 <script>
 // ============================================================
-// 完整 JavaScript（包含修复）
+// 完整 JavaScript（包含量子块 + 量子增益）
 // ============================================================
 const defaultData={
     blocks:[
@@ -363,7 +364,9 @@ const defaultData={
         {name:'五行结晶',hp:4e12,coins:2e8,drop:'fiveElementCrystal',sqrtZone:3},{name:'方立水',hp:1e13,coins:4.5e8,drop:'waterCube',dropAmount:64,sqrtZone:3},
         {name:'水沝㴇淼㵘',hp:5e14,coins:1e9,drop:'waterCube',dropAmount:256,sqrtZone:3},{name:'纯金',hp:2e15,coins:1e10,sqrtZone:3},
         {name:'元素晶片',hp:1e17,coins:1e6,drop:'elementChip',sqrtZone:3},
-        {name:'薛定谔的方块',hp:1,coins:0,sqrtZone:3}
+        {name:'薛定谔的方块',hp:1,coins:0,sqrtZone:3},
+        // ★ 四次开方区：量子块
+        {name:'量子块',hp:1,coins:0,drop:'quantumBonus',dropAmount:1,dropChance:100,sqrtZone:4}
     ],
     pickaxes:[
         {name:'木镐',damage:1,usage:0.01,coins:1,price:1,count:1,currency:'trophies'},
@@ -412,6 +415,8 @@ const defaultData={
     netherStar:0,glass:0,kunKun:0,earthCore:0,woodCore:0,fireCube:0,waterCube:0,goldCube:0,
     fiveElementCrystal:0,jingCore:0,elementChip:0,matterX:0,matterY:0,matterZ:0,beacon:0,
     mechanicalParts:0,mechanicalPickaxeLevel:0,mechanicalPickaxeUpgradeCost:10,
+    // ★ 量子增益
+    quantumBonus:1,
     level:1,experience:0,usageBonus:1,specialBonus:1,digCount:0,blocksMined:0,dropMultiplier:1,
     treeLevel:1,treeExperience:0,autoMine:false,autoExchange:false,autoExchangeThreshold:1000,
     startTime:Date.now(),originalStartTime:Date.now(),lastOnlineTime:Date.now(),currentHp:100,totalOnlineSeconds:0,
@@ -431,7 +436,6 @@ function getMechanicalCoins(){const lv=gameData?.mechanicalPickaxeLevel||0;retur
 function getMechanicalUpgradeCost(){const lv=gameData?.mechanicalPickaxeLevel||0;if(lv===0)return 10;if(lv===1)return 100;if(lv===2)return 1000;if(lv===3)return 10000;return 10000+(lv-3)*10000;}
 function getMechanicalDisplayName(){const lv=gameData?.mechanicalPickaxeLevel||0;return lv===0?'机械镐 (未合成)':'机械镐 Lv.'+lv;}
 
-// ★ 修复：增加 lastChestTime 异常检测
 function fixNanData(){
     const now=Date.now();if(!gameData)return;
     if(!gameData.sqrtPower||gameData.sqrtPower<1)gameData.sqrtPower=1;
@@ -439,7 +443,6 @@ function fixNanData(){
     if(typeof gameData.totalOnlineSeconds!=='number'||isNaN(gameData.totalOnlineSeconds))gameData.totalOnlineSeconds=0;
     if(!gameData.totalOnlineSeconds)gameData.totalOnlineSeconds=0;
     if(!gameData.lastChestTime||isNaN(gameData.lastChestTime))gameData.lastChestTime=now;
-    // ★ 如果 lastChestTime 比当前时间大超过5分钟，重置为当前时间
     if(gameData.lastChestTime > now + 300000) gameData.lastChestTime = now;
     if(!gameData.chests)gameData.chests={normal:0,golden:0,diamond:0,supreme:0};
     if(!gameData.usedRedeemCodes)gameData.usedRedeemCodes=[];
@@ -449,6 +452,8 @@ function fixNanData(){
     if(typeof gameData.mechanicalParts!=='number'||isNaN(gameData.mechanicalParts)||gameData.mechanicalParts<0)gameData.mechanicalParts=0;
     if(typeof gameData.mechanicalPickaxeLevel!=='number'||isNaN(gameData.mechanicalPickaxeLevel)||gameData.mechanicalPickaxeLevel<0)gameData.mechanicalPickaxeLevel=0;
     if(typeof gameData.mechanicalPickaxeUpgradeCost!=='number'||isNaN(gameData.mechanicalPickaxeUpgradeCost)||gameData.mechanicalPickaxeUpgradeCost<1)gameData.mechanicalPickaxeUpgradeCost=10;
+    // 量子增益
+    if(typeof gameData.quantumBonus!=='number'||isNaN(gameData.quantumBonus)||gameData.quantumBonus<1)gameData.quantumBonus=1;
     const fields=['coins','trophies','amethyst','copperIngot','blueObsidianFragment','redObsidianFragment','redBlueCrystal','bedrockFragment','obsidian','netherStar','glass','kunKun','earthCore','woodCore','fireCube','waterCube','goldCube','fiveElementCrystal','jingCore','elementChip','matterX','matterY','matterZ','beacon','experience','usageBonus','specialBonus','digCount','blocksMined','treeLevel','treeExperience','energy','energyProductionSpeed','energyUpgradeCost','autoExchangeThreshold'];
     fields.forEach(f=>{if(isNaN(gameData[f])||gameData[f]===undefined||gameData[f]===null)gameData[f]=defaultData[f]!==undefined?defaultData[f]:0;});
     gameData.autoMine=!!gameData.autoMine;gameData.autoExchange=!!gameData.autoExchange;gameData.debugEnabled=!!gameData.debugEnabled;gameData.researchInstituteActive=!!gameData.researchInstituteActive;
@@ -461,14 +466,14 @@ function updateMechanicalPickaxe(){
 }
 
 function saveGame(){if(!gameData)return;try{fixNanData();const state={...gameData,pickaxes:gameData.pickaxes,lastOnlineTime:Date.now()};delete state.blocks;localStorage.setItem(getSlotKey(currentSlot),JSON.stringify(state));}catch(e){console.warn('Save error:',e);}}
-function loadSlotData(slot){try{const raw=localStorage.getItem(getSlotKey(slot));if(!raw)return null;const gs=JSON.parse(raw);if(gs.blocks){localStorage.removeItem(getSlotKey(slot));return null;}const merged=deepClone(defaultData);for(const key in merged){if(key==='pickaxes'||key==='blocks')continue;if(gs[key]!==undefined)merged[key]=gs[key];}if(gs.pickaxes){gs.pickaxes.forEach((sp,i)=>{if(merged.pickaxes[i])merged.pickaxes[i].count=sp.count||0;});}const bi=merged.pickaxes.find(p=>p.name==='信标');if(bi){if(bi.count>merged.beacon)merged.beacon=bi.count;else if(merged.beacon>bi.count)bi.count=merged.beacon;}if(typeof merged.usageMultiplier!=='number'||isNaN(merged.usageMultiplier)||merged.usageMultiplier<1)merged.usageMultiplier=1;if(typeof merged.mechanicalParts!=='number'||isNaN(merged.mechanicalParts)||merged.mechanicalParts<0)merged.mechanicalParts=0;if(typeof merged.mechanicalPickaxeLevel!=='number'||isNaN(merged.mechanicalPickaxeLevel)||merged.mechanicalPickaxeLevel<0)merged.mechanicalPickaxeLevel=0;if(typeof merged.mechanicalPickaxeUpgradeCost!=='number'||isNaN(merged.mechanicalPickaxeUpgradeCost)||merged.mechanicalPickaxeUpgradeCost<1)merged.mechanicalPickaxeUpgradeCost=10;return merged;}catch(e){console.warn('Load slot error:',e);return null;}}
+function loadSlotData(slot){try{const raw=localStorage.getItem(getSlotKey(slot));if(!raw)return null;const gs=JSON.parse(raw);if(gs.blocks){localStorage.removeItem(getSlotKey(slot));return null;}const merged=deepClone(defaultData);for(const key in merged){if(key==='pickaxes'||key==='blocks')continue;if(gs[key]!==undefined)merged[key]=gs[key];}if(gs.pickaxes){gs.pickaxes.forEach((sp,i)=>{if(merged.pickaxes[i])merged.pickaxes[i].count=sp.count||0;});}const bi=merged.pickaxes.find(p=>p.name==='信标');if(bi){if(bi.count>merged.beacon)merged.beacon=bi.count;else if(merged.beacon>bi.count)bi.count=merged.beacon;}if(typeof merged.usageMultiplier!=='number'||isNaN(merged.usageMultiplier)||merged.usageMultiplier<1)merged.usageMultiplier=1;if(typeof merged.mechanicalParts!=='number'||isNaN(merged.mechanicalParts)||merged.mechanicalParts<0)merged.mechanicalParts=0;if(typeof merged.mechanicalPickaxeLevel!=='number'||isNaN(merged.mechanicalPickaxeLevel)||merged.mechanicalPickaxeLevel<0)merged.mechanicalPickaxeLevel=0;if(typeof merged.mechanicalPickaxeUpgradeCost!=='number'||isNaN(merged.mechanicalPickaxeUpgradeCost)||merged.mechanicalPickaxeUpgradeCost<1)merged.mechanicalPickaxeUpgradeCost=10;if(typeof merged.quantumBonus!=='number'||isNaN(merged.quantumBonus)||merged.quantumBonus<1)merged.quantumBonus=1;return merged;}catch(e){console.warn('Load slot error:',e);return null;}}
 function resetSlot(slot){if(!confirm(`确定要重置存档${slot}吗？所有进度将丢失！`))return;const fresh=deepClone(defaultData);fresh.startTime=Date.now();fresh.originalStartTime=Date.now();fresh.lastOnlineTime=Date.now();fresh.lastChestTime=Date.now();fresh.currentHp=fresh.blocks[fresh.currentBlockIndex].hp;localStorage.setItem(getSlotKey(slot),JSON.stringify(fresh));if(slot===currentSlot){loadSlot(slot);updateAllUI();}updateSlotButtons();alert(`存档${slot}已重置！`);}
 function loadSlot(slot){const data=loadSlotData(slot);if(data){gameData=data;}else{gameData=deepClone(defaultData);gameData.startTime=Date.now();gameData.originalStartTime=Date.now();gameData.lastOnlineTime=Date.now();gameData.lastChestTime=Date.now();gameData.currentHp=gameData.blocks[gameData.currentBlockIndex].hp;localStorage.setItem(getSlotKey(slot),JSON.stringify(gameData));}currentSlot=slot;fixNanData();processOfflineMining();updateAllUI();updateSlotButtons();}
 function switchSlot(slot){if(slot===currentSlot)return;saveGame();loadSlot(slot);}
 function updateSlotButtons(){document.querySelectorAll('.slot-btn').forEach(btn=>{const s=parseInt(btn.dataset.slot);btn.classList.toggle('active',s===currentSlot);});}
 
 const elements={};
-['block-name','current-hp','max-hp','hp-bar','exp-bar','prev-block','next-block','block-display','auto-mine-btn','auto-exchange-btn','auto-exchange-threshold','exchange-btn','damage-text-container','drop-info','pickaxe-name','pickaxe-damage','pickaxe-damage-value','pickaxe-usage-value','pickaxe-coins-value','usage-bonus','usage-per-dig','drop-multiplier-stat','level-bonus','trophy-bonus','beacon-bonus','time-bonus','special-bonus','energy-bonus','total-damage','level','experience','coins','trophies','amethyst','copper-ingot','blue-obsidian-fragment','red-obsidian-fragment','red-blue-crystal','bedrock-fragment','obsidian','nether-star','glass','kun-kun','earth-core','wood-core','fire-cube','water-cube','gold-cube','five-element-crystal','jing-core','element-chip','matter-x','matter-y','matter-z','tree-level','tree-progress-bar','tree-experience','tree-experience-required','water-tree-btn','auto-water-tree-btn','craft-beacon-btn','sqrt-power','playtime','dig-count','blocks-mined','shop-items','redeem-input','redeem-btn','research-inactive','research-active','activate-research-btn','upgrade-energy-btn','energy-total','energy-speed','energy-bonus-stat','energy-usage-stat','energy-tree-stat','chest-timer','open-chest-modal-btn','energy-upgrade-cost','energy-cost-display','open-all-chests-btn','tree-bonus','offline-duration','usage-multiplier-display','mechanical-parts','mechanical-pickaxe-level'
+['block-name','current-hp','max-hp','hp-bar','exp-bar','prev-block','next-block','block-display','auto-mine-btn','auto-exchange-btn','auto-exchange-threshold','exchange-btn','damage-text-container','drop-info','pickaxe-name','pickaxe-damage','pickaxe-damage-value','pickaxe-usage-value','pickaxe-coins-value','usage-bonus','usage-per-dig','drop-multiplier-stat','level-bonus','trophy-bonus','beacon-bonus','time-bonus','special-bonus','energy-bonus','total-damage','level','experience','coins','trophies','amethyst','copper-ingot','blue-obsidian-fragment','red-obsidian-fragment','red-blue-crystal','bedrock-fragment','obsidian','nether-star','glass','kun-kun','earth-core','wood-core','fire-cube','water-cube','gold-cube','five-element-crystal','jing-core','element-chip','matter-x','matter-y','matter-z','tree-level','tree-progress-bar','tree-experience','tree-experience-required','water-tree-btn','auto-water-tree-btn','craft-beacon-btn','sqrt-power','playtime','dig-count','blocks-mined','shop-items','redeem-input','redeem-btn','research-inactive','research-active','activate-research-btn','upgrade-energy-btn','energy-total','energy-speed','energy-bonus-stat','energy-usage-stat','energy-tree-stat','chest-timer','open-chest-modal-btn','energy-upgrade-cost','energy-cost-display','open-all-chests-btn','tree-bonus','offline-duration','usage-multiplier-display','mechanical-parts','mechanical-pickaxe-level','quantum-bonus'
 ].forEach(id=>elements[id.replace(/-([a-z])/g,g=>g[1].toUpperCase())]=document.getElementById(id));
 const lastStats={};
 
@@ -487,7 +492,8 @@ function calculateTotalDamage(){
     const lv=Math.pow(gameData.level,0.5);
     const tr=Math.pow(1+gameData.trophies,2/3);
     const prod=pk.damage*gameData.usageBonus*lv*tr;
-    return Math.pow(prod,1/gameData.sqrtPower)*calculateBeaconBonus()*calculateTimeBonus()*calculateTreeBonus()*gameData.specialBonus*calculateEnergyBonus();
+    // ★ 量子增益加入总伤害计算（白色增益，不被开方）
+    return Math.pow(prod,1/gameData.sqrtPower)*calculateBeaconBonus()*calculateTimeBonus()*calculateTreeBonus()*gameData.specialBonus*calculateEnergyBonus()*gameData.quantumBonus;
 }
 
 function updateBlockDisplay(){
@@ -496,7 +502,7 @@ function updateBlockDisplay(){
     elements.currentHp.textContent=formatNumber(gameData.currentHp);
     elements.maxHp.textContent=formatNumber(block.hp);
     elements.hpBar.style.width=(gameData.currentHp/block.hp)*100+'%';
-    if(block.drop){const dn={amethyst:'紫水晶',copperIngot:'铜锭',blueObsidianFragment:'蓝曜石碎片',redObsidianFragment:'红曜石碎片',redBlueCrystal:'红蓝结晶',bedrockFragment:'基岩碎片',obsidian:'黑曜石',netherStar:'下界之星',glass:'玻璃',kunKun:'坤坤',earthCore:'土核心',woodCore:'木核心',fireCube:'火立方',waterCube:'水立方',goldCube:'金立方',fiveElementCrystal:'五行结晶',jingCore:'京核',elementChip:'元素晶片',matterX:'物质X',matterY:'物质Y',matterZ:'物质Z',mechanicalParts:'机械零件'}[block.drop]||block.drop;
+    if(block.drop){const dn={amethyst:'紫水晶',copperIngot:'铜锭',blueObsidianFragment:'蓝曜石碎片',redObsidianFragment:'红曜石碎片',redBlueCrystal:'红蓝结晶',bedrockFragment:'基岩碎片',obsidian:'黑曜石',netherStar:'下界之星',glass:'玻璃',kunKun:'坤坤',earthCore:'土核心',woodCore:'木核心',fireCube:'火立方',waterCube:'水立方',goldCube:'金立方',fiveElementCrystal:'五行结晶',jingCore:'京核',elementChip:'元素晶片',matterX:'物质X',matterY:'物质Y',matterZ:'物质Z',mechanicalParts:'机械零件',quantumBonus:'量子增益'}[block.drop]||block.drop;
         elements.dropInfo.textContent=`${block.dropChance||100}%概率掉落${dn} x ${block.dropAmount||1}`;elements.dropInfo.style.display='block';
     }else{elements.dropInfo.style.display='none';}
 }
@@ -522,6 +528,15 @@ function updateStats(){
         if(elements.timeBonus){setStat(elements.timeBonus,formatNumber(calculateTimeBonus())+'x');elements.timeBonus.style.color='#2ecc71';}
         if(elements.specialBonus){setStat(elements.specialBonus,formatNumber(gameData.specialBonus)+'x');elements.specialBonus.style.color='#2ecc71';}
         if(elements.energyBonus){setStat(elements.energyBonus,formatNumber(calculateEnergyBonus())+'x');elements.energyBonus.style.color='#2ecc71';}
+        // ★ 量子增益（白色文字）
+        if(elements.quantumBonus){
+            const qv=gameData.quantumBonus;
+            const txt=formatNumber(qv)+'x';
+            if(elements.quantumBonus.tagName==='INPUT')elements.quantumBonus.value=txt;
+            else elements.quantumBonus.textContent=txt;
+            elements.quantumBonus.style.color='var(--text-main)';
+            lastStats['quantum-bonus']=txt;
+        }
         if(elements.totalDamage)elements.totalDamage.textContent=formatNumber(calculateTotalDamage());
         const set=(el,val)=>{if(el)setStat(el,formatNumber(val));};
         set(elements.level,gameData.level);set(elements.experience,gameData.experience);set(elements.coins,gameData.coins);set(elements.trophies,gameData.trophies);
@@ -564,6 +579,15 @@ function upgradeEnergyProduction(){if(gameData.energy>=gameData.energyUpgradeCos
 function dig(silent=false){
     const block=gameData.blocks[gameData.currentBlockIndex];
     const pk=gameData.pickaxes[gameData.currentPickaxeIndex];
+    
+    // ★ 量子块只能用量子镐挖掘
+    if(block.name==='量子块'){
+        if(!pk.isQuantum){
+            if(!silent) alert('⚠️ 量子块只能用量子镐挖掘！');
+            return;
+        }
+    }
+    
     const dmg=calculateTotalDamage();
     gameData.currentHp-=dmg;gameData.digCount++;
     const usageMult=calculateEnergyUsageBonus();
@@ -571,6 +595,7 @@ function dig(silent=false){
     gameData.usageBonus+=usageGain;
     if(!silent)showDamageText(dmg);
     if(gameData.currentHp<=0){
+        // 混沌镐 → 量子镐 转化
         if(pk.isChaos && block.name==='薛定谔的方块'){
             if(Math.random()<0.0001){
                 const chaosIdx=gameData.pickaxes.findIndex(p=>p.isChaos);
@@ -594,10 +619,12 @@ function dig(silent=false){
             if(block.dropChance){
                 if(Math.random()*100<=block.dropChance){
                     if(block.drop==='mechanicalParts')gameData.mechanicalParts=(gameData.mechanicalParts||0)+amount;
+                    else if(block.drop==='quantumBonus')gameData.quantumBonus=(gameData.quantumBonus||1)+amount;
                     else gameData[block.drop]+=amount;
                 }
             }else{
                 if(block.drop==='mechanicalParts')gameData.mechanicalParts=(gameData.mechanicalParts||0)+amount;
+                else if(block.drop==='quantumBonus')gameData.quantumBonus=(gameData.quantumBonus||1)+amount;
                 else gameData[block.drop]+=amount;
             }
         }
@@ -830,6 +857,11 @@ function processOfflineMining(){
         let gainedCoins=0,gainedExp=0,gainedTrophies=0,gainedUsage=0,gainedBlocks=0,gainedDrops={};
         const usageMult=calculateEnergyUsageBonus();
         for(let i=0;i<miningActions;i++){
+            // ★ 离线时也要检查量子块限制
+            if(block.name==='量子块' && !pk.isQuantum){
+                // 跳过本次挖掘
+                continue;
+            }
             const dmg=calculateTotalDamage();
             remainingHp-=dmg;
             gameData.digCount++;
@@ -847,11 +879,13 @@ function processOfflineMining(){
                     if(block.dropChance){
                         if(Math.random()*100<=block.dropChance){
                             if(block.drop==='mechanicalParts')gameData.mechanicalParts=(gameData.mechanicalParts||0)+amount;
+                            else if(block.drop==='quantumBonus')gameData.quantumBonus=(gameData.quantumBonus||1)+amount;
                             else gameData[block.drop]+=amount;
                             gainedDrops[block.drop]=(gainedDrops[block.drop]||0)+amount;
                         }
                     }else{
                         if(block.drop==='mechanicalParts')gameData.mechanicalParts=(gameData.mechanicalParts||0)+amount;
+                        else if(block.drop==='quantumBonus')gameData.quantumBonus=(gameData.quantumBonus||1)+amount;
                         else gameData[block.drop]+=amount;
                         gainedDrops[block.drop]=(gainedDrops[block.drop]||0)+amount;
                     }
@@ -892,7 +926,7 @@ function showOfflineSummary(sec,coins,exp,trophies,usage,blocks,drops,chests){
     if(chests>0)msg+='📦 离线宝箱 +'+chests+' 个（在线20%）\n';
     if(Object.keys(drops).length>0){
         msg+='📦 物品掉落：\n';
-        const nameMap={amethyst:'紫水晶',copperIngot:'铜锭',blueObsidianFragment:'蓝曜石碎片',redObsidianFragment:'红曜石碎片',redBlueCrystal:'红蓝结晶',bedrockFragment:'基岩碎片',obsidian:'黑曜石',netherStar:'下界之星',glass:'玻璃',kunKun:'坤坤',earthCore:'土核心',woodCore:'木核心',fireCube:'火立方',waterCube:'水立方',goldCube:'金立方',fiveElementCrystal:'五行结晶',jingCore:'京核',elementChip:'元素晶片',matterX:'物质X',matterY:'物质Y',matterZ:'物质Z',mechanicalParts:'机械零件'};
+        const nameMap={amethyst:'紫水晶',copperIngot:'铜锭',blueObsidianFragment:'蓝曜石碎片',redObsidianFragment:'红曜石碎片',redBlueCrystal:'红蓝结晶',bedrockFragment:'基岩碎片',obsidian:'黑曜石',netherStar:'下界之星',glass:'玻璃',kunKun:'坤坤',earthCore:'土核心',woodCore:'木核心',fireCube:'火立方',waterCube:'水立方',goldCube:'金立方',fiveElementCrystal:'五行结晶',jingCore:'京核',elementChip:'元素晶片',matterX:'物质X',matterY:'物质Y',matterZ:'物质Z',mechanicalParts:'机械零件',quantumBonus:'量子增益'};
         for(const[key,val]of Object.entries(drops)){msg+='  '+(nameMap[key]||key)+' +'+formatNumber(val)+'\n';}
     }
     alert('🎉 离线收益\n'+msg);
@@ -917,18 +951,15 @@ function toggleDebugMode(enabled){
 }
 function setupDebugInputs(){
     document.querySelectorAll('.editable-debug').forEach(inp=>{
-        inp.addEventListener('change',(e)=>{const id=e.target.id;let val=parseFloat(e.target.value.replace('x','').replace('/秒','').trim());if(isNaN(val))return;const map={'level':'level','experience':'experience','coins':'coins','trophies':'trophies','amethyst':'amethyst','copper-ingot':'copperIngot','blue-obsidian-fragment':'blueObsidianFragment','red-obsidian-fragment':'redObsidianFragment','red-blue-crystal':'redBlueCrystal','bedrock-fragment':'bedrockFragment','obsidian':'obsidian','nether-star':'netherStar','glass':'glass','kun-kun':'kunKun','earth-core':'earthCore','wood-core':'woodCore','fire-cube':'fireCube','water-cube':'waterCube','gold-cube':'goldCube','five-element-crystal':'fiveElementCrystal','jing-core':'jingCore','element-chip':'elementChip','matter-x':'matterX','matter-y':'matterY','matter-z':'matterZ','pickaxe-damage':'pickaxe.damage','usage-bonus':'usageBonus','special-bonus':'specialBonus','drop-multiplier-stat':'dropMultiplier','energy-total':'energy','energy-speed':'energyProductionSpeed','energy-upgrade-cost':'energyUpgradeCost','level-bonus':'level=Math.pow(val,2)','trophy-bonus':'trophies=Math.max(0,Math.pow(val,1.5)-1)','beacon-bonus':'beacon=Math.max(0,Math.pow(val,1/0.64)-1)','tree-bonus':'treeLevel=Math.max(1,Math.floor(Math.pow(val,2.5)))','time-bonus':'originalStartTime=Date.now()-(160*Math.pow(8,val)*1000)','energy-bonus':'energy=Math.max(0,Math.pow(val,1/0.22))','usage-multiplier-display':'usageMultiplier=val','mechanical-parts':'mechanicalParts=val','mechanical-pickaxe-level':'mechanicalPickaxeLevel=Math.max(0,Math.floor(val))'};
+        inp.addEventListener('change',(e)=>{const id=e.target.id;let val=parseFloat(e.target.value.replace('x','').replace('/秒','').trim());if(isNaN(val))return;const map={'level':'level','experience':'experience','coins':'coins','trophies':'trophies','amethyst':'amethyst','copper-ingot':'copperIngot','blue-obsidian-fragment':'blueObsidianFragment','red-obsidian-fragment':'redObsidianFragment','red-blue-crystal':'redBlueCrystal','bedrock-fragment':'bedrockFragment','obsidian':'obsidian','nether-star':'netherStar','glass':'glass','kun-kun':'kunKun','earth-core':'earthCore','wood-core':'woodCore','fire-cube':'fireCube','water-cube':'waterCube','gold-cube':'goldCube','five-element-crystal':'fiveElementCrystal','jing-core':'jingCore','element-chip':'elementChip','matter-x':'matterX','matter-y':'matterY','matter-z':'matterZ','pickaxe-damage':'pickaxe.damage','usage-bonus':'usageBonus','special-bonus':'specialBonus','drop-multiplier-stat':'dropMultiplier','energy-total':'energy','energy-speed':'energyProductionSpeed','energy-upgrade-cost':'energyUpgradeCost','level-bonus':'level=Math.pow(val,2)','trophy-bonus':'trophies=Math.max(0,Math.pow(val,1.5)-1)','beacon-bonus':'beacon=Math.max(0,Math.pow(val,1/0.64)-1)','tree-bonus':'treeLevel=Math.max(1,Math.floor(Math.pow(val,2.5)))','time-bonus':'originalStartTime=Date.now()-(160*Math.pow(8,val)*1000)','energy-bonus':'energy=Math.max(0,Math.pow(val,1/0.22))','usage-multiplier-display':'usageMultiplier=val','mechanical-parts':'mechanicalParts=val','mechanical-pickaxe-level':'mechanicalPickaxeLevel=Math.max(0,Math.floor(val))','quantum-bonus':'quantumBonus=Math.max(1,val)'};
             if(id in map){try{eval(`gameData.${map[id]}=val;`);}catch(e){}}updateStats();saveGame();
         });
     });
 }
 function updatePlaytime(){try{const sec=gameData.totalOnlineSeconds;if(elements.playtime)elements.playtime.innerHTML=Math.floor(sec/31536000)+'年'+Math.floor((sec%31536000)/86400)+'日'+Math.floor((sec%86400)/3600)+'时'+Math.floor((sec%3600)/60)+'分'+sec%60+'秒<br>合计'+sec+'秒';}catch(e){}}
-
-// ★ 修复：updateChestTimer 增加防御性修正
 function updateChestTimer(){
     try{
         let now=Date.now();
-        // 如果 lastChestTime 大于当前时间，修正为当前时间
         if(gameData.lastChestTime > now) gameData.lastChestTime = now;
         let rem=300-Math.floor((now-gameData.lastChestTime)/1000);
         if(rem<0)rem=0;
@@ -936,7 +967,6 @@ function updateChestTimer(){
         if(elements.chestTimer)elements.chestTimer.textContent=m+':'+s.toString().padStart(2,'0');
     }catch(e){console.warn('updateChestTimer error:',e);}
 }
-
 function updateAllUI(){if(!gameData)return;initShop();updateBlockDisplay();updateStats();updateExchangeButton();updateChestUI();updatePlaytime();updateChestTimer();updateAutoMine();elements.autoMineBtn.textContent='⚙ 自动挖矿: '+(gameData.autoMine?'开启':'关闭');elements.autoMineBtn.classList.toggle('active',gameData.autoMine);elements.autoExchangeBtn.textContent='⟳ 自动兑换: '+(gameData.autoExchange?'开启':'关闭');elements.autoExchangeBtn.classList.toggle('active',gameData.autoExchange);elements.autoExchangeThreshold.value=gameData.autoExchangeThreshold;const tReq=10*gameData.treeLevel;if(elements.treeLevel)elements.treeLevel.textContent=gameData.treeLevel;if(elements.treeProgressBar)elements.treeProgressBar.style.width=(gameData.treeExperience/tReq)*100+'%';if(elements.treeExperience)elements.treeExperience.textContent=formatNumber(gameData.treeExperience);if(elements.treeExperienceRequired)elements.treeExperienceRequired.textContent=formatNumber(tReq);}
 
 function initGame(){
@@ -954,7 +984,7 @@ function initGame(){
     elements.activateResearchBtn.addEventListener('click',activateResearchInstitute);
     elements.upgradeEnergyBtn.addEventListener('click',upgradeEnergyProduction);
     elements.openChestModalBtn.addEventListener('click',()=>{document.getElementById('chest-modal').style.display='flex';document.getElementById('chest-reward-text').innerHTML='✨ 选择一个宝箱开启 ✨';document.getElementById('chest-reward-text').className='';updateChestUI();});
-    elements.sqrtPower.addEventListener('change',()=>{const v=parseInt(elements.sqrtPower.value);if(v>=1&&v<=3){gameData.sqrtPower=v;const list=getCurrentSqrtZoneBlocks();if(list.length>0){gameData.currentBlockIndex=list[0];gameData.currentHp=gameData.blocks[gameData.currentBlockIndex].hp;updateBlockDisplay();}}else{elements.sqrtPower.value=gameData.sqrtPower;}});
+    elements.sqrtPower.addEventListener('change',()=>{const v=parseInt(elements.sqrtPower.value);if(v>=1&&v<=4){gameData.sqrtPower=v;const list=getCurrentSqrtZoneBlocks();if(list.length>0){gameData.currentBlockIndex=list[0];gameData.currentHp=gameData.blocks[gameData.currentBlockIndex].hp;updateBlockDisplay();}}else{elements.sqrtPower.value=gameData.sqrtPower;}});
     elements.sqrtPower.value=gameData.sqrtPower;
     const list=getCurrentSqrtZoneBlocks();if(!list.includes(gameData.currentBlockIndex)&&list.length>0){gameData.currentBlockIndex=list[0];gameData.currentHp=gameData.blocks[gameData.currentBlockIndex].hp;}
     toggleDebugMode(gameData.debugEnabled);
