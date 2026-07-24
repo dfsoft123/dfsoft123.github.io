@@ -517,7 +517,7 @@ body::before{
 <div class="intro" id="intro">
   <!-- 开场视频 -->
   <div class="intro-video-container" id="intro-video-container">
-    <video id="intro-video" autoplay playsinline>
+    <video id="intro-video" playsinline>
       <source src="7月24日.mp4" type="video/mp4">
     </video>
     <div class="intro-video-overlay"></div>
@@ -792,7 +792,7 @@ let game = {
   gold:0, level:1, onlinePoints:0, onlineTime:0,
   currentBlockLevel:1, blockHP:100, blockMaxHP:100,
   equipped:null, inventory:{},
-  usageBonus:{glass:1,foam:1,plastic:1,normal:1,extraordinary:1},
+  usageBonus:1,
   autoMining:false, autoDraw:false,
   settings:{superEffect:true,unit:'chinese'},
   lastSave:Date.now(), lastActive:Date.now(),
@@ -863,7 +863,7 @@ function eqAttrs(){ return game.equipped?attrs(game.equipped.type,game.equipped.
 function totalDmg(){
   if(!game.equipped) return 0;
   const a=eqAttrs();
-  return a.damage*game.usageBonus[game.equipped.type]*levelBonus();
+  return a.damage*game.usageBonus*levelBonus();
 }
 
 // ==================== 等级 ====================
@@ -978,7 +978,7 @@ function mine(silent){
   if(!game.equipped){ if(!silent) toast('请先装备一把镐子！','warning'); return; }
   const dmg=totalDmg();
   game.blockHP-=dmg;
-  game.usageBonus[game.equipped.type]+=eqAttrs().usage;
+  game.usageBonus+=eqAttrs().usage;
   game.totalMined++;
   if(!silent){
     showDmg(dmg);
@@ -1077,7 +1077,7 @@ function calcOffline(){
     const hits=Math.ceil(block.hp/dmg), total=Math.floor(sec*10);
     const broken=Math.floor(total/hits);
     r.gold=broken*block.gold*eqAttrs().gold;
-    game.usageBonus[game.equipped.type]+=eqAttrs().usage*total;
+    game.usageBonus+=eqAttrs().usage*total;
   }
   r.draws=Math.floor(sec/300);
   for(let i=0;i<r.draws;i++){
@@ -1112,7 +1112,7 @@ function load(){
         if(!game.inventory[t]) game.inventory[t]={};
         for(let s=0;s<=15;s++) if(game.inventory[t][s]===undefined) game.inventory[t][s]=0;
       }
-      if(!game.usageBonus) game.usageBonus={glass:1,foam:1,plastic:1,normal:1,extraordinary:1};
+      if(!game.usageBonus) game.usageBonus=1;
       if(!game.settings) game.settings={superEffect:true,unit:'chinese'};
       if(!game.drawHistory) game.drawHistory=[];
       if(!game.redeemedCodes) game.redeemedCodes=[];
@@ -1148,7 +1148,7 @@ function resetGame(){
     {text:'取消',action:'close'},
     {text:'确认重置',danger:true,action:()=>{
       localStorage.removeItem('pickaxeGameSave');
-      game={gold:0,level:1,onlinePoints:0,onlineTime:0,currentBlockLevel:1,blockHP:100,blockMaxHP:100,equipped:null,inventory:{},usageBonus:{glass:1,foam:1,plastic:1,normal:1,extraordinary:1},autoMining:false,autoDraw:false,settings:{superEffect:true,unit:'chinese'},lastSave:Date.now(),lastActive:Date.now(),drawHistory:[],totalMined:0,totalDraws:0,maxBlockUnlocked:1,redeemedCodes:[],introSeen:true};
+      game={gold:0,level:1,onlinePoints:0,onlineTime:0,currentBlockLevel:1,blockHP:100,blockMaxHP:100,equipped:null,inventory:{},usageBonus:1,autoMining:false,autoDraw:false,settings:{superEffect:true,unit:'chinese'},lastSave:Date.now(),lastActive:Date.now(),drawHistory:[],totalMined:0,totalDraws:0,maxBlockUnlocked:1,redeemedCodes:[],introSeen:true};
       initInv(); save(); renderAll(); closeModal(); toast('游戏已重置','success');
     }}
   ]);
@@ -1233,7 +1233,7 @@ function renderMineStats(){
     '<div class="mine-stat-row"><span class="mine-stat-label">单次伤害</span><span class="mine-stat-value">'+fmt(td)+'</span></div>'+
     '<div class="mine-stat-row"><span class="mine-stat-label">击破所需</span><span class="mine-stat-value">'+hits+' 次</span></div>'+
     '<div class="mine-stat-row"><span class="mine-stat-label">方块金币</span><span class="mine-stat-value">'+fmt(b.gold)+'</span></div>'+
-    '<div class="mine-stat-row"><span class="mine-stat-label">使用增益</span><span class="mine-stat-value">'+(game.equipped?'×'+fmt(game.usageBonus[game.equipped.type]):'未装备')+'</span></div>'+
+    '<div class="mine-stat-row"><span class="mine-stat-label">使用增益</span><span class="mine-stat-value">×'+fmt(game.usageBonus)+'</span></div>'+
     '<div class="mine-stat-row"><span class="mine-stat-label">等级增益</span><span class="mine-stat-value">×'+fmt(levelBonus())+'</span></div>'+
     '<div class="mine-stat-row"><span class="mine-stat-label">挖矿速度</span><span class="mine-stat-value">10次/秒</span></div>';
 }
@@ -1463,8 +1463,16 @@ function loops(){
 function init(){
   initInv();
   const loaded=load();
+  const intro=document.getElementById('intro');
+  const video=document.getElementById('intro-video');
+  if(video){
+    video.autoplay=false;
+    video.pause();
+    video.currentTime=0;
+    video.muted=true;
+  }
   if(loaded && game.introSeen){
-    document.getElementById('intro').style.display='none';
+    intro.style.display='none';
   }else{
     playIntro();
   }
