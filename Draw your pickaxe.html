@@ -1112,7 +1112,7 @@ function load(){
         if(!game.inventory[t]) game.inventory[t]={};
         for(let s=0;s<=15;s++) if(game.inventory[t][s]===undefined) game.inventory[t][s]=0;
       }
-      if(!game.usageBonus) game.usageBonus=1;
+      if(!game.usageBonus||typeof game.usageBonus==='object') game.usageBonus=1;
       if(!game.settings) game.settings={superEffect:true,unit:'chinese'};
       if(!game.drawHistory) game.drawHistory=[];
       if(!game.redeemedCodes) game.redeemedCodes=[];
