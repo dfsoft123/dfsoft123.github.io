@@ -739,22 +739,22 @@ body::before{
 
 // ==================== 数据定义 ====================
 const PICKAXES = {
-  glass:        { name:'玻璃镐', img:'%E6%99%BA%E8%B0%B1%E6%B8%85%E8%A8%80_2026-07-24.png', icon:'🔍', damage:1,    usage:0.01, gold:1,   rarity:0.4,   color:'#7dd3fc', class:'pickaxe-glass',        rarityName:'普通', sortKey:1 },
-  foam:         { name:'泡沫镐', img:'%E6%99%BA%E8%B0%B1%E6%B8%85%E8%A8%80_2026-07-24%20(1).png', icon:'🫧', damage:1.5,  usage:0.02, gold:1,   rarity:0.3,   color:'#fbbf24', class:'pickaxe-foam',         rarityName:'普通', sortKey:2 },
-  plastic:      { name:'塑料镐', img:'%E6%99%BA%E8%B0%B1%E6%B8%85%E8%A8%80_2026-07-24%20(2).png', icon:'♻️', damage:2,   usage:0.03, gold:1,   rarity:0.2,   color:'#4ade80', class:'pickaxe-plastic',      rarityName:'稀有', sortKey:3 },
-  normal:       { name:'普通镐', img:'%E6%99%BA%E8%B0%B1%E6%B8%85%E8%A8%80_2026-07-24%20(3).png', icon:'⛏️', damage:3,    usage:0.05, gold:1.1, rarity:0.099, color:'#94a3b8', class:'pickaxe-normal',       rarityName:'史诗', sortKey:4 },
-  extraordinary:{ name:'超凡镐', img:'%E6%99%BA%E8%B0%B1%E6%B8%85%E8%A8%80_2026-07-24%20(4).png', icon:'✨', damage:15,   usage:0.25,  gold:10, rarity:0.001, color:'#c084fc', class:'pickaxe-extraordinary',rarityName:'传说', sortKey:5 }
+  glass:        { name:'玻璃镐', img:'玻璃镐.png', icon:'🔍', damage:1,    usage:0.01, gold:1,   rarity:0.4,   color:'#7dd3fc', class:'pickaxe-glass',        rarityName:'普通', sortKey:1 },
+  foam:         { name:'泡沫镐', img:'泡沫镐.png', icon:'🫧', damage:1.5,  usage:0.02, gold:1,   rarity:0.3,   color:'#fbbf24', class:'pickaxe-foam',         rarityName:'普通', sortKey:2 },
+  plastic:      { name:'塑料镐', img:'塑料镐.png', icon:'♻️', damage:2,   usage:0.03, gold:1,   rarity:0.2,   color:'#4ade80', class:'pickaxe-plastic',      rarityName:'稀有', sortKey:3 },
+  normal:       { name:'普通镐', img:'普通镐.png', icon:'⛏️', damage:3,    usage:0.05, gold:1.1, rarity:0.099, color:'#94a3b8', class:'pickaxe-normal',       rarityName:'史诗', sortKey:4 },
+  extraordinary:{ name:'超凡镐', img:'超凡镐.png', icon:'✨', damage:15,   usage:0.25,  gold:10, rarity:0.001, color:'#c084fc', class:'pickaxe-extraordinary',rarityName:'传说', sortKey:5 }
 };
 
 const BLOCKS = [
-  { level:1, hp:100,      gold:1,    icon:'🟫', name:'泥土方块',   class:'block-1' },
-  { level:2, hp:400,      gold:2,    icon:'🪨', name:'石头方块',   class:'block-2' },
-  { level:3, hp:1600,     gold:4,    icon:'💎', name:'煤矿方块',   class:'block-3' },
-  { level:4, hp:6400,     gold:8,    icon:'💠', name:'铁矿方块',   class:'block-4' },
-  { level:5, hp:25600,    gold:16,   icon:'🟨', name:'金矿方块',   class:'block-5' },
-  { level:6, hp:102400,   gold:32,   icon:'⚪', name:'钻石方块',   class:'block-6' },
-  { level:7, hp:409600,   gold:64,   icon:'🟡', name:'绿宝石方块', class:'block-7' },
-  { level:8, hp:1638400,  gold:128,  icon:'🟣', name:'紫晶方块',   class:'block-8' }
+  { level:1, hp:100,      gold:1,    icon:'🟫', name:'泥土方块',   class:'block-1', img:'泥土.jpg' },
+  { level:2, hp:400,      gold:2,    icon:'🪨', name:'石头方块',   class:'block-2', img:'石头.jpg' },
+  { level:3, hp:1600,     gold:4,    icon:'💎', name:'煤矿方块',   class:'block-3', img:'煤矿.jpg' },
+  { level:4, hp:6400,     gold:8,    icon:'💠', name:'铁矿方块',   class:'block-4', img:'铁矿.jpg' },
+  { level:5, hp:25600,    gold:16,   icon:'🟨', name:'金矿方块',   class:'block-5', img:'金矿.jpg' },
+  { level:6, hp:102400,   gold:32,   icon:'⚪', name:'钻石方块',   class:'block-6', img:'钻石.jpg' },
+  { level:7, hp:409600,   gold:64,   icon:'🟡', name:'绿宝石方块', class:'block-7', img:'绿宝石.jpg' },
+  { level:8, hp:1638400,  gold:128,  icon:'🟣', name:'紫晶方块',   class:'block-8', img:'紫晶.jpg' }
 ];
 
 const CN_UNITS = [
@@ -1204,7 +1204,12 @@ function renderHistory(){
 function updateMine(){
   const b=BLOCKS[game.currentBlockLevel-1];
   const be=document.getElementById('mine-block');
-  be.textContent=b.icon; be.className='mine-block '+b.class;
+  be.className='mine-block '+b.class;
+  if(b.img){
+    be.innerHTML='<img src="'+b.img+'" style="width:100px;height:100px;object-fit:contain;">';
+  }else{
+    be.textContent=b.icon;
+  }
   document.getElementById('mine-block-level').textContent='Lv.'+b.level;
   document.getElementById('mine-block-label').textContent=b.name;
   const pct=Math.max(0,game.blockHP/game.blockMaxHP*100);
@@ -1217,7 +1222,8 @@ function updateMine(){
 function renderBlockSelector(){
   document.getElementById('block-selector').innerHTML=BLOCKS.map(b=>{
     const ul=b.level<=game.maxBlockUnlocked, ac=b.level===game.currentBlockLevel;
-    return '<button class="block-select-btn '+(ac?'active':'')+' '+(ul?'':'locked')+'" onclick="selectBlock('+b.level+')" '+(ul?'':'disabled')+'><div class="block-select-icon">'+b.icon+'</div><div>Lv.'+b.level+'</div><div style="font-size:9px">'+(ul?fmt(b.gold)+'金':'🔒')+'</div></button>';
+    const iconHtml=b.img?'<img src="'+b.img+'" style="width:24px;height:24px;object-fit:contain;">':b.icon;
+    return '<button class="block-select-btn '+(ac?'active':'')+' '+(ul?'':'locked')+'" onclick="selectBlock('+b.level+')" '+(ul?'':'disabled')+'><div class="block-select-icon">'+iconHtml+'</div><div>Lv.'+b.level+'</div><div style="font-size:9px">'+(ul?fmt(b.gold)+'金':'🔒')+'</div></button>';
   }).join('');
 }
 function renderMineStats(){
