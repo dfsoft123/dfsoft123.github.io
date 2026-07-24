@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>抽取你的镐子</title>
+<style>
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-0:#03060f;--bg-1:#080d1c;--bg-2:#0f1530;--bg-3:#1a2348;
+  --card:rgba(18,26,52,.7);--card-hi:rgba(32,44,80,.85);
+  --border:rgba(100,140,220,.22);--border-hi:rgba(130,190,255,.55);
+  --txt:#f2f6ff;--txt-2:#a8b8de;--txt-3:#6a7898;
+  --blue:#5ba8ff;--blue-g:rgba(91,168,255,.55);
+  --gold:#ffd54a;--gold-g:rgba(255,213,74,.55);
+  --pur:#c084ff;--pur-g:rgba(192,132,255,.55);
+  --grn:#3ee88a;--red:#ff5577;--org:#ff9944;--cyan:#33ddee;
+  --rb:linear-gradient(90deg,#ff3d8a,#ff8c00,#ffd700,#3ee88a,#33ddee,#c084ff,#ff3d8a);
+}
+html,body{height:100%}
+body{
+  font-family:'PingFang SC','Microsoft YaHei','Segoe UI',system-ui,sans-serif;
+  background:var(--bg-0);color:var(--txt);overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+/* 静态背景 */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 90% 70% at 15% 5%,rgba(91,168,255,.05),transparent 60%),radial-gradient(ellipse 70% 60% at 90% 95%,rgba(192,132,255,.04),transparent 60%);
+}
+
+/* ===== 开场剧情 ===== */
+.intro{
+  position:fixed;inset:0;z-index:9999;background:#000;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;overflow:hidden;
+}
+.intro.hide{opacity:0;pointer-events:none;transition:opacity 1s}
+/* 开场视频容器 */
+.intro-video-container{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  z-index:5;
+}
+.intro-video-container.hidden{display:none}
+.intro-video-container video{
+  width:100%;height:100%;object-fit:cover;
+}
+.intro-video-overlay{
+  position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.3),rgba(0,0,0,.7));
+}
+.intro-video-loading{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  color:#fff;font-size:18px;z-index:10;
+}
+.intro-video-progress{
+  position:absolute;bottom:30px;left:50%;transform:translateX(-50%);
+  width:80%;max-width:500px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;
+  overflow:hidden;z-index:10;
+}
+.intro-video-progress-fill{
+  height:100%;background:linear-gradient(90deg,#5ba8ff,#c084ff);border-radius:2px;
+  transition:width .3s;box-shadow:0 0 10px rgba(91,168,255,.8);
+}
+.intro-video-tip{
+  position:absolute;bottom:60px;left:50%;transform:translateX(-50%);
+  color:rgba(255,255,255,.7);font-size:14px;z-index:10;
+  text-shadow:0 0 10px rgba(0,0,0,.5);
+}
+.intro-scene{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity 1.2s ease;
+}
+.intro-scene.active{opacity:1}
+/* 场景1: 太空陨石 */
+.scene-space{
+  background:radial-gradient(ellipse at center,#0a1530 0%,#000 70%);
+}
+.meteor{
+  position:absolute;width:8px;height:80px;
+  background:linear-gradient(to bottom,transparent,#ff6b35,#ffaa00,#fff);
+  border-radius:50%;filter:blur(1px);
+  box-shadow:0 0 40px #ff6b35,0 0 80px #ffaa00;
+  animation:meteorFall 2s linear infinite;
+}
+.meteor:nth-child(1){left:20%;top:-10%;animation-delay:0s}
+.meteor:nth-child(2){left:50%;top:-10%;animation-delay:.7s}
+.meteor:nth-child(3){left:75%;top:-10%;animation-delay:1.4s}
+.meteor:nth-child(4){left:35%;top:-10%;animation-delay:1.8s}
+@keyframes meteorFall{
+  0%{transform:translateY(0) rotate(45deg);opacity:0}
+  10%{opacity:1}
+  100%{transform:translateY(120vh) rotate(45deg);opacity:0}
+}
+.earth{
+  position:absolute;bottom:-200px;left:50%;transform:translateX(-50%);
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#4a90d9,#1a4a7a 60%,#0a2540);
+  box-shadow:0 0 100px rgba(74,144,217,.4),inset -50px -50px 100px rgba(0,0,0,.6);
+  animation:earthGlow 3s ease-in-out infinite;
+}
+@keyframes earthGlow{0%,100%{box-shadow:0 0 100px rgba(74,144,217,.4),inset -50px -50px 100px rgba(0,0,0,.6)}50%{box-shadow:0 0 150px rgba(74,144,217,.6),inset -50px -50px 100px rgba(0,0,0,.6)}}
+.big-meteor{
+  position:absolute;top:-15%;left:40%;width:120px;height:120px;
+  background:radial-gradient(circle,#fff,#ff6b35 30%,#cc2200 70%);
+  border-radius:50%;filter:blur(2px);
+  box-shadow:0 0 80px #ff6b35,0 0 160px #ff2200;
+  animation:bigMeteorFall 4s ease-in 1s forwards;
+}
+@keyframes bigMeteorFall{
+  0%{top:-15%;left:40%;transform:scale(1)}
+  100%{top:60%;left:50%;transform:scale(2.5)}
+}
+/* 场景2: 毁灭 */
+.scene-destroy{
+  background:radial-gradient(ellipse at center,#3a1010 0%,#000 70%);
+}
+.explosion{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:0;height:0;border-radius:50%;
+  background:radial-gradient(circle,#fff,#ff6b35 20%,#ff2200 50%,transparent 70%);
+  animation:explosion 3s ease-out forwards;
+}
+@keyframes explosion{
+  0%{width:0;height:0;opacity:1}
+  50%{width:800px;height:800px;opacity:1}
+  100%{width:1200px;height:1200px;opacity:0}
+}
+.dust{
+  position:absolute;width:6px;height:6px;border-radius:50%;
+  background:#8a6a4a;filter:blur(1px);
+}
+/* 场景3: 怪兽 */
+.scene-monster{
+  background:radial-gradient(ellipse at center,#2a1a1a 0%,#000 70%);
+}
+.monster-silhouette{
+  position:absolute;bottom:10%;left:50%;transform:translateX(-50%);
+  width:300px;height:400px;
+  background:radial-gradient(ellipse at 50% 30%,#5a3a2a 0%,#2a1a0a 60%,transparent 80%);
+  filter:blur(3px);
+  animation:monsterRoar 2s ease-in-out infinite;
+}
+@keyframes monsterRoar{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.05)}}
+.monster-glow{
+  position:absolute;bottom:10%;left:50%;transform:translateX(-50%);
+  width:400px;height:450px;
+  background:radial-gradient(ellipse at 50% 40%,rgba(255,100,50,.3) 0%,transparent 60%);
+  animation:monsterGlow 2s ease-in-out infinite;
+}
+@keyframes monsterGlow{0%,100%{opacity:.5}50%{opacity:1}}
+/* 场景4: 文字 */
+.scene-text{
+  background:#000;
+}
+.intro-text{
+  color:#fff;font-size:42px;font-weight:700;text-align:center;
+  padding:0 40px;line-height:1.6;
+  opacity:0;animation:textFadeIn 1.5s ease forwards;
+  text-shadow:0 0 30px rgba(255,255,255,.3);
+}
+.intro-text.small{font-size:24px;font-weight:400;color:#ccc}
+.intro-text.joke{font-size:36px;color:#ff6b35;text-shadow:0 0 30px rgba(255,107,53,.5)}
+@keyframes textFadeIn{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
+/* 开始按钮 */
+.intro-start{
+  position:absolute;bottom:15%;left:50%;transform:translateX(-50%);
+  padding:18px 60px;font-size:22px;font-weight:700;
+  background:linear-gradient(135deg,#5ba8ff,#3060e0);
+  color:#fff;border:none;border-radius:50px;cursor:pointer;
+  box-shadow:0 0 40px rgba(91,168,255,.6),0 8px 24px rgba(0,0,0,.4);
+  opacity:0;animation:btnFadeIn 1s ease 1s forwards;
+  transition:all .3s;letter-spacing:4px;
+}
+.intro-start:hover{transform:translateX(-50%) scale(1.08);box-shadow:0 0 60px rgba(91,168,255,.8),0 12px 32px rgba(0,0,0,.5)}
+.intro-start::before{
+  content:'';position:absolute;inset:-3px;border-radius:50px;
+  background:linear-gradient(135deg,#5ba8ff,#c084ff,#5ba8ff);
+  z-index:-1;opacity:.6;animation:btnGlow 2s linear infinite;
+}
+@keyframes btnGlow{0%{filter:blur(8px)}50%{filter:blur(16px)}100%{filter:blur(8px)}}
+@keyframes btnFadeIn{0%{opacity:0;transform:translateX(-50%) translateY(20px)}100%{opacity:1;transform:translateX(-50%) translateY(0)}}
+.intro-skip{
+  position:absolute;top:20px;right:20px;
+  padding:8px 20px;font-size:14px;color:#888;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;cursor:pointer;transition:all .3s;z-index:10;
+}
+.intro-skip:hover{color:#fff;background:rgba(255,255,255,.1)}
+
+/* ===== 主应用 ===== */
+#app{position:relative;z-index:1;display:flex;height:100vh}
+/* 侧边栏 */
+.sidebar{
+  width:80px;background:rgba(10,15,35,.95);
+  border-right:1px solid rgba(91,168,255,.1);
+  display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px;
+  flex-shrink:0;z-index:10;
+}
+.sidebar-logo{font-size:28px;margin-bottom:8px;color:var(--blue)}
+.nav-btn{
+  width:56px;height:56px;border:none;background:transparent;color:var(--txt-2);
+  border-radius:10px;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;font-size:10px;
+}
+.nav-btn .nav-icon{font-size:20px}
+.nav-btn:hover{background:rgba(91,168,255,.06);color:var(--txt)}
+.nav-btn.active{background:rgba(91,168,255,.15);color:var(--blue)}
+.nav-btn.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:2px;height:28px;background:var(--blue);border-radius:0 2px 2px 0}
+
+/* 主内容 */
+.main{flex:1;overflow-y:auto;position:relative}
+.main::-webkit-scrollbar{width:8px}
+.main::-webkit-scrollbar-track{background:transparent}
+.main::-webkit-scrollbar-thumb{background:rgba(91,168,255,.3);border-radius:4px}
+.page{display:none;padding:20px 28px;animation:pageIn .4s ease}
+.page.active{display:block}
+@keyframes pageIn{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
+.page-header{margin-bottom:20px;position:relative}
+.page-title{font-size:26px;font-weight:700;background:linear-gradient(135deg,#fff,#a8b8de);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;position:relative;display:inline-block}
+.page-title::after{content:'';position:absolute;bottom:-4px;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--blue),var(--pur));border-radius:2px;box-shadow:0 0 12px rgba(91,168,255,.5)}
+.page-subtitle{font-size:13px;color:var(--txt-3);margin-top:8px}
+
+/* 顶部状态栏 */
+.topbar{
+  display:flex;gap:12px;padding:14px 18px;margin-bottom:20px;
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  backdrop-filter:blur(20px);flex-wrap:wrap;
+}
+.topbar-item{display:flex;align-items:center;gap:10px;padding:6px 14px;background:rgba(255,255,255,.03);border-radius:10px;flex:1;min-width:140px}
+.topbar-item .ti{font-size:24px}
+.topbar-item .tl{font-size:11px;color:var(--txt-3)}
+.topbar-item .tv{font-size:16px;font-weight:700}
+.topbar-item.gold .tv{color:var(--gold)}
+.topbar-item.blue .tv{color:var(--blue)}
+.topbar-item.pur .tv{color:var(--pur)}
+.topbar-item.grn .tv{color:var(--grn)}
+
+/* 卡片 */
+.card{
+  background:rgba(18,26,52,.8);border:1px solid rgba(91,168,255,.15);border-radius:12px;
+  padding:16px;
+  box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+.card-title{font-size:14px;font-weight:600;color:var(--txt);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.card-title::before{content:'';width:4px;height:14px;background:var(--blue);border-radius:2px}
+
+/* 主界面布局 */
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.home-left,.home-right{display:flex;flex-direction:column;gap:20px}
+@media(max-width:1100px){.home-grid{grid-template-columns:1fr}}
+
+/* 挖矿区 */
+.mine-arena{
+  position:relative;height:240px;border-radius:10px;
+  background:rgba(15,21,48,.6);border:1px solid rgba(91,168,255,.1);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;cursor:pointer;user-select:none;
+}
+.mine-block{font-size:100px;}
+.mine-block.shake{animation:blockShake .15s}
+@keyframes blockShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px) rotate(-2deg)}75%{transform:translateX(8px) rotate(2deg)}}
+.mine-block-label{position:absolute;top:16px;left:16px;font-size:13px;color:var(--txt-2);font-weight:600}
+.mine-block-level{position:absolute;top:16px;right:16px;font-size:13px;color:var(--gold);font-weight:700}
+.mine-hp-bar{position:absolute;bottom:16px;left:16px;right:16px;height:14px;background:rgba(0,0,0,.4);border-radius:7px;overflow:hidden;border:1px solid var(--border)}
+.mine-hp-fill{height:100%;background:linear-gradient(90deg,#ff5577,#ff9944,#3ee88a);border-radius:7px;transition:width .15s;box-shadow:0 0 12px rgba(62,232,138,.4)}
+.mine-hp-text{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);font-size:12px;color:var(--txt-2);font-weight:600;white-space:nowrap}
+.mine-damage-display{position:absolute;font-size:24px;font-weight:700;color:var(--org);text-shadow:0 0 10px rgba(255,153,68,.8);pointer-events:none;animation:dmgFloat 1s ease-out forwards}
+@keyframes dmgFloat{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-60px) scale(1.3)}}
+.coin-float{position:absolute;font-size:22px;font-weight:700;color:var(--gold);text-shadow:0 0 12px rgba(255,213,74,.8);pointer-events:none;animation:coinFloat 1.2s ease-out forwards}
+@keyframes coinFloat{0%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,-80px) scale(1.4)}}
+.mine-controls{display:flex;gap:8px;margin-top:12px}
+.btn{
+  padding:10px 16px;border:1px solid rgba(91,168,255,.1);background:rgba(25,35,65,.7);color:var(--txt);
+  border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;flex:1;
+}
+.btn:hover{background:rgba(35,48,85,.8);border-color:rgba(91,168,255,.3)}
+.btn.primary{background:#5ba8ff;border:none;color:#fff}
+.btn.gold{background:#ffd54a;border:none;color:#1a1a1a}
+.btn.active{background:#3ee88a;border:none;color:#fff}
+.btn.danger{background:#ff5577;border:none;color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* 方块选择 */
+.block-selector{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.block-select-btn{
+  padding:10px 6px;border:1px solid var(--border);background:var(--card);border-radius:10px;
+  cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;
+  transition:all .3s;font-size:11px;color:var(--txt-2);
+}
+.block-select-btn:hover{background:var(--card-hi);border-color:var(--border-hi)}
+.block-select-btn.active{background:linear-gradient(135deg,rgba(91,168,255,.2),rgba(91,168,255,.05));border-color:var(--blue);color:var(--blue);box-shadow:0 0 16px rgba(91,168,255,.3)}
+.block-select-btn.locked{opacity:.4;cursor:not-allowed}
+.block-select-icon{font-size:24px}
+
+/* 抽卡区 */
+.pack-display{
+  text-align:center;padding:24px;border-radius:14px;
+  background:radial-gradient(ellipse at center,rgba(192,132,255,.1),transparent 70%),linear-gradient(180deg,rgba(15,21,48,.7),rgba(8,13,28,.8));
+  border:1px solid rgba(192,132,255,.15);position:relative;overflow:hidden;
+}
+.pack-icon{font-size:60px;margin-bottom:8px;filter:drop-shadow(0 0 10px rgba(192,132,255,.3))}
+.pack-name{font-size:18px;font-weight:700;margin-top:4px;background:linear-gradient(135deg,#c084ff,#5ba8ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.pack-desc{font-size:12px;color:var(--txt-3);margin-top:4px}
+.draw-buttons{display:flex;gap:10px;margin-top:16px}
+
+/* 概率列表 */
+.prob-list{display:flex;flex-direction:column;gap:8px}
+.prob-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:10px;transition:all .3s}
+.prob-item:hover{background:rgba(255,255,255,.06)}
+.prob-thumb{width:36px;height:36px;border-radius:8px;object-fit:cover;border:1px solid var(--border)}
+.prob-name{font-size:13px;font-weight:600;flex:1}
+.prob-bar{height:6px;background:rgba(0,0,0,.3);border-radius:3px;margin-top:4px;overflow:hidden}
+.prob-bar-fill{height:100%;border-radius:3px;transition:width .5s}
+.prob-value{font-size:12px;font-weight:700;color:var(--txt-2)}
+.tag{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;margin-left:6px}
+.tag-blue{background:rgba(91,168,255,.2);color:var(--blue)}
+.tag-green{background:rgba(62,232,138,.2);color:var(--grn)}
+.tag-orange{background:rgba(255,153,68,.2);color:var(--org)}
+.tag-purple{background:rgba(192,132,255,.2);color:var(--pur)}
+
+/* 抽卡历史 */
+.draw-history{max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+.draw-history::-webkit-scrollbar{width:4px}
+.draw-history::-webkit-scrollbar-thumb{background:rgba(91,168,255,.3);border-radius:2px}
+.history-item{display:flex;align-items:center;gap:10px;padding:6px 10px;background:rgba(255,255,255,.03);border-radius:8px}
+.history-thumb{width:28px;height:28px;border-radius:6px;object-fit:cover;border:1px solid var(--border)}
+.history-name{font-size:12px;flex:1}
+.history-star{font-size:11px;color:var(--gold)}
+
+/* 等级面板 */
+.level-panel{text-align:center;padding:10px}
+.level-badge{display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#5ba8ff,#3060e0);font-size:28px;font-weight:700;color:#fff;box-shadow:0 0 24px rgba(91,168,255,.5)}
+.level-info{font-size:12px;color:var(--txt-3);margin-top:8px}
+.level-bonus{font-size:14px;color:var(--gold);font-weight:600;margin-top:4px}
+.level-progress{height:8px;background:rgba(0,0,0,.3);border-radius:4px;margin:12px 0;overflow:hidden}
+.level-progress-fill{height:100%;background:linear-gradient(90deg,#ffd54a,#ff9944);border-radius:4px;transition:width .3s;box-shadow:0 0 8px rgba(255,213,74,.5)}
+
+/* 仓库 */
+.warehouse-actions{display:flex;gap:8px;margin-bottom:12px}
+.warehouse-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.pickaxe-card{
+  background:rgba(20,28,55,.75);border:1px solid rgba(91,168,255,.1);border-radius:10px;padding:12px;
+  text-align:center;position:relative;
+}
+.pickaxe-card.equipped{border-color:var(--gold)}
+.pickaxe-card.equipped::before{content:'装备中';position:absolute;top:6px;right:6px;font-size:9px;padding:2px 8px;background:var(--gold);color:#1a1a1a;border-radius:8px;font-weight:700}
+.pickaxe-card.pickaxe-extraordinary{border-color:rgba(192,132,255,.4)}
+.pickaxe-card.pickaxe-normal{border-color:rgba(255,153,68,.3)}
+.pickaxe-count{position:absolute;top:6px;left:6px;font-size:11px;font-weight:700;color:var(--gold);background:rgba(0,0,0,.4);padding:2px 6px;border-radius:8px}
+.pickaxe-img{width:70px;height:70px;object-fit:cover;border-radius:8px;margin:6px auto;border:1px solid rgba(91,168,255,.1)}
+.pickaxe-name{font-size:13px;font-weight:600;margin-top:4px}
+.pickaxe-stars{margin:4px 0;font-size:13px;line-height:1}
+.star-yellow{color:var(--gold)}
+.star-red{color:var(--red)}
+.star-rainbow{background:var(--rb);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.pickaxe-attrs{margin:8px 0;font-size:11px}
+.attr-row{display:flex;justify-content:space-between;padding:3px 0;color:var(--txt-2)}
+.attr-row span:last-child{color:var(--txt);font-weight:600}
+.pickaxe-actions{display:flex;gap:6px;margin-top:8px}
+.pickaxe-btn{flex:1;padding:6px;font-size:11px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--txt);border-radius:8px;cursor:pointer;transition:all .3s}
+.pickaxe-btn:hover{background:rgba(255,255,255,.1)}
+.pickaxe-btn.equip{background:linear-gradient(135deg,rgba(91,168,255,.2),rgba(91,168,255,.1));border-color:var(--blue);color:var(--blue)}
+.pickaxe-btn.merge{background:linear-gradient(135deg,rgba(255,213,74,.2),rgba(255,213,74,.1));border-color:var(--gold);color:var(--gold)}
+.pickaxe-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* 设置 */
+.settings-container{display:flex;flex-direction:column;gap:16px;max-width:600px}
+.setting-group{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
+.setting-group-title{font-size:14px;font-weight:600;color:var(--blue);margin-bottom:12px}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.setting-row:last-child{border:none}
+.setting-label{font-size:14px;font-weight:600}
+.setting-desc{font-size:12px;color:var(--txt-3);margin-top:2px}
+.setting-value{font-size:14px;color:var(--txt-2);font-weight:600}
+.toggle{width:44px;height:24px;background:rgba(0,0,0,.4);border-radius:12px;cursor:pointer;position:relative;transition:all .3s;border:1px solid var(--border)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;background:var(--txt-3);border-radius:50%;transition:all .3s}
+.toggle.active{background:linear-gradient(135deg,#3ee88a,#22aa66)}
+.toggle.active::after{left:22px;background:#fff;box-shadow:0 0 8px rgba(62,232,138,.6)}
+.unit-switch{display:flex;gap:6px;background:rgba(0,0,0,.3);padding:4px;border-radius:10px}
+.unit-btn{padding:6px 14px;border:none;background:transparent;color:var(--txt-3);border-radius:7px;cursor:pointer;font-size:12px;transition:all .3s}
+.unit-btn.active{background:linear-gradient(135deg,#5ba8ff,#3060e0);color:#fff}
+.code-input{flex:1;padding:10px 14px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;color:var(--txt);font-size:14px;font-family:monospace}
+.code-input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 12px rgba(91,168,255,.3)}
+.text-input{width:100%;padding:10px 14px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;color:var(--txt);font-size:13px;font-family:monospace;min-height:80px;resize:vertical;margin-top:8px}
+.text-input:focus{outline:none;border-color:var(--blue)}
+
+/* 抽卡结果弹窗 */
+.draw-result{position:fixed;inset:0;background:rgba(0,0,0,.9);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;z-index:1000}
+.draw-result.show{display:flex;animation:overlayIn .3s}
+@keyframes overlayIn{0%{opacity:0}100%{opacity:1}}
+.draw-result::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,rgba(192,132,255,.15),transparent 70%);
+  animation:resultGlow 2s ease-in-out infinite;
+}
+@keyframes resultGlow{0%,100%{opacity:.5}50%{opacity:1}}
+.result-card{
+  width:340px;background:linear-gradient(180deg,var(--bg-2),var(--bg-1));border:2px solid var(--border);
+  border-radius:24px;padding:32px;text-align:center;position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+}
+.result-card.animate{
+  animation:cardIn .4s cubic-bezier(.175,.885,.32,1.275);
+}
+@keyframes cardIn{0%{transform:scale(.1) translateY(-100px);opacity:0}60%{transform:scale(1.15) translateY(10px);opacity:1}80%{transform:scale(.95) translateY(-5px)}100%{transform:scale(1) translateY(0);opacity:1}}
+.result-card.legendary{border-color:var(--pur);box-shadow:0 0 80px rgba(192,132,255,.6),0 20px 60px rgba(0,0,0,.6)}
+.result-card.legendary::before{content:'';position:absolute;inset:-4px;border-radius:26px;background:var(--rb);z-index:-1;opacity:.7;animation:rbShift 2s linear infinite;filter:blur(10px)}
+.result-card.legendary::after{content:'';position:absolute;inset:0;border-radius:24px;background:radial-gradient(circle at 30% 20%,rgba(192,132,255,.2),transparent 50%);pointer-events:none}
+.result-card.epic{border-color:var(--org);box-shadow:0 0 50px rgba(255,153,68,.5),0 20px 60px rgba(0,0,0,.6)}
+.result-card.epic::after{content:'';position:absolute;inset:0;border-radius:24px;background:radial-gradient(circle at 30% 20%,rgba(255,153,68,.15),transparent 50%);pointer-events:none}
+.result-img{width:150px;height:150px;object-fit:cover;border-radius:20px;margin:0 auto 18px;border:3px solid var(--border);display:block;transition:all .3s}
+.result-card.legendary .result-img{border-color:var(--pur);box-shadow:0 0 40px rgba(192,132,255,.6);animation:legendaryPulse 1.5s ease-in-out infinite}
+.result-card.epic .result-img{border-color:var(--org);box-shadow:0 0 25px rgba(255,153,68,.5)}
+@keyframes legendaryPulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.05);filter:brightness(1.2)}}
+.result-name{font-size:24px;font-weight:700;margin-bottom:8px}
+.result-card.legendary .result-name{background:var(--rb);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:rbShift 2s linear infinite;text-shadow:0 0 30px rgba(192,132,255,.5)}
+.result-rarity{font-size:14px;color:var(--txt-2);margin-bottom:16px;padding:4px 16px;background:rgba(255,255,255,.05);border-radius:20px;display:inline-block}
+.result-card.legendary .result-rarity{background:rgba(192,132,255,.2);color:var(--pur)}
+.result-card.epic .result-rarity{background:rgba(255,153,68,.2);color:var(--org)}
+.result-attrs{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.attr-pill{font-size:12px;padding:8px 14px;background:rgba(255,255,255,.05);border-radius:25px;color:var(--txt-2);border:1px solid rgba(255,255,255,.1);transition:all .3s}
+.attr-pill:hover{background:rgba(255,255,255,.1)}
+.attr-pill span{color:var(--gold);font-weight:700;margin-left:4px}
+.result-close-btn{padding:12px 48px;background:linear-gradient(135deg,#5ba8ff,#3060e0);border:none;border-radius:30px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:all .3s;letter-spacing:2px}
+.result-close-btn:hover{transform:scale(1.08);box-shadow:0 0 30px rgba(91,168,255,.6)}
+
+/* 超凡特效 */
+.super-effect{position:fixed;inset:0;z-index:2000;pointer-events:none;display:none}
+.super-effect.active{display:block}
+.super-flash{position:absolute;inset:0;background:#fff;animation:superFlash .8s ease-out}
+@keyframes superFlash{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+.super-flash-2{position:absolute;inset:0;background:var(--rb);animation:superFlash2 .6s ease-out}
+@keyframes superFlash2{0%{opacity:0}30%{opacity:.4}100%{opacity:0}}
+.super-ray{position:absolute;top:50%;left:50%;width:6px;height:50vh;background:linear-gradient(to bottom,transparent,#fff,transparent);transform-origin:top center;animation:superRay 2s ease-out}
+@keyframes superRay{0%{transform:translate(-50%,0) rotate(var(--angle)) scaleY(0);opacity:1}100%{transform:translate(-50%,0) rotate(var(--angle)) scaleY(2.5);opacity:0}}
+.super-particle{position:absolute;width:10px;height:10px;border-radius:50%;pointer-events:none;box-shadow:0 0 12px currentColor}
+.super-ring{position:absolute;top:50%;left:50%;width:20px;height:20px;border:3px solid #fff;border-radius:50%;transform:translate(-50%,-50%);animation:superRing 2s ease-out}
+@keyframes superRing{0%{width:20px;height:20px;opacity:1;border-width:6px}100%{width:1000px;height:1000px;opacity:0;border-width:1px}}
+.super-ring-2{position:absolute;top:50%;left:50%;width:20px;height:20px;border:2px solid var(--pur);border-radius:50%;transform:translate(-50%,-50%);animation:superRing2 1.8s ease-out}
+@keyframes superRing2{0%{width:20px;height:20px;opacity:1;border-width:4px}100%{width:600px;height:600px;opacity:0;border-width:1px}}
+.super-star{position:absolute;width:30px;height:30px;background:#fff;border-radius:50%;animation:superStar 1.5s ease-out}
+@keyframes superStar{0%{opacity:1;transform:scale(0)}50%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.5)}}
+.super-sparkle{position:absolute;width:4px;height:4px;background:#fff;border-radius:50%;animation:superSparkle 1s ease-out}
+@keyframes superSparkle{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(0)}}
+
+/* 模态框 */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:1500}
+.modal-overlay.show{display:flex;animation:overlayIn .3s}
+.modal-box{width:420px;max-width:90vw;background:linear-gradient(180deg,var(--bg-2),var(--bg-1));border:1px solid var(--border);border-radius:16px;padding:24px;animation:cardIn .4s}
+.modal-title{font-size:18px;font-weight:700;margin-bottom:14px}
+.modal-body{font-size:14px;color:var(--txt-2);line-height:1.6}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+.modal-btn{padding:8px 20px;border:1px solid var(--border);background:var(--card);color:var(--txt);border-radius:10px;cursor:pointer;font-size:13px;transition:all .3s}
+.modal-btn:hover{background:var(--card-hi)}
+.modal-btn.primary{background:linear-gradient(135deg,#5ba8ff,#3060e0);border:none;color:#fff}
+.modal-btn.danger{background:linear-gradient(135deg,#ff5577,#cc2244);border:none;color:#fff}
+
+/* Toast */
+.toast-container{position:fixed;top:20px;right:20px;z-index:3000;display:flex;flex-direction:column;gap:10px}
+.toast{padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;animation:toastIn .3s,toastOut .3s 2.7s forwards;backdrop-filter:blur(20px);box-shadow:0 8px 24px rgba(0,0,0,.3);max-width:320px}
+.toast.success{background:linear-gradient(135deg,rgba(62,232,138,.95),rgba(34,170,102,.95));color:#fff}
+.toast.warning{background:linear-gradient(135deg,rgba(255,213,74,.95),rgba(255,153,68,.95));color:#1a1a1a}
+.toast.error{background:linear-gradient(135deg,rgba(255,85,119,.95),rgba(204,34,68,.95));color:#fff}
+.toast.gold{background:linear-gradient(135deg,rgba(255,213,74,.95),rgba(255,153,68,.95));color:#1a1a1a}
+@keyframes toastIn{0%{transform:translateX(120%);opacity:0}100%{transform:translateX(0);opacity:1}}
+@keyframes toastOut{0%{transform:translateX(0);opacity:1}100%{transform:translateX(120%);opacity:0}}
+
+/* 离线收益 */
+.offline-report{text-align:center}
+.offline-report-icon{font-size:48px;margin-bottom:8px}
+.offline-report-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.offline-report-time{font-size:14px;color:var(--txt-2);margin-bottom:16px}
+.offline-report-items{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.offline-report-item{display:flex;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,.05);border-radius:10px}
+.offline-report-label{font-size:13px;color:var(--txt-2)}
+.offline-report-value{font-size:15px;font-weight:700;color:var(--gold)}
+
+/* 商店 */
+.shop-coming-soon{text-align:center;padding:60px 20px}
+.shop-icon{font-size:80px;margin-bottom:16px;filter:drop-shadow(0 0 20px rgba(91,168,255,.3))}
+.shop-title{font-size:24px;font-weight:700;margin-bottom:8px}
+.shop-desc{font-size:14px;color:var(--txt-3);margin-bottom:20px}
+.shop-badge{display:inline-block;padding:8px 24px;background:linear-gradient(135deg,rgba(91,168,255,.2),rgba(192,132,255,.2));border:1px solid var(--border);border-radius:20px;font-size:14px;font-weight:600;color:var(--blue);letter-spacing:2px}
+
+/* 装备展示 */
+.equipped-display{text-align:center;padding:10px}
+.equipped-label{font-size:12px;color:var(--txt-3);margin-bottom:8px}
+.equipped-img{width:100px;height:100px;object-fit:cover;border-radius:14px;margin:0 auto 10px;border:2px solid var(--border)}
+.equipped-name{font-size:16px;font-weight:600;margin-bottom:6px}
+.equipped-stars{margin-bottom:10px;font-size:16px}
+.equipped-attrs{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+
+/* 属性面板 */
+.stats-panel{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.stat-item{padding:10px 12px;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid var(--border)}
+.stat-label{font-size:11px;color:var(--txt-3)}
+.stat-value{font-size:18px;font-weight:700;margin-top:2px}
+.stat-value.gold{color:var(--gold)}
+.stat-value.blue{color:var(--blue)}
+.stat-value.pur{color:var(--pur)}
+.stat-value.grn{color:var(--grn)}
+.stat-value.org{color:var(--org)}
+.stat-sub{font-size:11px;color:var(--txt-3);margin-top:2px}
+
+/* 挖矿数据 */
+.mine-stats{display:flex;flex-direction:column;gap:8px}
+.mine-stat-row{display:flex;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;font-size:13px}
+.mine-stat-label{color:var(--txt-2)}
+.mine-stat-value{font-weight:600;color:var(--txt)}
+
+</style>
+</head>
+<body>
+
+<!-- 开场剧情 -->
+<div class="intro" id="intro">
+  <!-- 开场视频 -->
+  <div class="intro-video-container" id="intro-video-container">
+    <video id="intro-video" autoplay playsinline>
+      <source src="7月24日.mp4" type="video/mp4">
+    </video>
+    <div class="intro-video-overlay"></div>
+    <div class="intro-video-loading">加载中...</div>
+    <div class="intro-video-progress">
+      <div class="intro-video-progress-fill" id="intro-video-progress-fill"></div>
+    </div>
+    <div class="intro-video-tip">首次进入，观看剧情后可开始游戏</div>
+  </div>
+  <button class="intro-start" id="intro-start" style="display:none">点击开始</button>
+</div>
+
+<div id="app">
+  <!-- 侧边栏 -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">⛏️</div>
+    <button class="nav-btn active" data-page="home"><span class="nav-icon">🏠</span><span>主界面</span></button>
+    <button class="nav-btn" data-page="warehouse"><span class="nav-icon">📦</span><span>仓库</span></button>
+    <button class="nav-btn" data-page="shop"><span class="nav-icon">🛒</span><span>商店</span></button>
+    <button class="nav-btn" data-page="settings"><span class="nav-icon">⚙️</span><span>设置</span></button>
+  </nav>
+  <!-- 主内容 -->
+  <main class="main">
+    <!-- 主界面 -->
+    <div class="page active" id="page-home">
+      <div class="page-header">
+        <h1 class="page-title">主界面</h1>
+        <p class="page-subtitle">挖矿与抽卡 · 提升你的镐子</p>
+      </div>
+      <div class="topbar" id="home-topbar"></div>
+      <div class="home-grid">
+        <div class="home-left">
+          <!-- 挖矿区 -->
+          <div class="card">
+            <div class="card-title">挖矿</div>
+            <div class="mine-arena" id="mine-arena">
+              <div class="mine-block-label" id="mine-block-label">泥土方块</div>
+              <div class="mine-block-level" id="mine-block-level">Lv.1</div>
+              <div class="mine-block" id="mine-block">🟫</div>
+              <div class="mine-hp-text" id="mine-hp-text">100 / 100</div>
+              <div class="mine-hp-bar"><div class="mine-hp-fill" id="mine-hp-fill" style="width:100%"></div></div>
+            </div>
+            <div class="mine-controls">
+              <button class="btn primary" id="btn-mine">⛏️ 长按挖矿</button>
+              <button class="btn" id="btn-auto-mine">🤖 自动挖矿</button>
+            </div>
+          </div>
+          <!-- 方块选择 -->
+          <div class="card">
+            <div class="card-title">方块选择</div>
+            <div class="block-selector" id="block-selector"></div>
+          </div>
+          <!-- 挖矿数据 -->
+          <div class="card">
+            <div class="card-title">挖矿数据</div>
+            <div class="mine-stats" id="mine-stats"></div>
+          </div>
+        </div>
+        <div class="home-right">
+          <!-- 抽卡区 -->
+          <div class="card">
+            <div class="card-title">抽取镐子</div>
+            <div class="pack-display">
+              <div class="pack-icon">🎁</div>
+              <div class="pack-name">基础包</div>
+              <div class="pack-desc">包含5种稀有度的镐子</div>
+              <div class="draw-buttons">
+                <button class="btn gold" id="btn-draw">抽取一次</button>
+                <button class="btn" id="btn-auto-draw">🔄 自动抽卡</button>
+              </div>
+            </div>
+          </div>
+          <!-- 概率 -->
+          <div class="card">
+            <div class="card-title">概率一览</div>
+            <div class="prob-list" id="prob-list"></div>
+          </div>
+          <!-- 最近抽取 -->
+          <div class="card">
+            <div class="card-title">最近抽取</div>
+            <div class="draw-history" id="draw-history"></div>
+          </div>
+          <!-- 等级 -->
+          <div class="card">
+            <div class="card-title">等级系统</div>
+            <div class="level-panel" id="level-panel"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 仓库 -->
+    <div class="page" id="page-warehouse">
+      <div class="page-header">
+        <h1 class="page-title">仓库</h1>
+        <p class="page-subtitle">查看、合并、装备你的镐子（5个同星合并升1星，属性翻倍）</p>
+      </div>
+      <div class="warehouse-actions">
+        <button class="btn gold" id="btn-auto-merge" onclick="autoMergeAll()">🔮 一键合并</button>
+      </div>
+      <div class="warehouse-grid" id="warehouse-grid"></div>
+    </div>
+    <!-- 商店 -->
+    <div class="page" id="page-shop">
+      <div class="page-header">
+        <h1 class="page-title">商店</h1>
+        <p class="page-subtitle">购买更多资源</p>
+      </div>
+      <div class="shop-coming-soon">
+        <div class="shop-icon">🛒</div>
+        <div class="shop-title">商店即将开放</div>
+        <div class="shop-desc">开发者正在努力筹备中...</div>
+        <div class="shop-badge">COMING SOON</div>
+      </div>
+    </div>
+    <!-- 设置 -->
+    <div class="page" id="page-settings">
+      <div class="page-header">
+        <h1 class="page-title">设置</h1>
+        <p class="page-subtitle">管理游戏存档与偏好</p>
+      </div>
+      <div class="settings-container">
+        <div class="setting-group">
+          <div class="setting-group-title">兑换码</div>
+          <div class="setting-row" style="border:none">
+            <input type="text" class="code-input" id="code-input" placeholder="输入兑换码..." />
+            <button class="btn primary" id="redeem-btn" style="flex:0 0 auto;margin-left:10px">兑换</button>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="setting-group-title">存档管理</div>
+          <div class="setting-row">
+            <div><div class="setting-label">导出存档</div><div class="setting-desc">复制存档数据到剪贴板</div></div>
+            <button class="btn" id="export-btn" style="flex:0 0 auto">导出</button>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">导入存档</div><div class="setting-desc">从剪贴板导入存档</div></div>
+            <button class="btn" id="import-btn" style="flex:0 0 auto">导入</button>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">重置游戏</div><div class="setting-desc">清除所有数据重新开始</div></div>
+            <button class="btn danger" id="reset-btn" style="flex:0 0 auto">重置</button>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="setting-group-title">显示设置</div>
+          <div class="setting-row">
+            <div><div class="setting-label">超凡特效</div><div class="setting-desc">抽取超凡镐时的超级特效</div></div>
+            <div class="toggle active" id="super-effect-toggle"></div>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">数字单位</div><div class="setting-desc">切换数字显示格式</div></div>
+            <div class="unit-switch">
+              <button class="unit-btn active" data-unit="chinese">中文</button>
+              <button class="unit-btn" data-unit="international">国际</button>
+              <button class="unit-btn" data-unit="scientific">科学</button>
+            </div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="setting-group-title">游戏信息</div>
+          <div class="setting-row">
+            <div class="setting-label">在线时间</div>
+            <div class="setting-value" id="online-time">00:00</div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-label">在线积分</div>
+            <div class="setting-value" id="online-points-display">0</div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-label">游戏版本</div>
+            <div class="setting-value">v1.0.0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- 抽卡结果弹窗 -->
+<div class="draw-result" id="draw-result">
+  <div class="result-card" id="result-card">
+    <img class="result-img" id="result-img" src="" alt="">
+    <div class="result-name" id="result-name"></div>
+    <div class="result-rarity" id="result-rarity"></div>
+    <div class="result-attrs" id="result-attrs"></div>
+    <button class="result-close-btn" id="result-close-btn">确认</button>
+  </div>
+</div>
+
+<!-- 超凡特效层 -->
+<div class="super-effect" id="super-effect"></div>
+
+<!-- 模态框 -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-actions" id="modal-actions"></div>
+  </div>
+</div>
+
+<!-- Toast容器 -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- 离线收益弹窗 -->
+<div class="modal-overlay" id="offline-modal">
+  <div class="modal-box offline-report">
+    <div class="offline-report-icon">💤</div>
+    <div class="offline-report-title">欢迎回来！</div>
+    <div class="offline-report-time" id="offline-time"></div>
+    <div class="offline-report-items" id="offline-items"></div>
+    <div class="modal-actions">
+      <button class="modal-btn primary" id="offline-collect-btn">领取</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+// ==================== 数据定义 ====================
+const PICKAXES = {
+  glass:        { name:'玻璃镐', img:'%E6%99%BA%E8%B0%B1%E6%B8%85%E8%A8%80_2026-07-24.png', icon:'🔍', damage:1,    usage:0.01, gold:1,   rarity:0.4,   color:'#7dd3fc', class:'pickaxe-glass',        rarityName:'普通', sortKey:1 },
+  foam:         { name:'泡沫镐', img:'%E6%99%BA%E8%B0%B1%E6%B8%85%E8%A8%80_2026-07-24%20(1).png', icon:'🫧', damage:1.5,  usage:0.02, gold:1,   rarity:0.3,   color:'#fbbf24', class:'pickaxe-foam',         rarityName:'普通', sortKey:2 },
+  plastic:      { name:'塑料镐', img:'%E6%99%BA%E8%B0%B1%E6%B8%85%E8%A8%80_2026-07-24%20(2).png', icon:'♻️', damage:2,   usage:0.03, gold:1,   rarity:0.2,   color:'#4ade80', class:'pickaxe-plastic',      rarityName:'稀有', sortKey:3 },
+  normal:       { name:'普通镐', img:'%E6%99%BA%E8%B0%B1%E6%B8%85%E8%A8%80_2026-07-24%20(3).png', icon:'⛏️', damage:3,    usage:0.05, gold:1.1, rarity:0.099, color:'#94a3b8', class:'pickaxe-normal',       rarityName:'史诗', sortKey:4 },
+  extraordinary:{ name:'超凡镐', img:'%E6%99%BA%E8%B0%B1%E6%B8%85%E8%A8%80_2026-07-24%20(4).png', icon:'✨', damage:15,   usage:0.25,  gold:10, rarity:0.001, color:'#c084fc', class:'pickaxe-extraordinary',rarityName:'传说', sortKey:5 }
+};
+
+const BLOCKS = [
+  { level:1, hp:100,      gold:1,    icon:'🟫', name:'泥土方块',   class:'block-1' },
+  { level:2, hp:400,      gold:2,    icon:'🪨', name:'石头方块',   class:'block-2' },
+  { level:3, hp:1600,     gold:4,    icon:'💎', name:'煤矿方块',   class:'block-3' },
+  { level:4, hp:6400,     gold:8,    icon:'💠', name:'铁矿方块',   class:'block-4' },
+  { level:5, hp:25600,    gold:16,   icon:'🟨', name:'金矿方块',   class:'block-5' },
+  { level:6, hp:102400,   gold:32,   icon:'⚪', name:'钻石方块',   class:'block-6' },
+  { level:7, hp:409600,   gold:64,   icon:'🟡', name:'绿宝石方块', class:'block-7' },
+  { level:8, hp:1638400,  gold:128,  icon:'🟣', name:'紫晶方块',   class:'block-8' }
+];
+
+const CN_UNITS = [
+  {value:1e88,label:'万京垓'},{value:1e84,label:'京垓'},{value:1e80,label:'兆垓'},
+  {value:1e76,label:'万亿垓'},{value:1e72,label:'亿垓'},{value:1e68,label:'万垓'},
+  {value:1e64,label:'垓'},{value:1e60,label:'万亿兆京'},{value:1e56,label:'亿兆京'},
+  {value:1e52,label:'万兆京'},{value:1e48,label:'兆京'},{value:1e44,label:'万亿京'},
+  {value:1e40,label:'亿京'},{value:1e36,label:'万京'},{value:1e32,label:'京'},
+  {value:1e28,label:'万亿兆'},{value:1e24,label:'亿兆'},{value:1e20,label:'万兆'},
+  {value:1e16,label:'兆'},{value:1e12,label:'万亿'},{value:1e8,label:'亿'},{value:1e4,label:'万'}
+];
+const INT_UNITS = [
+  {value:1e33,label:'Dc'},{value:1e30,label:'No'},{value:1e27,label:'Oc'},
+  {value:1e24,label:'Sp'},{value:1e21,label:'Sx'},{value:1e18,label:'Qi'},
+  {value:1e15,label:'Qa'},{value:1e12,label:'T'},{value:1e9,label:'B'},
+  {value:1e6,label:'M'},{value:1e3,label:'K'}
+];
+
+// 兑换码
+const CODES = {
+  'NEWBIE1000': { desc:'新手礼包 1000金币', reward:()=>{game.gold+=1000;return '1000金币';} },
+  'GOLD10K':    { desc:'1万金币', reward:()=>{game.gold+=10000;return '1万金币';} },
+  'GOLD1M':     { desc:'100万金币', reward:()=>{game.gold+=1000000;return '100万金币';} },
+  'PICKAXE5':   { desc:'5个随机镐子', reward:()=>{for(let i=0;i<5;i++){const t=randomPickaxe();game.inventory[t][0]++;game.totalDraws++;}return '5个随机镐子';} },
+  'SUPER1':     { desc:'1个超凡镐', reward:()=>{game.inventory.extraordinary[0]++;game.totalDraws++;return '1个超凡镐';} },
+  'RAINBOW':    { desc:'10个超凡镐', reward:()=>{for(let i=0;i<10;i++)game.inventory.extraordinary[0]++;game.totalDraws+=10;return '10个超凡镐';} },
+  'LEVELUP5':   { desc:'直接升5级', reward:()=>{game.level+=5;return '等级+5';} },
+  'GLASS100':   { desc:'100个玻璃镐', reward:()=>{game.inventory.glass[0]+=100;game.totalDraws+=100;return '100个玻璃镐';} }
+};
+
+
+
+// 游戏状态
+let game = {
+  gold:0, level:1, onlinePoints:0, onlineTime:0,
+  currentBlockLevel:1, blockHP:100, blockMaxHP:100,
+  equipped:null, inventory:{},
+  usageBonus:{glass:1,foam:1,plastic:1,normal:1,extraordinary:1},
+  autoMining:false, autoDraw:false,
+  settings:{superEffect:true,unit:'chinese'},
+  lastSave:Date.now(), lastActive:Date.now(),
+  drawHistory:[], totalMined:0, totalDraws:0, maxBlockUnlocked:1,
+  redeemedCodes:[], introSeen:false
+};
+
+function initInv(){
+  game.inventory={};
+  for(const t in PICKAXES){ game.inventory[t]={}; for(let s=0;s<=15;s++) game.inventory[t][s]=0; }
+}
+
+// ==================== 数字格式化 ====================
+function fmt(n){
+  if(n===Infinity) return '∞';
+  if(n<0) return '-'+fmt(-n);
+  if(n<10000){
+    if(n<100) return (Math.floor(n*100)/100).toString();
+    return Math.floor(n).toString();
+  }
+  const u=game.settings.unit;
+  if(u==='scientific'){
+    if(n<1e6) return Math.floor(n).toLocaleString();
+    return n.toExponential(2).replace('e+','e');
+  }
+  const units=u==='chinese'?CN_UNITS:INT_UNITS;
+  for(const x of units){
+    if(n>=x.value){
+      const v=n/x.value;
+      let s;
+      if(v<100) s=(Math.floor(v*100)/100).toString();
+      else if(v<1000) s=Math.floor(v).toString();
+      else s=(Math.floor(v*10)/10).toString();
+      return s+x.label;
+    }
+  }
+  return n.toExponential(2);
+}
+function fmtTime(s){
+  s=Math.floor(s);
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),x=s%60;
+  if(h>0) return h+':'+String(m).padStart(2,'0')+':'+String(x).padStart(2,'0');
+  return String(m).padStart(2,'0')+':'+String(x).padStart(2,'0');
+}
+
+// ==================== 星级 ====================
+function starHTML(s){
+  if(s<=0) return '<span style="color:var(--txt-3);font-size:11px">无星级</span>';
+  let h='';
+  if(s<=5) for(let i=0;i<s;i++) h+='<span class="star-yellow">★</span>';
+  else if(s<=10){const c=s-5;for(let i=0;i<c;i++) h+='<span class="star-red">★</span>';}
+  else{const c=s-10;for(let i=0;i<c;i++) h+='<span class="star-rainbow">★</span>';}
+  return h;
+}
+function starName(s){
+  if(s<=0) return '0星';
+  if(s<=5) return s+'星(黄)';
+  if(s<=10) return (s-5)+'星(红)';
+  return (s-10)+'星(彩)';
+}
+
+// ==================== 镐子属性 ====================
+function attrs(t,s){
+  const p=PICKAXES[t], m=Math.pow(2,s);
+  return { damage:p.damage*m, usage:p.usage*m, gold:p.gold*m };
+}
+function eqAttrs(){ return game.equipped?attrs(game.equipped.type,game.equipped.star):null; }
+function totalDmg(){
+  if(!game.equipped) return 0;
+  const a=eqAttrs();
+  return a.damage*game.usageBonus[game.equipped.type]*levelBonus();
+}
+
+// ==================== 等级 ====================
+function levelCost(lv){ return Math.pow(20,lv)*100; }
+function levelBonus(){ return Math.pow(2,game.level-1); }  // 2^(等级-1)
+function tryLevelUp(){
+  const c=levelCost(game.level);
+  if(game.gold>=c){
+    game.gold-=c; game.level++;
+    toast('等级提升至 '+game.level+'！增益 ×'+fmt(levelBonus()),'gold');
+    renderAll();
+  }else toast('金币不足！','error');
+}
+
+// ==================== 抽卡 ====================
+function randomPickaxe(){
+  const r=Math.random(); let acc=0;
+  for(const t in PICKAXES){ acc+=PICKAXES[t].rarity; if(r<acc) return t; }
+  return 'glass';
+}
+function drawCard(silent){
+  const t=randomPickaxe();
+  game.inventory[t][0]++; game.totalDraws++;
+  game.drawHistory.unshift({type:t,star:0,time:Date.now()});
+  if(game.drawHistory.length>20) game.drawHistory.pop();
+  if(!silent || t==='extraordinary'){
+    showDrawResult(t);
+    if(t==='extraordinary' && game.settings.superEffect) triggerSuperEffect();
+  }else{
+    const p=PICKAXES[t];
+    toast('📦 抽到 '+p.name,'info');
+  }
+}
+function showDrawResult(t){
+  const p=PICKAXES[t], card=document.getElementById('result-card');
+  const dr=document.getElementById('draw-result');
+  dr.classList.remove('show');
+  card.classList.remove('animate');
+  void card.offsetWidth;
+  card.className='result-card';
+  if(t==='extraordinary') card.classList.add('legendary');
+  else if(t==='normal') card.classList.add('epic');
+  card.classList.add('animate');
+  document.getElementById('result-img').src=p.img;
+  document.getElementById('result-name').textContent=p.name;
+  document.getElementById('result-rarity').textContent=p.rarityName+' · '+(p.rarity*100).toFixed(p.rarity<0.01?2:1)+'%';
+  const a=attrs(t,0);
+  document.getElementById('result-attrs').innerHTML='<div class="attr-pill">伤害<span>×'+a.damage+'</span></div><div class="attr-pill">使用<span>×'+a.usage+'</span></div><div class="attr-pill">金币<span>×'+a.gold+'</span></div>';
+  dr.classList.add('show');
+  if(game.autoDraw){
+    setTimeout(()=>{ dr.classList.remove('show'); },1200);
+  }
+}
+
+function triggerSuperEffect(){
+  const eff=document.getElementById('super-effect');
+  eff.classList.add('active');
+  eff.innerHTML='';
+  const flash=document.createElement('div'); flash.className='super-flash'; eff.appendChild(flash);
+  const flash2=document.createElement('div'); flash2.className='super-flash-2'; flash2.style.animationDelay='0.2s'; eff.appendChild(flash2);
+  for(let i=0;i<16;i++){
+    const ray=document.createElement('div'); ray.className='super-ray';
+    ray.style.setProperty('--angle',(i*22.5)+'deg');
+    ray.style.animationDelay=(i*0.05)+'s';
+    eff.appendChild(ray);
+  }
+  for(let i=0;i<4;i++){
+    const ring=document.createElement('div'); ring.className='super-ring';
+    ring.style.animationDelay=(i*0.2)+'s';
+    eff.appendChild(ring);
+  }
+  for(let i=0;i<3;i++){
+    const ring=document.createElement('div'); ring.className='super-ring-2';
+    ring.style.animationDelay=(i*0.3)+'s';
+    eff.appendChild(ring);
+  }
+  const colors=['#ff3d8a','#ff8c00','#ffd700','#3ee88a','#33ddee','#c084ff','#ffffff'];
+  for(let i=0;i<100;i++){
+    const p=document.createElement('div'); p.className='super-particle';
+    p.style.background=colors[i%colors.length];
+    p.style.color=colors[i%colors.length];
+    p.style.left='50%'; p.style.top='50%';
+    const ang=(Math.PI*2*i)/100, dist=150+Math.random()*500;
+    p.style.transition='all 2s cubic-bezier(.1,.5,.1,1)';
+    eff.appendChild(p);
+    setTimeout(()=>{
+      p.style.transform='translate('+(Math.cos(ang)*dist)+'px,'+(Math.sin(ang)*dist)+'px) scale(0)';
+      p.style.opacity='0';
+    },10);
+  }
+  for(let i=0;i<8;i++){
+    const star=document.createElement('div'); star.className='super-star';
+    star.style.left=(20+Math.random()*60)+'%';
+    star.style.top=(20+Math.random()*60)+'%';
+    star.style.animationDelay=(i*0.15)+'s';
+    eff.appendChild(star);
+  }
+  for(let i=0;i<30;i++){
+    setTimeout(()=>{
+      const sparkle=document.createElement('div'); sparkle.className='super-sparkle';
+      sparkle.style.left=(Math.random()*100)+'%';
+      sparkle.style.top=(Math.random()*100)+'%';
+      eff.appendChild(sparkle);
+      setTimeout(()=>sparkle.remove(),1000);
+    },i*100);
+  }
+  setTimeout(()=>{ eff.classList.remove('active'); eff.innerHTML=''; },2800);
+}
+
+// ==================== 挖矿 ====================
+function mine(silent){
+  if(!game.equipped){ if(!silent) toast('请先装备一把镐子！','warning'); return; }
+  const dmg=totalDmg();
+  game.blockHP-=dmg;
+  game.usageBonus[game.equipped.type]+=eqAttrs().usage;
+  game.totalMined++;
+  if(!silent){
+    showDmg(dmg);
+    const b=document.getElementById('mine-block');
+    b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),150);
+  }
+  if(game.blockHP<=0){
+    const block=BLOCKS[game.currentBlockLevel-1];
+    const gold=block.gold*eqAttrs().gold;
+    game.gold+=gold;
+    if(game.currentBlockLevel<8) game.maxBlockUnlocked=Math.max(game.maxBlockUnlocked,game.currentBlockLevel+1);
+    if(!silent) showCoin(gold);
+    const nb=BLOCKS[game.currentBlockLevel-1];
+    game.blockMaxHP=nb.hp; game.blockHP=nb.hp;
+  }
+  updateMine();
+}
+function showDmg(d){
+  const a=document.getElementById('mine-arena'); if(!a) return;
+  const e=document.createElement('div'); e.className='mine-damage-display';
+  e.textContent='-'+fmt(d);
+  e.style.left=(35+Math.random()*30)+'%';
+  e.style.top=(25+Math.random()*30)+'%';
+  a.appendChild(e); setTimeout(()=>e.remove(),1000);
+}
+function showCoin(g){
+  const a=document.getElementById('mine-arena'); if(!a) return;
+  const e=document.createElement('div'); e.className='coin-float';
+  e.textContent='+'+fmt(g)+' 💰';
+  e.style.left='50%'; e.style.top='40%';
+  a.appendChild(e); setTimeout(()=>e.remove(),1200);
+}
+function selectBlock(lv){
+  if(lv>game.maxBlockUnlocked){ toast('该方块尚未解锁！','warning'); return; }
+  game.currentBlockLevel=lv;
+  const b=BLOCKS[lv-1];
+  game.blockMaxHP=b.hp; game.blockHP=b.hp;
+  updateMine(); renderBlockSelector();
+}
+
+// ==================== 仓库 ====================
+function equip(t,s){
+  if(game.inventory[t][s]<=0) return;
+  if(game.equipped) game.inventory[game.equipped.type][game.equipped.star]++;
+  game.inventory[t][s]--;
+  game.equipped={type:t,star:s};
+  toast('装备 '+PICKAXES[t].name+' '+starName(s),'success');
+  renderAll();
+}
+function unequip(){
+  if(!game.equipped) return;
+  game.inventory[game.equipped.type][game.equipped.star]++;
+  game.equipped=null;
+  renderAll();
+}
+function merge(t,s){
+  if(s>=15){ toast('已达最高星级！','warning'); return; }
+  if(game.inventory[t][s]<5){ toast('数量不足，需要5个同星级镐子','warning'); return; }
+  game.inventory[t][s]-=5; game.inventory[t][s+1]++;
+  toast('合并成功！获得 '+PICKAXES[t].name+' '+starName(s+1),'gold');
+  renderWarehouse();
+  save();
+}
+function autoMergeAll(){
+  let mergedCount=0;
+  for(const t in PICKAXES){
+    for(let s=0;s<15;s++){
+      const equipped=game.equipped&&game.equipped.type===t&&game.equipped.star===s;
+      const count=equipped?(game.inventory[t][s]+1):game.inventory[t][s];
+      if(count>=5){
+        const actualCount=equipped?(game.inventory[t][s]):count;
+        const merges=Math.floor(actualCount/5);
+        game.inventory[t][s]-=merges*5;
+        game.inventory[t][s+1]+=merges;
+        mergedCount+=merges;
+      }
+    }
+  }
+  if(mergedCount>0){
+    toast('✨ 合并完成！共合并 '+mergedCount+' 组','gold');
+    renderWarehouse();
+    save();
+  }else{
+    toast('没有可合并的镐子（需要5个同星级）','warning');
+  }
+}
+
+// ==================== 离线收益 ====================
+function calcOffline(){
+  const now=Date.now(), off=(now-game.lastActive)/1000;
+  const sec=Math.min(off,8*3600);
+  if(sec<60) return null;
+  const r={gold:0,draws:0,time:sec};
+  if(game.equipped){
+    const dmg=totalDmg(), block=BLOCKS[game.currentBlockLevel-1];
+    const hits=Math.ceil(block.hp/dmg), total=Math.floor(sec*10);
+    const broken=Math.floor(total/hits);
+    r.gold=broken*block.gold*eqAttrs().gold;
+    game.usageBonus[game.equipped.type]+=eqAttrs().usage*total;
+  }
+  r.draws=Math.floor(sec/300);
+  for(let i=0;i<r.draws;i++){
+    const t=randomPickaxe();
+    game.inventory[t][0]++; game.totalDraws++;
+  }
+  game.gold+=r.gold; game.lastActive=now;
+  return r;
+}
+function showOffline(r){
+  document.getElementById('offline-time').textContent='离线时长：'+fmtTime(r.time);
+  const items=document.getElementById('offline-items'); items.innerHTML='';
+  if(r.gold>0) items.innerHTML+='<div class="offline-report-item"><span class="offline-report-label">💰 离线挖矿收益</span><span class="offline-report-value">+'+fmt(r.gold)+'</span></div>';
+  if(r.draws>0) items.innerHTML+='<div class="offline-report-item"><span class="offline-report-label">🎁 离线抽卡</span><span class="offline-report-value">+'+r.draws+' 次</span></div>';
+  document.getElementById('offline-modal').classList.add('show');
+  renderAll();
+}
+
+// ==================== 存档 ====================
+function save(){
+  game.lastSave=Date.now(); game.lastActive=Date.now();
+  try{ localStorage.setItem('pickaxeGameSave',JSON.stringify(game)); }catch(e){}
+}
+function load(){
+  try{
+    const d=localStorage.getItem('pickaxeGameSave');
+    if(d){
+      const l=JSON.parse(d);
+      game=Object.assign(game,l);
+      if(!game.inventory) initInv();
+      for(const t in PICKAXES){
+        if(!game.inventory[t]) game.inventory[t]={};
+        for(let s=0;s<=15;s++) if(game.inventory[t][s]===undefined) game.inventory[t][s]=0;
+      }
+      if(!game.usageBonus) game.usageBonus={glass:1,foam:1,plastic:1,normal:1,extraordinary:1};
+      if(!game.settings) game.settings={superEffect:true,unit:'chinese'};
+      if(!game.drawHistory) game.drawHistory=[];
+      if(!game.redeemedCodes) game.redeemedCodes=[];
+      const b=BLOCKS[game.currentBlockLevel-1]||BLOCKS[0];
+      if(!game.blockMaxHP||game.blockHP>b.hp){ game.blockMaxHP=b.hp; game.blockHP=b.hp; }
+      return true;
+    }
+  }catch(e){}
+  return false;
+}
+function exportSave(){
+  const d=btoa(unescape(encodeURIComponent(JSON.stringify(game))));
+  showModal('导出存档','<p style="margin-bottom:8px">复制下方文本保存：</p><textarea class="text-input" readonly>'+d+'</textarea>',[
+    {text:'关闭',action:'close'},
+    {text:'复制',primary:true,action:()=>{const ta=document.querySelector('.text-input');ta.select();document.execCommand('copy');toast('已复制到剪贴板','success');}}
+  ]);
+}
+function importSave(){
+  showModal('导入存档','<p style="margin-bottom:8px">粘贴存档文本：</p><textarea class="text-input" id="import-text" placeholder="在此粘贴存档..."></textarea>',[
+    {text:'取消',action:'close'},
+    {text:'导入',primary:true,action:()=>{
+      const t=document.getElementById('import-text').value.trim();
+      try{
+        game=Object.assign(game,JSON.parse(decodeURIComponent(escape(atob(t)))));
+        if(!game.inventory) initInv();
+        save(); toast('导入成功！','success'); renderAll(); closeModal();
+      }catch(e){ toast('存档格式错误！','error'); }
+    }}
+  ]);
+}
+function resetGame(){
+  showModal('重置游戏','<p style="color:var(--red)">⚠️ 警告：此操作将清除所有数据，不可恢复！</p><p style="margin-top:8px">确定要重置吗？</p>',[
+    {text:'取消',action:'close'},
+    {text:'确认重置',danger:true,action:()=>{
+      localStorage.removeItem('pickaxeGameSave');
+      game={gold:0,level:1,onlinePoints:0,onlineTime:0,currentBlockLevel:1,blockHP:100,blockMaxHP:100,equipped:null,inventory:{},usageBonus:{glass:1,foam:1,plastic:1,normal:1,extraordinary:1},autoMining:false,autoDraw:false,settings:{superEffect:true,unit:'chinese'},lastSave:Date.now(),lastActive:Date.now(),drawHistory:[],totalMined:0,totalDraws:0,maxBlockUnlocked:1,redeemedCodes:[],introSeen:true};
+      initInv(); save(); renderAll(); closeModal(); toast('游戏已重置','success');
+    }}
+  ]);
+}
+
+// ==================== 兑换码 ====================
+function redeemCode(){
+  const input=document.getElementById('code-input');
+  const code=input.value.trim().toUpperCase();
+  if(!code){ toast('请输入兑换码','warning'); return; }
+  if(game.redeemedCodes.includes(code)){ toast('该兑换码已使用','warning'); return; }
+  if(!CODES[code]){ toast('兑换码无效','error'); return; }
+  const result=CODES[code].reward();
+  game.redeemedCodes.push(code);
+  toast('兑换成功！获得 '+result,'gold');
+  input.value=''; save(); renderAll();
+}
+
+// ==================== 渲染 ====================
+function renderTopbar(id){
+  const a=eqAttrs(), td=totalDmg();
+  document.getElementById(id).innerHTML=
+    '<div class="topbar-item gold"><div class="ti">💰</div><div><div class="tl">金币</div><div class="tv">'+fmt(game.gold)+'</div></div></div>'+
+    '<div class="topbar-item blue"><div class="ti">⭐</div><div><div class="tl">等级</div><div class="tv">'+game.level+' (×'+fmt(levelBonus())+')</div></div></div>'+
+    '<div class="topbar-item pur"><div class="ti">⚔️</div><div><div class="tl">总伤害</div><div class="tv">'+fmt(td)+'</div></div></div>'+
+    '<div class="topbar-item grn"><div class="ti">🕐</div><div><div class="tl">在线积分</div><div class="tv">'+fmt(game.onlinePoints)+'</div></div></div>';
+}
+function renderLevelPanel(){
+  const c=levelCost(game.level), ok=game.gold>=c, pct=Math.min(100,game.gold/c*100);
+  document.getElementById('level-panel').innerHTML=
+    '<div class="level-badge">'+game.level+'</div>'+
+    '<div class="level-info">当前等级</div>'+
+    '<div class="level-bonus">等级增益 ×'+fmt(levelBonus())+'</div>'+
+    '<div class="level-progress"><div class="level-progress-fill" style="width:'+pct+'%"></div></div>'+
+    '<button class="btn gold" '+(ok?'':'disabled')+' onclick="tryLevelUp()">⬆️ 升级到 '+game.level+'</button>'+
+    '<div class="level-info" style="margin-top:8px">需要 '+fmt(c)+' 金币</div>';
+}
+function renderProb(){
+  const pl=document.getElementById('prob-list'); pl.innerHTML='';
+  for(const t in PICKAXES){
+    const p=PICKAXES[t], tc=t==='extraordinary'?'purple':t==='normal'?'orange':t==='plastic'?'green':'blue';
+    pl.innerHTML+='<div class="prob-item"><img class="prob-thumb" src="'+p.img+'"><div style="flex:1"><div class="prob-name">'+p.name+' <span class="tag tag-'+tc+'">'+p.rarityName+'</span></div><div class="prob-bar"><div class="prob-bar-fill" style="width:'+p.rarity*100+'%;background:'+p.color+'"></div></div></div><div class="prob-value">'+(p.rarity*100).toFixed(p.rarity<0.01?2:1)+'%</div></div>';
+  }
+}
+function renderHistory(){
+  const h=document.getElementById('draw-history');
+  if(game.drawHistory.length===0){ h.innerHTML='<div style="text-align:center;color:var(--txt-3);padding:20px;font-size:13px">暂无抽取记录</div>'; return; }
+  h.innerHTML=game.drawHistory.map(x=>{
+    const p=PICKAXES[x.type];
+    return '<div class="history-item"><img class="history-thumb" src="'+p.img+'"><div class="history-name">'+p.name+'</div><div class="history-star">'+starName(x.star)+'</div></div>';
+  }).join('');
+}
+function updateMine(){
+  const b=BLOCKS[game.currentBlockLevel-1];
+  const be=document.getElementById('mine-block');
+  be.textContent=b.icon; be.className='mine-block '+b.class;
+  document.getElementById('mine-block-level').textContent='Lv.'+b.level;
+  document.getElementById('mine-block-label').textContent=b.name;
+  const pct=Math.max(0,game.blockHP/game.blockMaxHP*100);
+  document.getElementById('mine-hp-fill').style.width=pct+'%';
+  document.getElementById('mine-hp-text').textContent=fmt(Math.max(0,game.blockHP))+' / '+fmt(game.blockMaxHP);
+  const ab=document.getElementById('btn-auto-mine');
+  ab.classList.toggle('active',game.autoMining);
+  ab.textContent=game.autoMining?'🤖 自动挖矿中':'🤖 自动挖矿';
+}
+function renderBlockSelector(){
+  document.getElementById('block-selector').innerHTML=BLOCKS.map(b=>{
+    const ul=b.level<=game.maxBlockUnlocked, ac=b.level===game.currentBlockLevel;
+    return '<button class="block-select-btn '+(ac?'active':'')+' '+(ul?'':'locked')+'" onclick="selectBlock('+b.level+')" '+(ul?'':'disabled')+'><div class="block-select-icon">'+b.icon+'</div><div>Lv.'+b.level+'</div><div style="font-size:9px">'+(ul?fmt(b.gold)+'金':'🔒')+'</div></button>';
+  }).join('');
+}
+function renderMineStats(){
+  const a=eqAttrs(), td=totalDmg(), b=BLOCKS[game.currentBlockLevel-1];
+  const hits=a?Math.ceil(game.blockMaxHP/td):'∞';
+  document.getElementById('mine-stats').innerHTML=
+    '<div class="mine-stat-row"><span class="mine-stat-label">单次伤害</span><span class="mine-stat-value">'+fmt(td)+'</span></div>'+
+    '<div class="mine-stat-row"><span class="mine-stat-label">击破所需</span><span class="mine-stat-value">'+hits+' 次</span></div>'+
+    '<div class="mine-stat-row"><span class="mine-stat-label">方块金币</span><span class="mine-stat-value">'+fmt(b.gold)+'</span></div>'+
+    '<div class="mine-stat-row"><span class="mine-stat-label">使用增益</span><span class="mine-stat-value">'+(game.equipped?'×'+fmt(game.usageBonus[game.equipped.type]):'未装备')+'</span></div>'+
+    '<div class="mine-stat-row"><span class="mine-stat-label">等级增益</span><span class="mine-stat-value">×'+fmt(levelBonus())+'</span></div>'+
+    '<div class="mine-stat-row"><span class="mine-stat-label">挖矿速度</span><span class="mine-stat-value">10次/秒</span></div>';
+}
+function renderWarehouse(){
+  let cards=[];
+  for(const t in PICKAXES) for(let s=0;s<=15;s++) if(game.inventory[t][s]>0) cards.push({type:t,star:s,count:game.inventory[t][s]});
+  if(game.equipped) cards.unshift({type:game.equipped.type,star:game.equipped.star,count:1,equipped:true});
+  cards.sort((a,b)=>{
+    if(a.equipped&&!b.equipped) return -1;
+    if(!a.equipped&&b.equipped) return 1;
+    const da=attrs(a.type,a.star).damage, db=attrs(b.type,b.star).damage;
+    if(db!==da) return db-da;
+    return PICKAXES[b.type].sortKey-PICKAXES[a.type].sortKey;
+  });
+  const grid=document.getElementById('warehouse-grid');
+  if(cards.length===0){ grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--txt-3)">仓库空空如也，快去抽卡吧！</div>'; return; }
+  let html='';
+  for(let i=0;i<cards.length;i++){
+    const c=cards[i], p=PICKAXES[c.type], a=attrs(c.type,c.star), eq=c.equipped, cm=!eq&&c.count>=5&&c.star<15;
+    html+='<div class="pickaxe-card '+p.class+' '+(eq?'equipped':'')+'">'+
+      '<div class="pickaxe-count">×'+c.count+'</div>'+
+      '<img class="pickaxe-img" src="'+p.img+'" alt="'+p.name+'">'+
+      '<div class="pickaxe-name">'+p.name+'</div>'+
+      '<div class="pickaxe-stars">'+starHTML(c.star)+'</div>'+
+      '<div class="pickaxe-attrs">'+
+        '<div class="attr-row"><span>伤害</span><span>×'+fmt(a.damage)+'</span></div>'+
+        '<div class="attr-row"><span>使用</span><span>×'+a.usage+'</span></div>'+
+        '<div class="attr-row"><span>金币</span><span>×'+fmt(a.gold)+'</span></div>'+
+      '</div>'+
+      '<div class="pickaxe-actions">'+
+        (eq?'<button class="pickaxe-btn" onclick="unequip()">卸下</button>':
+        '<button class="pickaxe-btn equip" onclick="equip(\''+c.type+'\','+c.star+')">装备</button><button class="pickaxe-btn merge" '+(cm?'':'disabled')+' onclick="merge(\''+c.type+'\','+c.star+')">合并</button>')+
+      '</div></div>';
+  }
+  grid.innerHTML=html;
+}
+function renderSettings(){
+  document.getElementById('online-time').textContent=fmtTime(game.onlineTime);
+  document.getElementById('online-points-display').textContent=fmt(game.onlinePoints);
+  document.getElementById('super-effect-toggle').classList.toggle('active',game.settings.superEffect);
+  document.querySelectorAll('.unit-btn').forEach(b=>b.classList.toggle('active',b.dataset.unit===game.settings.unit));
+}
+function renderAll(){
+  renderTopbar('home-topbar');
+  renderLevelPanel(); renderProb(); renderHistory();
+  updateMine(); renderBlockSelector(); renderMineStats();
+  renderWarehouse(); renderSettings();
+}
+
+// ==================== 页面切换 ====================
+function switchPage(p){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===p));
+  document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+}
+
+// ==================== Toast ====================
+function toast(msg,type='success'){
+  const c=document.getElementById('toast-container');
+  const t=document.createElement('div'); t.className='toast '+type; t.textContent=msg;
+  c.appendChild(t); setTimeout(()=>t.remove(),3000);
+}
+
+// ==================== 模态框 ====================
+function showModal(title,body,actions){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-body').innerHTML=body;
+  const ac=document.getElementById('modal-actions'); ac.innerHTML='';
+  actions.forEach(a=>{
+    const b=document.createElement('button');
+    b.className='modal-btn'+(a.primary?' primary':'')+(a.danger?' danger':'');
+    b.textContent=a.text;
+    b.onclick=()=>{ if(a.action)a.action(); if(a.text!=='复制'&&a.text!=='导入')closeModal(); };
+    ac.appendChild(b);
+  });
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal(){ document.getElementById('modal-overlay').classList.remove('show'); }
+
+// ==================== 开场剧情 ====================
+function playIntro(){
+  const intro=document.getElementById('intro');
+  const videoContainer=document.getElementById('intro-video-container');
+  const video=document.getElementById('intro-video');
+  const loadingEl=document.querySelector('.intro-video-loading');
+  const progressFill=document.getElementById('intro-video-progress-fill');
+  const startBtn=document.getElementById('intro-start');
+  let videoEnded=false;
+  function onVideoEnd(){
+    if(videoEnded) return;
+    videoEnded=true;
+    video.pause();
+    videoContainer.classList.add('hidden');
+    if(loadingEl) loadingEl.style.display='none';
+    startBtn.style.display='block';
+  }
+  video.addEventListener('loadedmetadata',()=>{
+    if(loadingEl) loadingEl.style.display='none';
+    video.play();
+  });
+  video.addEventListener('timeupdate',()=>{
+    if(video.duration&&progressFill){
+      progressFill.style.width=(video.currentTime/video.duration*100)+'%';
+    }
+  });
+  video.addEventListener('error',()=>{
+    if(loadingEl) loadingEl.textContent='视频加载失败';
+    setTimeout(onVideoEnd,2000);
+  });
+  video.addEventListener('ended',onVideoEnd);
+  video.addEventListener('play',()=>{
+    if(loadingEl) loadingEl.style.display='none';
+  });
+  video.addEventListener('canplay',()=>{
+    if(loadingEl) loadingEl.style.display='none';
+  });
+  intro.addEventListener('click',()=>{
+    video.muted=false;
+    video.play().catch(()=>{});
+  },{once:true});
+  startBtn.onclick=()=>{
+    intro.classList.add('hide');
+    game.introSeen=true;
+    save();
+    setTimeout(()=>intro.style.display='none',1000);
+  };
+}
+
+// ==================== 事件绑定 ====================
+function bind(){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchPage(b.dataset.page)));
+  document.getElementById('btn-draw').addEventListener('click',()=>drawCard(false));
+  document.getElementById('result-close-btn').addEventListener('click',()=>document.getElementById('draw-result').classList.remove('show'));
+  document.getElementById('draw-result').addEventListener('click',e=>{if(e.target.id==='draw-result')document.getElementById('draw-result').classList.remove('show');});
+  // 手动挖矿（长按）
+  const mb=document.getElementById('btn-mine');
+  let mi=null,mp=false;
+  function startMine(){
+    if(mp) return; mp=true;
+    if(game.autoMining){ toast('自动挖矿运行中，手动不可叠加','warning'); return; }
+    mine(false); mi=setInterval(()=>mine(false),100);
+  }
+  function stopMine(){ mp=false; if(mi){clearInterval(mi);mi=null;} }
+  mb.addEventListener('mousedown',startMine);
+  mb.addEventListener('mouseup',stopMine);
+  mb.addEventListener('mouseleave',stopMine);
+  mb.addEventListener('touchstart',e=>{e.preventDefault();startMine();});
+  mb.addEventListener('touchend',stopMine);
+  // 自动挖矿
+  document.getElementById('btn-auto-mine').addEventListener('click',()=>{
+    game.autoMining=!game.autoMining;
+    if(game.autoMining){
+      if(!game.equipped){ toast('请先装备镐子！','warning'); game.autoMining=false; return; }
+      toast('自动挖矿已开启','success');
+    }else toast('自动挖矿已关闭','success');
+    updateMine();
+  });
+  // 自动抽卡
+  document.getElementById('btn-auto-draw').addEventListener('click',()=>{
+    game.autoDraw=!game.autoDraw;
+    const adb=document.getElementById('btn-auto-draw');
+    adb.classList.toggle('active',game.autoDraw);
+    adb.textContent=game.autoDraw?'⏹️ 停止自动抽卡':'🔄 自动抽卡';
+    toast(game.autoDraw?'自动抽卡已开启':'自动抽卡已关闭','success');
+  });
+  // 设置
+  document.getElementById('export-btn').addEventListener('click',exportSave);
+  document.getElementById('import-btn').addEventListener('click',importSave);
+  document.getElementById('reset-btn').addEventListener('click',resetGame);
+  document.getElementById('redeem-btn').addEventListener('click',redeemCode);
+  document.getElementById('code-input').addEventListener('keydown',e=>{if(e.key==='Enter')redeemCode();});
+  document.getElementById('super-effect-toggle').addEventListener('click',()=>{
+    game.settings.superEffect=!game.settings.superEffect;
+    document.getElementById('super-effect-toggle').classList.toggle('active',game.settings.superEffect);
+    save();
+  });
+  document.querySelectorAll('.unit-btn').forEach(b=>b.addEventListener('click',()=>{
+    game.settings.unit=b.dataset.unit;
+    document.querySelectorAll('.unit-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); renderAll(); save();
+  }));
+  document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target.id==='modal-overlay')closeModal();});
+  document.getElementById('offline-collect-btn').addEventListener('click',()=>document.getElementById('offline-modal').classList.remove('show'));
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden){
+      const r=calcOffline();
+      if(r&&(r.gold>0||r.draws>0)) showOffline(r);
+    }else{ game.lastActive=Date.now(); save(); }
+  });
+  window.addEventListener('beforeunload',()=>{ game.lastActive=Date.now(); save(); });
+}
+
+// ==================== 主循环 ====================
+function loops(){
+  setInterval(()=>{
+    if(game.autoMining&&game.equipped) mine(false);
+  },100);
+  setInterval(()=>{
+    if(document.getElementById('page-home').classList.contains('active')){
+      document.getElementById('mine-hp-fill').style.width=(Math.max(0,game.blockHP/game.blockMaxHP*100))+'%';
+      document.getElementById('mine-hp-text').textContent=fmt(Math.max(0,game.blockHP))+' / '+fmt(game.blockMaxHP);
+      renderTopbar('home-topbar');
+      renderMineStats();
+    }
+  },200);
+  setInterval(()=>{
+    if(game.autoDraw){
+      drawCard(true);
+    }
+  },1500);
+  setInterval(()=>{
+    game.onlineTime++; game.onlinePoints++;
+    if(document.getElementById('page-settings').classList.contains('active')) renderSettings();
+  },1000);
+  setInterval(save,15000);
+  setInterval(()=>{ game.lastActive=Date.now(); },15000);
+}
+
+// ==================== 初始化 ====================
+function init(){
+  initInv();
+  const loaded=load();
+  if(loaded && game.introSeen){
+    document.getElementById('intro').style.display='none';
+  }else{
+    playIntro();
+  }
+  if(loaded){
+    const r=calcOffline();
+    if(r&&(r.gold>0||r.draws>0)) setTimeout(()=>showOffline(r),500);
+  }else{
+    game.inventory.glass[0]=1; game.equipped={type:'glass',star:0};
+    toast('欢迎来到抽取你的镐子！已赠送一把玻璃镐','success');
+  }
+  bind(); renderAll(); loops();
+}
+init();
+
+</script>
+</body>
+</html>
