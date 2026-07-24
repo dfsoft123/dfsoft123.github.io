@@ -1316,14 +1316,20 @@ function playIntro(){
   const progressFill=document.getElementById('intro-video-progress-fill');
   const startBtn=document.getElementById('intro-start');
   let videoEnded=false;
+  function stopVideo(){
+    video.pause();
+    video.currentTime=0;
+    video.muted=true;
+  }
   function onVideoEnd(){
     if(videoEnded) return;
     videoEnded=true;
-    video.pause();
+    stopVideo();
     videoContainer.classList.add('hidden');
     if(loadingEl) loadingEl.style.display='none';
     startBtn.style.display='block';
   }
+  video.loop=false;
   video.addEventListener('loadedmetadata',()=>{
     if(loadingEl) loadingEl.style.display='none';
     video.play();
@@ -1349,6 +1355,7 @@ function playIntro(){
     video.play().catch(()=>{});
   },{once:true});
   startBtn.onclick=()=>{
+    stopVideo();
     intro.classList.add('hide');
     game.introSeen=true;
     save();
