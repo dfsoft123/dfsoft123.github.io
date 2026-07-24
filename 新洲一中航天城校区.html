@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新洲一中航天城校区</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1a1a2e;
+            --secondary-color: #16213e;
+            --accent-color: #0f3460;
+            --highlight-color: #e94560;
+            --gold-color: #d4af37;
+            --white-color: #ffffff;
+            --gray-color: #f5f5f5;
+            --text-color: #333333;
+            --light-text: #666666;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--gray-color);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .font-serif {
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 50%, var(--accent-color) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .orbit-ring {
+            position: absolute;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 50%;
+            animation: orbit 20s linear infinite;
+        }
+
+        @keyframes orbit {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
+        }
+
+        .school-title {
+            text-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--highlight-color) 0%, #c73e54 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-color);
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary-color);
+            cursor: pointer;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .section-divider {
+            position: relative;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold-color), transparent);
+            width: 100px;
+            margin: 0 auto;
+        }
+
+        .section-divider::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px;
+            height: 10px;
+            background: var(--gold-color);
+            border-radius: 50%;
+        }
+
+        .card-3d {
+            perspective: 1000px;
+        }
+
+        .card-3d-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .card-3d:hover .card-3d-inner {
+            transform: rotateY(5deg) rotateX(-5deg);
+        }
+
+        .badge {
+            background: linear-gradient(135deg, var(--gold-color) 0%, #b89600 100%);
+            color: var(--primary-color);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .nav-link {
+            position: relative;
+            color: rgba(255, 255, 255, 0.8);
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--gold-color);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gold-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        .scroll-indicator {
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .gallery-item {
+            overflow: hidden;
+            border-radius: 16px;
+            position: relative;
+        }
+
+        .gallery-item img {
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(26, 26, 46, 0.7);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 16px;
+            height: 16px;
+            background: var(--gold-color);
+            border-radius: 50%;
+            border: 3px solid var(--primary-color);
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 24px;
+            width: 2px;
+            height: calc(100% - 16px);
+            background: var(--primary-color);
+        }
+
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        .student-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .student-card:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .footer {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem !important;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .navbar {
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background: rgba(26, 26, 46, 0.9); backdrop-filter: blur(10px);">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-700 flex items-center justify-center">
+                    <i class="fas fa-rocket text-white text-xl"></i>
+                </div>
+                <span class="font-serif text-white text-xl font-bold">新洲一中航天城校区</span>
+            </div>
+            <div class="nav-links flex items-center gap-8">
+                <a href="#home" class="nav-link text-sm font-medium">首页</a>
+                <a href="#school" class="nav-link text-sm font-medium">学校概况</a>
+                <a href="#principal" class="nav-link text-sm font-medium">校长寄语</a>
+                <a href="#students" class="nav-link text-sm font-medium">学子风采</a>
+                <a href="#notable" class="nav-link text-sm font-medium">知名校友</a>
+                <a href="#gallery" class="nav-link text-sm font-medium">校园风光</a>
+            </div>
+            <button class="btn-primary text-sm">联系我们</button>
+        </div>
+    </nav>
+
+    <section id="home" class="hero-section min-h-screen flex items-center justify-center relative">
+        <div class="orbit-ring" style="width: 600px; height: 600px; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+        <div class="orbit-ring" style="width: 800px; height: 800px; top: 50%; left: 50%; transform: translate(-50%, -50%); animation-duration: 30s;"></div>
+        <div class="orbit-ring" style="width: 1000px; height: 1000px; top: 50%; left: 50%; transform: translate(-50%, -50%); animation-duration: 45s;"></div>
+        
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="star" style="top: 10%; left: 10%; width: 2px; height: 2px;"></div>
+            <div class="star" style="top: 20%; left: 80%; width: 3px; height: 3px; animation-delay: 0.5s;"></div>
+            <div class="star" style="top: 30%; left: 20%; width: 2px; height: 2px; animation-delay: 1s;"></div>
+            <div class="star" style="top: 40%; left: 70%; width: 4px; height: 4px; animation-delay: 1.5s;"></div>
+            <div class="star" style="top: 50%; left: 30%; width: 2px; height: 2px; animation-delay: 0.3s;"></div>
+            <div class="star" style="top: 60%; left: 85%; width: 3px; height: 3px; animation-delay: 0.8s;"></div>
+            <div class="star" style="top: 70%; left: 15%; width: 2px; height: 2px; animation-delay: 1.2s;"></div>
+            <div class="star" style="top: 80%; left: 60%; width: 4px; height: 4px; animation-delay: 1.8s;"></div>
+            <div class="star" style="top: 90%; left: 40%; width: 2px; height: 2px; animation-delay: 0.6s;"></div>
+        </div>
+
+        <div class="relative z-10 text-center px-6">
+            <div class="badge mb-6 inline-block">省级示范高中</div>
+            <h1 class="hero-title font-serif text-white text-5xl md:text-7xl font-bold mb-6 school-title">
+                新洲一中航天城校区
+            </h1>
+            <p class="text-white/80 text-xl md:text-2xl max-w-3xl mx-auto mb-10 leading-relaxed">
+                博大 方正 尚美 创新
+                <br>
+                培养具有航天精神的新时代英才
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button class="btn-primary text-lg px-8 py-4">探索校园</button>
+                <button class="btn-outline text-lg px-8 py-4">了解更多</button>
+            </div>
+        </div>
+
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 scroll-indicator">
+            <i class="fas fa-chevron-down text-white/60 text-2xl"></i>
+        </div>
+    </section>
+
+    <section id="school" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="text-sm text-gray-500 font-medium uppercase tracking-wider">School Overview</span>
+                <h2 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mt-4 mb-6">学校概况</h2>
+                <div class="section-divider mb-6"></div>
+                <p class="text-gray-600 text-lg max-w-2xl mx-auto">
+                    新洲一中航天城校区位于武汉市新洲区双柳航天城，是新洲一中的重要组成部分，以航天科技教育为特色，致力于培养具有创新精神和实践能力的优秀人才。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                <div class="glass-card p-8 text-center card-3d">
+                    <div class="card-3d-inner">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-users text-white text-2xl"></i>
+                        </div>
+                        <h3 class="font-serif text-2xl font-bold text-gray-900 mb-2">300+</h3>
+                        <p class="text-gray-600">在校学生</p>
+                    </div>
+                </div>
+                <div class="glass-card p-8 text-center card-3d">
+                    <div class="card-3d-inner">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-chalkboard-teacher text-white text-2xl"></i>
+                        </div>
+                        <h3 class="font-serif text-2xl font-bold text-gray-900 mb-2">80+</h3>
+                        <p class="text-gray-600">优秀教师</p>
+                    </div>
+                </div>
+                <div class="glass-card p-8 text-center card-3d">
+                    <div class="card-3d-inner">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-trophy text-white text-2xl"></i>
+                        </div>
+                        <h3 class="font-serif text-2xl font-bold text-gray-900 mb-2">20+</h3>
+                        <p class="text-gray-600">荣誉奖项</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h3 class="font-serif text-3xl font-bold text-gray-900 mb-6">航天特色教育</h3>
+                    <p class="text-gray-600 leading-relaxed mb-6">
+                        新洲一中航天城校区依托航天城的区位优势，与多家航天科研单位建立合作关系，开设航天科技课程，建设航天实验室，培养学生的科学素养和创新能力。
+                    </p>
+                    <ul class="space-y-4">
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">航天科技实验室</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">卫星测控实践课程</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">航天专家进校园</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">航天主题研学活动</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="relative">
+                    <img src="BHIEIJAFDJGJD-YeTM1CuuiR.png" alt="校园全景" class="w-full rounded-2xl shadow-2xl">
+                    <div class="absolute -bottom-6 -right-6 bg-white rounded-xl p-6 shadow-xl">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
+                                <i class="fas fa-star text-white"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-gray-900">省级示范高中</p>
+                                <p class="text-sm text-gray-500">新洲区重点学校</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="principal" class="py-24 bg-gradient-to-br from-gray-50 to-gray-100">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="text-sm text-gray-500 font-medium uppercase tracking-wider">Principal's Message</span>
+                <h2 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mt-4 mb-6">校长寄语</h2>
+                <div class="section-divider mb-6"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="relative">
+                    <div class="absolute -top-4 -left-4 w-full h-full bg-gradient-to-br from-yellow-400/20 to-yellow-600/20 rounded-2xl"></div>
+                    <img src="BHIEIJAFIEEHE-KnWbPTAcni.png" alt="蔡凤珍校长" class="relative w-full rounded-2xl shadow-2xl">
+                    <div class="absolute -bottom-4 -left-4 bg-white rounded-xl p-4 shadow-xl">
+                        <span class="badge">校长</span>
+                        <p class="font-serif text-xl font-bold text-gray-900 mt-2">蔡凤珍</p>
+                    </div>
+                </div>
+                <div>
+                    <blockquote class="relative">
+                        <i class="fas fa-quote-left text-6xl text-gray-200 absolute -top-4 -left-4"></i>
+                        <p class="text-gray-700 text-xl leading-relaxed relative z-10 pl-8">
+                            教育是点燃火焰，而非灌满容器。在新洲一中航天城校区，我们致力于培养具有家国情怀、航天梦想、创新精神和实践能力的新时代英才。
+                        </p>
+                        <p class="text-gray-700 text-xl leading-relaxed relative z-10 pl-8 mt-4">
+                            愿每一位学子都能仰望星空、脚踏实地，在这片充满希望的土地上，追逐梦想，成就未来！
+                        </p>
+                    </blockquote>
+                    <div class="mt-8 flex items-center gap-4">
+                        <div class="flex -space-x-2">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-white"></div>
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 border-2 border-white"></div>
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 border-2 border-white"></div>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">带领团队</p>
+                            <p class="font-bold text-gray-900">80+ 优秀教师</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="students" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="text-sm text-gray-500 font-medium uppercase tracking-wider">Student Body</span>
+                <h2 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mt-4 mb-6">学子风采</h2>
+                <div class="section-divider mb-6"></div>
+                <p class="text-gray-600 text-lg max-w-2xl mx-auto">
+                    目前我校已有四批学生，他们承载着航天梦想，在这片热土上茁壮成长。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <div class="glass-card p-8">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                            <i class="fas fa-graduation-cap text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-serif text-2xl font-bold text-gray-900">高二年级</h3>
+                            <p class="text-gray-500">第二批学子</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="student-card">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-satellite text-blue-500"></i>
+                                <span class="font-bold text-gray-900">卫星班</span>
+                            </div>
+                            <p class="text-sm text-gray-600">卫星1班、卫星2班、卫星3班</p>
+                        </div>
+                        <div class="student-card">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-rocket text-orange-500"></i>
+                                <span class="font-bold text-gray-900">航天班</span>
+                            </div>
+                            <p class="text-sm text-gray-600">航天4班、航天5班、航天6班</p>
+                        </div>
+                    </div>
+                    <p class="mt-6 text-gray-600 text-sm">
+                        高二年级学子在各类学科竞赛中屡获佳绩，展现了扎实的学业基础和创新能力。
+                    </p>
+                </div>
+
+                <div class="glass-card p-8">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center">
+                            <i class="fas fa-user-graduate text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-serif text-2xl font-bold text-gray-900">高一年级</h3>
+                            <p class="text-gray-500">第四批学子</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="student-card">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-space-shuttle text-green-500"></i>
+                                <span class="font-bold text-gray-900">神舟班</span>
+                            </div>
+                            <p class="text-sm text-gray-600">神舟1班、神舟2班、神舟3班、神舟4班</p>
+                        </div>
+                        <div class="student-card opacity-75">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-plane text-gray-400"></i>
+                                <span class="font-bold text-gray-900">快舟班</span>
+                            </div>
+                            <p class="text-sm text-gray-600">即将入学</p>
+                        </div>
+                    </div>
+                    <p class="mt-6 text-gray-600 text-sm">
+                        高一年级新生朝气蓬勃，怀揣着对航天事业的向往，开始了他们的高中征程。快舟班即将迎来新一届学子。
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="text-center p-6 bg-gray-50 rounded-xl">
+                    <span class="font-serif text-4xl font-bold text-blue-600">2025.1</span>
+                    <p class="text-gray-600 mt-2">第一批学子</p>
+                </div>
+                <div class="text-center p-6 bg-gray-50 rounded-xl">
+                    <span class="font-serif text-4xl font-bold text-green-600">2025.8</span>
+                    <p class="text-gray-600 mt-2">第二批学子</p>
+                </div>
+                <div class="text-center p-6 bg-gray-50 rounded-xl">
+                    <span class="font-serif text-4xl font-bold text-purple-600">2026.1</span>
+                    <p class="text-gray-600 mt-2">第三批学子</p>
+                </div>
+                <div class="text-center p-6 bg-gray-50 rounded-xl">
+                    <span class="font-serif text-4xl font-bold text-orange-600">2026.8</span>
+                    <p class="text-gray-600 mt-2">第四批学子</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="notable" class="py-24 bg-gradient-to-br from-gray-50 to-gray-100">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="text-sm text-gray-500 font-medium uppercase tracking-wider">Notable Alumni</span>
+                <h2 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mt-4 mb-6">知名校友</h2>
+                <div class="section-divider mb-6"></div>
+                <p class="text-gray-600 text-lg max-w-2xl mx-auto">
+                    我校培养了众多优秀毕业生，他们在各自领域发光发热，成为社会的栋梁之才。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="glass-card p-6 text-center">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+                        <span class="font-serif text-3xl font-bold text-white">王</span>
+                    </div>
+                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-2">王祖元</h3>
+                    <p class="text-sm text-gray-500 mb-4">高级特级教师</p>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        曾提出“四步朗读法”，被广泛应用于教育领域，帮助学生提高阅读理解和写作能力。
+                    </p>
+                    <div class="mt-4 flex justify-center gap-2">
+                        <span class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">高级特级教师</span>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 text-center">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
+                        <span class="font-serif text-3xl font-bold text-white">何</span>
+                    </div>
+                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-2">何志平</h3>
+                    <p class="text-sm text-gray-500 mb-4">高一年级主任</p>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        物理教师，负责高一年级物理课程，注重学生物理思维和实验能力的培养。
+                    </p>
+                    <div class="mt-4 flex justify-center gap-2">
+                        <span class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">高一年级主任</span>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 text-center">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
+                        <span class="font-serif text-3xl font-bold text-white">姚</span>
+                    </div>
+                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-2">姚俊希</h3>
+                    <p class="text-sm text-gray-500 mb-4">高一年级神舟2班学生</p>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        67
+                    </p>
+                    <div class="mt-4 flex justify-center gap-2">
+                        <span class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full">67</span>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 text-center">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+                        <span class="font-serif text-3xl font-bold text-white">潘</span>
+                    </div>
+                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-2">潘若元</h3>
+                    <p class="text-sm text-gray-500 mb-4">高一年级神舟2班学生，本网站制作者</p>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        有实力，有才华，有能力，非常强大
+                    </p>
+                    <div class="mt-4 flex justify-center gap-2">
+                        <span class="text-xs bg-orange-100 text-orange-700 px-3 py-1 rounded-full">神人</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="gallery" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="text-sm text-gray-500 font-medium uppercase tracking-wider">Campus Gallery</span>
+                <h2 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mt-4 mb-6">校园风光</h2>
+                <div class="section-divider mb-6"></div>
+                <p class="text-gray-600 text-lg max-w-2xl mx-auto">
+                    美丽的校园环境，现代化的教学设施，为学子们提供了良好的学习生活环境。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <div class="gallery-item aspect-[4/3]">
+                    <img src="BHIEIJAFDJGJD-YeTM1CuuiR.png" alt="校园全景" class="w-full h-full object-cover">
+                    <div class="gallery-overlay">
+                        <span class="text-white font-medium">校园全景</span>
+                    </div>
+                </div>
+                <div class="gallery-item aspect-[4/3]">
+                    <img src="BHIEIJAFGBHAB-eKxbobAO4A.png" alt="教学楼" class="w-full h-full object-cover">
+                    <div class="gallery-overlay">
+                        <span class="text-white font-medium">教学楼</span>
+                    </div>
+                </div>
+                <div class="gallery-item aspect-[4/3]">
+                    <img src="BHIEIJAFEIEGC-mz72yHWoZp.png" alt="师生食堂" class="w-full h-full object-cover">
+                    <div class="gallery-overlay">
+                        <span class="text-white font-medium">师生食堂</span>
+                    </div>
+                </div>
+                <div class="gallery-item aspect-[4/3]">
+                    <img src="BHIEIJAFGGCDB-RlK2JFsvtn.png" alt="操场" class="w-full h-full object-cover">
+                    <div class="gallery-overlay">
+                        <span class="text-white font-medium">操场</span>
+                    </div>
+                </div>
+                <div class="gallery-item aspect-[4/3]">
+                    <img src="BHIEIJAFIJEJF-0WDcPvVXO8.png" alt="跑道" class="w-full h-full object-cover">
+                    <div class="gallery-overlay">
+                        <span class="text-white font-medium">跑道</span>
+                    </div>
+                </div>
+                <div class="gallery-item aspect-[4/3]">
+                    <img src="BHIEIJAFIEEHE-KnWbPTAcni.png" alt="教室" class="w-full h-full object-cover">
+                    <div class="gallery-overlay">
+                        <span class="text-white font-medium">教室</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer py-16">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-700 flex items-center justify-center">
+                            <i class="fas fa-rocket text-white text-xl"></i>
+                        </div>
+                        <span class="font-serif text-white text-xl font-bold">新洲一中航天城校区</span>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        仰望星空 脚踏实地
+                        <br>
+                        培养具有航天精神的新时代英才
+                    </p>
+                </div>
+                <div>
+                    <h3 class="font-serif text-white font-bold mb-6">快速链接</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#home" class="text-gray-400 hover:text-white transition-colors">首页</a></li>
+                        <li><a href="#school" class="text-gray-400 hover:text-white transition-colors">学校概况</a></li>
+                        <li><a href="#principal" class="text-gray-400 hover:text-white transition-colors">校长寄语</a></li>
+                        <li><a href="#students" class="text-gray-400 hover:text-white transition-colors">学子风采</a></li>
+                        <li><a href="#notable" class="text-gray-400 hover:text-white transition-colors">知名校友</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-serif text-white font-bold mb-6">联系我们</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-map-marker-alt text-yellow-500"></i>
+                            <span class="text-gray-400">武汉市新洲区阳逻街道</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-phone text-yellow-500"></i>
+                            <span class="text-gray-400">067-6767676</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-envelope text-yellow-500"></i>
+                            <span class="text-gray-400">13125021156@163.com</span>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-serif text-white font-bold mb-6">关注我们</h3>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-yellow-500 transition-colors">
+                            <i class="fab fa-weixin text-white"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-yellow-500 transition-colors">
+                            <i class="fab fa-weibo text-white"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-yellow-500 transition-colors">
+                            <i class="fab fa-bilibili text-white"></i>
+                        </a>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-6">
+                        扫描二维码关注学校公众号
+                    </p>
+                </div>
+            </div>
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-gray-400 text-sm">
+                    © 2026 新洲一中航天城校区. 保留所有权利.
+                </p>
+                <div class="flex gap-6 text-sm">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">隐私政策</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">使用条款</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.background = 'rgba(26, 26, 46, 0.95)';
+                navbar.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.2)';
+            } else {
+                navbar.style.background = 'rgba(26, 26, 46, 0.9)';
+                navbar.style.boxShadow = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
