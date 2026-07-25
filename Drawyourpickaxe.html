@@ -850,7 +850,7 @@ const PICKAXES = {
   imagination:  { name:'想象镐', img:'想象镐.png', icon:'💭', damage:200000,usage:360,gold:360,  rarity:0.000005,color:'#a5f3fc',class:'pickaxe-imagination',  rarityName:'神话', sortKey:48 },
   ultimate2:    { name:'终极镐', img:'终极镐.png', icon:'🔮', damage:20000,usage:50,  gold:60,   rarity:0.000004,color:'#a855f7',class:'pickaxe-ultimate2',    rarityName:'神话', sortKey:49 },
   thunder:      { name:'雷霆镐', img:'雷霆镐.png', icon:'🌩️', damage:100000,usage:200,gold:440,  rarity:0.000003,color:'#facc15',class:'pickaxe-thunder',      rarityName:'神圣', sortKey:50 },
-  transcendence:{ name:'超越镐', img:'超越镐.png', icon:'🔮', damage:780000,usage:1280,gold:1280, rarity:0.000002,color:'#8b5cf6',class:'pickaxe-transcendence',rarityName:'神话',sortKey:51 },
+  transcendence:{ name:'超越镐', img:'超越镐.png', icon:'🔮', damage:780000,usage:1280,gold:1280, rarity:0.000002,color:'#8b5cf6',class:'pickaxe-transcendence',rarityName:'神圣',sortKey:51 },
   invincible:   { name:'无敌镐', img:'无敌镐.png', icon:'👑', damage:9990000,usage:9999,gold:9999,rarity:0.000001,color:'#fcd34d',class:'pickaxe-invincible',  rarityName:'无限',sortKey:52 },
   special67:    { name:'67镐', img:'67镐.png', icon:'⚡', damage:0, usage:0, gold:0, rarity:0, color:'#f472b6', class:'pickaxe-special67', rarityName:'特殊', sortKey:53, isSpecial:true, baseBonus:0.67, starBonus:0.13 },
   specialInfinite:{ name:'无极镐', img:'无极镐.png', icon:'🌀', damage:0, usage:0, gold:0, rarity:0, color:'#22d3ee', class:'pickaxe-specialInfinite', rarityName:'特殊', sortKey:54, isSpecial:true, baseBonus:0.9, starBonus:0.2 }
@@ -886,12 +886,12 @@ const BLOCKS = [
 const SHOP_UPGRADES = [
   { id:'drawSpeed', name:'快速抽取', desc:'抽取间隔×0.95', icon:'快速抽取.png', basePrice:1000, priceMultiplier:4, maxLevel:60, getLevel:()=>game.drawSpeed, getPrice:(lvl)=>1000*Math.pow(4,lvl-1), getDesc:(lvl)=>'抽取间隔×'+(0.95**lvl).toFixed(3), currency:'gold' },
   { id:'multiDraw', name:'多重抽取', desc:'每次抽取卡片数量+1', icon:'多重抽卡.png', basePrice:100000, priceMultiplier:10, maxLevel:50, getLevel:()=>game.multiDraw, getPrice:(lvl)=>100000*Math.pow(10,lvl-1), getDesc:(lvl)=>'每次抽取'+lvl+'张卡片', currency:'gold' },
-  { id:'cardClone', name:'卡片克隆', desc:'每张卡片获得数量+1', icon:'卡片克隆.png', basePrice:10000000, priceMultiplier:20, maxLevel:20, getLevel:()=>game.cardClone, getPrice:(lvl)=>10000000*Math.pow(20,lvl-1), getDesc:(lvl)=>'每张卡片获得'+lvl+'个', currency:'gold' },
-  { id:'cardStar', name:'卡片升星', desc:'抽到的卡片星级+1', icon:'抽卡升星.png', basePrice:10000000000, priceMultiplier:50, maxLevel:10, getLevel:()=>game.cardStar, getPrice:(lvl)=>10000000000*Math.pow(50,lvl-1), getDesc:(lvl)=>'卡片星级+'+lvl, currency:'gold' },
+  { id:'cardClone', name:'卡片克隆', desc:'每张卡片获得数量+1', icon:'卡片克隆.png', basePrice:10000000, priceMultiplier:20, maxLevel:50, getLevel:()=>game.cardClone, getPrice:(lvl)=>10000000*Math.pow(20,lvl-1), getDesc:(lvl)=>'每张卡片获得'+lvl+'个', currency:'gold' },
+  { id:'cardStar', name:'卡片升星', desc:'抽到的卡片星级+1', icon:'抽卡升星.png', basePrice:10000000000, priceMultiplier:50, maxLevel:30, getLevel:()=>game.cardStar, getPrice:(lvl)=>10000000000*Math.pow(50,lvl-1), getDesc:(lvl)=>'卡片星级+'+lvl, currency:'gold' },
   { id:'goldMultiplier', name:'金币倍率', desc:'获得金币×1.1', icon:'金币.png', basePrice:10000, priceMultiplier:5, maxLevel:100, getLevel:()=>game.goldMultiplierLevel||0, getPrice:(lvl)=>10000*Math.pow(5,lvl), getDesc:(lvl)=>'金币×'+(1.1**(lvl+1)).toFixed(2), currency:'gold' },
   { id:'goldMultiplier2', name:'金币倍率II', desc:'获得金币×2（消耗钻石）', icon:'金币.png', basePrice:10, priceMultiplier:2, maxLevel:50, getLevel:()=>game.goldMultiplier2Level||0, getPrice:(lvl)=>10*Math.pow(2,lvl), getDesc:(lvl)=>'金币×'+(2**(lvl+1)).toFixed(1)+'（钻石）', currency:'diamonds' },
   { id:'diamondChance', name:'钻石几率', desc:'挖掘获得钻石几率+1%', icon:'钻石（数据）.png', basePrice:1000000, priceMultiplier:10, maxLevel:99, getLevel:()=>Math.floor((game.diamondChance-0.01)*100), getPrice:(lvl)=>1000000*Math.pow(10,lvl), getDesc:(lvl)=>'钻石几率 '+((lvl+1)/100*100).toFixed(1)+'%', currency:'gold' },
-  { id:'equippedSlots', name:'装备镐子数量', desc:'可同时装备的镐子数量+1', icon:'无敌镐.png', basePrice:10000, priceMultiplier:10000, maxLevel:10, getLevel:()=>(game.equippedSlots||1)-1, getPrice:(lvl)=>10000*Math.pow(10000,lvl), getDesc:(lvl)=>'可装备'+(lvl+1)+'把镐子', currency:'gold' }
+  { id:'equippedSlots', name:'装备镐子数量', desc:'可同时装备的镐子数量+1', icon:'无敌镐.png', basePrice:10000, priceMultiplier:10000, maxLevel:50, getLevel:()=>(game.equippedSlots||1)-1, getPrice:(lvl)=>10000*Math.pow(10000,lvl), getDesc:(lvl)=>'可装备'+(lvl+1)+'把镐子', currency:'gold' }
 ];
 
 const SHOP_PACKS = [
