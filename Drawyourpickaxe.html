@@ -1036,7 +1036,7 @@ const SHOP_UPGRADES = [
   { id:'cardStar', name:'卡片升星', desc:'抽到的卡片星级+1', icon:'抽卡升星.png', basePrice:10000000000, priceMultiplier:50, maxLevel:10, getLevel:()=>game.cardStar, getPrice:(lvl)=>10000000000*Math.pow(50,lvl-1), getDesc:(lvl)=>'卡片星级+'+lvl, currency:'gold' },
   { id:'goldMultiplier', name:'金币倍率', desc:'获得金币×1.1', icon:'金币.png', basePrice:10000, priceMultiplier:5, maxLevel:100, getLevel:()=>game.goldMultiplierLevel||0, getPrice:(lvl)=>10000*Math.pow(5,lvl), getDesc:(lvl)=>'金币×'+(1.1**(lvl+1)).toFixed(2), currency:'gold' },
   { id:'goldMultiplier2', name:'金币倍率II', desc:'获得金币×2（消耗钻石）', icon:'金币.png', basePrice:10, priceMultiplier:2, maxLevel:50, getLevel:()=>game.goldMultiplier2Level||0, getPrice:(lvl)=>10*Math.pow(2,lvl), getDesc:(lvl)=>'金币×'+(2**(lvl+1)).toFixed(1)+'（钻石）', currency:'diamonds' },
-  { id:'diamondChance', name:'钻石几率', desc:'挖掘获得钻石几率+1%', icon:'钻石.png', basePrice:1000000, priceMultiplier:10, maxLevel:99, getLevel:()=>Math.floor((game.diamondChance-0.01)*100), getPrice:(lvl)=>1000000*Math.pow(10,lvl), getDesc:(lvl)=>'钻石几率 '+((lvl+1)/100*100).toFixed(1)+'%', currency:'gold' },
+  { id:'diamondChance', name:'钻石几率', desc:'挖掘获得钻石几率+1%', icon:'钻石（数据）.png', basePrice:1000000, priceMultiplier:10, maxLevel:99, getLevel:()=>Math.floor((game.diamondChance-0.01)*100), getPrice:(lvl)=>1000000*Math.pow(10,lvl), getDesc:(lvl)=>'钻石几率 '+((lvl+1)/100*100).toFixed(1)+'%', currency:'gold' },
   { id:'equippedSlots', name:'装备镐子数量', desc:'可同时装备的镐子数量+1', icon:'无敌镐.png', basePrice:10000, priceMultiplier:10000, maxLevel:10, getLevel:()=>(game.equippedSlots||1)-1, getPrice:(lvl)=>10000*Math.pow(10000,lvl), getDesc:(lvl)=>'可装备'+(lvl+1)+'把镐子', currency:'gold' }
 ];
 
