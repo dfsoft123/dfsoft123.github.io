@@ -24,20 +24,18 @@ body{
   background:var(--bg-0);color:var(--txt);overflow:hidden;
   -webkit-font-smoothing:antialiased;
 }
-/* 静态背景 */
 body::before{
   content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   background:radial-gradient(ellipse 90% 70% at 15% 5%,rgba(91,168,255,.05),transparent 60%),radial-gradient(ellipse 70% 60% at 90% 95%,rgba(192,132,255,.04),transparent 60%);
 }
 
-/* ===== 开场剧情 ===== */
+/* ===== 开场 ===== */
 .intro{
   position:fixed;inset:0;z-index:9999;background:#000;
   display:flex;align-items:center;justify-content:center;
   flex-direction:column;overflow:hidden;
 }
 .intro.hide{opacity:0;pointer-events:none;transition:opacity 1s}
-/* 开场视频容器 */
 .intro-video-container{
   position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   z-index:5;
@@ -67,121 +65,6 @@ body::before{
   color:rgba(255,255,255,.7);font-size:14px;z-index:10;
   text-shadow:0 0 10px rgba(0,0,0,.5);
 }
-.intro-sound-btn{
-  position:absolute;top:20px;right:20px;z-index:10;
-  padding:10px 20px;border:1px solid rgba(255,255,255,.3);
-  background:rgba(0,0,0,.5);backdrop-filter:blur(10px);
-  color:#fff;border-radius:30px;cursor:pointer;font-size:14px;font-weight:600;
-  transition:all .3s;
-}
-.intro-sound-btn:hover{background:rgba(91,168,255,.6);border-color:var(--blue);transform:scale(1.05)}
-.intro-sound-btn.unmuted{background:rgba(62,232,138,.6);border-color:#3ee88a}
-.intro-scene{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  opacity:0;transition:opacity 1.2s ease;
-}
-.intro-scene.active{opacity:1}
-/* 场景1: 太空陨石 */
-.scene-space{
-  background:radial-gradient(ellipse at center,#0a1530 0%,#000 70%);
-}
-.meteor{
-  position:absolute;width:8px;height:80px;
-  background:linear-gradient(to bottom,transparent,#ff6b35,#ffaa00,#fff);
-  border-radius:50%;filter:blur(1px);
-  box-shadow:0 0 40px #ff6b35,0 0 80px #ffaa00;
-  animation:meteorFall 2s linear infinite;
-}
-.meteor:nth-child(1){left:20%;top:-10%;animation-delay:0s}
-.meteor:nth-child(2){left:50%;top:-10%;animation-delay:.7s}
-.meteor:nth-child(3){left:75%;top:-10%;animation-delay:1.4s}
-.meteor:nth-child(4){left:35%;top:-10%;animation-delay:1.8s}
-@keyframes meteorFall{
-  0%{transform:translateY(0) rotate(45deg);opacity:0}
-  10%{opacity:1}
-  100%{transform:translateY(120vh) rotate(45deg);opacity:0}
-}
-.earth{
-  position:absolute;bottom:-200px;left:50%;transform:translateX(-50%);
-  width:600px;height:600px;border-radius:50%;
-  background:radial-gradient(circle at 35% 35%,#4a90d9,#1a4a7a 60%,#0a2540);
-  box-shadow:0 0 100px rgba(74,144,217,.4),inset -50px -50px 100px rgba(0,0,0,.6);
-  animation:earthGlow 3s ease-in-out infinite;
-}
-@keyframes earthGlow{0%,100%{box-shadow:0 0 100px rgba(74,144,217,.4),inset -50px -50px 100px rgba(0,0,0,.6)}50%{box-shadow:0 0 150px rgba(74,144,217,.6),inset -50px -50px 100px rgba(0,0,0,.6)}}
-.big-meteor{
-  position:absolute;top:-15%;left:40%;width:120px;height:120px;
-  background:radial-gradient(circle,#fff,#ff6b35 30%,#cc2200 70%);
-  border-radius:50%;filter:blur(2px);
-  box-shadow:0 0 80px #ff6b35,0 0 160px #ff2200;
-  animation:bigMeteorFall 4s ease-in 1s forwards;
-}
-@keyframes bigMeteorFall{
-  0%{top:-15%;left:40%;transform:scale(1)}
-  100%{top:60%;left:50%;transform:scale(2.5)}
-}
-/* 场景2: 毁灭 */
-.scene-destroy{
-  background:radial-gradient(ellipse at center,#3a1010 0%,#000 70%);
-}
-.explosion{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:0;height:0;border-radius:50%;
-  background:radial-gradient(circle,#fff,#ff6b35 20%,#ff2200 50%,transparent 70%);
-  animation:explosion 3s ease-out forwards;
-}
-@keyframes explosion{
-  0%{width:0;height:0;opacity:1}
-  50%{width:800px;height:800px;opacity:1}
-  100%{width:1200px;height:1200px;opacity:0}
-}
-.dust{
-  position:absolute;width:6px;height:6px;border-radius:50%;
-  background:#8a6a4a;filter:blur(1px);
-}
-/* 场景3: 怪兽 */
-.scene-monster{
-  background:radial-gradient(ellipse at center,#2a1a1a 0%,#000 70%);
-}
-.monster-silhouette{
-  position:absolute;bottom:10%;left:50%;transform:translateX(-50%);
-  width:300px;height:400px;
-  background:radial-gradient(ellipse at 50% 30%,#5a3a2a 0%,#2a1a0a 60%,transparent 80%);
-  filter:blur(3px);
-  animation:monsterRoar 2s ease-in-out infinite;
-}
-@keyframes monsterRoar{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.05)}}
-.monster-glow{
-  position:absolute;bottom:10%;left:50%;transform:translateX(-50%);
-  width:400px;height:450px;
-  background:radial-gradient(ellipse at 50% 40%,rgba(255,100,50,.3) 0%,transparent 60%);
-  animation:monsterGlow 2s ease-in-out infinite;
-}
-@keyframes monsterGlow{0%,100%{opacity:.5}50%{opacity:1}}
-/* 场景4: 文字 */
-.scene-text{
-  background:#000;
-}
-.intro-text{
-  color:#fff;font-size:42px;font-weight:700;text-align:center;
-  padding:0 40px;line-height:1.6;
-  opacity:0;animation:textFadeIn 1.5s ease forwards;
-  text-shadow:0 0 30px rgba(255,255,255,.3);
-}
-.intro-text.small{font-size:24px;font-weight:400;color:#ccc}
-.intro-text.joke{font-size:36px;color:#ff6b35;text-shadow:0 0 30px rgba(255,107,53,.5)}
-@keyframes textFadeIn{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
-/* 开始按钮（原按钮保留但隐藏，改用图片） */
-.intro-start{
-  display:none; /* 隐藏原按钮 */
-}
-.intro-skip{
-  position:absolute;top:20px;right:20px;
-  padding:8px 20px;font-size:14px;color:#888;
-  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
-  border-radius:20px;cursor:pointer;transition:all .3s;z-index:10;
-}
-.intro-skip:hover{color:#fff;background:rgba(255,255,255,.1)}
 
 /* ===== 开始菜单（标题 + 开始图片） ===== */
 .intro-menu{
@@ -195,7 +78,7 @@ body::before{
 .intro-menu.show{display:flex;animation:menuFadeIn 1.2s ease forwards}
 @keyframes menuFadeIn{0%{opacity:0;transform:scale(.96)}100%{opacity:1;transform:scale(1)}}
 .intro-title-img{
-  max-width:67%;          /* 缩小标题，避免过大 */
+  max-width:67%;
   height:auto;
   margin-bottom: 5px;
   filter:drop-shadow(0 0 40px rgba(91,168,255,.3));
@@ -205,7 +88,7 @@ body::before{
 }
 @keyframes titleFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .intro-start-img{
-  max-width:25%;          /* 适当大小，不遮挡 */
+  max-width:25%;
   height:auto;
   cursor:pointer;
   transition:all .35s cubic-bezier(.4,0,.2,1);
@@ -219,7 +102,6 @@ body::before{
   filter:drop-shadow(0 0 50px rgba(91,168,255,.6));
 }
 .intro-start-img:active{transform:scale(.96)}
-/* 星空装饰 */
 .intro-menu::before{
   content:'';position:absolute;inset:0;z-index:-1;
   background:
@@ -251,7 +133,6 @@ body::before{
 
 /* ===== 主应用 ===== */
 #app{position:relative;z-index:1;display:flex;height:100vh}
-/* 侧边栏 */
 .sidebar{
   width:80px;background:rgba(10,15,35,.95);
   border-right:1px solid rgba(91,168,255,.1);
@@ -271,7 +152,6 @@ body::before{
 .nav-btn.active{background:rgba(91,168,255,.15);color:var(--blue)}
 .nav-btn.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:2px;height:28px;background:var(--blue);border-radius:0 2px 2px 0}
 
-/* 主内容 */
 .main{flex:1;overflow-y:auto;position:relative}
 .main::-webkit-scrollbar{width:8px}
 .main::-webkit-scrollbar-track{background:transparent}
@@ -284,7 +164,6 @@ body::before{
 .page-title::after{content:'';position:absolute;bottom:-4px;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--blue),var(--pur));border-radius:2px;box-shadow:0 0 12px rgba(91,168,255,.5)}
 .page-subtitle{font-size:13px;color:var(--txt-3);margin-top:8px}
 
-/* 顶部状态栏 */
 .topbar{
   display:flex;gap:12px;padding:14px 18px;margin-bottom:20px;
   background:var(--card);border:1px solid var(--border);border-radius:16px;
@@ -302,7 +181,6 @@ body::before{
 .topbar-item.grn .tv{color:var(--grn)}
 .topbar-item.yel .tv{color:var(--gold)}
 
-/* 卡片 */
 .card{
   background:rgba(18,26,52,.8);border:1px solid rgba(91,168,255,.15);border-radius:12px;
   padding:16px;
@@ -311,12 +189,10 @@ body::before{
 .card-title{font-size:14px;font-weight:600;color:var(--txt);margin-bottom:12px;display:flex;align-items:center;gap:6px}
 .card-title::before{content:'';width:4px;height:14px;background:var(--blue);border-radius:2px}
 
-/* 主界面布局 */
 .home-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .home-left,.home-right{display:flex;flex-direction:column;gap:20px}
 @media(max-width:1100px){.home-grid{grid-template-columns:1fr}}
 
-/* 挖矿区 */
 .mine-arena{
   position:relative;height:240px;border-radius:10px;
   background:rgba(15,21,48,.6);border:1px solid rgba(91,168,255,.1);
@@ -353,7 +229,6 @@ body::before{
 .btn.secondary:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)}
 .btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
 
-/* 方块选择 */
 .block-selector{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .block-select-btn{
   padding:10px 6px;border:1px solid var(--border);background:var(--card);border-radius:10px;
@@ -365,7 +240,6 @@ body::before{
 .block-select-btn.locked{opacity:.4;cursor:not-allowed}
 .block-select-icon{font-size:24px}
 
-/* 抽卡区 */
 .pack-display{
   text-align:center;padding:24px;border-radius:14px;
   background:radial-gradient(ellipse at center,rgba(192,132,255,.1),transparent 70%),linear-gradient(180deg,rgba(15,21,48,.7),rgba(8,13,28,.8));
@@ -376,7 +250,6 @@ body::before{
 .pack-desc{font-size:12px;color:var(--txt-3);margin-top:4px}
 .draw-buttons{display:flex;gap:10px;margin-top:16px}
 
-/* 概率列表 */
 .prob-list{display:flex;flex-direction:column;gap:8px}
 .prob-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:10px;transition:all .3s}
 .prob-item:hover{background:rgba(255,255,255,.06)}
@@ -395,7 +268,6 @@ body::before{
 .tag-gray{background:rgba(148,163,184,.2);color:#94a3b8}
 .tag-pink{background:linear-gradient(90deg,#ec4899,#8b5cf6,#06b6d4,#fcd34d);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:bold}
 
-/* 抽卡历史 */
 .draw-history{max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
 .draw-history::-webkit-scrollbar{width:4px}
 .draw-history::-webkit-scrollbar-thumb{background:rgba(91,168,255,.3);border-radius:2px}
@@ -404,7 +276,6 @@ body::before{
 .history-name{font-size:12px;flex:1}
 .history-star{font-size:11px;color:var(--gold)}
 
-/* 等级面板 */
 .level-panel{text-align:center;padding:10px}
 .level-badge{display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#5ba8ff,#3060e0);font-size:28px;font-weight:700;color:#fff;box-shadow:0 0 24px rgba(91,168,255,.5)}
 .level-info{font-size:12px;color:var(--txt-3);margin-top:8px}
@@ -412,7 +283,6 @@ body::before{
 .level-progress{height:8px;background:rgba(0,0,0,.3);border-radius:4px;margin:12px 0;overflow:hidden}
 .level-progress-fill{height:100%;background:linear-gradient(90deg,#ffd54a,#ff9944);border-radius:4px;transition:width .3s;box-shadow:0 0 8px rgba(255,213,74,.5)}
 
-/* 仓库 */
 .warehouse-actions{display:flex;gap:8px;margin-bottom:12px}
 .warehouse-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .pickaxe-card{
@@ -444,7 +314,6 @@ body::before{
 .pickaxe-btn.merge{background:linear-gradient(135deg,rgba(255,213,74,.2),rgba(255,213,74,.1));border-color:var(--gold);color:var(--gold)}
 .pickaxe-btn:disabled{opacity:.4;cursor:not-allowed}
 
-/* 设置 */
 .settings-container{display:flex;flex-direction:column;gap:16px;max-width:600px}
 .setting-group{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
 .setting-group-title{font-size:14px;font-weight:600;color:var(--blue);margin-bottom:12px}
@@ -470,7 +339,6 @@ body::before{
 .text-input{width:100%;padding:10px 14px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;color:var(--txt);font-size:13px;font-family:monospace;min-height:80px;resize:vertical;margin-top:8px}
 .text-input:focus{outline:none;border-color:var(--blue)}
 
-/* 抽卡结果弹窗 */
 .draw-result{position:fixed;inset:0;background:rgba(0,0,0,.9);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;z-index:1000;overflow:hidden}
 .draw-result.show{display:flex;animation:overlayIn .3s}
 @keyframes overlayIn{0%{opacity:0}100%{opacity:1}}
@@ -510,7 +378,6 @@ body::before{
 .result-close-btn{padding:12px 48px;background:linear-gradient(135deg,#5ba8ff,#3060e0);border:none;border-radius:30px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:all .3s;letter-spacing:2px}
 .result-close-btn:hover{transform:scale(1.08);box-shadow:0 0 30px rgba(91,168,255,.6)}
 
-/* 超凡特效 */
 .super-effect{position:absolute;inset:0;z-index:1;pointer-events:none;display:none}
 .super-effect.active{display:block}
 .result-card{position:relative;z-index:2}
@@ -529,10 +396,8 @@ body::before{
 @keyframes superStar{0%{opacity:1;transform:scale(0)}50%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.5)}}
 .super-sparkle{position:absolute;width:4px;height:4px;background:#fff;border-radius:50%;animation:superSparkle 1s ease-out}
 @keyframes superSparkle{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(0)}}
-/* 神圣光柱 */
 .super-beam{position:absolute;top:0;left:50%;width:120px;height:100%;transform:translateX(-50%);background:linear-gradient(to bottom,transparent,rgba(255,215,0,.3),rgba(255,215,0,.6),rgba(255,215,0,.3),transparent);animation:superBeam 2s ease-out;filter:blur(8px)}
 @keyframes superBeam{0%{opacity:0;transform:translateX(-50%) scaleY(0)}30%{opacity:1;transform:translateX(-50%) scaleY(1)}100%{opacity:0;transform:translateX(-50%) scaleY(1.2)}}
-/* 无限特效专用 */
 .super-shockwave{position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;transform:translate(-50%,-50%);animation:superShockwave 2.5s ease-out}
 @keyframes superShockwave{0%{width:0;height:0;opacity:1;border:8px solid rgba(255,255,255,.8);box-shadow:0 0 60px rgba(255,255,255,.5)}100%{width:1200px;height:1200px;opacity:0;border:1px solid rgba(255,255,255,0);box-shadow:0 0 0 rgba(255,255,255,0)}}
 .super-rainbow-ring{position:absolute;top:50%;left:50%;border-radius:50%;transform:translate(-50%,-50%);animation:superRainbowRing 3s ease-out}
@@ -542,7 +407,6 @@ body::before{
 .super-lightning{position:absolute;top:0;left:50%;width:2px;height:100%;transform:translateX(-50%);background:linear-gradient(to bottom,transparent,#fff,transparent);animation:superLightning .5s ease-out;box-shadow:0 0 20px #fff}
 @keyframes superLightning{0%{opacity:0}20%{opacity:1}40%{opacity:0}60%{opacity:1}100%{opacity:0}}
 
-/* 模态框 */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:1500}
 .modal-overlay.show{display:flex;animation:overlayIn .3s}
 .modal-box{width:420px;max-width:90vw;background:linear-gradient(180deg,var(--bg-2),var(--bg-1));border:1px solid var(--border);border-radius:16px;padding:24px;animation:cardIn .4s}
@@ -554,7 +418,6 @@ body::before{
 .modal-btn.primary{background:linear-gradient(135deg,#5ba8ff,#3060e0);border:none;color:#fff}
 .modal-btn.danger{background:linear-gradient(135deg,#ff5577,#cc2244);border:none;color:#fff}
 
-/* Toast */
 .toast-container{position:fixed;top:20px;right:20px;z-index:3000;display:flex;flex-direction:column;gap:10px}
 .toast{padding:14px 22px;border-radius:14px;font-size:14px;font-weight:600;animation:toastIn .3s cubic-bezier(.4,0,.2,1),toastOut .3s 2.7s forwards;backdrop-filter:blur(20px);box-shadow:0 10px 28px rgba(0,0,0,.35);max-width:320px;border:1px solid rgba(255,255,255,.1)}
 .toast.success{background:linear-gradient(135deg,rgba(62,232,138,.95),rgba(34,170,102,.95));color:#fff;box-shadow:0 10px 28px rgba(62,232,138,.3)}
@@ -564,7 +427,6 @@ body::before{
 @keyframes toastIn{0%{transform:translateX(120%);opacity:0}100%{transform:translateX(0);opacity:1}}
 @keyframes toastOut{0%{transform:translateX(0);opacity:1}100%{transform:translateX(120%);opacity:0}}
 
-/* 离线收益 */
 .offline-report{text-align:center}
 .offline-report-icon{font-size:48px;margin-bottom:8px}
 .offline-report-title{font-size:20px;font-weight:700;margin-bottom:8px}
@@ -574,9 +436,8 @@ body::before{
 .offline-report-label{font-size:13px;color:var(--txt-2)}
 .offline-report-value{font-size:15px;font-weight:700;color:var(--gold)}
 
-/* 商店 */
 .shop-banner{width:100%;margin-bottom:16px;border-radius:16px;overflow:hidden;border:1px solid var(--border);box-shadow:0 8px 32px rgba(0,0,0,.3);position:relative}
-.shop-banner img{width:100%;height:200px;object-fit:cover;object-position:center center}
+.shop-banner img{width:100%;height:260px;object-fit:cover;object-position:center top}
 .shop-banner::after{content:'';position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(to top,var(--bg-1),transparent)}
 .shop-tabs{display:flex;gap:4px;margin-bottom:16px;padding:5px;background:linear-gradient(180deg,var(--card),rgba(18,26,52,.4));border-radius:14px;border:1px solid var(--border);box-shadow:0 2px 12px rgba(0,0,0,.2)}
 .shop-tab{flex:1;padding:11px 14px;border:none;background:transparent;color:var(--txt-3);border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;transition:all .25s;position:relative;overflow:hidden;letter-spacing:.5px}
@@ -610,7 +471,6 @@ body::before{
 .shop-item-btn:hover{opacity:.9;transform:scale(1.02);box-shadow:0 6px 16px rgba(255,213,74,.4)}
 .shop-item.disabled .shop-item-btn{background:linear-gradient(135deg,#555,#444);cursor:not-allowed;box-shadow:none}
 
-/* 商店卡包 */
 .shop-pack-item{background:linear-gradient(180deg,var(--card),rgba(18,26,52,.6));border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;transition:all .3s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden}
 .shop-pack-item::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(192,132,255,.04),transparent 50%);opacity:0;transition:opacity .3s}
 .shop-pack-item:hover{border-color:var(--border-hi);transform:translateY(-3px);box-shadow:0 10px 24px rgba(91,168,255,.15)}
@@ -633,7 +493,6 @@ body::before{
 .shop-pack-actions{display:flex;gap:10px}
 .shop-pack-actions .btn{flex:1}
 
-/* 装备展示 */
 .equipped-display{text-align:center;padding:10px}
 .equipped-label{font-size:12px;color:var(--txt-3);margin-bottom:8px}
 .equipped-img{width:100px;height:100px;object-fit:cover;border-radius:14px;margin:0 auto 10px;border:2px solid var(--border)}
@@ -641,7 +500,6 @@ body::before{
 .equipped-stars{margin-bottom:10px;font-size:16px}
 .equipped-attrs{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
 
-/* 属性面板 */
 .stats-panel{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .stat-item{padding:10px 12px;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid var(--border)}
 .stat-label{font-size:11px;color:var(--txt-3)}
@@ -653,7 +511,6 @@ body::before{
 .stat-value.org{color:var(--org)}
 .stat-sub{font-size:11px;color:var(--txt-3);margin-top:2px}
 
-/* 挖矿数据 */
 .mine-stats{display:flex;flex-direction:column;gap:8px}
 .mine-stat-row{display:flex;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;font-size:13px}
 .mine-stat-label{color:var(--txt-2)}
@@ -675,11 +532,8 @@ body::before{
     <div class="intro-video-progress">
       <div class="intro-video-progress-fill" id="intro-video-progress-fill"></div>
     </div>
-    <div class="intro-video-tip">首次进入，观看剧情后自动进入开始界面</div>
+    <div class="intro-video-tip">首次进入，观看剧情后自动进入开始界面<br>点击视频可跳过</div>
   </div>
-
-  <!-- 声音控制按钮 -->
-  <button class="" id="intro-sound-btn"></button>
 
   <!-- 开始菜单（标题 + 开始图片） -->
   <div class="intro-menu" id="intro-menu">
@@ -1603,7 +1457,7 @@ function autoMergeAll(){
   }
 }
 
-// ==================== 离线收益 ====================
+// ==================== 离线收益（已修改：按当前卡包概率抽取） ====================
 function calcOffline(){
   const now=Date.now(), off=(now-game.lastActive)/1000;
   const sec=Math.min(off,8*3600);
@@ -1617,8 +1471,10 @@ function calcOffline(){
     game.usageBonus+=eqAttrs().usage*total;
   }
   r.draws=Math.floor(sec/0.5);
+  // 使用当前卡包概率抽取
+  const pack = SHOP_PACKS.find(p => p.id === game.currentPack) || SHOP_PACKS[0];
   for(let i=0;i<r.draws;i++){
-    r.drawResults.push(randomPickaxe());
+    r.drawResults.push(randomPickFromPack(pack));
   }
   game.gold+=r.gold; game.lastActive=now;
   return r;
@@ -1905,7 +1761,7 @@ function showModal(title,body,actions){
 }
 function closeModal(){ document.getElementById('modal-overlay').classList.remove('show'); }
 
-// ==================== 开场剧情（修改后） ====================
+// ==================== 开场剧情（修复循环播放 + 点击跳过） ====================
 function playIntro() {
   const intro = document.getElementById('intro');
   const videoContainer = document.getElementById('intro-video-container');
@@ -1913,66 +1769,77 @@ function playIntro() {
   const progressFill = document.getElementById('intro-video-progress-fill');
   const menu = document.getElementById('intro-menu');
   const startBtn = document.getElementById('intro-start-btn');
-  const soundBtn = document.getElementById('intro-sound-btn');
 
-  // 声音控制
-  let soundEnabled = false;
-  soundBtn.addEventListener('click', function() {
-    soundEnabled = !soundEnabled;
-    video.muted = !soundEnabled;
-    soundBtn.textContent = soundEnabled ? '🔊 声音已开启' : '🔇 开启声音';
-    soundBtn.classList.toggle('unmuted', soundEnabled);
-    // 如果用户开启声音，尝试重新播放（如果暂停的话）
-    if (soundEnabled && video.paused) {
-      video.play().catch(() => {});
+  // 确保视频不循环
+  video.loop = false;
+
+  let videoEnded = false;
+  let timeoutId = null;
+
+  const onVideoEnd = () => {
+    if (videoEnded) return;
+    videoEnded = true;
+    video.pause();
+    videoContainer.classList.add('hidden');
+    menu.classList.add('show');
+    game.introSeen = true;
+    save();
+    if (timeoutId) clearTimeout(timeoutId);
+  };
+
+  // 监听结束事件
+  video.addEventListener('ended', onVideoEnd);
+  video.addEventListener('error', onVideoEnd);
+
+  // 进度更新 + 主动结束检测
+  video.addEventListener('timeupdate', () => {
+    if (video.duration && video.currentTime >= video.duration - 0.2) {
+      onVideoEnd();
+    }
+    if (video.duration) {
+      progressFill.style.width = (video.currentTime / video.duration * 100) + '%';
     }
   });
 
-  // 判断是否为首次进入
+  // 点击视频跳过
+  const skipVideo = () => {
+    if (!videoEnded) {
+      video.pause();
+      onVideoEnd();
+      if (timeoutId) clearTimeout(timeoutId);
+    }
+  };
+  videoContainer.addEventListener('click', skipVideo);
+  video.addEventListener('click', skipVideo);
+
+  // 强制超时：10秒后自动显示菜单
+  timeoutId = setTimeout(() => {
+    if (!videoEnded) {
+      video.pause();
+      onVideoEnd();
+    }
+  }, 10000);
+
+  // 判断首次进入
   const isFirstTime = !game.introSeen;
 
   if (isFirstTime) {
-    // 首次进入：播放视频（默认静音，通过按钮开启）
     videoContainer.classList.remove('hidden');
     menu.classList.remove('show');
-    video.muted = true; // 默认静音，避免自动播放被阻止
+    video.muted = true;
     video.currentTime = 0;
     video.play().catch(() => {});
-
-    // 视频结束或出错后自动显示菜单
-    const onVideoEnd = () => {
-      video.pause();
-      videoContainer.classList.add('hidden');
-      menu.classList.add('show');
-      game.introSeen = true;
-      save();
-    };
-    video.addEventListener('ended', onVideoEnd);
-    video.addEventListener('error', onVideoEnd);
-    // 后备：10秒后强制显示菜单
-    setTimeout(() => {
-      if (!video.paused && !video.ended) {
-        video.pause();
-        onVideoEnd();
-      }
-    }, 10000);
-    // 进度条
-    video.addEventListener('timeupdate', () => {
-      if (video.duration) {
-        progressFill.style.width = (video.currentTime / video.duration * 100) + '%';
-      }
-    });
   } else {
-    // 非首次：直接显示菜单
     videoContainer.classList.add('hidden');
     menu.classList.add('show');
+    clearTimeout(timeoutId);
   }
 
-  // 点击开始图片进入游戏
+  // 开始按钮
   startBtn.onclick = function() {
     intro.classList.add('hide');
-    // 如果视频还在播放，暂停
-    if (!video.paused) video.pause();
+    video.pause();
+    clearTimeout(timeoutId);
     setTimeout(() => {
       intro.style.display = 'none';
       const r = calcOffline();
