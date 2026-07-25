@@ -1852,15 +1852,146 @@ function playIntro() {
 }
 
 // ==================== 商店 ====================
+// ==================== 商店渲染 ====================
 function renderShop(){
-  renderShopUpgrades(); renderShopPacks(); renderShopPotions(); renderShopOther(); renderShopPoints();
+  renderShopUpgrades();
+  renderShopPacks();
+  renderShopPotions();
+  renderShopOther();
+  renderShopPoints();
 }
-function renderShopUpgrades(){ /* 与之前相同，省略以节省篇幅，但实际代码中完整保留 */ }
-function renderShopPacks(){ /* 同上 */ }
-function renderShopPotions(){ /* 同上 */ }
-function renderShopOther(){ /* 同上 */ }
-function renderShopPoints(){ /* 同上 */ }
 
+function renderShopUpgrades(){
+  const container = document.querySelector('#shop-tab-upgrade .shop-items');
+  if (!container) return;
+  let html = '';
+  for (const item of SHOP_UPGRADES) {
+    const lvl = item.getLevel();
+    const maxReached = lvl >= item.maxLevel;
+    const price = maxReached ? 0 : item.getPrice(lvl);
+    const currency = item.currency || 'gold';
+    const currencyImg = currency === 'diamonds' ? '钻石（数据）.png' : currency === 'onlinePoints' ? '在线积分.png' : '金币.png';
+    const currentVal = currency === 'diamonds' ? game.diamonds : currency === 'onlinePoints' ? game.onlinePoints : game.gold;
+    const canAfford = currentVal >= price;
+    html += `<div class="shop-item${maxReached ? ' disabled' : ''}">
+      <div class="shop-item-icon"><img src="${item.icon}" alt="${item.name}" onerror="this.style.display='none'"></div>
+      <div class="shop-item-name">${item.name}</div>
+      <div class="shop-item-desc">${maxReached ? '已达满级' : item.getDesc(lvl)}</div>
+      <div class="shop-item-price">${maxReached ? 'MAX' : '<img src="' + currencyImg + '" class="price-icon"> ' + fmt(price)}</div>
+      <button class="btn ${maxReached ? 'disabled' : (canAfford ? 'primary' : 'danger')}" data-upgrade="${item.id}" ${maxReached ? 'disabled' : ''}>${maxReached ? '已满级' : '升级'}</button>
+    </div>`;
+  }
+  container.innerHTML = html;
+}
+
+function renderShopPacks(){
+  const container = document.querySelector('#shop-tab-packs .shop-items');
+  if (!container) return;
+  let html = '';
+  for (const pack of SHOP_PACKS) {
+    const unlocked = game.unlockedPacks.includes(pack.id);
+    const isCurrent = game.currentPack === pack.id;
+    html += `<div class="shop-pack-item${!unlocked ? ' locked' : ''}${isCurrent ? ' active' : ''}">
+      <div class="shop-pack-header">
+        <div class="shop-pack-icon"><img src="${pack.img || ''}" alt="${pack.name}" onerror="this.style.display='none';this.parentElement.innerHTML='🎁'"></div>
+        <div class="shop-pack-info">
+          <div class="shop-pack-name">${pack.name}</div>
+          <div class="shop-pack-desc">${pack.desc}</div>
+        </div>
+      </div>
+      <div class="shop-pack-contents">`;
+    for (const content of pack.contents) {
+      const pickaxe = PICKAXES[content.type];
+      const imgSrc = pickaxe && pickaxe.img ? pickaxe.img : '';
+      html += `<div class="pack-content-item">
+        <span class="pack-content-icon" style="color:${content.color}">${imgSrc ? '<img src="' + imgSrc + '" alt="' + content.name + '" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'' + content.icon + '\'">' : content.icon}</span>
+        <span class="pack-content-name">${content.name}</span>
+        <span class="pack-content-chance">${(content.chance * 100).toFixed(content.chance < 0.01 ? 2 : 1)}%</span>
+      </div>`;
+    }
+    html += `</div>
+      <div class="shop-pack-actions">`;
+    if (!unlocked) {
+      html += `<button class="btn ${game.gold >= pack.goldPrice ? 'primary' : 'danger'}" data-buy-pack="${pack.id}"><img src="金币.png" class="price-icon"> ${fmt(pack.goldPrice)}</button>`;
+    } else {
+      html += `<button class="btn ${isCurrent ? 'success' : 'primary'}" data-use-pack="${pack.id}">${isCurrent ? '使用中' : '使用'}</button>`;
+    }
+    html += `</div></div>`;
+  }
+  container.innerHTML = html;
+}
+
+function renderShopPotions(){
+  const container = document.querySelector('#shop-tab-potions .shop-items');
+  if (!container) return;
+  let html = '';
+  for (const potion of POTIONS) {
+    const canAfford = game.diamonds >= potion.price;
+    const count = (game.potionInventory && game.potionInventory[potion.id]) || 0;
+    const isActive = game.activePotions && game.activePotions[potion.id] && game.activePotions[potion.id] > Date.now();
+    const remainingTime = isActive ? Math.ceil((game.activePotions[potion.id] - Date.now()) / 1000 / 60) : 0;
+    html += `<div class="shop-item">
+      <div class="shop-item-icon"><img src="${potion.icon}" alt="${potion.name}" onerror="this.style.display='none'"></div>
+      <div class="shop-item-name">${potion.name}${isActive ? ' <span class="tag tag-green">生效中</span>' : ''}</div>
+      <div class="shop-item-desc">${potion.desc}${isActive ? ' 剩余' + remainingTime + '分钟' : ''}</div>
+      <div class="shop-item-price"><img src="钻石（数据）.png" class="price-icon"> ${potion.price}</div>
+      <div class="shop-item-count">库存: ${count}</div>
+      <div class="shop-item-actions">
+        <button class="btn ${canAfford ? 'primary' : 'danger'}" data-buy-potion="${potion.id}">购买</button>
+        ${count > 0 ? '<button class="btn secondary" data-use-potion="' + potion.id + '">使用</button>' : ''}
+      </div>
+    </div>`;
+  }
+  container.innerHTML = html;
+}
+
+function renderShopOther(){
+  const container = document.querySelector('#shop-tab-other .shop-items');
+  if (!container) return;
+  let html = '';
+  for (const item of SHOP_ITEMS_OTHER) {
+    const canAfford = game.diamonds >= item.price;
+    let count = 0;
+    if (item.id === 'scroll67') {
+      count = game.scrollInventory && game.scrollInventory[item.id] || 0;
+    } else if (item.type === 'specialPickaxe') {
+      const pickaxeId = item.id === 'pickaxe67' ? 'special67' : 'specialInfinite';
+      count = game.inventory[pickaxeId] && game.inventory[pickaxeId][0] || 0;
+    }
+    html += `<div class="shop-item">
+      <div class="shop-item-icon"><img src="${item.icon}" alt="${item.name}" onerror="this.style.display='none'"></div>
+      <div class="shop-item-name">${item.name}</div>
+      <div class="shop-item-desc">${item.desc}</div>
+      <div class="shop-item-price"><img src="钻石（数据）.png" class="price-icon"> ${item.price}</div>
+      <div class="shop-item-count">库存: ${count}</div>
+      <div class="shop-item-actions">
+        <button class="btn ${canAfford ? 'primary' : 'danger'}" data-buy-other="${item.id}">购买</button>
+        ${count > 0 && item.id === 'scroll67' ? '<button class="btn secondary" data-use-scroll="' + item.id + '">使用</button>' : ''}
+      </div>
+    </div>`;
+  }
+  container.innerHTML = html;
+}
+
+function renderShopPoints(){
+  const container = document.querySelector('#shop-tab-points .shop-items');
+  if (!container) return;
+  let html = '';
+  for (const item of SHOP_ITEMS_POINTS) {
+    const lvl = item.getLevel();
+    const maxReached = lvl >= item.maxLevel;
+    const price = maxReached ? 0 : item.getPrice(lvl);
+    const canAfford = game.onlinePoints >= price;
+    html += `<div class="shop-item${maxReached ? ' disabled' : ''}">
+      <div class="shop-item-icon"><img src="${item.icon}" alt="${item.name}" onerror="this.style.display='none'"></div>
+      <div class="shop-item-name">${item.name}</div>
+      <div class="shop-item-desc">${maxReached ? '已达满级' : item.getDesc(lvl)}</div>
+      <div class="shop-item-price">${maxReached ? 'MAX' : '<img src="在线积分.png" class="price-icon"> ' + fmt(price)}</div>
+      <button class="btn ${maxReached ? 'disabled' : (canAfford ? 'primary' : 'danger')}" data-points-upgrade="${item.id}" ${maxReached ? 'disabled' : ''}>${maxReached ? '已满级' : '升级'}</button>
+    </div>`;
+  }
+  container.innerHTML = html;
+}
 // 注意：由于篇幅，上面四个函数在最终完整文件中会完整保留，这里仅示意。
 
 // ==================== 事件绑定 ====================
