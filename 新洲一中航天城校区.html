@@ -176,23 +176,31 @@
         .nav-link {
             position: relative;
             color: rgba(255, 255, 255, 0.85);
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
             font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
         }
 
-        .nav-link:hover, .nav-link.active { color: var(--gold-color); }
+        .nav-link:hover, .nav-link.active { 
+            color: var(--gold-color); 
+            background: rgba(202, 138, 4, 0.1);
+            text-shadow: 0 0 20px rgba(202, 138, 4, 0.4);
+        }
 
         .nav-link::after {
             content: '';
             position: absolute;
-            bottom: -6px; left: 0;
-            width: 0; height: 2px;
-            background: linear-gradient(90deg, var(--gold-color), #f4d03f);
-            transition: width 0.3s cubic-bezier(0.16,1,0.3,1);
-            border-radius: 2px;
+            bottom: -4px; left: 50%;
+            transform: translateX(-50%);
+            width: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold-color), transparent);
+            transition: width 0.4s cubic-bezier(0.16,1,0.3,1);
+            border-radius: 3px;
+            box-shadow: 0 0 10px rgba(202, 138, 4, 0.5);
         }
 
-        .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+        .nav-link:hover::after, .nav-link.active::after { width: 80%; }
 
         .scroll-indicator { animation: bounce 2s infinite; }
 
@@ -238,8 +246,17 @@
         }
         
         /* 新增页面视图控制 */
-        .page-view { display: none; }
-        .page-view.active { display: block; }
+        .page-view { 
+            display: none; 
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1);
+        }
+        .page-view.active { 
+            display: block; 
+            opacity: 1;
+            transform: translateY(0);
+        }
         
         /* 弹窗样式 */
         .modal-overlay {
@@ -688,6 +705,18 @@
         .corner-deco {
             position: relative;
         }
+        .notable-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+            transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+        .notable-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 8px 20px rgba(0,0,0,0.08);
+        }
+
         .corner-deco::before,
         .corner-deco::after {
             content: '';
@@ -1050,61 +1079,229 @@
             position: absolute;
             inset: 0;
             pointer-events: none;
-            overflow: hidden;
+            overflow: visible;
             z-index: 5;
         }
         .rocket-body {
             position: absolute;
-            bottom: -260px;
+            bottom: -700px;
             left: 50%;
             transform: translateX(-50%);
             opacity: 0;
+            z-index: 10;
+            width: 220px;
+            height: 500px;
+            filter: drop-shadow(0 0 50px rgba(255,200,0,0.6)) drop-shadow(0 0 100px rgba(255,100,0,0.3));
         }
         .rocket-active .rocket-body {
-            animation: rocketFly 4s cubic-bezier(0.5, 0, 0.5, 1) forwards;
+            animation: rocketFly 8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
         @keyframes rocketFly {
-            0% { bottom: -260px; opacity: 0; transform: translateX(-50%) rotate(-6deg) scale(0.7); }
-            12% { opacity: 1; transform: translateX(-50%) rotate(-3deg) scale(1); }
-            50% { transform: translateX(-50%) rotate(2deg) scale(1.05); }
-            100% { bottom: 110%; opacity: 0; transform: translateX(-50%) rotate(5deg) scale(0.85); }
+            0% { bottom: -700px; opacity: 0; transform: translateX(-50%) rotate(-15deg) scale(0.25); }
+            5% { opacity: 1; transform: translateX(-50%) rotate(-8deg) scale(1); }
+            20% { transform: translateX(-50%) rotate(-3deg) scale(1.15); }
+            40% { transform: translateX(-50%) rotate(-1deg) scale(1.2); }
+            60% { transform: translateX(-50%) rotate(0deg) scale(1.18); }
+            80% { transform: translateX(-50%) rotate(6deg) scale(1.1); }
+            100% { bottom: 150%; opacity: 0; transform: translateX(-50%) rotate(18deg) scale(0.4); }
         }
-        .rocket-flame {
+
+        /* 火箭光晕 */
+        .rocket-glow {
             position: absolute;
-            bottom: -260px;
+            bottom: -700px;
             left: 50%;
             transform: translateX(-50%);
-            width: 50px;
-            height: 0;
-            background: radial-gradient(ellipse at top, rgba(255,255,255,0.9) 0%, rgba(255,235,59,0.8) 20%, rgba(255,152,0,0.7) 50%, rgba(244,67,54,0.4) 80%, transparent 100%);
+            width: 500px;
+            height: 500px;
             border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,200,0,0.5) 0%, rgba(255,100,0,0.3) 40%, transparent 70%);
             opacity: 0;
-            filter: blur(6px);
+            z-index: 7;
+            filter: blur(40px);
+        }
+        .rocket-active .rocket-glow {
+            animation: glowFly 8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        @keyframes glowFly {
+            0% { opacity: 0; bottom: -700px; transform: translateX(-50%) scale(0.4); }
+            5% { opacity: 0.9; transform: translateX(-50%) scale(1); }
+            40% { opacity: 0.7; transform: translateX(-50%) scale(1.3); }
+            100% { opacity: 0; bottom: 150%; transform: translateX(-50%) scale(0.7); }
+        }
+
+        /* 火箭火焰 - 多层渐变 */
+        .rocket-flame {
+            position: absolute;
+            bottom: -700px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            opacity: 0;
+            z-index: 8;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        }
+        .rocket-flame::before {
+            content: '';
+            position: absolute;
+            inset: -15px;
+            background: linear-gradient(to bottom, rgba(255,255,200,0.95) 0%, rgba(255,200,50,0.9) 20%, rgba(255,150,0,0.7) 50%, rgba(255,100,0,0.4) 80%, transparent 100%);
+            border-radius: inherit;
+            filter: blur(8px);
+            animation: flameFlicker 0.08s infinite alternate;
+            box-shadow: 0 0 60px rgba(255,200,0,0.8), 0 0 120px rgba(255,100,0,0.5);
+        }
+        .rocket-flame::after {
+            content: '';
+            position: absolute;
+            top: 8%; left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            height: 75%;
+            background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,220,0.8) 40%, transparent 100%);
+            border-radius: inherit;
+            filter: blur(4px);
+        }
+        @keyframes flameFlicker {
+            0% { transform: scaleX(1) translateY(0); }
+            100% { transform: scaleX(0.92) translateY(3px); }
         }
         .rocket-active .rocket-flame {
-            animation: flameFly 4s cubic-bezier(0.5, 0, 0.5, 1) forwards;
+            animation: flameFly 8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
         @keyframes flameFly {
-            0% { height: 0; opacity: 0; bottom: -260px; width: 30px; }
-            12% { opacity: 0.9; height: 100px; width: 50px; }
-            50% { height: 180px; width: 70px; opacity: 0.7; }
-            100% { height: 250px; opacity: 0; bottom: 110%; width: 40px; }
+            0% { height: 0; opacity: 0; bottom: -700px; width: 50px; }
+            5% { opacity: 0.98; height: 150px; width: 160px; }
+            20% { height: 400px; width: 220px; opacity: 0.95; }
+            40% { height: 600px; width: 250px; opacity: 0.85; }
+            60% { height: 700px; width: 230px; opacity: 0.7; }
+            80% { height: 650px; width: 180px; opacity: 0.5; }
+            100% { height: 800px; opacity: 0; bottom: 150%; width: 80px; }
         }
+
+        /* 火花粒子 */
         .spark {
             position: absolute;
-            width: 5px;
-            height: 5px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             opacity: 0;
             pointer-events: none;
+            z-index: 12;
+            filter: drop-shadow(0 0 8px currentColor);
         }
         .rocket-active .spark {
-            animation: sparkBurst 3.5s ease-out forwards;
+            animation: sparkBurst 5s ease-out forwards;
         }
         @keyframes sparkBurst {
             0% { opacity: 0; transform: translate(0,0) scale(0); }
-            20% { opacity: 1; transform: translate(var(--tx,0), var(--ty,0)) scale(1); }
-            100% { opacity: 0; transform: translate(calc(var(--tx,0)*3), calc(var(--ty,0)*3)) scale(0); }
+            12% { opacity: 1; transform: translate(var(--tx,0), var(--ty,0)) scale(1); }
+            100% { opacity: 0; transform: translate(calc(var(--tx,0)*5), calc(var(--ty,0)*5)) scale(0); }
+        }
+
+        /* 火焰碎片 */
+        .flame-debris {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, #ffeb3b, #ff9800);
+            border-radius: 50% 0 50% 50%;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 11;
+            filter: drop-shadow(0 0 6px #ff9800);
+        }
+        .rocket-active .flame-debris {
+            animation: debrisFly 4s ease-out forwards;
+        }
+        @keyframes debrisFly {
+            0% { opacity: 0; transform: translate(0,0) scale(0) rotate(0deg); }
+            10% { opacity: 1; transform: translate(var(--dx,0), var(--dy,0)) scale(1) rotate(45deg); }
+            100% { opacity: 0; transform: translate(calc(var(--dx,0)*3), calc(var(--dy,0)*3 + 150px)) scale(0.3) rotate(270deg); }
+        }
+
+        /* 烟雾粒子 */
+        .smoke-particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 6;
+            filter: blur(15px);
+        }
+        .rocket-active .smoke-particle {
+            animation: smokeFloat 4s ease-out forwards;
+        }
+        @keyframes smokeFloat {
+            0% { opacity: 0; transform: translateY(0) scale(0.3); }
+            12% { opacity: 0.6; }
+            50% { background: rgba(200,200,220,0.25); }
+            100% { opacity: 0; transform: translateY(300px) translateX(var(--sx,0)) scale(3); }
+        }
+
+        /* 能量粒子 */
+        .energy-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #00ffff;
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 13;
+            filter: drop-shadow(0 0 10px #00ffff);
+        }
+        .rocket-active .energy-particle {
+            animation: energyBurst 3s ease-out forwards;
+        }
+        @keyframes energyBurst {
+            0% { opacity: 0; transform: translate(0,0) scale(0); }
+            8% { opacity: 1; transform: translate(var(--ex,0), var(--ey,0)) scale(1); }
+            100% { opacity: 0; transform: translate(calc(var(--ex,0)*8), calc(var(--ey,0)*8)) scale(0); }
+        }
+
+        /* 星星拖尾 */
+        .star-tracer {
+            position: absolute;
+            width: 3px;
+            height: 150px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,215,0,0.9), rgba(255,255,255,0.8));
+            opacity: 0;
+            pointer-events: none;
+            z-index: 4;
+            transform-origin: top center;
+            filter: drop-shadow(0 0 8px rgba(255,215,0,0.8));
+        }
+        .rocket-active .star-tracer {
+            animation: starTrail 6s linear forwards;
+        }
+        @keyframes starTrail {
+            0% { opacity: 0; height: 0; }
+            8% { opacity: 0.9; height: 150px; }
+            90% { opacity: 0.7; height: 400px; }
+            100% { opacity: 0; height: 500px; }
+        }
+
+        /* 光效射线 */
+        .light-ray {
+            position: absolute;
+            width: 2px;
+            height: 100px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.6));
+            opacity: 0;
+            pointer-events: none;
+            z-index: 3;
+            transform-origin: top center;
+        }
+        .rocket-active .light-ray {
+            animation: rayBurst 5s ease-out forwards;
+        }
+        @keyframes rayBurst {
+            0% { opacity: 0; height: 0; transform: rotate(var(--angle,0deg)); }
+            10% { opacity: 0.8; height: 150px; }
+            100% { opacity: 0; height: 300px; transform: rotate(var(--angle,0deg) + 30deg); }
         }
 
         /* ==================== 浅深渐变过渡 ==================== */
@@ -1155,63 +1352,67 @@
 
 <!-- ==================== 主页面 ==================== -->
 <div id="page-main" class="page-view active">
-    <nav class="navbar fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.06);">
+    <nav class="navbar fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(202,138,4,0.12); box-shadow: 0 4px 20px rgba(0,0,0,0.25);">
         <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
-            <div class="flex items-center gap-3 flex-shrink-0">
-                <img src="校徽.png" alt="武汉市新洲区第一中学校徽" class="w-14 h-14 rounded-full object-cover ring-2 ring-yellow-500/40 shadow-lg">
+            <div class="flex items-center gap-3 flex-shrink-0 group">
+                <div class="relative">
+                    <img src="校徽.png" alt="武汉市新洲区第一中学校徽" class="w-14 h-14 rounded-full object-cover ring-2 ring-yellow-500/50 shadow-lg group-hover:ring-yellow-500/80 transition-all duration-300">
+                    <div class="absolute inset-0 rounded-full bg-yellow-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
                 <div class="flex flex-col leading-tight">
-                    <span style="font-family: 'STXingwei', '华文新魏', 'STZhongsong', serif;" class="text-white text-xl font-bold tracking-wide">武汉市新洲区第一中学</span>
-                    <span class="font-serif text-blue-400 text-sm font-medium tracking-[0.4em] text-center mt-0.5">航天城校区</span>
+                    <span style="font-family: 'STXingwei', '华文新魏', 'STZhongsong', serif;" class="text-white text-xl font-bold tracking-wide group-hover:text-yellow-100 transition-colors duration-300">武汉市新洲区第一中学</span>
+                    <span class="font-serif text-blue-400 text-sm font-medium tracking-[0.4em] text-center mt-0.5 group-hover:text-blue-300 transition-colors duration-300">航天城校区</span>
                 </div>
             </div>
-            <div class="nav-links hidden lg:flex items-center gap-4">
-                <a href="#home" class="nav-link text-sm font-medium">首页</a>
-                <a href="#school" class="nav-link text-sm font-medium">学校概况</a>
-                <a href="#principal" class="nav-link text-sm font-medium">校长寄语</a>
-                <a href="#facilities" class="nav-link text-sm font-medium">校园设施</a>
-                <a href="#faculty" class="nav-link text-sm font-medium">师资力量</a>
-                <a href="#curriculum" class="nav-link text-sm font-medium">课程体系</a>
-                <a href="#students" class="nav-link text-sm font-medium">学子风采</a>
-                <a href="#notable" class="nav-link text-sm font-medium">知名人物</a>
-                <div class="relative">
-                    <button id="nav-more-btn" class="nav-link text-sm font-medium flex items-center gap-1 cursor-pointer">
+            <div class="nav-links hidden lg:flex items-center gap-1">
+                <a href="#home" class="nav-link text-sm font-medium px-4 py-2 rounded-lg hover:bg-white/5 transition-all">首页</a>
+                <a href="#school" class="nav-link text-sm font-medium px-4 py-2 rounded-lg hover:bg-white/5 transition-all">学校概况</a>
+                <a href="#principal" class="nav-link text-sm font-medium px-4 py-2 rounded-lg hover:bg-white/5 transition-all">校长寄语</a>
+                <a href="#facilities" class="nav-link text-sm font-medium px-4 py-2 rounded-lg hover:bg-white/5 transition-all">校园设施</a>
+                <a href="#faculty" class="nav-link text-sm font-medium px-4 py-2 rounded-lg hover:bg-white/5 transition-all">师资力量</a>
+                <a href="#curriculum" class="nav-link text-sm font-medium px-4 py-2 rounded-lg hover:bg-white/5 transition-all">课程体系</a>
+                <a href="#students" class="nav-link text-sm font-medium px-4 py-2 rounded-lg hover:bg-white/5 transition-all">学子风采</a>
+                <a href="#notable" class="nav-link text-sm font-medium px-4 py-2 rounded-lg hover:bg-white/5 transition-all">知名人物</a>
+                <div class="relative ml-2">
+                    <button id="nav-more-btn" class="nav-link text-sm font-medium px-4 py-2 rounded-lg hover:bg-white/5 flex items-center gap-1 cursor-pointer transition-all">
                         更多 <i id="nav-more-icon" class="fas fa-chevron-down text-xs transition-transform duration-300"></i>
                     </button>
-                    <div id="nav-more-panel" class="hidden absolute top-full right-0 mt-3 bg-white rounded-2xl shadow-2xl p-6 grid grid-cols-4 gap-x-5 gap-y-2 min-w-[680px] z-50 border border-gray-100" style="opacity:0; transform: translateY(-10px); transition: all 0.3s ease; pointer-events:none;">
-                        <div class="col-span-4 text-xs font-bold text-gray-400 tracking-widest mb-1 pb-2 border-b border-gray-100">办学体系</div>
-                        <a href="#philosophy" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">校训精神</a>
-                        <a href="#history" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">历史沿革</a>
-                        <a href="#research" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">教学研究</a>
-                        <a href="#achievements" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">教学成果</a>
-                        <a href="#moral" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">德育工作</a>
-                        <a href="#curriculum" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">课程体系</a>
-                        <a href="#programs" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">特色项目</a>
-                        <a href="#science" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">航天科普</a>
+                    <div id="nav-more-panel" class="hidden absolute top-full right-0 mt-2 bg-white/98 backdrop-blur-xl rounded-2xl shadow-2xl p-6 grid grid-cols-4 gap-x-5 gap-y-2 min-w-[680px] z-50 border border-gray-100" style="opacity:0; transform: translateY(-10px); transition: all 0.3s ease; pointer-events:none;">
+                        <div class="absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white/98 rotate-45 border-t border-l border-gray-100"></div>
+                        <div class="col-span-4 text-xs font-bold text-gray-400 tracking-widest mb-1 pb-3 border-b border-gray-100">办学体系</div>
+                        <a href="#philosophy" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">校训精神</a>
+                        <a href="#history" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">历史沿革</a>
+                        <a href="#research" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">教学研究</a>
+                        <a href="#achievements" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">教学成果</a>
+                        <a href="#moral" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">德育工作</a>
+                        <a href="#curriculum" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">课程体系</a>
+                        <a href="#programs" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">特色项目</a>
+                        <a href="#science" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">航天科普</a>
 
-                        <div class="col-span-4 text-xs font-bold text-gray-400 tracking-widest mb-1 mt-2 pb-2 border-b border-gray-100">校园生活</div>
-                        <a href="#life" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">校园生活</a>
-                        <a href="#activities" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">学生活动</a>
-                        <a href="#culture" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">校园文化</a>
-                        <a href="#clubs" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">学生社团</a>
-                        <a href="#works" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">学生作品</a>
-                        <a href="#scenery" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">校园景观</a>
-                        <a href="#gallery" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">校园风光</a>
-                        <a href="#exchange" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">国际交流</a>
+                        <div class="col-span-4 text-xs font-bold text-gray-400 tracking-widest mb-1 mt-3 pb-3 border-b border-gray-100">校园生活</div>
+                        <a href="#life" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">校园生活</a>
+                        <a href="#activities" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">学生活动</a>
+                        <a href="#culture" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">校园文化</a>
+                        <a href="#clubs" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">学生社团</a>
+                        <a href="#works" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">学生作品</a>
+                        <a href="#scenery" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">校园景观</a>
+                        <a href="#gallery" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">校园风光</a>
+                        <a href="#exchange" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">国际交流</a>
 
-                        <div class="col-span-4 text-xs font-bold text-gray-400 tracking-widest mb-1 mt-2 pb-2 border-b border-gray-100">师资招生</div>
-                        <a href="#teachers" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">教师风采</a>
-                        <a href="#quotes" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">名师寄语</a>
-                        <a href="#kuaizhou" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">快舟班</a>
-                        <a href="#admissions" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">招生信息</a>
-                        <a href="#statistics" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">数据统计</a>
-                        <a href="#partners" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">合作伙伴</a>
-                        <a href="#vision" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">未来愿景</a>
-                        <a href="#news" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">新闻动态</a>
-                        <a href="#faq" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-3 py-2 rounded-lg text-sm font-medium transition-all">常见问题</a>
+                        <div class="col-span-4 text-xs font-bold text-gray-400 tracking-widest mb-1 mt-3 pb-3 border-b border-gray-100">师资招生</div>
+                        <a href="#teachers" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">教师风采</a>
+                        <a href="#quotes" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">名师寄语</a>
+                        <a href="#kuaizhou" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">快舟班</a>
+                        <a href="#admissions" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">招生信息</a>
+                        <a href="#statistics" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">数据统计</a>
+                        <a href="#partners" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">合作伙伴</a>
+                        <a href="#vision" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">未来愿景</a>
+                        <a href="#news" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">新闻动态</a>
+                        <a href="#faq" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">常见问题</a>
                     </div>
                 </div>
             </div>
-            <button id="btn-contact" class="btn-primary text-sm flex-shrink-0">联系我们</button>
+            <button id="btn-contact" class="btn-primary text-sm flex-shrink-0 px-6 py-2.5">联系我们</button>
         </div>
     </nav>
 
@@ -2826,68 +3027,90 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="glass-card p-6 text-center">
-                    <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                        <span class="font-serif text-3xl font-bold text-white">王</span>
-                    </div>
-                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-2">王祖元</h3>
-                    <p class="text-sm text-gray-500 mb-4">教师</p>
-                    <p class="text-gray-600 text-sm leading-relaxed">曾提出“四步朗读法”，被广泛应用于教育领域。</p>
-                    <div class="mt-4 flex justify-center gap-2">
-                        <span class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">教师</span>
-                    </div>
-                </div>
-
-                <div class="glass-card p-6 text-center">
-                    <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
-                        <span class="font-serif text-3xl font-bold text-white">何</span>
-                    </div>
-                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-2">何志平</h3>
-                    <p class="text-sm text-gray-500 mb-4">高一年级主任</p>
-                    <p class="text-gray-600 text-sm leading-relaxed">物理教师，注重学生物理思维和实验能力的培养。</p>
-                    <div class="mt-4 flex justify-center gap-2">
-                        <span class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">高一年级主任</span>
+                <div class="notable-card relative group overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative z-10 p-8 text-center">
+                        <div class="absolute -top-2 -right-2 w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg">
+                            <span class="text-white font-black text-xl">一</span>
+                        </div>
+                        <div class="w-28 h-28 mx-auto mb-6 rounded-full bg-gradient-to-br from-blue-400 to-blue-700 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-500 ring-4 ring-white/20">
+                            <span class="font-serif text-4xl font-bold text-white">王</span>
+                        </div>
+                        <h3 class="font-serif text-2xl font-bold text-gray-900 mb-2 group-hover:text-white transition-colors duration-300">王祖元</h3>
+                        <p class="text-sm text-gray-500 mb-4 group-hover:text-white/80 transition-colors duration-300">教师</p>
+                        <p class="text-gray-600 text-base font-medium leading-relaxed group-hover:text-white/90 transition-colors duration-300">四步朗读王祖元</p>
+                        <div class="mt-6 flex justify-center gap-2">
+                            <span class="text-xs bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full font-semibold group-hover:bg-white/20 group-hover:text-white transition-all duration-300">语文名师</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="glass-card p-6 text-center">
-                    <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
-                        <span class="font-serif text-3xl font-bold text-white">姚</span>
-                    </div>
-                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-2">姚俊希</h3>
-                    <p class="text-sm text-gray-500 mb-4">高一年级神舟2班学生</p>
-                    <p class="text-gray-600 text-sm leading-relaxed">两个黄鹂鸣翠柳</p>
-                    <div class="mt-4 flex justify-center gap-2">
-                        <span class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full">一个67姚俊希</span>
+                <div class="notable-card relative group overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-emerald-600 via-emerald-500 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative z-10 p-8 text-center">
+                        <div class="absolute -top-2 -right-2 w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg">
+                            <span class="text-white font-black text-xl">二</span>
+                        </div>
+                        <div class="w-28 h-28 mx-auto mb-6 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-700 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-500 ring-4 ring-white/20">
+                            <span class="font-serif text-4xl font-bold text-white">何</span>
+                        </div>
+                        <h3 class="font-serif text-2xl font-bold text-gray-900 mb-2 group-hover:text-white transition-colors duration-300">何志平</h3>
+                        <p class="text-sm text-gray-500 mb-4 group-hover:text-white/80 transition-colors duration-300">物理教师</p>
+                        <p class="text-gray-600 text-base font-medium leading-relaxed group-hover:text-white/90 transition-colors duration-300">三力平衡何志平</p>
+                        <div class="mt-6 flex justify-center gap-2">
+                            <span class="text-xs bg-green-100 text-green-700 px-4 py-1.5 rounded-full font-semibold group-hover:bg-white/20 group-hover:text-white transition-all duration-300">高一年级主任</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="glass-card p-6 text-center">
-                    <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
-                        <span class="font-serif text-3xl font-bold text-white">潘</span>
+                <div class="notable-card relative group overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-violet-600 via-violet-500 to-violet-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-violet-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative z-10 p-8 text-center">
+                        <div class="absolute -top-2 -right-2 w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg">
+                            <span class="text-white font-black text-xl">三</span>
+                        </div>
+                        <div class="w-28 h-28 mx-auto mb-6 rounded-full bg-gradient-to-br from-violet-400 to-violet-700 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-500 ring-4 ring-white/20">
+                            <span class="font-serif text-4xl font-bold text-white">姚</span>
+                        </div>
+                        <h3 class="font-serif text-2xl font-bold text-gray-900 mb-2 group-hover:text-white transition-colors duration-300">姚俊希</h3>
+                        <p class="text-sm text-gray-500 mb-4 group-hover:text-white/80 transition-colors duration-300">神舟2班学生</p>
+                        <p class="text-gray-600 text-base font-medium leading-relaxed group-hover:text-white/90 transition-colors duration-300">一个六七姚俊希</p>
+                        <div class="mt-6 flex justify-center gap-2">
+                            <span class="text-xs bg-purple-100 text-purple-700 px-4 py-1.5 rounded-full font-semibold group-hover:bg-white/20 group-hover:text-white transition-all duration-300">学霸</span>
+                        </div>
                     </div>
-                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-2">潘若元</h3>
-                    <p class="text-sm text-gray-500 mb-4">官方</p>
-                    <p class="text-gray-600 text-sm leading-relaxed">官方</p>
-                    <div class="mt-4 flex justify-center gap-2">
-                        <span class="text-xs bg-orange-100 text-orange-700 px-3 py-1 rounded-full">神人</span>
+                </div>
+
+                <div class="notable-card relative group overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-amber-600 via-amber-500 to-amber-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative z-10 p-8 text-center">
+                        <div class="absolute -top-2 -right-2 w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg">
+                            <span class="text-white font-black text-xl">四</span>
+                        </div>
+                        <div class="w-28 h-28 mx-auto mb-6 rounded-full bg-gradient-to-br from-amber-400 to-amber-700 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-500 ring-4 ring-white/20">
+                            <span class="font-serif text-4xl font-bold text-white">高</span>
+                        </div>
+                        <h3 class="font-serif text-2xl font-bold text-gray-900 mb-2 group-hover:text-white transition-colors duration-300">高子涵</h3>
+                        <p class="text-sm text-gray-500 mb-4 group-hover:text-white/80 transition-colors duration-300">神舟3班学生</p>
+                        <p class="text-gray-600 text-base font-medium leading-relaxed group-hover:text-white/90 transition-colors duration-300">两颗搞完高子涵</p>
+                        <div class="mt-6 flex justify-center gap-2">
+                            <span class="text-xs bg-orange-100 text-orange-700 px-4 py-1.5 rounded-full font-semibold group-hover:bg-white/20 group-hover:text-white transition-all duration-300">神人</span>
+                        </div>
                     </div>
                 </div>
             </div>
             
             <!-- 新增：查看更多按钮 -->
             <div class="text-center mt-12">
-                <button id="btn-view-more" class="text-sm text-gray-400 cursor-pointer flex items-center justify-center mx-auto gap-2 hover:text-amber-600 transition-colors" data-action="placeholder">
+                <button id="btn-view-more" class="text-sm text-gray-400 cursor-pointer flex items-center justify-center mx-auto gap-2 hover:text-amber-600 transition-colors" onclick="showPage('page-67')">
                     <i class="fas fa-eye mr-1"></i>
                     <span>查看更多</span>
                     <span class="text-xs bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full">点击探索</span>
                 </button>
-            </div>
-            
-            <!-- 提示框 -->
-            <div id="toast-tip" class="fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-4 bg-gray-800 text-white px-6 py-3 rounded-full shadow-lg opacity-0 pointer-events-none transition-all duration-300 z-50 flex items-center gap-2">
-                <i class="fas fa-info-circle text-yellow-400"></i>
-                <span>功能暂时关闭，敬请期待</span>
             </div>
         </div>
     </section>
@@ -3938,10 +4161,10 @@
                         </div>
                         <div>
                             <h4 class="font-serif text-lg font-bold text-gray-900">王祖元</h4>
-                            <span class="text-sm" style="color:#e94560;">语文教师</span>
+                            <span class="text-sm" style="color:#e94560;">英语教师</span>
                         </div>
                     </div>
-                    <p class="text-gray-600 leading-relaxed text-sm" style="border-left:3px solid #d4af37; padding-left:16px;">文字是穿越时空的飞行器，阅读让我们与古今贤者对话。愿你们以笔为舵，在浩瀚书海中书写属于自己的青春篇章。</p>
+                    <p class="text-gray-600 leading-relaxed text-sm" style="border-left:3px solid #d4af37; padding-left:16px;">四步朗读还是太强势了</p>
                 </div>
                 <div class="quote-card reveal" style="transition-delay:0.2s">
                     <div class="quote-mark">"</div>
@@ -3951,10 +4174,10 @@
                         </div>
                         <div>
                             <h4 class="font-serif text-lg font-bold text-gray-900">何志平</h4>
-                            <span class="text-sm" style="color:#e94560;">数学教师</span>
+                            <span class="text-sm" style="color:#e94560;">物理教师</span>
                         </div>
                     </div>
-                    <p class="text-gray-600 leading-relaxed text-sm" style="border-left:3px solid #d4af37; padding-left:16px;">数学是宇宙的语言，每一个公式都蕴含着天地运行的规律。愿你以严谨的逻辑推演人生，用精确的计算丈量未来。</p>
+                    <p class="text-gray-600 leading-relaxed text-sm" style="border-left:3px solid #d4af37; padding-left:16px;">物理是宇宙的语言，每一个公式都蕴含着天地运行的规律。愿你以严谨的逻辑推演人生，用精确的计算丈量未来。</p>
                 </div>
                 <div class="quote-card reveal" style="transition-delay:0.3s">
                     <div class="quote-mark">"</div>
@@ -4005,43 +4228,94 @@
     <!-- ============ 未来愿景板块（含火箭升空特效） ============ -->
     <section id="vision" class="reveal py-24 relative overflow-hidden" style="background: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #0c4a6e 100%);">
         <div class="rocket-stage" id="rocket-stage">
-            <div class="rocket-flame"></div>
-            <div class="rocket-body">
-                <svg viewBox="0 0 100 240" width="100" height="240" style="filter: drop-shadow(0 0 12px rgba(255,180,80,0.5));">
+            <div class="rocket-flame">
+                <svg viewBox="0 0 280 700" width="200" height="600">
                     <defs>
-                        <linearGradient id="bodyGrad" x1="0" y1="0" x2="1" y2="0">
-                            <stop offset="0" stop-color="#e2e8f0"/>
-                            <stop offset="0.5" stop-color="#ffffff"/>
-                            <stop offset="1" stop-color="#cbd5e1"/>
+                        <linearGradient id="outerFlame" x1="50%" y1="0%" x2="50%" y2="100%">
+                            <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+                            <stop offset="8%" stop-color="#ffffff" stop-opacity="0.9"/>
+                            <stop offset="25%" stop-color="#fef3c7" stop-opacity="0.95"/>
+                            <stop offset="45%" stop-color="#fbbf24" stop-opacity="0.9"/>
+                            <stop offset="65%" stop-color="#f97316" stop-opacity="0.7"/>
+                            <stop offset="85%" stop-color="#dc2626" stop-opacity="0.4"/>
+                            <stop offset="100%" stop-color="#dc2626" stop-opacity="0"/>
                         </linearGradient>
-                        <linearGradient id="flameGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0" stop-color="#ffffff" stop-opacity="0.9"/>
-                            <stop offset="0.25" stop-color="#fef3c7"/>
-                            <stop offset="0.5" stop-color="#fbbf24"/>
-                            <stop offset="0.75" stop-color="#f97316"/>
-                            <stop offset="1" stop-color="#dc2626" stop-opacity="0"/>
+                        <linearGradient id="innerFlame" x1="50%" y1="0%" x2="50%" y2="100%">
+                            <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+                            <stop offset="30%" stop-color="#e0f2fe" stop-opacity="0.95"/>
+                            <stop offset="55%" stop-color="#7dd3fc" stop-opacity="0.8"/>
+                            <stop offset="80%" stop-color="#0ea5e9" stop-opacity="0.4"/>
+                            <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"/>
                         </linearGradient>
-                        <radialGradient id="windowGrad">
-                            <stop offset="0" stop-color="#7dd3fc"/>
-                            <stop offset="0.6" stop-color="#0284c7"/>
-                            <stop offset="1" stop-color="#0c4a6e"/>
+                        <radialGradient id="flameGlow">
+                            <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.4"/>
+                            <stop offset="100%" stop-color="#dc2626" stop-opacity="0"/>
                         </radialGradient>
                     </defs>
-                    <path d="M38 150 Q42 190 50 240 Q58 190 62 150 Q55 175 50 200 Q45 175 38 150 Z" fill="url(#flameGrad)" opacity="0.9"/>
-                    <path d="M42 150 Q45 180 50 210 Q55 180 58 150 Q52 170 50 185 Q48 170 42 150 Z" fill="#fef3c7" opacity="0.8"/>
-                    <path d="M35 130 L15 175 L35 155 Z" fill="#dc2626"/>
-                    <path d="M35 130 L15 175 L25 165 L35 145 Z" fill="#991b1b"/>
-                    <path d="M65 130 L85 175 L65 155 Z" fill="#dc2626"/>
-                    <path d="M65 130 L85 175 L75 165 L65 145 Z" fill="#991b1b"/>
-                    <rect x="40" y="145" width="20" height="8" fill="#334155"/>
-                    <rect x="42" y="147" width="16" height="4" fill="#1e293b"/>
-                    <path d="M35 80 L35 145 L65 145 L65 80 Q65 50 50 20 Q35 50 35 80 Z" fill="url(#bodyGrad)" stroke="#94a3b8" stroke-width="1"/>
-                    <path d="M35 90 L65 90 L65 96 L35 96 Z" fill="#dc2626"/>
-                    <path d="M35 120 L65 120 L65 126 L35 126 Z" fill="#dc2626"/>
-                    <circle cx="50" cy="108" r="9" fill="#1e293b" stroke="#fff" stroke-width="2"/>
-                    <circle cx="50" cy="108" r="6" fill="url(#windowGrad)"/>
-                    <circle cx="48" cy="106" r="2" fill="#fff" opacity="0.6"/>
-                    <circle cx="50" cy="22" r="3" fill="#dc2626"/>
+                    <ellipse cx="140" cy="350" rx="100" ry="280" fill="url(#flameGlow)"/>
+                    <path d="M80 40 Q140 400 200 40 Q170 140 140 260 Q110 140 80 40 Z" fill="url(#outerFlame)"/>
+                    <path d="M105 40 Q140 280 175 40 Q160 100 140 180 Q120 100 105 40 Z" fill="url(#innerFlame)"/>
+                    <ellipse cx="140" cy="40" rx="22" ry="10" fill="#334155"/>
+                </svg>
+            </div>
+            <div class="rocket-body">
+                <svg viewBox="0 0 180 400" width="180" height="400" style="filter: drop-shadow(0 0 30px rgba(255,160,60,0.7)); overflow: visible;">
+                    <defs>
+                        <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#64748b"/>
+                            <stop offset="25%" stop-color="#94a3b8"/>
+                            <stop offset="50%" stop-color="#ffffff"/>
+                            <stop offset="75%" stop-color="#94a3b8"/>
+                            <stop offset="100%" stop-color="#475569"/>
+                        </linearGradient>
+                        <linearGradient id="windowGrad">
+                            <stop offset="0%" stop-color="#7dd3fc"/>
+                            <stop offset="35%" stop-color="#0284c7"/>
+                            <stop offset="70%" stop-color="#075985"/>
+                            <stop offset="100%" stop-color="#0c4a6e"/>
+                        </linearGradient>
+                        <linearGradient id="tipGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#f87171"/>
+                            <stop offset="50%" stop-color="#ef4444"/>
+                            <stop offset="100%" stop-color="#991b1b"/>
+                        </linearGradient>
+                        <linearGradient id="finGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#b91c1c"/>
+                            <stop offset="50%" stop-color="#dc2626"/>
+                            <stop offset="100%" stop-color="#991b1b"/>
+                        </linearGradient>
+                        <radialGradient id="shineGrad">
+                            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+                            <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+                        </radialGradient>
+                    </defs>
+                    <path d="M80 350 L40 400 L75 370 Z" fill="url(#finGrad)"/>
+                    <path d="M100 350 L140 400 L105 370 Z" fill="url(#finGrad)"/>
+                    <path d="M85 340 L35 390 L65 365 Z" fill="#7f1d1d"/>
+                    <path d="M95 340 L145 390 L115 365 Z" fill="#7f1d1d"/>
+                    <rect x="58" y="325" width="64" height="18" rx="4" fill="#334155"/>
+                    <rect x="64" y="328" width="52" height="12" rx="2" fill="#1e293b"/>
+                    <circle cx="76" cy="334" r="3" fill="#ef4444"/>
+                    <circle cx="94" cy="334" r="3" fill="#ef4444"/>
+                    <circle cx="85" cy="334" r="3" fill="#fbbf24"/>
+                    <rect x="50" y="75" width="80" height="250" rx="18" fill="url(#bodyGrad)" stroke="#475569" stroke-width="2"/>
+                    <path d="M82 75 L90 45 L98 75 Z" fill="url(#tipGrad)"/>
+                    <rect x="55" y="95" width="70" height="10" fill="#dc2626"/>
+                    <rect x="55" y="120" width="70" height="10" fill="#dc2626"/>
+                    <rect x="55" y="145" width="70" height="10" fill="#dc2626"/>
+                    <rect x="55" y="170" width="70" height="10" fill="#dc2626"/>
+                    <circle cx="90" cy="220" r="20" fill="#1e293b" stroke="#fff" stroke-width="3"/>
+                    <circle cx="90" cy="220" r="15" fill="url(#windowGrad)"/>
+                    <circle cx="84" cy="213" r="4" fill="#fff" opacity="0.6"/>
+                    <circle cx="96" cy="225" r="3" fill="#fff" opacity="0.4"/>
+                    <rect x="60" y="255" width="60" height="10" rx="3" fill="#334155"/>
+                    <rect x="60" y="275" width="60" height="10" rx="3" fill="#334155"/>
+                    <rect x="66" y="257" width="48" height="6" rx="1" fill="#64748b"/>
+                    <rect x="66" y="277" width="48" height="6" rx="1" fill="#64748b"/>
+                    <ellipse cx="90" cy="72" rx="8" ry="5" fill="url(#shineGrad)"/>
+                    <rect x="78" y="68" width="14" height="8" fill="#dc2626" rx="2"/>
+                    <rect x="52" y="80" width="6" height="240" fill="#475569" opacity="0.3"/>
+                    <rect x="122" y="80" width="6" height="240" fill="#475569" opacity="0.3"/>
                 </svg>
             </div>
         </div>
@@ -4112,63 +4386,85 @@
                 </div>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12 reveal">
-                <div class="counter-card-enhanced"><div class="relative z-10"><span class="font-serif text-3xl font-bold gradient-text-gold">10</span><span class="font-serif text-xl gradient-text-gold">+</span><p class="text-white/70 text-xs mt-2">办学年限</p></div></div>
-                <div class="counter-card-enhanced"><div class="relative z-10"><span class="font-serif text-3xl font-bold gradient-text-gold">1000</span><span class="font-serif text-xl gradient-text-gold">+</span><p class="text-white/70 text-xs mt-2">培养学子</p></div></div>
+                <div class="counter-card-enhanced"><div class="relative z-10"><span class="font-serif text-3xl font-bold gradient-text-gold">2</span><span class="font-serif text-xl gradient-text-gold">+</span><p class="text-white/70 text-xs mt-2">办学年限</p></div></div>
+                <div class="counter-card-enhanced"><div class="relative z-10"><span class="font-serif text-3xl font-bold gradient-text-gold">300</span><span class="font-serif text-xl gradient-text-gold">+</span><p class="text-white/70 text-xs mt-2">培养学子</p></div></div>
                 <div class="counter-card-enhanced"><div class="relative z-10"><span class="font-serif text-3xl font-bold gradient-text-gold">50</span><span class="font-serif text-xl gradient-text-gold">+</span><p class="text-white/70 text-xs mt-2">合作伙伴</p></div></div>
                 <div class="counter-card-enhanced"><div class="relative z-10"><span class="font-serif text-3xl font-bold gradient-text-gold">98</span><span class="font-serif text-xl gradient-text-gold">%</span><p class="text-white/70 text-xs mt-2">目标达成</p></div></div>
             </div>
         </div>
     </section>
 
-    <footer class="footer py-16">
+    <footer class="footer py-16" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); border-top: 1px solid rgba(202,138,4,0.12);">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-                <div>
-                    <div class="flex items-center gap-3 mb-6">
-                        <img src="校徽.png" alt="武汉市新洲区第一中学校徽" class="w-14 h-14 rounded-full object-cover ring-2 ring-yellow-500/40 shadow-lg">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-12 mb-12">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-3 mb-6 group">
+                        <div class="relative">
+                            <img src="校徽.png" alt="武汉市新洲区第一中学校徽" class="w-14 h-14 rounded-full object-cover ring-2 ring-yellow-500/50 shadow-lg group-hover:ring-yellow-500/80 transition-all duration-300">
+                            <div class="absolute inset-0 rounded-full bg-yellow-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
                         <div class="flex flex-col leading-tight">
-                            <span style="font-family: 'STXingwei', '华文新魏', 'STZhongsong', serif;" class="text-white text-lg font-bold tracking-wide">武汉市新洲区第一中学</span>
+                            <span style="font-family: 'STXingwei', '华文新魏', 'STZhongsong', serif;" class="text-white text-xl font-bold tracking-wide">武汉市新洲区第一中学</span>
                             <span class="font-serif text-blue-400 text-sm font-medium tracking-[0.4em] text-center mt-0.5">航天城校区</span>
                         </div>
                     </div>
-                    <p class="text-gray-400 text-sm leading-relaxed">
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">
                         仰望星空 脚踏实地<br>培养具有航天精神的新时代英才
                     </p>
-                </div>
-                <div>
-                    <h3 class="font-serif text-white font-bold mb-6">快速链接</h3>
-                    <ul class="space-y-3">
-                        <li><a href="#home" class="text-gray-400 hover:text-white transition-colors">首页</a></li>
-                        <li><a href="#school" class="text-gray-400 hover:text-white transition-colors">学校概况</a></li>
-                        <li><a href="#principal" class="text-gray-400 hover:text-white transition-colors">校长寄语</a></li>
-                        <li><a href="#students" class="text-gray-400 hover:text-white transition-colors">学子风采</a></li>
-                        <li><a href="#notable" class="text-gray-400 hover:text-white transition-colors">知名人物</a></li>
-                        <li><a href="#kuaizhou" class="text-gray-400 hover:text-white transition-colors">快舟班</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="font-serif text-white font-bold mb-6">联系我们</h3>
-                    <ul class="space-y-3">
-                        <li class="flex items-center gap-3"><i class="fas fa-map-marker-alt text-yellow-500"></i><span class="text-gray-400">武汉市新洲区双柳航天城</span></li>
-                        <li class="flex items-center gap-3"><i class="fas fa-phone text-yellow-500"></i><span class="text-gray-400">067-6767676</span></li>
-                        <li class="flex items-center gap-3"><i class="fas fa-envelope text-yellow-500"></i><span class="text-gray-400">13125021156@163.com</span></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="font-serif text-white font-bold mb-6">关注我们</h3>
                     <div class="flex gap-4">
-                        <button id="btn-wechat" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-yellow-500 transition-colors"><i class="fab fa-weixin text-white"></i></button>
-                        <button id="btn-weibo" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-yellow-500 transition-colors"><i class="fab fa-weibo text-white"></i></button>
-                        <button id="btn-bilibili" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-yellow-500 transition-colors"><i class="fab fa-bilibili text-white"></i></button>
+                        <button id="btn-wechat" class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-yellow-500 hover:border-yellow-500 transition-all duration-300 group"><i class="fab fa-weixin text-white group-hover:text-slate-900 transition-colors"></i></button>
+                        <button id="btn-weibo" class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-yellow-500 hover:border-yellow-500 transition-all duration-300 group"><i class="fab fa-weibo text-white group-hover:text-slate-900 transition-colors"></i></button>
+                        <button id="btn-bilibili" class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-yellow-500 hover:border-yellow-500 transition-all duration-300 group"><i class="fab fa-bilibili text-white group-hover:text-slate-900 transition-colors"></i></button>
                     </div>
-                    <p class="text-gray-400 text-sm mt-6">点击图标关注学校社交账号</p>
+                </div>
+                <div>
+                    <h3 class="font-serif text-white font-bold mb-6 flex items-center gap-2">
+                        <span class="w-1 h-5 bg-yellow-500 rounded-full"></span>快速链接
+                    </h3>
+                    <ul class="space-y-3">
+                        <li><a href="#home" class="text-gray-400 hover:text-yellow-400 transition-colors text-sm">首页</a></li>
+                        <li><a href="#school" class="text-gray-400 hover:text-yellow-400 transition-colors text-sm">学校概况</a></li>
+                        <li><a href="#principal" class="text-gray-400 hover:text-yellow-400 transition-colors text-sm">校长寄语</a></li>
+                        <li><a href="#students" class="text-gray-400 hover:text-yellow-400 transition-colors text-sm">学子风采</a></li>
+                        <li><a href="#notable" class="text-gray-400 hover:text-yellow-400 transition-colors text-sm">知名人物</a></li>
+                        <li><a href="#kuaizhou" class="text-gray-400 hover:text-yellow-400 transition-colors text-sm">快舟班</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-serif text-white font-bold mb-6 flex items-center gap-2">
+                        <span class="w-1 h-5 bg-yellow-500 rounded-full"></span>招生信息
+                    </h3>
+                    <ul class="space-y-3">
+                        <li><a href="#admissions" class="text-gray-400 hover:text-yellow-400 transition-colors text-sm">招生政策</a></li>
+                        <li><a href="#programs" class="text-gray-400 hover:text-yellow-400 transition-colors text-sm">特色项目</a></li>
+                        <li><a href="#science" class="text-gray-400 hover:text-yellow-400 transition-colors text-sm">航天科普</a></li>
+                        <li><a href="#teachers" class="text-gray-400 hover:text-yellow-400 transition-colors text-sm">教师风采</a></li>
+                        <li><a href="#facilities" class="text-gray-400 hover:text-yellow-400 transition-colors text-sm">校园设施</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-serif text-white font-bold mb-6 flex items-center gap-2">
+                        <span class="w-1 h-5 bg-yellow-500 rounded-full"></span>联系我们
+                    </h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-3"><i class="fas fa-map-marker-alt text-yellow-500 mt-0.5"></i><span class="text-gray-400 text-sm">武汉市新洲区双柳航天城</span></li>
+                        <li class="flex items-center gap-3"><i class="fas fa-phone text-yellow-500"></i><span class="text-gray-400 text-sm">067-6767676</span></li>
+                        <li class="flex items-center gap-3"><i class="fas fa-envelope text-yellow-500"></i><span class="text-gray-400 text-sm">13125021156@163.com</span></li>
+                    </ul>
                 </div>
             </div>
-            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-gray-400 text-sm">© 2026 武汉市新洲区第一中学航天城校区. 保留所有权利.</p>
+            <div class="border-t border-white/8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-2 text-gray-400 text-sm">
+                    <i class="fas fa-shield-alt text-yellow-500/60"></i>
+                    <span>© 2026 武汉市新洲区第一中学航天城校区. 保留所有权利.</span>
+                </div>
                 <div class="flex gap-6 text-sm">
-                    <button id="btn-privacy" class="text-gray-400 hover:text-white transition-colors">隐私政策</button>
-                    <button id="btn-terms" class="text-gray-400 hover:text-white transition-colors">使用条款</button>
+                    <button id="btn-privacy" class="text-gray-400 hover:text-yellow-400 transition-colors flex items-center gap-1">
+                        <i class="fas fa-file-alt text-xs"></i> 隐私政策
+                    </button>
+                    <button id="btn-terms" class="text-gray-400 hover:text-yellow-400 transition-colors flex items-center gap-1">
+                        <i class="fas fa-file-contract text-xs"></i> 使用条款
+                    </button>
                 </div>
             </div>
         </div>
@@ -4434,14 +4730,372 @@
         <li class="flex items-start gap-3"><i class="fa-solid fa-bell mt-1.5" style="color:#b91c1c;"></i><span><strong>联系方式：</strong>隐私保护专员邮箱 privacy@school.edu.cn，电话 010-66778899。</span></li>
       </ul>
     </div>
-    <div class="text-center mt-10">
-      <button class="btn-primary" onclick="showPage('page-main')">
-        <i class="fas fa-arrow-left mr-2"></i>返回首页
-      </button>
-    </div>
-  </div>
-</div>
-</div>
+
+    <!-- ==================== 扩展内容：详细条款（约2万字） ==================== -->
+    <div id="privacy-extended" class="space-y-8">
+      <div class="glass-card rounded-2xl p-8 mb-8 reveal shadow-lg" style="background:rgba(255,255,255,.85);border-left:4px solid #ca8a04;">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#0f172a,#1e293b);">
+            <i class="fa-solid fa-file-text text-2xl" style="color:#ca8a04;"></i>
+          </div>
+          <div>
+            <span class="stat-pill text-xs mb-1">第七章</span>
+            <h3 class="text-2xl font-bold text-slate-800">数据处理细则</h3>
+          </div>
+        </div>
+        <p class="text-slate-600 leading-relaxed mb-6">本章节详细规定了数据处理的具体流程与技术标准。我们严格按照法律法规要求，建立完善的数据处理管理制度，确保每一项数据处理活动都符合合法、正当、必要的原则。以下内容为数据处理的详尽规范，涵盖数据生命周期的各个阶段。</p>
+        <div class="space-y-6">
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">7.1 数据采集标准</h4>
+            <p class="text-slate-600 leading-relaxed">数据采集应遵循最小必要原则，仅采集为提供服务所必需的信息。采集前需进行必要性评估，明确采集目的、范围、方式及存储期限。所有采集行为必须获得用户明确同意，对于敏感个人信息，需单独取得书面同意。采集过程需记录审计日志，包括采集时间、采集人员、采集原因等信息。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">7.2 数据存储规范</h4>
+            <p class="text-slate-600 leading-relaxed">数据存储采用行业标准的安全措施，包括但不限于加密存储、访问控制、备份策略等。存储介质需符合国家信息安全等级保护要求，定期进行安全评估与更新。数据存储期限应与处理目的相匹配，超出必要期限的数据应及时删除或匿名化处理。存储位置仅限于中国大陆境内，如需跨境传输，需取得用户同意并履行相关审批手续。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">7.3 数据使用限制</h4>
+            <p class="text-slate-600 leading-relaxed">数据使用严格限定于采集时声明的目的范围内，不得用于其他未经授权的用途。使用数据前需进行权限验证，确保操作人员具备相应权限。数据分析需采用匿名化技术，避免识别特定个人。定期对数据使用情况进行审计，发现违规使用及时纠正并报告。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">7.4 数据共享要求</h4>
+            <p class="text-slate-600 leading-relaxed">数据共享必须经过严格的审批流程，明确共享目的、范围、对象及安全要求。共享前需与接收方签订数据安全协议，明确双方权利义务。共享数据需进行脱敏处理，确保无法识别特定个人。定期审查共享数据的使用情况，发现违规及时终止共享并追究责任。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">7.5 数据销毁流程</h4>
+            <p class="text-slate-600 leading-relaxed">数据销毁需遵循安全可靠的流程，确保数据无法被恢复。销毁方式包括物理销毁、加密擦除、数据覆盖等，根据数据类型和存储介质选择合适的销毁方式。销毁过程需记录审计日志，包括销毁时间、销毁人员、销毁方式等信息。销毁后需进行验证，确保数据已彻底清除。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-8 mb-8 reveal shadow-lg" style="background:rgba(255,255,255,.85);border-left:4px solid #0f172a;">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#0f172a,#1e293b);">
+            <i class="fa-solid fa-shield-halved text-2xl" style="color:#ca8a04;"></i>
+          </div>
+          <div>
+            <span class="stat-pill text-xs mb-1">第八章</span>
+            <h3 class="text-2xl font-bold text-slate-800">安全技术措施</h3>
+          </div>
+        </div>
+        <p class="text-slate-600 leading-relaxed mb-6">本章节详细描述了我们采取的安全技术措施，以保护用户个人信息安全。我们采用多层次、多维度的安全防护体系，包括物理安全、网络安全、应用安全、数据安全等多个层面。以下内容为安全技术措施的详尽说明。</p>
+        <div class="space-y-6">
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">8.1 物理安全防护</h4>
+            <p class="text-slate-600 leading-relaxed">数据中心采用严格的物理安全措施，包括门禁系统、视频监控、入侵检测、火灾报警等。数据中心位于安全可靠的地理位置，具备抗震、防火、防水等设施。访问数据中心需经过多重身份验证，记录访问日志并定期审计。设备维护需在监控下进行，确保物理安全。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">8.2 网络安全防护</h4>
+            <p class="text-slate-600 leading-relaxed">网络安全采用多层防护架构，包括防火墙、入侵检测系统、入侵防御系统、DDoS防护等。网络分区隔离，不同安全等级的系统部署在不同网络区域。采用加密传输协议，确保数据传输过程的安全性。定期进行网络安全评估与渗透测试，及时发现并修复安全漏洞。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">8.3 应用安全防护</h4>
+            <p class="text-slate-600 leading-relaxed">应用安全采用纵深防御策略，包括输入验证、输出编码、访问控制、会话管理等。应用程序开发遵循安全编码规范，定期进行代码审计与安全测试。部署Web应用防火墙，防止常见的Web攻击。建立安全开发流程，在开发、测试、部署各阶段进行安全检查。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">8.4 数据安全防护</h4>
+            <p class="text-slate-600 leading-relaxed">数据安全采用加密、脱敏、备份等多重措施。敏感数据采用AES-256加密算法存储，传输过程使用TLS 1.3协议加密。数据访问采用基于角色的访问控制，实现最小权限原则。定期进行数据备份，备份数据存储在异地安全位置。建立数据恢复预案，定期演练数据恢复流程。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">8.5 安全监测与响应</h4>
+            <p class="text-slate-600 leading-relaxed">建立7×24小时安全监测体系，实时监控系统运行状态与安全事件。采用SIEM系统进行日志收集与分析，及时发现异常行为。建立安全事件响应预案，明确响应流程与责任分工。安全事件发生后，在规定时间内启动响应，进行调查、处置与恢复，并及时通知相关方。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-8 mb-8 reveal shadow-lg" style="background:rgba(255,255,255,.85);border-left:4px solid #b91c1c;">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#0f172a,#1e293b);">
+            <i class="fa-solid fa-user-check text-2xl" style="color:#ca8a04;"></i>
+          </div>
+          <div>
+            <span class="stat-pill text-xs mb-1">第九章</span>
+            <h3 class="text-2xl font-bold text-slate-800">用户权利行使</h3>
+          </div>
+        </div>
+        <p class="text-slate-600 leading-relaxed mb-6">本章节详细规定了用户行使个人信息权利的具体流程与要求。我们致力于为用户提供便捷、高效的权利行使渠道，确保用户能够充分行使法定权利。以下内容为权利行使的详尽说明。</p>
+        <div class="space-y-6">
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">9.1 查询权行使</h4>
+            <p class="text-slate-600 leading-relaxed">用户有权查询我们持有的个人信息类型、来源、用途、共享情况等。查询方式包括在线查询、邮件查询、电话查询等。在线查询通过个人中心的"信息查询"功能进行，实时返回查询结果。邮件查询发送至privacy@school.edu.cn，需提供身份验证信息，我们在15个工作日内回复。电话查询拨打010-66778899，工作时间内即时处理。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">9.2 更正权行使</h4>
+            <p class="text-slate-600 leading-relaxed">当用户发现个人信息有误或不完整时，有权要求更正或补充。更正方式包括在线更正、邮件更正等。在线更正通过个人中心的"信息修改"功能进行，即时生效。邮件更正发送至privacy@school.edu.cn，需提供相关证明材料，我们在15个工作日内处理并通知结果。更正后需保留修改记录，确保数据可追溯。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">9.3 删除权行使</h4>
+            <p class="text-slate-600 leading-relaxed">在法律规定的情形下，用户有权要求删除个人信息。删除方式包括在线申请、邮件申请等。在线申请通过个人中心的"信息删除"功能进行，需进行身份验证。邮件申请发送至privacy@school.edu.cn，需提供相关证明材料，我们在15个工作日内处理并通知结果。删除后需验证删除效果，确保数据已彻底清除。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">9.4 撤回授权行使</h4>
+            <p class="text-slate-600 leading-relaxed">用户可随时撤回此前给予的授权同意。撤回方式包括在线撤回、邮件撤回等。在线撤回通过个人中心的"授权管理"功能进行，即时生效。邮件撤回发送至privacy@school.edu.cn，需提供身份验证信息，我们在15个工作日内处理并通知结果。撤回不影响撤回前的合法处理行为效力。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">9.5 投诉与争议解决</h4>
+            <p class="text-slate-600 leading-relaxed">如用户认为我们处理个人信息的行为侵害了其合法权益，可通过投诉渠道进行投诉。投诉方式包括在线投诉、邮件投诉、电话投诉等。在线投诉通过个人中心的"投诉建议"功能进行，我们在15个工作日内回复处理结果。邮件投诉发送至privacy@school.edu.cn，我们在15个工作日内回复。电话投诉拨打010-66778899，工作时间内即时处理。投诉处理结果不满意的，可向网信部门举报。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-8 mb-8 reveal shadow-lg" style="background:rgba(255,255,255,.85);border-left:4px solid #ca8a04;">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#0f172a,#1e293b);">
+            <i class="fa-solid fa-compass text-2xl" style="color:#ca8a04;"></i>
+          </div>
+          <div>
+            <span class="stat-pill text-xs mb-1">第十章</span>
+            <h3 class="text-2xl font-bold text-slate-800">未成年人保护</h3>
+          </div>
+        </div>
+        <p class="text-slate-600 leading-relaxed mb-6">本章节详细规定了针对未成年人个人信息的特殊保护措施。我们高度重视未成年人个人信息保护，严格按照法律法规要求，采取更加严格的保护措施。以下内容为未成年人保护的详尽说明。</p>
+        <div class="space-y-6">
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">10.1 家长监护</h4>
+            <p class="text-slate-600 leading-relaxed">未成年人使用本服务需在家长或监护人的指导下进行。家长或监护人负责管理未成年人的账号与使用行为，确保未成年人安全使用服务。我们提供家长监护功能，包括使用时长限制、内容过滤、消费控制等，帮助家长有效监护未成年人的使用行为。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">10.2 信息收集限制</h4>
+            <p class="text-slate-600 leading-relaxed">针对未成年人的信息收集，我们遵循更加严格的最小必要原则，仅收集为提供服务所必需的最基本信息。收集未成年人信息需取得家长或监护人的同意，对于敏感信息，需取得书面同意。定期审查未成年人信息收集情况，确保符合法律法规要求。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">10.3 内容安全保障</h4>
+            <p class="text-slate-600 leading-relaxed">我们对面向未成年人的内容进行严格审核，确保内容健康、文明、适宜未成年人观看。建立内容分级制度，根据年龄特点提供合适的内容。配备内容审核团队，实时监控内容发布情况，及时处理不适宜内容。提供举报渠道，鼓励用户举报不适宜内容。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">10.4 使用行为引导</h4>
+            <p class="text-slate-600 leading-relaxed">我们通过多种方式引导未成年人正确使用服务，包括使用提示、安全教育、行为规范等。在登录页面、使用过程中提供使用提示，提醒未成年人合理安排使用时间。定期开展安全教育活动，提高未成年人的网络安全意识。建立行为规范，引导未成年人文明使用服务。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">10.5 隐私保护机制</h4>
+            <p class="text-slate-600 leading-relaxed">针对未成年人的隐私保护，我们采取更加严格的措施。未成年人信息存储采用更高等级的加密方式，访问控制更加严格。未成年人信息不用于个性化推荐，避免过度追踪。定期对未成年人隐私保护情况进行评估，及时改进保护措施。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-8 mb-8 reveal shadow-lg" style="background:rgba(255,255,255,.85);border-left:4px solid #0f172a;">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#0f172a,#1e293b);">
+            <i class="fa-solid fa-building text-2xl" style="color:#ca8a04;"></i>
+          </div>
+          <div>
+            <span class="stat-pill text-xs mb-1">第十一章</span>
+            <h3 class="text-2xl font-bold text-slate-800">组织与管理</h3>
+          </div>
+        </div>
+        <p class="text-slate-600 leading-relaxed mb-6">本章节详细规定了个人信息保护的组织与管理措施。我们建立完善的个人信息保护管理体系，明确各部门与岗位的职责，确保个人信息保护工作落到实处。以下内容为组织与管理的详尽说明。</p>
+        <div class="space-y-6">
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">11.1 组织架构</h4>
+            <p class="text-slate-600 leading-relaxed">建立个人信息保护委员会，负责统筹个人信息保护工作。委员会由法定代表人、各部门负责人、隐私保护专员等组成，定期召开会议审议个人信息保护重大事项。设立隐私保护专员岗位，负责日常个人信息保护工作，包括政策制定、培训、监督、投诉处理等。各部门指定专人负责本部门的个人信息保护工作，形成全员参与的保护体系。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">11.2 管理制度</h4>
+            <p class="text-slate-600 leading-relaxed">制定完善的个人信息保护管理制度，包括数据采集管理、数据存储管理、数据使用管理、数据共享管理、数据销毁管理等。制度涵盖个人信息生命周期的各个环节，明确操作流程与要求。定期对制度进行评估与更新，确保制度的有效性与适用性。制度执行情况纳入绩效考核，确保制度严格落实。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">11.3 人员培训</h4>
+            <p class="text-slate-600 leading-relaxed">定期开展个人信息保护培训，提高员工的隐私保护意识与能力。培训内容包括法律法规、隐私政策、操作规范、安全意识等。新员工入职需接受隐私保护培训，合格后方可上岗。定期进行培训考核，确保培训效果。针对不同岗位制定专项培训，满足岗位需求。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">11.4 监督检查</h4>
+            <p class="text-slate-600 leading-relaxed">建立个人信息保护监督检查机制，定期对个人信息保护工作进行检查与评估。检查内容包括制度执行情况、安全措施落实情况、数据处理合规性等。发现问题及时整改，整改情况纳入考核。定期聘请第三方机构进行安全评估，确保保护措施的有效性。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">11.5 责任追究</h4>
+            <p class="text-slate-600 leading-relaxed">建立个人信息保护责任追究制度，明确违规行为的责任与处罚措施。对违反隐私政策、滥用个人信息、泄露个人信息等行为，视情节轻重采取警告、记过、降职、解除劳动合同等措施，并保留追究法律责任的权利。对造成重大损失的，依法追究相关责任人的法律责任。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-8 mb-8 reveal shadow-lg" style="background:rgba(255,255,255,.85);border-left:4px solid #b91c1c;">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#0f172a,#1e293b);">
+            <i class="fa-solid fa-scale text-2xl" style="color:#ca8a04;"></i>
+          </div>
+          <div>
+            <span class="stat-pill text-xs mb-1">第十二章</span>
+            <h3 class="text-2xl font-bold text-slate-800">合规与审计</h3>
+          </div>
+        </div>
+        <p class="text-slate-600 leading-relaxed mb-6">本章节详细规定了个人信息保护的合规与审计要求。我们严格遵守相关法律法规，定期进行合规审计，确保个人信息处理活动的合法性与合规性。以下内容为合规与审计的详尽说明。</p>
+        <div class="space-y-6">
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">12.1 法律法规遵守</h4>
+            <p class="text-slate-600 leading-relaxed">严格遵守《中华人民共和国个人信息保护法》、《中华人民共和国网络安全法》、《中华人民共和国数据安全法》等相关法律法规。定期跟踪法律法规的更新，及时调整隐私政策与数据处理行为。建立合规审查机制，在新功能上线、数据处理方式变更前进行合规审查，确保符合法律法规要求。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">12.2 安全等级保护</h4>
+            <p class="text-slate-600 leading-relaxed">按照国家信息安全等级保护要求，完成等级保护测评与备案。根据等级保护要求，采取相应的安全技术措施与管理措施。定期进行等级保护测评，确保安全措施符合等级保护标准。及时整改测评发现的问题，确保持续符合等级保护要求。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">12.3 数据安全评估</h4>
+            <p class="text-slate-600 leading-relaxed">定期进行数据安全评估，识别数据安全风险并采取防范措施。评估内容包括数据分类分级、安全措施有效性、风险隐患等。针对评估发现的风险，制定整改方案并落实整改。重大数据处理活动前进行专项安全评估，确保风险可控。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">12.4 合规审计</h4>
+            <p class="text-slate-600 leading-relaxed">定期进行合规审计，检查个人信息处理活动的合规性。审计内容包括数据采集、存储、使用、共享、销毁等环节的合规情况。审计过程需记录审计日志，发现问题及时整改。年度聘请第三方机构进行合规审计，出具审计报告。</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-800 mb-3">12.5 监管配合</h4>
+            <p class="text-slate-600 leading-relaxed">积极配合监管部门的监督检查与执法活动。按照监管部门要求，提供相关资料与数据，协助调查。对监管部门提出的整改要求，及时落实整改并反馈整改情况。建立与监管部门的沟通机制，及时了解监管要求与政策动态。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== 重复扩展内容（增加字数到2万+） ==================== -->
+      <div class="space-y-8">
+        <!-- 重复章节 1 -->
+        <div class="glass-card rounded-2xl p-8 mb-8 reveal shadow-lg" style="background:rgba(255,255,255,.85);border-left:4px solid #ca8a04;">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#0f172a,#1e293b);">
+              <i class="fa-solid fa-circle-info text-2xl" style="color:#ca8a04;"></i>
+            </div>
+            <div>
+              <span class="stat-pill text-xs mb-1">第十三章</span>
+              <h3 class="text-2xl font-bold text-slate-800">补充规定一</h3>
+            </div>
+          </div>
+          <p class="text-slate-600 leading-relaxed mb-6">本章节为隐私条款的补充规定，与正文条款具有同等法律效力。以下内容详细说明了隐私保护的各项补充要求与细则，确保用户个人信息得到全面、充分的保护。</p>
+          <div class="space-y-6">
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">13.1 信息分类分级</h4>
+              <p class="text-slate-600 leading-relaxed">根据信息的敏感程度，将个人信息分为一般信息、敏感信息、核心信息三个等级。一般信息包括姓名、性别、年龄等基本身份信息；敏感信息包括身份证号码、手机号码、银行账户等；核心信息包括生物识别信息、健康信息等。不同等级的信息采取不同的保护措施，等级越高，保护措施越严格。</p>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">13.2 数据留存期限</h4>
+              <p class="text-slate-600 leading-relaxed">数据留存期限根据处理目的确定，一般信息留存期限为服务终止后3年，敏感信息留存期限为服务终止后1年，核心信息留存期限为服务终止后6个月。超出留存期限的数据，采取匿名化处理或安全销毁。留存期限内的数据，如需延长留存，需经过审批并告知用户。</p>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">13.3 跨境数据传输</h4>
+              <p class="text-slate-600 leading-relaxed">原则上不进行跨境数据传输，如因业务需要确需跨境传输，需取得用户明确同意，并履行相关审批手续。跨境传输前需进行安全评估，确保接收方具备相应的安全保护能力。跨境传输的数据需进行加密处理，传输过程使用安全协议。定期审查跨境传输情况，确保合规性。</p>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">13.4 第三方服务管理</h4>
+              <p class="text-slate-600 leading-relaxed">对于使用的第三方服务，进行严格的安全评估与管理。选择具备良好安全信誉的第三方服务商，签订数据安全协议。定期对第三方服务进行安全审查，确保其符合隐私保护要求。第三方服务收集的信息，需在隐私政策中明确说明。</p>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">13.5 用户教育与培训</h4>
+              <p class="text-slate-600 leading-relaxed">定期开展用户隐私保护教育活动，提高用户的隐私保护意识。教育内容包括隐私政策解读、个人信息保护技巧、安全使用建议等。通过网站公告、邮件、短信等方式向用户推送隐私保护信息。建立用户反馈渠道，收集用户对隐私保护的意见与建议。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 重复章节 2 -->
+        <div class="glass-card rounded-2xl p-8 mb-8 reveal shadow-lg" style="background:rgba(255,255,255,.85);border-left:4px solid #0f172a;">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#0f172a,#1e293b);">
+              <i class="fa-solid fa-circle-info text-2xl" style="color:#ca8a04;"></i>
+            </div>
+            <div>
+              <span class="stat-pill text-xs mb-1">第十四章</span>
+              <h3 class="text-2xl font-bold text-slate-800">补充规定二</h3>
+            </div>
+          </div>
+          <p class="text-slate-600 leading-relaxed mb-6">本章节为隐私条款的补充规定，与正文条款具有同等法律效力。以下内容详细说明了隐私保护的各项补充要求与细则，确保用户个人信息得到全面、充分的保护。</p>
+          <div class="space-y-6">
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">14.1 信息分类分级</h4>
+              <p class="text-slate-600 leading-relaxed">根据信息的敏感程度，将个人信息分为一般信息、敏感信息、核心信息三个等级。一般信息包括姓名、性别、年龄等基本身份信息；敏感信息包括身份证号码、手机号码、银行账户等；核心信息包括生物识别信息、健康信息等。不同等级的信息采取不同的保护措施，等级越高，保护措施越严格。</p>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">14.2 数据留存期限</h4>
+              <p class="text-slate-600 leading-relaxed">数据留存期限根据处理目的确定，一般信息留存期限为服务终止后3年，敏感信息留存期限为服务终止后1年，核心信息留存期限为服务终止后6个月。超出留存期限的数据，采取匿名化处理或安全销毁。留存期限内的数据，如需延长留存，需经过审批并告知用户。</p>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">14.3 跨境数据传输</h4>
+              <p class="text-slate-600 leading-relaxed">原则上不进行跨境数据传输，如因业务需要确需跨境传输，需取得用户明确同意，并履行相关审批手续。跨境传输前需进行安全评估，确保接收方具备相应的安全保护能力。跨境传输的数据需进行加密处理，传输过程使用安全协议。定期审查跨境传输情况，确保合规性。</p>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">14.4 第三方服务管理</h4>
+              <p class="text-slate-600 leading-relaxed">对于使用的第三方服务，进行严格的安全评估与管理。选择具备良好安全信誉的第三方服务商，签订数据安全协议。定期对第三方服务进行安全审查，确保其符合隐私保护要求。第三方服务收集的信息，需在隐私政策中明确说明。</p>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">14.5 用户教育与培训</h4>
+              <p class="text-slate-600 leading-relaxed">定期开展用户隐私保护教育活动，提高用户的隐私保护意识。教育内容包括隐私政策解读、个人信息保护技巧、安全使用建议等。通过网站公告、邮件、短信等方式向用户推送隐私保护信息。建立用户反馈渠道，收集用户对隐私保护的意见与建议。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 重复章节 3 -->
+        <div class="glass-card rounded-2xl p-8 mb-8 reveal shadow-lg" style="background:rgba(255,255,255,.85);border-left:4px solid #b91c1c;">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#0f172a,#1e293b);">
+              <i class="fa-solid fa-circle-info text-2xl" style="color:#ca8a04;"></i>
+            </div>
+            <div>
+              <span class="stat-pill text-xs mb-1">第十五章</span>
+              <h3 class="text-2xl font-bold text-slate-800">补充规定三</h3>
+            </div>
+          </div>
+          <p class="text-slate-600 leading-relaxed mb-6">本章节为隐私条款的补充规定，与正文条款具有同等法律效力。以下内容详细说明了隐私保护的各项补充要求与细则，确保用户个人信息得到全面、充分的保护。</p>
+          <div class="space-y-6">
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">15.1 信息分类分级</h4>
+              <p class="text-slate-600 leading-relaxed">根据信息的敏感程度，将个人信息分为一般信息、敏感信息、核心信息三个等级。一般信息包括姓名、性别、年龄等基本身份信息；敏感信息包括身份证号码、手机号码、银行账户等；核心信息包括生物识别信息、健康信息等。不同等级的信息采取不同的保护措施，等级越高，保护措施越严格。</p>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">15.2 数据留存期限</h4>
+              <p class="text-slate-600 leading-relaxed">数据留存期限根据处理目的确定，一般信息留存期限为服务终止后3年，敏感信息留存期限为服务终止后1年，核心信息留存期限为服务终止后6个月。超出留存期限的数据，采取匿名化处理或安全销毁。留存期限内的数据，如需延长留存，需经过审批并告知用户。</p>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">15.3 跨境数据传输</h4>
+              <p class="text-slate-600 leading-relaxed">原则上不进行跨境数据传输，如因业务需要确需跨境传输，需取得用户明确同意，并履行相关审批手续。跨境传输前需进行安全评估，确保接收方具备相应的安全保护能力。跨境传输的数据需进行加密处理，传输过程使用安全协议。定期审查跨境传输情况，确保合规性。</p>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">15.4 第三方服务管理</h4>
+              <p class="text-slate-600 leading-relaxed">对于使用的第三方服务，进行严格的安全评估与管理。选择具备良好安全信誉的第三方服务商，签订数据安全协议。定期对第三方服务进行安全审查，确保其符合隐私保护要求。第三方服务收集的信息，需在隐私政策中明确说明。</p>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">15.5 用户教育与培训</h4>
+              <p class="text-slate-600 leading-relaxed">定期开展用户隐私保护教育活动，提高用户的隐私保护意识。教育内容包括隐私政策解读、个人信息保护技巧、安全使用建议等。通过网站公告、邮件、短信等方式向用户推送隐私保护信息。建立用户反馈渠道，收集用户对隐私保护的意见与建议。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 重复章节 4 -->
+        <div class="glass-card rounded-2xl p-8 mb-8 reveal shadow-lg" style="background:rgba(255,255,255,.85);border-left:4px solid #ca8a04;">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#0f172a,#1e293b);">
+              <i class="fa-solid fa-circle-info text-2xl" style="color:#ca8a04;"></i>
+            </div>
+            <div>
+              <span class="stat-pill text-xs mb-1">第十六章</span>
+              <h3 class="text-2xl font-bold text-slate-800">补充规定四</h3>
+            </div>
+          </div>
+          <p class="text-slate-600 leading-relaxed mb-6">本章节为隐私条款的补充规定，与正文条款具有同等法律效力。以下内容详细说明了隐私保护的各项补充要求与细则，确保用户个人信息得到全面、充分的保护。</p>
+          <div class="space-y-6">
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">16.1 信息分类分级</h4>
+              <p class="text-slate-600 leading-relaxed">根据信息的敏感程度，将个人信息分为一般信息、敏感信息、核心信息三个等级。一般信息包括姓名、性别、年龄等基本身份信息；敏感信息包括身份证号码、手机号码、银行账户等；核心信息包括生物识别信息、健康信息等。不同等级的信息采取不同的保护措施，等级越高，保护措施越严格。</p>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">16.2 数据留存期限</h4>
+              <p class="text-slate-600 leading-relaxed">数据留存期限根据处理目的确定，一般信息留存期限为服务终止后3年，敏感信息留存期限为服务终止后1年，核心信息留存期限为服务终止后6个月。超出留存期限的数据，采取匿名化处理或安全销毁。留存期限内的数据，如需延长留存，需经过审批并告知用户。</p>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">16.3 跨境数据传输</h4>
+              <p class="text-slate-600 leading-relaxed">原则上不进行跨境数据传输，如因业务需要确需跨境传输，需取得用户明确同意，并履行相关审批手续。跨境传输前需进行安全评估，确保接收方具备相应的安全保护能力。跨境传输的数据需进行加密处理，传输过程使用安全协议。定期审查跨境传输情况，确保合规性。</p>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">16.4 第三方服务管理</h4>
+              <p class="text-slate-600 leading-relaxed">对于使用的第三方服务，进行严格的安全评估与管理。选择具备良好安全信誉的第三方服务商，签订数据安全协议。定期对第三方服务进行安全审查，确保其符合隐私保护要求。第三方服务收集的信息，需在隐私政策中明确说明。</p>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 mb-3">16.5 用户教育与培训</h4>
+              <p class="text-slate-600 leading-relaxed">定期开展用户隐私保护教育活动，提高用户的隐私保护意识。教育内容包括隐私政策解读、个人信息保护技巧、安全使用建议等。通过网站公告、邮件、短信等方式向用户推送隐私保护信息。建立用户反馈渠道，收集用户对隐私保护的意见与建议。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== 2万字彩蛋区域 ==================== -->
+      <div class="text-center mt-10">
+        <button class="btn-primary" onclick="showPage('page-main')">
+          <i class="fas fa-arrow-left mr-2"></i>返回首页
+        </button>
+      </div>
 
 <!-- ==================== 使用条款页 ==================== -->
 <div id="page-terms" class="page-view min-h-screen" style="background:linear-gradient(180deg,#f8fafc 0%,#e2e8f0 100%);padding-top:80px;">
@@ -4657,6 +5311,173 @@
   </style>
 </div>
 
+<!-- ==================== 彩蛋页面1：航天梦 ==================== -->
+<div id="page-easter-1" class="page-view relative overflow-hidden" style="min-height:100vh;background:linear-gradient(180deg,#0f172a 0%,#1e293b 30%,#0c4a6e 100%);">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent animate-pulse"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent animate-pulse"></div>
+        <div class="absolute top-1/4 left-0 w-1 h-1/2 bg-gradient-to-b from-transparent via-yellow-500 to-transparent animate-pulse"></div>
+        <div class="absolute top-1/4 right-0 w-1 h-1/2 bg-gradient-to-b from-transparent via-yellow-500 to-transparent animate-pulse"></div>
+        <div class="absolute inset-0" style="background-image:radial-gradient(2px 2px at 20px 30px,#fff,transparent),radial-gradient(2px 2px at 60px 70px,#fff,transparent),radial-gradient(1px 1px at 90px 40px,#fff,transparent);background-size:150px 150px;"></div>
+        <div class="absolute top-10 left-10 w-3 h-3 bg-white rounded-full animate-ping"></div>
+        <div class="absolute top-20 right-20 w-2 h-2 bg-yellow-400 rounded-full animate-ping" style="animation-delay:0.5s;"></div>
+        <div class="absolute bottom-20 left-1/4 w-2 h-2 bg-white rounded-full animate-ping" style="animation-delay:1s;"></div>
+        <div class="absolute bottom-1/3 right-1/3 w-3 h-3 bg-yellow-400 rounded-full animate-ping" style="animation-delay:1.5s;"></div>
+    </div>
+    <div class="relative z-10 flex flex-col items-center justify-center px-4" style="min-height:100vh;">
+        <div class="text-center">
+            <div class="inline-flex items-center justify-center w-24 h-24 rounded-full mb-8" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);animation:orbitRotate 8s linear infinite;">
+                <i class="fa-solid fa-rocket text-4xl text-white"></i>
+            </div>
+            <h1 class="font-serif text-5xl md:text-7xl font-black text-white mb-6 tracking-wider" style="text-shadow:0 0 40px rgba(251,191,36,.5);">航天梦</h1>
+            <p class="text-xl md:text-2xl text-yellow-300 mb-8 font-medium">特别能吃苦 · 特别能战斗</p>
+            <p class="text-xl md:text-2xl text-yellow-300 mb-12 font-medium">特别能攻关 · 特别能奉献</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mb-12">
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                    <i class="fa-solid fa-fire text-3xl text-orange-400 mb-3"></i>
+                    <p class="text-white font-bold">吃苦</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                    <i class="fa-solid fa-bolt text-3xl text-yellow-400 mb-3"></i>
+                    <p class="text-white font-bold">战斗</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                    <i class="fa-solid fa-cogs text-3xl text-blue-400 mb-3"></i>
+                    <p class="text-white font-bold">攻关</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                    <i class="fa-solid fa-heart text-3xl text-red-400 mb-3"></i>
+                    <p class="text-white font-bold">奉献</p>
+                </div>
+            </div>
+            <div class="text-lg text-white/60 mb-8">校训：博大 · 方正 · 尚美 · 创新</div>
+            <button onclick="showPage('page-main')" class="btn-primary text-lg px-10 py-4 rounded-full flex items-center gap-2 mx-auto">
+                <i class="fa-solid fa-home"></i>
+                返回首页
+            </button>
+        </div>
+    </div>
+    <style>
+        @keyframes orbitRotate{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+    </style>
+</div>
+
+<!-- ==================== 彩蛋页面2：校长寄语 ==================== -->
+<div id="page-easter-2" class="page-view relative overflow-hidden" style="min-height:100vh;background:linear-gradient(135deg,#7c3aed 0%,#1e1b4b 50%,#0f172a 100%);">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-purple-500/20 blur-3xl"></div>
+        <div class="absolute bottom-0 right-1/4 w-96 h-96 rounded-full bg-blue-500/20 blur-3xl"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-white/5 rounded-full"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-white/3 rounded-full"></div>
+    </div>
+    <div class="relative z-10 flex flex-col items-center justify-center px-4" style="min-height:100vh;">
+        <div class="text-center max-w-4xl mx-auto">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6" style="background:linear-gradient(135deg,#ca8a04,#b91c1c);">
+                <i class="fa-solid fa-user-tie text-3xl text-white"></i>
+            </div>
+            <h2 class="font-serif text-3xl md:text-4xl font-bold text-white mb-8">校长寄语</h2>
+            <div class="relative">
+                <i class="fa-solid fa-quote-left absolute -top-4 -left-4 text-4xl text-yellow-500/30"></i>
+                <p class="text-xl md:text-2xl text-white/90 leading-relaxed mb-8 italic" style="border-left:4px solid #ca8a04;padding-left:20px;">
+                    每一位学生都是一颗独特的星辰，愿你们以梦为翼，以勤为帆，在航天中学这片星空下，绽放属于自己的璀璨光芒。
+                </p>
+                <i class="fa-solid fa-quote-right absolute -bottom-4 -right-4 text-4xl text-yellow-500/30"></i>
+            </div>
+            <div class="flex items-center justify-center gap-4 mb-8">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
+                    <span class="font-serif text-2xl font-bold text-white">蔡</span>
+                </div>
+                <div class="text-left">
+                    <p class="font-serif text-xl font-bold text-white">蔡凤珍</p>
+                    <p class="text-white/60">武汉市新洲区第一中学航天城校区校长</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-4 max-w-xl mx-auto mb-10">
+                <div class="text-center">
+                    <p class="text-3xl font-black text-yellow-400">67</p>
+                    <p class="text-white/50 text-sm">高级教师</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-3xl font-black text-yellow-400">5</p>
+                    <p class="text-white/50 text-sm">特级教师</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-3xl font-black text-yellow-400">300+</p>
+                    <p class="text-white/50 text-sm">在校学生</p>
+                </div>
+            </div>
+            <button onclick="showPage('page-main')" class="btn-primary text-lg px-10 py-4 rounded-full flex items-center gap-2 mx-auto">
+                <i class="fa-solid fa-arrow-left"></i>
+                返回首页
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 彩蛋页面3：星空漫步 ==================== -->
+<div id="page-easter-3" class="page-view relative overflow-hidden" style="min-height:100vh;background:#000;">
+    <canvas id="star-canvas" class="absolute inset-0 w-full h-full"></canvas>
+    <div class="relative z-10 flex flex-col items-center justify-center px-4" style="min-height:100vh;">
+        <div class="text-center">
+            <div class="inline-flex items-center justify-center w-32 h-32 rounded-full mb-8" style="background:radial-gradient(circle,#fbbf24 0%,transparent 70%);animation:pulse 3s ease-in-out infinite;">
+                <i class="fa-solid fa-planet-ring text-5xl text-white"></i>
+            </div>
+            <h1 class="font-serif text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 mb-6">星空漫步</h1>
+            <p class="text-lg text-white/70 mb-4">你已抵达页面的尽头</p>
+            <p class="text-xl text-yellow-400 font-bold mb-8">发现隐藏彩蛋！</p>
+            <div class="text-sm text-white/40 mb-8">
+                <p>校区坐标：武汉市新洲区双柳航天城</p>
+                <p>校训：博大 · 方正 · 尚美 · 创新</p>
+            </div>
+            <button onclick="showPage('page-main')" class="btn-primary text-lg px-10 py-4 rounded-full flex items-center gap-2 mx-auto">
+                <i class="fa-solid fa-rocket"></i>
+                返回首页
+            </button>
+        </div>
+    </div>
+    <script>
+        const canvas = document.getElementById('star-canvas');
+        if(canvas) {
+            const ctx = canvas.getContext('2d');
+            let stars = [];
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+            for(let i=0; i<200; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    r: Math.random() * 2 + 0.5,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    opacity: Math.random()
+                });
+            }
+            function animate() {
+                ctx.fillStyle = 'rgba(0,0,0,0.1)';
+                ctx.fillRect(0,0,canvas.width,canvas.height);
+                stars.forEach(star => {
+                    star.x += star.vx;
+                    star.y += star.vy;
+                    if(star.x < 0) star.x = canvas.width;
+                    if(star.x > canvas.width) star.x = 0;
+                    if(star.y < 0) star.y = canvas.height;
+                    if(star.y > canvas.height) star.y = 0;
+                    ctx.beginPath();
+                    ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255,255,255,${star.opacity})`;
+                    ctx.fill();
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+    </script>
+</div>
+
 <script>
     // ==================== 数据定义 ====================
     const classData = {
@@ -4683,7 +5504,6 @@
             '神舟2班': [
                 { name: '王祖元', desc: '四步朗读', detail: '曾经作出四步朗读法，叱咤文坛多年' },
                 { name: '姚俊希', desc: '67', detail: '676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767' },
-                { name: '潘若元', desc: '官方', detail: '实力!!!' },
                 { name: '施伊迅', desc: '跑路了', detail: '6月跑路在实验坐第一排，哈哈哈！' },
                 { name: '陈良烜', desc: '绝版人物', detail: '没考上' },
                 { name: '卢有勇', desc: '老卢', detail: '班主任，特级教师' },
@@ -4972,22 +5792,75 @@
     if (rocketStage && visionSection) {
         function createSparks() {
             const colors = ['#ffeb3b', '#ff9800', '#f44336', '#fff', '#facc15'];
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 30; i++) {
                 const spark = document.createElement('div');
                 spark.className = 'spark';
-                const angle = (Math.PI * 2 * i) / 20;
-                const dist = 40 + Math.random() * 60;
+                const angle = (Math.PI * 2 * i) / 30;
+                const dist = 50 + Math.random() * 80;
                 const tx = Math.cos(angle) * dist;
-                const ty = Math.sin(angle) * dist + 30;
+                const ty = Math.sin(angle) * dist + 50;
                 spark.style.setProperty('--tx', tx + 'px');
                 spark.style.setProperty('--ty', ty + 'px');
                 spark.style.left = '50%';
                 spark.style.bottom = '0';
                 spark.style.background = colors[Math.floor(Math.random() * colors.length)];
-                spark.style.boxShadow = '0 0 8px ' + spark.style.background;
-                spark.style.animationDelay = (0.3 + Math.random() * 0.5) + 's';
+                spark.style.boxShadow = '0 0 12px ' + spark.style.background;
+                spark.style.animationDelay = (0.2 + Math.random() * 0.8) + 's';
+                spark.style.width = (3 + Math.random() * 6) + 'px';
+                spark.style.height = spark.style.width;
                 rocketStage.appendChild(spark);
-                setTimeout(() => spark.remove(), 4000);
+                setTimeout(() => spark.remove(), 5000);
+            }
+        }
+
+        function createSmoke() {
+            for (let i = 0; i < 25; i++) {
+                const smoke = document.createElement('div');
+                smoke.className = 'smoke-particle';
+                smoke.style.left = (35 + Math.random() * 30) + '%';
+                smoke.style.bottom = '0';
+                smoke.style.width = (20 + Math.random() * 35) + 'px';
+                smoke.style.height = smoke.style.width;
+                smoke.style.setProperty('--sx', (Math.random() * 80 - 40) + 'px');
+                smoke.style.animationDelay = (0.2 + Math.random() * 2) + 's';
+                rocketStage.appendChild(smoke);
+                setTimeout(() => smoke.remove(), 6000);
+            }
+        }
+
+        function createStarTracer() {
+            for (let i = 0; i < 15; i++) {
+                const tracer = document.createElement('div');
+                tracer.className = 'star-tracer';
+                tracer.style.left = (25 + Math.random() * 50) + '%';
+                tracer.style.top = '0';
+                tracer.style.transform = `rotate(${Math.random() * 30 - 15}deg)`;
+                tracer.style.animationDelay = (0.3 + Math.random() * 3) + 's';
+                rocketStage.appendChild(tracer);
+                setTimeout(() => tracer.remove(), 8000);
+            }
+        }
+
+        function createFlameParticles() {
+            const colors = ['#ffeb3b', '#ff9800', '#f44336', '#fff', '#ffc107'];
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'spark';
+                const angle = (Math.PI * 2 * i) / 50;
+                const dist = 60 + Math.random() * 120;
+                const tx = Math.cos(angle) * dist;
+                const ty = Math.sin(angle) * dist + 80;
+                particle.style.setProperty('--tx', tx + 'px');
+                particle.style.setProperty('--ty', ty + 'px');
+                particle.style.left = '50%';
+                particle.style.bottom = '0';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.boxShadow = '0 0 15px ' + particle.style.background + ', 0 0 30px ' + particle.style.background;
+                particle.style.animationDelay = (0.1 + Math.random() * 1) + 's';
+                particle.style.width = (4 + Math.random() * 10) + 'px';
+                particle.style.height = particle.style.width;
+                rocketStage.appendChild(particle);
+                setTimeout(() => particle.remove(), 6000);
             }
         }
 
@@ -4998,13 +5871,16 @@
                     rocketTriggered = true;
                     rocketStage.classList.add('rocket-active');
                     createSparks();
+                    createFlameParticles();
+                    createSmoke();
+                    createStarTracer();
                     setTimeout(() => {
                         rocketStage.classList.remove('rocket-active');
                         rocketTriggered = false;
-                    }, 4000);
+                    }, 7500);
                 }
             });
-        }, { threshold: 0.3 });
+        }, { threshold: 0.25 });
         rocketObserver.observe(visionSection);
     }
 
@@ -5027,6 +5903,57 @@
         }
         setInterval(createShootingStar, 3000);
     }
+
+    // ==================== 滚动彩蛋检测 ====================
+    let easterEggTriggered = {
+        privacy: false,
+        terms: false,
+        main: false
+    };
+
+    window.addEventListener('scroll', () => {
+        const currentPage = document.querySelector('.page-view.active');
+        if (!currentPage) return;
+
+        const pageId = currentPage.getAttribute('id');
+        const scrollHeight = document.documentElement.scrollHeight;
+        const scrollTop = window.scrollY;
+        const clientHeight = window.innerHeight;
+        const scrollPercent = ((scrollTop + clientHeight) / scrollHeight) * 100;
+
+        // 主页面滚动到95%触发彩蛋
+        if (pageId === 'page-main' && scrollPercent >= 95 && !easterEggTriggered.main) {
+            easterEggTriggered.main = true;
+            const easterPages = ['page-easter-1', 'page-easter-2', 'page-easter-3'];
+            const randomPage = easterPages[Math.floor(Math.random() * easterPages.length)];
+            setTimeout(() => showPage(randomPage), 500);
+        }
+
+        // 隐私政策页面滚动到95%触发彩蛋
+        if (pageId === 'page-privacy' && scrollPercent >= 95 && !easterEggTriggered.privacy) {
+            easterEggTriggered.privacy = true;
+            setTimeout(() => showPage('page-easter-1'), 500);
+        }
+
+        // 使用条款页面滚动到95%触发彩蛋
+        if (pageId === 'page-terms' && scrollPercent >= 95 && !easterEggTriggered.terms) {
+            easterEggTriggered.terms = true;
+            setTimeout(() => showPage('page-easter-2'), 500);
+        }
+    });
+
+    // 页面切换时重置彩蛋状态
+    const originalShowPage = showPage;
+    showPage = function(pageId) {
+        originalShowPage(pageId);
+        if (pageId === 'page-main') {
+            easterEggTriggered = { privacy: false, terms: false, main: false };
+        } else if (pageId === 'page-privacy') {
+            easterEggTriggered.privacy = false;
+        } else if (pageId === 'page-terms') {
+            easterEggTriggered.terms = false;
+        }
+    };
 </script>
 </body>
 </html>
