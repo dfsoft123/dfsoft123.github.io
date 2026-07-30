@@ -5,1347 +5,1942 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>新洲一中航天城校区</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary-color: #0f172a;
-            --secondary-color: #1e293b;
-            --accent-color: #0c4a6e;
-            --highlight-color: #b91c1c;
-            --gold-color: #a16207;
-            --gold-light: #ca8a04;
-            --white-color: #ffffff;
-            --gray-color: #fafafa;
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
-            --text-color: #1e293b;
-            --light-text: #64748b;
-            --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.04);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
-            --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.08), 0 4px 10px -2px rgba(0,0,0,0.04);
-            --shadow-xl: 0 20px 40px -10px rgba(0,0,0,0.12), 0 8px 20px -4px rgba(0,0,0,0.06);
-        }
-
-        * { box-sizing: border-box; }
-
-        body {
-            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--gray-color);
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            color: var(--text-color);
-            letter-spacing: 0.01em;
-            line-height: 1.6;
-        }
-
-        .font-serif {
-            font-family: 'Noto Serif SC', 'STSong', serif;
-            font-weight: 600;
-        }
-
-        h1, h2, h3, h4 { color: var(--primary-color); line-height: 1.3; }
-
-        .hero-section {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 50%, var(--accent-color) 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-
-        .orbit-ring {
-            position: absolute;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 50%;
-            animation: orbit 20s linear infinite;
-        }
-
-        @keyframes orbit {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle 2s ease-in-out infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
-            border-radius: 12px;
-            box-shadow: var(--shadow-lg);
-            transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s cubic-bezier(0.16,1,0.3,1);
-            border: 1px solid rgba(255,255,255,0.6);
-        }
-
-        .glass-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-xl);
-        }
-
-        .school-title {
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            letter-spacing: 0.05em;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--highlight-color) 0%, #991b1b 100%);
-            color: white;
-            padding: 10px 28px;
-            border-radius: 6px;
-            font-weight: 500;
-            transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 1px 3px rgba(185, 28, 28, 0.3), 0 4px 12px rgba(185, 28, 28, 0.15);
-            letter-spacing: 0.05em;
-            font-size: 0.875rem;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 6px rgba(185, 28, 28, 0.4), 0 8px 20px rgba(185, 28, 28, 0.2);
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 30px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: 2px solid rgba(255,255,255,0.6);
-            cursor: pointer;
-        }
-        
-        .btn-outline-nav {
-            color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .btn-outline:hover {
-            background: rgba(255,255,255,0.1);
-        }
-
-        .section-divider {
-            position: relative;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
-            width: 80px;
-            margin: 0 auto;
-        }
-
-        .section-divider::after {
-            content: '';
-            position: absolute;
-            top: -3px; left: 50%;
-            transform: translateX(-50%);
-            width: 7px; height: 7px;
-            background: var(--gold-light);
-            border-radius: 50%;
-        }
-
-        .badge {
-            background: var(--gold-light);
-            color: white;
-            padding: 3px 10px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 500;
-            letter-spacing: 0.05em;
-        }
-
-        .nav-link {
-            position: relative;
-            color: rgba(255, 255, 255, 0.85);
-            transition: all 0.3s ease;
-            font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 8px;
-        }
-
-        .nav-link:hover, .nav-link.active { 
-            color: var(--gold-color); 
-            background: rgba(202, 138, 4, 0.1);
-            text-shadow: 0 0 20px rgba(202, 138, 4, 0.4);
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -4px; left: 50%;
-            transform: translateX(-50%);
-            width: 0; height: 3px;
-            background: linear-gradient(90deg, transparent, var(--gold-color), transparent);
-            transition: width 0.4s cubic-bezier(0.16,1,0.3,1);
-            border-radius: 3px;
-            box-shadow: 0 0 10px rgba(202, 138, 4, 0.5);
-        }
-
-        .nav-link:hover::after, .nav-link.active::after { width: 80%; }
-
-        .scroll-indicator { animation: bounce 2s infinite; }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-
-        .gallery-item {
-            overflow: hidden;
-            border-radius: 16px;
-            position: relative;
-        }
-        .gallery-item img { transition: transform 0.5s ease; }
-        .gallery-item:hover img { transform: scale(1.1); }
-
-        .gallery-overlay {
-            position: absolute; inset: 0;
-            background: rgba(26, 26, 46, 0.7);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .gallery-item:hover .gallery-overlay { opacity: 1; }
-
-        .student-card {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-            border: 1px solid #f3f4f6;
-        }
-        .student-card:hover {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.06), 0 12px 30px rgba(0,0,0,0.1);
-            transform: translateY(-6px);
-            border-color: rgba(212,175,55,0.3);
-        }
-
-        .footer {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-        }
-        
-        /* 新增页面视图控制 */
-        .page-view { 
-            display: none; 
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1);
-        }
-        .page-view.active { 
-            display: block; 
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        /* 弹窗样式 */
-        .modal-overlay {
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal-content {
-            background: white;
-            border-radius: 24px;
-            max-width: 500px;
-            width: 90%;
-            padding: 30px;
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        }
-        .modal-overlay.active .modal-content { transform: scale(1); }
-
-        /* ==================== 新增精美样式 ==================== */
-        .gradient-text {
-            background: linear-gradient(135deg, #a16207 0%, #b91c1c 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .gradient-text-gold {
-            background: linear-gradient(135deg, #ca8a04 0%, #facc15 50%, #ca8a04 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* 滚动揭示动画 */
-        .reveal {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
-        }
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* 渐变边框卡片 */
-        .gradient-border-card {
-            position: relative;
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            transition: all 0.4s ease;
-        }
-        .gradient-border-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            padding: 2px;
-            background: linear-gradient(135deg, #d4af37, transparent, #e94560);
-            border-radius: 20px;
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-        .gradient-border-card:hover::before { opacity: 1; }
-        .gradient-border-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 60px rgba(15, 52, 96, 0.15);
-        }
-
-        /* 发光按钮 */
-        .btn-glow {
-            background: linear-gradient(135deg, #d4af37 0%, #e94560 100%);
-            color: white;
-            padding: 12px 30px;
-            border-radius: 30px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-        .btn-glow::after {
-            content: '';
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 0; height: 0;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-        .btn-glow:hover::after { width: 300px; height: 300px; }
-        .btn-glow:hover {
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
-            transform: translateY(-2px);
-        }
-
-        /* 玻璃拟态深色卡片 */
-        .glass-dark {
-            background: rgba(26, 26, 46, 0.6);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 20px;
-            transition: all 0.3s ease;
-        }
-        .glass-dark:hover {
-            background: rgba(26, 26, 46, 0.8);
-            border-color: rgba(212, 175, 55, 0.5);
-            transform: translateY(-5px);
-        }
-
-        /* 时间线样式 */
-        .timeline-line {
-            position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: linear-gradient(180deg, transparent, #d4af37, #e94560, transparent);
-            transform: translateX(-50%);
-        }
-        .timeline-dot {
-            position: absolute;
-            left: 50%;
-            width: 20px; height: 20px;
-            background: white;
-            border: 4px solid #d4af37;
-            border-radius: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 0 0 4px rgba(212,175,55,0.2);
-            z-index: 2;
-        }
-
-        /* 数字计数器 */
-        .counter-card {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            border-radius: 20px;
-            padding: 32px 20px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        .counter-card::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(212,175,55,0.1) 0%, transparent 60%);
-            animation: rotate-bg 20s linear infinite;
-        }
-        @keyframes rotate-bg {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        .counter-card:hover { transform: translateY(-8px); }
-
-        /* 脉冲动画 */
-        .pulse-ring {
-            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        @keyframes pulse-ring {
-            0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
-        }
-
-        /* 渐变背景区块 */
-        .gradient-section-dark {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        .gradient-section-dark::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-
-        /* FAQ 手风琴 */
-        .faq-item {
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            background: white;
-        }
-        .faq-item.active {
-            border-color: #d4af37;
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
-        }
-        .faq-answer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease;
-        }
-        .faq-item.active .faq-answer { max-height: 300px; }
-        .faq-item.active .faq-icon { transform: rotate(180deg); }
-
-        /* 标签芯片 */
-        .chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        .chip-blue { background: #eff6ff; color: #1d4ed8; }
-        .chip-green { background: #f0fdf4; color: #15803d; }
-        .chip-orange { background: #fff7ed; color: #c2410c; }
-        .chip-purple { background: #faf5ff; color: #7e22ce; }
-        .chip-gold { background: #fefce8; color: #a16207; }
-
-        /* 进度条 */
-        .progress-bar {
-            height: 8px;
-            border-radius: 4px;
-            background: #e5e7eb;
-            overflow: hidden;
-            position: relative;
-        }
-        .progress-fill {
-            height: 100%;
-            border-radius: 4px;
-            background: linear-gradient(90deg, #d4af37, #e94560);
-            transition: width 1.5s ease;
-        }
-
-        /* ==================== 新增精美样式 ==================== */
-
-        /* 渐变标题装饰 */
-        .title-deco-left {
-            position: relative;
-            padding-left: 20px;
-        }
-        .title-deco-left::before {
-            content: '';
-            position: absolute;
-            left: 0; top: 50%;
-            transform: translateY(-50%);
-            width: 6px; height: 70%;
-            background: linear-gradient(180deg, #d4af37, #e94560);
-            border-radius: 3px;
-        }
-
-        /* 卡片悬浮光晕 */
-        .card-glow-hover {
-            position: relative;
-            transition: all 0.4s ease;
-        }
-        .card-glow-hover::after {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 22px;
-            background: linear-gradient(135deg, rgba(212,175,55,0.4), rgba(233,69,96,0.4), rgba(15,52,96,0.4));
-            opacity: 0;
-            z-index: -1;
-            filter: blur(15px);
-            transition: opacity 0.4s ease;
-        }
-        .card-glow-hover:hover::after { opacity: 1; }
-        .card-glow-hover:hover { transform: translateY(-10px) scale(1.02); }
-
-        /* 数字翻转卡片 */
-        .flip-card {
-            perspective: 1000px;
-            height: 200px;
-        }
-        .flip-card-inner {
-            position: relative;
-            width: 100%; height: 100%;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-        }
-        .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
-        .flip-card-front, .flip-card-back {
-            position: absolute;
-            width: 100%; height: 100%;
-            backface-visibility: hidden;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            padding: 20px;
-            text-align: center;
-        }
-        .flip-card-front {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: white;
-        }
-        .flip-card-back {
-            background: linear-gradient(135deg, #d4af37 0%, #e94560 100%);
-            color: white;
-            transform: rotateY(180deg);
-        }
-
-        /* 渐变标签 */
-        .gradient-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            background: linear-gradient(135deg, #d4af37, #e94560);
-            color: white;
-            box-shadow: 0 4px 10px rgba(212,175,55,0.3);
-        }
-
-        /* 步骤连接线 */
-        .step-connector {
-            position: relative;
-        }
-        .step-connector::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: -20px;
-            width: 40px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #d4af37);
-            transform: translateY(-50%);
-        }
-
-        /* 悬浮发光球 */
-        .floating-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(60px);
-            opacity: 0.4;
-            animation: float 8s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(30px, -30px); }
-        }
-
-        /* 渐变文字描边卡片 */
-        .gradient-frame-card {
-            position: relative;
-            background: white;
-            border-radius: 20px;
-            padding: 28px;
-            transition: all 0.4s ease;
-            border: 2px solid transparent;
-            background-clip: padding-box;
-        }
-        .gradient-frame-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 50px rgba(15,52,96,0.15);
-        }
-
-        /* 排行榜样式 */
-        .ranking-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px;
-            background: white;
-            border-radius: 14px;
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-        }
-        .ranking-item:hover {
-            transform: translateX(8px);
-            border-left-color: #d4af37;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-        }
-        .ranking-number {
-            width: 44px; height: 44px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-        .ranking-1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; }
-        .ranking-2 { background: linear-gradient(135deg, #94a3b8, #64748b); color: white; }
-        .ranking-3 { background: linear-gradient(135deg, #cd7f32, #a0522d); color: white; }
-        .ranking-n { background: #f3f4f6; color: #6b7280; }
-
-        /* 季节卡片 */
-        .season-card {
-            position: relative;
-            border-radius: 24px;
-            overflow: hidden;
-            padding: 32px;
-            min-height: 240px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            color: white;
-            transition: all 0.4s ease;
-        }
-        .season-spring { background: linear-gradient(135deg, #fce7f3, #fbcfe8, #f9a8d4); }
-        .season-summer { background: linear-gradient(135deg, #fef3c7, #fde68a, #fbbf24); }
-        .season-autumn { background: linear-gradient(135deg, #fed7aa, #fdba74, #fb923c); }
-        .season-winter { background: linear-gradient(135deg, #dbeafe, #bfdbfe, #93c5fd); }
-        .season-card:hover { transform: translateY(-8px) scale(1.02); }
-
-        /* 时间标签 */
-        .time-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            background: rgba(212,175,55,0.1);
-            color: #b89600;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        /* 大数字样式 */
-        .big-number {
-            font-family: 'Noto Serif SC', serif;
-            font-weight: 900;
-            line-height: 1;
-            background: linear-gradient(135deg, #d4af37 0%, #e94560 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* 装饰性边角 */
-        .corner-deco {
-            position: relative;
-        }
-        .notable-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
-            transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
-            border: 1px solid rgba(0,0,0,0.06);
-        }
-        .notable-card:hover {
-            transform: translateY(-12px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 8px 20px rgba(0,0,0,0.08);
-        }
-
-        .corner-deco::before,
-        .corner-deco::after {
-            content: '';
-            position: absolute;
-            width: 24px; height: 24px;
-            border: 2px solid #d4af37;
-        }
-        .corner-deco::before {
-            top: -2px; left: -2px;
-            border-right: none;
-            border-bottom: none;
-            border-top-left-radius: 12px;
-        }
-        .corner-deco::after {
-            bottom: -2px; right: -2px;
-            border-left: none;
-            border-top: none;
-            border-bottom-right-radius: 12px;
-        }
-
-        /* 文字流光动画 */
-        .text-shimmer {
-            background: linear-gradient(90deg, #d4af37 0%, #f4d03f 25%, #ffffff 50%, #f4d03f 75%, #d4af37 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: shimmer 3s linear infinite;
-        }
-        @keyframes shimmer {
-            to { background-position: 200% center; }
-        }
-
-        /* 悬浮粒子背景容器 */
-        .particle-bg {
-            position: relative;
-            overflow: hidden;
-        }
-        .particle-bg::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image: 
-                radial-gradient(circle at 20% 30%, rgba(212,175,55,0.08) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(233,69,96,0.08) 0%, transparent 40%);
-            pointer-events: none;
-        }
-
-        @media (max-width: 768px) {
-            .hero-title { font-size: 2.5rem !important; }
-            .nav-links { flex-direction: column; gap: 10px; }
-            .navbar { padding: 15px 20px; }
-            .timeline-line { left: 20px; }
-            .timeline-dot { left: 20px; }
-        }
-
-        /* ==================== 校训卡片样式 ==================== */
-        .motto-card {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(202, 138, 4, 0.2);
-            border-radius: 12px;
-            padding: 32px 20px;
-            text-align: center;
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-            position: relative;
-            overflow: hidden;
-        }
-        .motto-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 50% 0%, rgba(202, 138, 4, 0.12) 0%, transparent 60%);
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-        .motto-card:hover {
-            transform: translateY(-6px);
-            border-color: rgba(202, 138, 4, 0.5);
-            box-shadow: 0 20px 50px rgba(202, 138, 4, 0.15);
-        }
-        .motto-card:hover::before { opacity: 1; }
-        .motto-char {
-            font-family: 'Noto Serif SC', serif;
-            font-size: 4rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #ca8a04 0%, #facc15 50%, #ca8a04 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1;
-            margin-bottom: 12px;
-            position: relative;
-            z-index: 1;
-        }
-        .motto-card:hover .motto-char {
-            transform: scale(1.08);
-            transition: transform 0.4s ease;
-        }
-        .motto-label {
-            font-family: 'Noto Serif SC', serif;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: white;
-            letter-spacing: 0.3em;
-            margin-bottom: 12px;
-            position: relative;
-            z-index: 1;
-        }
-        .motto-desc {
-            color: rgba(255,255,255,0.6);
-            font-size: 0.85rem;
-            line-height: 1.8;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* ==================== 导航栏更多面板美化 ==================== */
-        #nav-more-panel::before {
-            content: '';
-            position: absolute;
-            top: -6px;
-            right: 24px;
-            width: 12px;
-            height: 12px;
-            background: white;
-            transform: rotate(45deg);
-            border-left: 1px solid #f3f4f6;
-            border-top: 1px solid #f3f4f6;
-        }
-        #nav-more-btn:hover { color: #d4af37; }
-
-        /* ==================== 通用精美元素 ==================== */
-        .deco-line {
-            display: inline-block;
-            width: 40px;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, #d4af37, transparent);
-            vertical-align: middle;
-            margin: 0 12px;
-        }
-        .icon-bubble {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
-            background: linear-gradient(135deg, #d4af37 0%, #e94560 100%);
-            box-shadow: 0 8px 20px rgba(212,175,55,0.3);
-        }
-        .stat-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 5px 12px;
-            border-radius: 4px;
-            background: rgba(202, 138, 4, 0.08);
-            border: 1px solid rgba(202, 138, 4, 0.2);
-            color: #a16207;
-            font-size: 0.75rem;
-            font-weight: 500;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
-        /* ==================== 航天精神卡片 ==================== */
-        .spirit-card {
-            background: white;
-            border-radius: 12px;
-            padding: 32px 24px;
-            text-align: center;
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid var(--gray-200);
-        }
-        .spirit-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, currentColor, transparent);
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-        .spirit-card:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-xl);
-            border-color: transparent;
-        }
-        .spirit-card:hover::before { opacity: 1; }
-        .spirit-icon {
-            width: 64px;
-            height: 64px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            color: white;
-            font-size: 1.5rem;
-            box-shadow: var(--shadow-md);
-            transition: transform 0.4s ease;
-        }
-        .spirit-card:hover .spirit-icon { transform: scale(1.08); }
-
-        /* ==================== 办学特色卡片 ==================== */
-        .feature-card {
-            background: white;
-            border-radius: 12px;
-            padding: 36px 28px;
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid var(--gray-200);
-        }
-        .feature-card::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(202, 138, 4, 0.04) 0%, transparent 50%);
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            pointer-events: none;
-        }
-        .feature-card:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-xl);
-        }
-        .feature-card:hover::after { opacity: 1; }
-        .feature-num {
-            position: absolute;
-            top: 20px;
-            right: 28px;
-            font-family: 'Noto Serif SC', serif;
-            font-size: 3rem;
-            font-weight: 800;
-            color: rgba(202, 138, 4, 0.1);
-            line-height: 1;
-        }
-        .feature-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--gold-light);
-            font-size: 1.3rem;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-md);
-        }
-
-        /* ==================== 社团卡片 ==================== */
-        .club-card {
-            background: white;
-            border-radius: 12px;
-            padding: 28px 24px;
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid var(--gray-200);
-        }
-        .club-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-            border-color: rgba(202, 138, 4, 0.3);
-        }
-        .club-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
-            margin-bottom: 16px;
-        }
-
-        /* ==================== 景观卡片 ==================== */
-        .scenery-card {
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-            box-shadow: var(--shadow-md);
-        }
-        .scenery-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-xl); }
-        .scenery-bg {
-            height: 240px;
-            display: flex;
-            align-items: flex-end;
-            padding: 24px;
-            position: relative;
-            overflow: hidden;
-        }
-        .scenery-bg::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.7) 100%);
-        }
-        .scenery-content { position: relative; z-index: 1; color: white; }
-
-        /* ==================== 寄语卡片 ==================== */
-        .quote-card {
-            background: white;
-            border-radius: 12px;
-            padding: 36px 32px;
-            position: relative;
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-            border: 1px solid var(--gray-200);
-        }
-        .quote-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-            border-color: rgba(202, 138, 4, 0.3);
-        }
-        .quote-mark {
-            position: absolute;
-            top: 16px;
-            right: 24px;
-            font-family: Georgia, serif;
-            font-size: 4rem;
-            line-height: 1;
-            color: rgba(202, 138, 4, 0.15);
-            font-weight: 700;
-        }
-
-        /* ==================== 愿景时间线 ==================== */
-        .vision-item {
-            display: flex;
-            gap: 24px;
-            padding: 24px;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(202, 138, 4, 0.15);
-            transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
-        }
-        .vision-item:hover {
-            background: rgba(255,255,255,0.08);
-            border-color: rgba(202, 138, 4, 0.4);
-            transform: translateX(6px);
-        }
-        .vision-year {
-            font-family: 'Noto Serif SC', serif;
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: var(--gold-light);
-            flex-shrink: 0;
-            min-width: 80px;
-        }
-
-        /* ==================== 火箭升空绚丽特效 ==================== */
-        .rocket-stage {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            overflow: visible;
-            z-index: 5;
-        }
-        .rocket-body {
-            position: absolute;
-            bottom: -700px;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0;
-            z-index: 10;
-            width: 220px;
-            height: 500px;
-            filter: drop-shadow(0 0 50px rgba(255,200,0,0.6)) drop-shadow(0 0 100px rgba(255,100,0,0.3));
-        }
-        .rocket-active .rocket-body {
-            animation: rocketFly 8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        @keyframes rocketFly {
-            0% { bottom: -700px; opacity: 0; transform: translateX(-50%) rotate(-15deg) scale(0.25); }
-            5% { opacity: 1; transform: translateX(-50%) rotate(-8deg) scale(1); }
-            20% { transform: translateX(-50%) rotate(-3deg) scale(1.15); }
-            40% { transform: translateX(-50%) rotate(-1deg) scale(1.2); }
-            60% { transform: translateX(-50%) rotate(0deg) scale(1.18); }
-            80% { transform: translateX(-50%) rotate(6deg) scale(1.1); }
-            100% { bottom: 150%; opacity: 0; transform: translateX(-50%) rotate(18deg) scale(0.4); }
-        }
-
-        /* 火箭光晕 */
-        .rocket-glow {
-            position: absolute;
-            bottom: -700px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 500px;
-            height: 500px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,200,0,0.5) 0%, rgba(255,100,0,0.3) 40%, transparent 70%);
-            opacity: 0;
-            z-index: 7;
-            filter: blur(40px);
-        }
-        .rocket-active .rocket-glow {
-            animation: glowFly 8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        @keyframes glowFly {
-            0% { opacity: 0; bottom: -700px; transform: translateX(-50%) scale(0.4); }
-            5% { opacity: 0.9; transform: translateX(-50%) scale(1); }
-            40% { opacity: 0.7; transform: translateX(-50%) scale(1.3); }
-            100% { opacity: 0; bottom: 150%; transform: translateX(-50%) scale(0.7); }
-        }
-
-        /* 火箭火焰 - 多层渐变 */
-        .rocket-flame {
-            position: absolute;
-            bottom: -700px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            opacity: 0;
-            z-index: 8;
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-        }
-        .rocket-flame::before {
-            content: '';
-            position: absolute;
-            inset: -15px;
-            background: linear-gradient(to bottom, rgba(255,255,200,0.95) 0%, rgba(255,200,50,0.9) 20%, rgba(255,150,0,0.7) 50%, rgba(255,100,0,0.4) 80%, transparent 100%);
-            border-radius: inherit;
-            filter: blur(8px);
-            animation: flameFlicker 0.08s infinite alternate;
-            box-shadow: 0 0 60px rgba(255,200,0,0.8), 0 0 120px rgba(255,100,0,0.5);
-        }
-        .rocket-flame::after {
-            content: '';
-            position: absolute;
-            top: 8%; left: 50%;
-            transform: translateX(-50%);
-            width: 50%;
-            height: 75%;
-            background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,220,0.8) 40%, transparent 100%);
-            border-radius: inherit;
-            filter: blur(4px);
-        }
-        @keyframes flameFlicker {
-            0% { transform: scaleX(1) translateY(0); }
-            100% { transform: scaleX(0.92) translateY(3px); }
-        }
-        .rocket-active .rocket-flame {
-            animation: flameFly 8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        @keyframes flameFly {
-            0% { height: 0; opacity: 0; bottom: -700px; width: 50px; }
-            5% { opacity: 0.98; height: 150px; width: 160px; }
-            20% { height: 400px; width: 220px; opacity: 0.95; }
-            40% { height: 600px; width: 250px; opacity: 0.85; }
-            60% { height: 700px; width: 230px; opacity: 0.7; }
-            80% { height: 650px; width: 180px; opacity: 0.5; }
-            100% { height: 800px; opacity: 0; bottom: 150%; width: 80px; }
-        }
-
-        /* 火花粒子 */
-        .spark {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 12;
-            filter: drop-shadow(0 0 8px currentColor);
-        }
-        .rocket-active .spark {
-            animation: sparkBurst 5s ease-out forwards;
-        }
-        @keyframes sparkBurst {
-            0% { opacity: 0; transform: translate(0,0) scale(0); }
-            12% { opacity: 1; transform: translate(var(--tx,0), var(--ty,0)) scale(1); }
-            100% { opacity: 0; transform: translate(calc(var(--tx,0)*5), calc(var(--ty,0)*5)) scale(0); }
-        }
-
-        /* 火焰碎片 */
-        .flame-debris {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            background: linear-gradient(135deg, #ffeb3b, #ff9800);
-            border-radius: 50% 0 50% 50%;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 11;
-            filter: drop-shadow(0 0 6px #ff9800);
-        }
-        .rocket-active .flame-debris {
-            animation: debrisFly 4s ease-out forwards;
-        }
-        @keyframes debrisFly {
-            0% { opacity: 0; transform: translate(0,0) scale(0) rotate(0deg); }
-            10% { opacity: 1; transform: translate(var(--dx,0), var(--dy,0)) scale(1) rotate(45deg); }
-            100% { opacity: 0; transform: translate(calc(var(--dx,0)*3), calc(var(--dy,0)*3 + 150px)) scale(0.3) rotate(270deg); }
-        }
-
-        /* 烟雾粒子 */
-        .smoke-particle {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.3);
-            opacity: 0;
-            pointer-events: none;
-            z-index: 6;
-            filter: blur(15px);
-        }
-        .rocket-active .smoke-particle {
-            animation: smokeFloat 4s ease-out forwards;
-        }
-        @keyframes smokeFloat {
-            0% { opacity: 0; transform: translateY(0) scale(0.3); }
-            12% { opacity: 0.6; }
-            50% { background: rgba(200,200,220,0.25); }
-            100% { opacity: 0; transform: translateY(300px) translateX(var(--sx,0)) scale(3); }
-        }
-
-        /* 能量粒子 */
-        .energy-particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #00ffff;
-            border-radius: 50%;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 13;
-            filter: drop-shadow(0 0 10px #00ffff);
-        }
-        .rocket-active .energy-particle {
-            animation: energyBurst 3s ease-out forwards;
-        }
-        @keyframes energyBurst {
-            0% { opacity: 0; transform: translate(0,0) scale(0); }
-            8% { opacity: 1; transform: translate(var(--ex,0), var(--ey,0)) scale(1); }
-            100% { opacity: 0; transform: translate(calc(var(--ex,0)*8), calc(var(--ey,0)*8)) scale(0); }
-        }
-
-        /* 星星拖尾 */
-        .star-tracer {
-            position: absolute;
-            width: 3px;
-            height: 150px;
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,215,0,0.9), rgba(255,255,255,0.8));
-            opacity: 0;
-            pointer-events: none;
-            z-index: 4;
-            transform-origin: top center;
-            filter: drop-shadow(0 0 8px rgba(255,215,0,0.8));
-        }
-        .rocket-active .star-tracer {
-            animation: starTrail 6s linear forwards;
-        }
-        @keyframes starTrail {
-            0% { opacity: 0; height: 0; }
-            8% { opacity: 0.9; height: 150px; }
-            90% { opacity: 0.7; height: 400px; }
-            100% { opacity: 0; height: 500px; }
-        }
-
-        /* 光效射线 */
-        .light-ray {
-            position: absolute;
-            width: 2px;
-            height: 100px;
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.6));
-            opacity: 0;
-            pointer-events: none;
-            z-index: 3;
-            transform-origin: top center;
-        }
-        .rocket-active .light-ray {
-            animation: rayBurst 5s ease-out forwards;
-        }
-        @keyframes rayBurst {
-            0% { opacity: 0; height: 0; transform: rotate(var(--angle,0deg)); }
-            10% { opacity: 0.8; height: 150px; }
-            100% { opacity: 0; height: 300px; transform: rotate(var(--angle,0deg) + 30deg); }
-        }
-
-        /* ==================== 浅深渐变过渡 ==================== */
-        .gradient-transition {
-            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 30%, #e2e8f0 60%, #0f172a 100%);
-        }
-
-        /* ==================== Hero 增强特效 ==================== */
-        .hero-glow {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.4;
-            animation: glowPulse 6s ease-in-out infinite;
-        }
-        @keyframes glowPulse {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.1); }
-        }
-
-        /* ==================== 滚动视差 ==================== */
-        .parallax-bg {
-            will-change: transform;
-            transition: transform 0.1s linear;
-        }
-
-        /* ==================== 发光边框 ==================== */
-        .glow-border {
-            position: relative;
-        }
-        .glow-border::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(202,138,4,0.5), transparent, rgba(185,28,28,0.3));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-        .glow-border:hover::before { opacity: 1; }
+/* ============================================================
+   新洲一中航天城校区 · 视觉系统（史诗级典藏版）
+   设计语言：典藏学府 · 星海航天
+   主色：深海军蓝 / 沉稳红 / 哑光金
+   原则：克制、典雅、层次丰富、专业官方
+   ============================================================ */
+
+/* ---------- 设计令牌 ---------- */
+:root {
+    --primary-color: #0f172a;
+    --secondary-color: #1e293b;
+    --accent-color: #0c4a6e;
+    --highlight-color: #b91c1c;
+    --highlight-deep: #991b1b;
+    --gold-color: #a16207;
+    --gold-light: #ca8a04;
+    --gold-bright: #facc15;
+    --gold-pale: #fde68a;
+
+    --white-color: #ffffff;
+    --gray-color: #fafafa;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --text-color: #1e293b;
+    --light-text: #64748b;
+
+    /* 阴影系统（带色温，避免廉价平面感） */
+    --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -1px rgba(15, 23, 42, 0.04);
+    --shadow-lg: 0 12px 28px -8px rgba(15, 23, 42, 0.10), 0 4px 10px -2px rgba(15, 23, 42, 0.05);
+    --shadow-xl: 0 24px 48px -12px rgba(15, 23, 42, 0.16), 0 8px 20px -4px rgba(15, 23, 42, 0.08);
+    --shadow-2xl: 0 40px 80px -20px rgba(15, 23, 42, 0.22);
+    --shadow-gold: 0 14px 32px -8px rgba(202, 138, 4, 0.30);
+    --shadow-crimson: 0 12px 28px -6px rgba(185, 28, 28, 0.32);
+
+    --r-card: 12px;
+    --r-btn: 6px;
+    --r-badge: 4px;
+
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+    --hairline: rgba(15, 23, 42, 0.08);
+    --hairline-gold: rgba(202, 138, 4, 0.22);
+
+    /* ===== 史诗 Pro：航天典藏档案扩展变量 ===== */
+    --space-deep: #060912;        /* 深空底色 */
+    --space-mid: #0a1224;         /* 中层空间 */
+    --blueprint: #1e3a5f;         /* 蓝图线条 */
+    --gold-foil: #d4a437;         /* 拉丝金箔 */
+    --gold-deep: #8b6914;         /* 深金 */
+    --crimson-seal: #a01818;      /* 朱砂印章 */
+    --paper-warm: #f5f0e1;        /* 暖纸档案 */
+    --paper-cool: #f8fafc;        /* 冷纸档案 */
+    --r-card-lg: 16px;
+    --r-card-xl: 22px;
+    --space-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='%23ca8a04' stroke-opacity='0.04' stroke-width='0.5'%3E%3Cpath d='M0 0h40v40H0z'/%3E%3Cpath d='M0 20h40M20 0v40'/%3E%3Ccircle cx='20' cy='20' r='3'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--gray-color);
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: var(--text-color);
+    letter-spacing: 0.012em;
+    line-height: 1.7;
+    /* 纸感底纹 + 暖冷微光 + 蓝图坐标网格 */
+    background-image:
+        radial-gradient(circle at 12% -8%, rgba(202, 138, 4, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 6%, rgba(12, 74, 110, 0.07) 0%, transparent 44%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.06  0 0 0 0 0.09  0 0 0 0 0.16  0 0 0 0.022 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+        var(--space-pattern);
+    background-attachment: fixed;
+}
+
+::selection { background: rgba(202, 138, 4, 0.22); color: #0f172a; }
+::-moz-selection { background: rgba(202, 138, 4, 0.22); color: #0f172a; }
+
+/* ============================================================
+   史诗 Pro · 航天典藏档案视觉系统
+   ============================================================ */
+
+/* 章节标题装饰：左侧蓝图刻度线 + 编号 */
+.section-archive-header { position: relative; padding-left: 56px; text-align: left; }
+.section-archive-header::before {
+    content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 40px; height: 2px;
+    background: linear-gradient(90deg, var(--gold-foil), transparent);
+}
+.section-archive-header::after {
+    content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--gold-foil); box-shadow: 0 0 12px var(--gold-foil);
+}
+.archive-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--gold-deep); padding: 4px 10px;
+    border: 1px solid var(--hairline-gold); border-radius: 2px;
+    background: rgba(202, 138, 4, 0.04);
+}
+.archive-tag::before {
+    content: '◆'; color: var(--gold-foil); font-size: 8px;
+}
+
+/* 升级版玻璃卡片：金属箔边 + 蓝图角标 + 双层光 */
+.glass-card {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: var(--r-card-lg);
+    box-shadow:
+        0 1px 0 rgba(255,255,255,0.9) inset,
+        0 0 0 1px rgba(202, 138, 4, 0.08),
+        var(--shadow-lg);
+    transition: transform 0.45s var(--ease-out), box-shadow 0.45s var(--ease-out), border-color 0.45s var(--ease-out);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    position: relative;
+    overflow: hidden;
+}
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold-foil), var(--gold-deep), var(--gold-foil), transparent);
+    opacity: 0.85;
+}
+.glass-card::after {
+    content: ''; position: absolute; top: 8px; right: 8px;
+    width: 28px; height: 28px;
+    background:
+        linear-gradient(135deg, transparent 50%, rgba(202, 138, 4, 0.18) 50%);
+    border-top-right-radius: var(--r-card-lg);
+    pointer-events: none;
+    opacity: 0; transition: opacity 0.4s var(--ease-out);
+}
+.glass-card:hover {
+    transform: translateY(-6px);
+    box-shadow:
+        0 1px 0 rgba(255,255,255,0.9) inset,
+        0 0 0 1px rgba(202, 138, 4, 0.28),
+        var(--shadow-2xl),
+        var(--shadow-gold);
+}
+.glass-card:hover::after { opacity: 1; }
+
+/* 通用可点击卡片：金色按下涟漪 */
+.clickable-card { cursor: pointer; position: relative; }
+.clickable-card::before { z-index: 1; }
+.clickable-card:active { transform: translateY(-3px) scale(0.99); }
+
+/* 主按钮：朱砂红 + 火焰光晕 */
+.btn-primary {
+    background: linear-gradient(135deg, var(--highlight-color) 0%, var(--highlight-deep) 100%);
+    color: white;
+    padding: 12px 32px;
+    border-radius: var(--r-btn);
+    font-weight: 600;
+    transition: all 0.25s var(--ease-out);
+    border: none;
+    cursor: pointer;
+    box-shadow:
+        0 0 0 1px rgba(185, 28, 28, 0.4),
+        0 1px 3px rgba(185, 28, 28, 0.3),
+        0 6px 16px rgba(185, 28, 28, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    letter-spacing: 0.06em;
+    font-size: 0.875rem;
+    position: relative;
+    overflow: hidden;
+}
+.btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -120%;
+    width: 60%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.7s var(--ease-out);
+}
+.btn-primary:hover::after { left: 130%; }
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 0 0 1px rgba(185, 28, 28, 0.6),
+        0 2px 6px rgba(185, 28, 28, 0.5),
+        0 12px 28px rgba(185, 28, 28, 0.32),
+        0 0 32px rgba(250, 204, 21, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* 描边按钮：金箔边 + 深空底 */
+.btn-outline {
+    background: rgba(15, 23, 42, 0.4);
+    color: white;
+    padding: 12px 32px;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: all 0.3s var(--ease-out);
+    border: 1.5px solid rgba(212, 164, 55, 0.55);
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+}
+.btn-outline:hover {
+    border-color: var(--gold-foil);
+    background: rgba(202, 138, 4, 0.12);
+    box-shadow: 0 0 24px rgba(202, 138, 4, 0.28), inset 0 0 12px rgba(202, 138, 4, 0.08);
+    transform: translateY(-1px);
+}
+
+/* 数据统计卡片：深空金属感 */
+.counter-card {
+    background: linear-gradient(180deg, rgba(15,23,42,0.6) 0%, rgba(15,23,42,0.85) 100%);
+    border: 1px solid rgba(202, 138, 4, 0.18);
+    border-radius: var(--r-card);
+    padding: 20px 12px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.4s var(--ease-out);
+}
+.counter-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(202, 138, 4, 0.18) 0%, transparent 60%);
+    opacity: 0; transition: opacity 0.4s var(--ease-out);
+}
+.counter-card:hover {
+    border-color: rgba(202, 138, 4, 0.55);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 36px -8px rgba(202, 138, 4, 0.32);
+}
+.counter-card:hover::before { opacity: 1; }
+.gradient-text-gold {
+    background: linear-gradient(135deg, #facc15 0%, #ca8a04 50%, #fde68a 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* 渐变描边卡片：金箔边框 */
+.gradient-border-card {
+    background: white;
+    border-radius: var(--r-card-lg);
+    padding: 32px 24px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.4s var(--ease-out);
+    box-shadow: var(--shadow-md);
+}
+.gradient-border-card::before {
+    content: ''; position: absolute; inset: 0;
+    border-radius: var(--r-card-lg);
+    padding: 1.5px;
+    background: linear-gradient(135deg, rgba(202, 138, 4, 0.4), transparent 40%, transparent 60%, rgba(185, 28, 28, 0.25));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+.gradient-border-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-xl), var(--shadow-gold);
+}
+
+/* 章节分隔线：金箔中点 */
+.section-divider {
+    width: 64px; height: 2px; margin: 0 auto;
+    background: linear-gradient(90deg, transparent, var(--gold-foil), transparent);
+    position: relative;
+}
+.section-divider::after {
+    content: '◆'; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--gold-foil); font-size: 10px;
+    background: var(--gray-color); padding: 0 8px;
+}
+
+/* 深色章节容器：深空 + 蓝图网格 */
+.gradient-section-dark {
+    background:
+        radial-gradient(ellipse at 20% 0%, rgba(202, 138, 4, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(185, 28, 28, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, var(--space-deep) 0%, var(--primary-color) 50%, var(--space-mid) 100%);
+    position: relative;
+}
+.gradient-section-dark::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background-image:
+        linear-gradient(rgba(202, 138, 4, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(202, 138, 4, 0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+}
+
+/* 通用详情模态框样式 */
+.info-modal-overlay {
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(6, 9, 18, 0.78);
+    backdrop-filter: blur(10px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s var(--ease-out);
+}
+.info-modal-overlay.active { opacity: 1; pointer-events: auto; }
+.info-modal-box {
+    background: linear-gradient(180deg, #ffffff 0%, var(--paper-cool) 100%);
+    border-radius: var(--r-card-xl);
+    max-width: 720px; width: 100%; max-height: 88vh;
+    overflow-y: auto;
+    box-shadow:
+        0 0 0 1px rgba(202, 138, 4, 0.22),
+        0 30px 80px -20px rgba(0,0,0,0.5),
+        0 12px 32px -8px rgba(0,0,0,0.3);
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.4s var(--ease-out);
+    position: relative;
+}
+.info-modal-overlay.active .info-modal-box { transform: translateY(0) scale(1); }
+.info-modal-box::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--gold-foil), var(--crimson-seal), var(--gold-foil));
+    border-radius: var(--r-card-xl) var(--r-card-xl) 0 0;
+}
+.info-modal-close {
+    position: absolute; top: 16px; right: 16px;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(15, 23, 42, 0.06); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.25s var(--ease-out);
+    color: var(--light-text);
+}
+.info-modal-close:hover { background: var(--crimson-seal); color: white; transform: rotate(90deg); }
+
+/* 滚动揭示增强：进入时带蓝图刻度 */
+.reveal {
+    opacity: 0; transform: translateY(28px);
+    transition: opacity 0.85s var(--ease-out), transform 0.85s var(--ease-out);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* 点击涟漪 */
+.ripple { position: absolute; border-radius: 50%; pointer-events: none; overflow: hidden;
+    background: radial-gradient(circle, rgba(202, 138, 4, 0.4) 0%, transparent 70%);
+    transform: scale(0); animation: rippleAnim 0.7s var(--ease-out); }
+@keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
+
+/* 装饰：朱砂印章 */
+.seal-stamp {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 56px; height: 56px;
+    border: 2.5px solid var(--crimson-seal);
+    color: var(--crimson-seal);
+    font-family: 'Noto Serif SC', serif; font-weight: 800; font-size: 14px;
+    border-radius: 8px;
+    transform: rotate(-6deg);
+    background: rgba(185, 28, 28, 0.04);
+    box-shadow: inset 0 0 0 1px rgba(185, 28, 28, 0.3);
+    letter-spacing: 0.1em;
+}
+
+/* ============================================================
+   史诗 PROMAX · 3D 倾斜 + 光标 + 视差 + 进度环
+   ============================================================ */
+
+/* 3D 倾斜卡片容器 */
+.tilt-card {
+    transform-style: preserve-3d;
+    transition: transform 0.2s var(--ease-out), box-shadow 0.4s var(--ease-out);
+    will-change: transform;
+}
+.tilt-card .tilt-inner {
+    transform: translateZ(40px);
+    transition: transform 0.2s var(--ease-out);
+}
+.tilt-card .tilt-shine {
+    position: absolute; inset: 0; border-radius: inherit;
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%),
+        rgba(255, 255, 255, 0.25) 0%, transparent 50%);
+    opacity: 0; transition: opacity 0.3s var(--ease-out);
+    pointer-events: none; z-index: 2;
+}
+.tilt-card:hover .tilt-shine { opacity: 1; }
+
+/* 自定义金光标 */
+@media (hover: hover) and (pointer: fine) {
+    body { cursor: none; }
+    a, button, .clickable-card, .glass-card, .gradient-border-card,
+    .counter-card, [data-info], input, select, textarea { cursor: none; }
+}
+.cursor-dot {
+    position: fixed; width: 8px; height: 8px;
+    background: var(--gold-foil); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width 0.2s var(--ease-out), height 0.2s var(--ease-out),
+                background 0.2s var(--ease-out), opacity 0.2s var(--ease-out);
+    box-shadow: 0 0 12px rgba(212, 164, 55, 0.6);
+    mix-blend-mode: screen;
+}
+.cursor-ring {
+    position: fixed; width: 36px; height: 36px;
+    border: 1.5px solid rgba(212, 164, 55, 0.5); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s var(--ease-out), height 0.3s var(--ease-out),
+                border-color 0.3s var(--ease-out), opacity 0.3s var(--ease-out);
+}
+.cursor-dot.hover-active { width: 16px; height: 16px; background: var(--crimson-seal); }
+.cursor-ring.hover-active { width: 56px; height: 56px; border-color: var(--crimson-seal); }
+
+/* 章节编号徽章（JS 自动注入） */
+.section-num-badge {
+    position: absolute; top: -8px; right: -8px;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--space-deep), var(--primary-color));
+    border: 2px solid var(--gold-foil);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 700; color: var(--gold-foil);
+    box-shadow: 0 4px 16px rgba(202, 138, 4, 0.3);
+    z-index: 5;
+}
+.section-archive-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--gold-deep);
+    padding: 3px 10px;
+    border: 1px solid var(--hairline-gold);
+    border-radius: 2px;
+    background: rgba(202, 138, 4, 0.05);
+    margin-bottom: 12px;
+}
+.section-archive-tag::before {
+    content: '◇'; color: var(--gold-foil); font-size: 7px;
+}
+
+/* 视差浮层 */
+.parallax-layer {
+    position: absolute; pointer-events: none;
+    will-change: transform;
+}
+
+/* 进度环 */
+.progress-ring-wrap {
+    position: relative; display: inline-flex; align-items: center; justify-content: center;
+}
+.progress-ring-svg { transform: rotate(-90deg); }
+.progress-ring-bg { stroke: rgba(202, 138, 4, 0.12); }
+.progress-ring-fg {
+    stroke: var(--gold-foil);
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1.5s var(--ease-out);
+    filter: drop-shadow(0 0 6px rgba(212, 164, 55, 0.5));
+}
+
+/* PROMAX 章节标题动画 */
+.promax-title {
+    opacity: 0; transform: translateY(20px);
+    animation: promaxTitleIn 0.8s var(--ease-out) forwards;
+}
+@keyframes promaxTitleIn {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 滚动进度条（顶部金线） */
+.scroll-progress-bar {
+    position: fixed; top: 0; left: 0; height: 3px; z-index: 999;
+    background: linear-gradient(90deg, var(--gold-foil), var(--crimson-seal), var(--gold-foil));
+    width: 0%; transition: width 0.1s linear;
+    box-shadow: 0 0 12px rgba(212, 164, 55, 0.6);
+}
+
+/* 卡片底部金线扫光 */
+.card-scan-line {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold-foil), transparent);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.6s var(--ease-out);
+}
+.glass-card:hover .card-scan-line,
+.gradient-border-card:hover .card-scan-line { transform: scaleX(1); }
+
+/* 滚动条 —— 深空金条 */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: #0b1220; }
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ca8a04, #a16207);
+    border-radius: 8px;
+    border: 3px solid #0b1220;
+}
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #facc15, #ca8a04); }
+html { scrollbar-color: #a16207 #0b1220; scrollbar-width: thin; }
+
+.font-serif {
+    font-family: 'Noto Serif SC', 'STSong', serif;
+    font-weight: 600;
+    font-feature-settings: "palt";
+}
+.font-display { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-weight: 600; letter-spacing: 0.01em; }
+.font-mono-tech { font-family: 'JetBrains Mono', 'Courier New', monospace; letter-spacing: 0.04em; }
+
+h1, h2, h3, h4 { color: var(--primary-color); line-height: 1.3; letter-spacing: 0.02em; }
+
+/* ---------- 英雄区 ---------- */
+.hero-section {
+    background:
+        radial-gradient(ellipse at 50% 120%, rgba(202, 138, 4, 0.22) 0%, transparent 55%),
+        radial-gradient(ellipse at 18% 22%, rgba(12, 74, 110, 0.55) 0%, transparent 50%),
+        radial-gradient(ellipse at 82% 18%, rgba(185, 28, 28, 0.18) 0%, transparent 48%),
+        linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 50%, var(--accent-color) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* 地平线金光 */
+.hero-section::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 38%;
+    background: linear-gradient(180deg, transparent 0%, rgba(202, 138, 4, 0.10) 60%, rgba(202, 138, 4, 0.22) 100%);
+    pointer-events: none;
+}
+
+.orbit-ring {
+    position: absolute;
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    border-radius: 50%;
+    animation: orbit 20s linear infinite;
+    box-shadow: inset 0 0 60px rgba(202, 138, 4, 0.06);
+}
+.orbit-ring::after {
+    content: '';
+    position: absolute;
+    top: 50%; right: -4px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--gold-bright);
+    box-shadow: 0 0 14px rgba(250, 204, 21, 0.9);
+}
+
+@keyframes orbit {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 2s ease-in-out infinite;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.7);
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.25; }
+    50% { opacity: 1; }
+}
+
+/* ---------- 玻璃卡片（已升级到典藏档案系统，见上方） ---------- */
+.school-title {
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 0 40px rgba(202, 138, 4, 0.25);
+    letter-spacing: 0.05em;
+}
+
+/* ---------- 按钮（已升级到典藏档案系统，见上方） ---------- */
+.btn-outline-nav {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.badge {
+    background: linear-gradient(135deg, var(--gold-light), var(--gold-color));
+    color: white;
+    padding: 4px 12px;
+    border-radius: var(--r-badge);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    box-shadow: 0 2px 8px rgba(202, 138, 4, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* ---------- 导航 ---------- */
+.nav-link {
+    position: relative;
+    color: rgba(255, 255, 255, 0.85);
+    transition: all 0.3s ease;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 8px;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--gold-bright);
+    background: rgba(202, 138, 4, 0.10);
+    text-shadow: 0 0 20px rgba(202, 138, 4, 0.45);
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px; left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold-bright), transparent);
+    transition: width 0.4s var(--ease-out);
+    border-radius: 3px;
+    box-shadow: 0 0 10px rgba(250, 204, 21, 0.6);
+}
+
+.nav-link:hover::after, .nav-link.active::after { width: 80%; }
+
+.scroll-indicator { animation: bounce 2s infinite; }
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+
+/* ---------- 画廊 ---------- */
+.gallery-item {
+    overflow: hidden;
+    border-radius: 16px;
+    position: relative;
+    box-shadow: var(--shadow-md);
+}
+.gallery-item img { transition: transform 0.6s var(--ease-out); }
+.gallery-item:hover img { transform: scale(1.08); }
+
+.gallery-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.2) 0%, rgba(15, 23, 42, 0.78) 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    display: flex; align-items: center; justify-content: center;
+}
+.gallery-item:hover .gallery-overlay { opacity: 1; }
+
+/* ---------- 学生卡片 ---------- */
+.student-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.04);
+    transition: all 0.4s var(--ease-out);
+    border: 1px solid #f3f4f6;
+    position: relative;
+    overflow: hidden;
+}
+.student-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 3px;
+    background: linear-gradient(90deg, var(--gold-color), var(--gold-bright), var(--highlight-color));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s var(--ease-out);
+}
+.student-card:hover::before { transform: scaleX(1); }
+.student-card:hover {
+    box-shadow: 0 4px 8px rgba(15, 23, 42, 0.06), 0 16px 36px rgba(15, 23, 42, 0.12);
+    transform: translateY(-6px);
+    border-color: rgba(202, 138, 4, 0.35);
+}
+
+/* ---------- 页脚 ---------- */
+.footer {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    position: relative;
+}
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(202, 138, 4, 0.5), transparent);
+}
+
+/* ---------- 页面视图 ---------- */
+.page-view {
+    display: none;
+}
+.page-view.active {
+    display: block;
+    min-height: 100vh;
+}
+
+/* ---------- 弹窗 ---------- */
+.modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(8, 12, 24, 0.72);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+.modal-overlay.active { opacity: 1; visibility: visible; }
+.modal-content {
+    background: white;
+    border-radius: 24px;
+    max-width: 500px;
+    width: 90%;
+    padding: 30px;
+    transform: scale(0.92) translateY(10px);
+    transition: transform 0.4s var(--ease-out);
+    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(202, 138, 4, 0.18);
+}
+.modal-overlay.active .modal-content { transform: scale(1) translateY(0); }
+
+/* ---------- 渐变文字 ---------- */
+.gradient-text {
+    background: linear-gradient(135deg, #a16207 0%, #b91c1c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+/* ---------- 滚动揭示 ---------- */
+/* .reveal 已升级到典藏档案系统，见上方 */
+
+/* ---------- 发光按钮 ---------- */
+.btn-glow {
+    background: linear-gradient(135deg, #d4af37 0%, #e94560 100%);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.btn-glow::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 0; height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+.btn-glow:hover::after { width: 300px; height: 300px; }
+.btn-glow:hover {
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+    transform: translateY(-2px);
+}
+
+/* ---------- 深色玻璃卡 ---------- */
+.glass-dark {
+    background: rgba(26, 26, 46, 0.55);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    border-radius: 20px;
+    transition: all 0.35s var(--ease-out);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.glass-dark:hover {
+    background: rgba(26, 26, 46, 0.78);
+    border-color: rgba(212, 175, 55, 0.55);
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* ---------- 时间线 ---------- */
+.timeline-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, transparent, #d4af37, #e94560, transparent);
+    transform: translateX(-50%);
+    box-shadow: 0 0 16px rgba(212, 175, 55, 0.35);
+}
+.timeline-dot {
+    position: absolute;
+    left: 50%;
+    width: 20px; height: 20px;
+    background: white;
+    border: 4px solid #d4af37;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2), 0 0 18px rgba(212, 175, 55, 0.55);
+    z-index: 2;
+}
+
+/* ---------- 数字计数卡（已升级到典藏档案系统，见上方） ---------- */
+@keyframes rotate-bg {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ---------- 脉冲环 ---------- */
+.pulse-ring {
+    animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+    70% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+}
+
+/* ---------- 深色渐变区块（已升级到典藏档案系统，见上方） ---------- */
+.gradient-section-dark::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(202, 138, 4, 0.55), transparent);
+    z-index: 1;
+}
+
+/* ---------- FAQ ---------- */
+.faq-item {
+    border: 1px solid var(--hairline);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    background: white;
+    box-shadow: var(--shadow-sm);
+}
+.faq-item:hover { box-shadow: var(--shadow-md); }
+.faq-item.active {
+    border-color: rgba(202, 138, 4, 0.55);
+    box-shadow: 0 10px 30px rgba(202, 175, 55, 0.12);
+}
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.45s var(--ease-out);
+}
+.faq-item.active .faq-answer { max-height: 320px; }
+.faq-item.active .faq-icon { transform: rotate(180deg); }
+
+/* ---------- 标签芯片 ---------- */
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+.chip-blue { background: #eff6ff; color: #1d4ed8; border-color: rgba(29, 78, 216, 0.12); }
+.chip-green { background: #f0fdf4; color: #15803d; border-color: rgba(21, 128, 61, 0.12); }
+.chip-orange { background: #fff7ed; color: #c2410c; border-color: rgba(194, 65, 12, 0.12); }
+.chip-purple { background: #faf5ff; color: #7e22ce; border-color: rgba(126, 34, 206, 0.12); }
+.chip-gold { background: #fefce8; color: #a16207; border-color: rgba(161, 98, 7, 0.16); }
+
+/* ---------- 进度条 ---------- */
+.progress-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: #e5e7eb;
+    overflow: hidden;
+    position: relative;
+}
+.progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #d4af37, #e94560);
+    transition: width 1.5s ease;
+    position: relative;
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.5);
+}
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+    animation: progress-shine 2.5s linear infinite;
+}
+@keyframes progress-shine {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+}
+
+/* ---------- 标题装饰 ---------- */
+.title-deco-left {
+    position: relative;
+    padding-left: 20px;
+}
+.title-deco-left::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 6px; height: 70%;
+    background: linear-gradient(180deg, #d4af37, #e94560);
+    border-radius: 3px;
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
+}
+
+/* ---------- 卡片悬浮光晕 ---------- */
+.card-glow-hover {
+    position: relative;
+    transition: all 0.4s ease;
+}
+.card-glow-hover::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.4), rgba(233, 69, 96, 0.4), rgba(15, 52, 96, 0.4));
+    opacity: 0;
+    z-index: -1;
+    filter: blur(15px);
+    transition: opacity 0.4s ease;
+}
+.card-glow-hover:hover::after { opacity: 1; }
+.card-glow-hover:hover { transform: translateY(-10px) scale(1.02); }
+
+/* ---------- 翻转卡 ---------- */
+.flip-card {
+    perspective: 1000px;
+    height: 200px;
+}
+.flip-card-inner {
+    position: relative;
+    width: 100%; height: 100%;
+    transition: transform 0.7s var(--ease-out);
+    transform-style: preserve-3d;
+}
+.flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+.flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%; height: 100%;
+    backface-visibility: hidden;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 20px;
+    text-align: center;
+}
+.flip-card-front {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: white;
+    border: 1px solid rgba(202, 138, 4, 0.2);
+}
+.flip-card-back {
+    background: linear-gradient(135deg, #d4af37 0%, #e94560 100%);
+    color: white;
+    transform: rotateY(180deg);
+}
+
+/* ---------- 渐变标签 ---------- */
+.gradient-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #d4af37, #e94560);
+    color: white;
+    box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
+}
+
+/* ---------- 步骤连接线 ---------- */
+.step-connector {
+    position: relative;
+}
+.step-connector::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -20px;
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #d4af37);
+    transform: translateY(-50%);
+}
+
+/* ---------- 悬浮发光球 ---------- */
+.floating-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.4;
+    animation: float 8s ease-in-out infinite;
+}
+@keyframes float {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(30px, -30px); }
+}
+
+/* ---------- 渐变描边框卡 ---------- */
+.gradient-frame-card {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
+    transition: all 0.4s ease;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+.gradient-frame-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(15, 52, 96, 0.15);
+}
+
+/* ---------- 排行榜 ---------- */
+.ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: white;
+    border-radius: 14px;
+    transition: all 0.3s var(--ease-out);
+    border-left: 4px solid transparent;
+    box-shadow: var(--shadow-sm);
+}
+.ranking-item:hover {
+    transform: translateX(8px);
+    border-left-color: #d4af37;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+.ranking-number {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+.ranking-1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4); }
+.ranking-2 { background: linear-gradient(135deg, #94a3b8, #64748b); color: white; box-shadow: 0 6px 16px rgba(100, 116, 139, 0.35); }
+.ranking-3 { background: linear-gradient(135deg, #cd7f32, #a0522d); color: white; box-shadow: 0 6px 16px rgba(205, 127, 50, 0.35); }
+.ranking-n { background: #f3f4f6; color: #6b7280; }
+
+/* ---------- 季节卡 ---------- */
+.season-card {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    padding: 32px;
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    color: white;
+    transition: all 0.45s var(--ease-out);
+    box-shadow: var(--shadow-lg);
+}
+.season-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 35%, rgba(15, 23, 42, 0.55) 100%);
+}
+.season-card > * { position: relative; z-index: 1; }
+.season-spring { background: linear-gradient(135deg, #fce7f3, #fbcfe8, #f9a8d4); }
+.season-summer { background: linear-gradient(135deg, #fef3c7, #fde68a, #fbbf24); }
+.season-autumn { background: linear-gradient(135deg, #fed7aa, #fdba74, #fb923c); }
+.season-winter { background: linear-gradient(135deg, #dbeafe, #bfdbfe, #93c5fd); }
+.season-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: var(--shadow-xl); }
+
+/* ---------- 时间标签 ---------- */
+.time-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background: rgba(212, 175, 55, 0.1);
+    color: #b89600;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid rgba(212, 175, 55, 0.18);
+}
+
+/* ---------- 大数字 ---------- */
+.big-number {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(135deg, #d4af37 0%, #e94560 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ---------- 知名人物卡 / 装饰边角 ---------- */
+.corner-deco {
+    position: relative;
+}
+.notable-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
+    transition: all 0.5s var(--ease-out);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    position: relative;
+    overflow: hidden;
+}
+.notable-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold-color), var(--gold-bright), var(--highlight-color));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.6s var(--ease-out);
+}
+.notable-card:hover::before { transform: scaleX(1); }
+.notable-card:hover {
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: 0 24px 48px rgba(15, 23, 42, 0.16), 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.corner-deco::before,
+.corner-deco::after {
+    content: '';
+    position: absolute;
+    width: 24px; height: 24px;
+    border: 2px solid #d4af37;
+}
+.corner-deco::before {
+    top: -2px; left: -2px;
+    border-right: none;
+    border-bottom: none;
+    border-top-left-radius: 12px;
+}
+.corner-deco::after {
+    bottom: -2px; right: -2px;
+    border-left: none;
+    border-top: none;
+    border-bottom-right-radius: 12px;
+}
+
+/* ---------- 文字流光 ---------- */
+.text-shimmer {
+    background: linear-gradient(90deg, #d4af37 0%, #f4d03f 25%, #ffffff 50%, #f4d03f 75%, #d4af37 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s linear infinite;
+}
+@keyframes shimmer {
+    to { background-position: 200% center; }
+}
+
+/* ---------- 粒子背景容器 ---------- */
+.particle-bg {
+    position: relative;
+    overflow: hidden;
+}
+.particle-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(233, 69, 96, 0.08) 0%, transparent 40%);
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .hero-title { font-size: 2.5rem !important; }
+    .nav-links { flex-direction: column; gap: 10px; }
+    .navbar { padding: 15px 20px; }
+    .timeline-line { left: 20px; }
+    .timeline-dot { left: 20px; }
+}
+
+/* ============================================================
+   校训卡片
+   ============================================================ */
+.motto-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(202, 138, 4, 0.22);
+    border-radius: var(--r-card);
+    padding: 36px 20px 30px;
+    text-align: center;
+    transition: all 0.45s var(--ease-out);
+    position: relative;
+    overflow: hidden;
+}
+.motto-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(202, 138, 4, 0.14) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.45s ease;
+}
+/* 四角金线装饰 */
+.motto-card::after {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    border: 1px solid rgba(202, 138, 4, 0.18);
+    border-radius: 8px;
+    pointer-events: none;
+    opacity: 0.6;
+    transition: opacity 0.45s ease, inset 0.45s var(--ease-out);
+}
+.motto-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(202, 138, 4, 0.55);
+    box-shadow: 0 20px 50px rgba(202, 138, 4, 0.18);
+}
+.motto-card:hover::before { opacity: 1; }
+.motto-card:hover::after { opacity: 1; inset: 14px; }
+.motto-char {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 4.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ca8a04 0%, #facc15 50%, #ca8a04 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 0 30px rgba(250, 204, 21, 0.25);
+}
+.motto-card:hover .motto-char {
+    transform: scale(1.08);
+    transition: transform 0.45s var(--ease-out);
+}
+.motto-label {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 0.3em;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+}
+.motto-desc {
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 0.85rem;
+    line-height: 1.85;
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================================
+   导航更多面板
+   ============================================================ */
+#nav-more-panel::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    right: 24px;
+    width: 12px;
+    height: 12px;
+    background: white;
+    transform: rotate(45deg);
+    border-left: 1px solid #f3f4f6;
+    border-top: 1px solid #f3f4f6;
+}
+#nav-more-btn:hover { color: #d4af37; }
+
+/* “更多”下拉面板 —— 强制实色白底，金边描影 */
+#nav-more-panel {
+    background: #ffffff !important;
+    border: 1px solid rgba(202, 138, 4, 0.28) !important;
+    box-shadow: 0 24px 60px -12px rgba(15, 23, 42, 0.30), 0 10px 24px -6px rgba(15, 23, 42, 0.14), 0 0 0 1px rgba(202,138,4,0.04) !important;
+    border-radius: 18px !important;
+    padding: 24px !important;
+}
+#nav-more-panel::before {
+    background: #ffffff !important;
+    border-left: 1px solid rgba(202, 138, 4, 0.28) !important;
+    border-top: 1px solid rgba(202, 138, 4, 0.28) !important;
+}
+#nav-more-panel > div:first-child {
+    background: #ffffff !important;
+    border-color: rgba(202, 138, 4, 0.22) !important;
+}
+#nav-more-panel a {
+    border-radius: 10px;
+    transition: all 0.25s var(--ease-out);
+}
+#nav-more-panel a:hover {
+    background: linear-gradient(135deg, rgba(202, 138, 4, 0.10), rgba(185, 28, 28, 0.06)) !important;
+    color: #a16207 !important;
+    transform: translateX(3px);
+    box-shadow: inset 3px 0 0 #ca8a04;
+}
+#nav-more-panel .text-xs.font-bold {
+    color: #a16207 !important;
+    letter-spacing: 0.18em;
+}
+
+/* ============================================================
+   通用精美元素
+   ============================================================ */
+.deco-line {
+    display: inline-block;
+    width: 40px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #d4af37, transparent);
+    vertical-align: middle;
+    margin: 0 12px;
+}
+.icon-bubble {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #d4af37 0%, #e94560 100%);
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+}
+.stat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: var(--r-badge);
+    background: linear-gradient(135deg, rgba(202, 138, 4, 0.10), rgba(185, 28, 28, 0.06));
+    border: 1px solid rgba(202, 138, 4, 0.25);
+    color: #a16207;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* ============================================================
+   航天精神卡
+   ============================================================ */
+.spirit-card {
+    background: white;
+    border-radius: var(--r-card);
+    padding: 34px 24px;
+    text-align: center;
+    transition: all 0.45s var(--ease-out);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+}
+.spirit-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, currentColor, transparent);
+    opacity: 0;
+    transition: opacity 0.45s ease;
+}
+.spirit-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(202, 138, 4, 0.06) 0%, transparent 65%);
+    opacity: 0;
+    transition: opacity 0.45s ease;
+}
+.spirit-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-xl);
+    border-color: transparent;
+}
+.spirit-card:hover::before { opacity: 1; }
+.spirit-card:hover::after { opacity: 1; }
+.spirit-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: white;
+    font-size: 1.5rem;
+    box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transition: transform 0.45s var(--ease-out);
+    position: relative;
+    z-index: 1;
+}
+.spirit-card:hover .spirit-icon { transform: scale(1.1) rotate(-3deg); }
+
+/* ============================================================
+   办学特色卡
+   ============================================================ */
+.feature-card {
+    background: white;
+    border-radius: var(--r-card);
+    padding: 36px 28px;
+    transition: all 0.45s var(--ease-out);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+}
+.feature-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(202, 138, 4, 0.05) 0%, transparent 55%);
+    opacity: 0;
+    transition: opacity 0.45s ease;
+    pointer-events: none;
+}
+.feature-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-xl);
+    border-color: rgba(202, 138, 4, 0.3);
+}
+.feature-card:hover::after { opacity: 1; }
+.feature-num {
+    position: absolute;
+    top: 18px;
+    right: 28px;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 3.2rem;
+    font-weight: 800;
+    color: rgba(202, 138, 4, 0.12);
+    line-height: 1;
+}
+.feature-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold-bright);
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* ============================================================
+   社团卡
+   ============================================================ */
+.club-card {
+    background: white;
+    border-radius: var(--r-card);
+    padding: 28px 24px;
+    transition: all 0.4s var(--ease-out);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+}
+.club-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(202, 138, 4, 0.35);
+}
+.club-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+}
+
+/* ============================================================
+   景观卡
+   ============================================================ */
+.scenery-card {
+    border-radius: var(--r-card);
+    overflow: hidden;
+    position: relative;
+    transition: all 0.45s var(--ease-out);
+    box-shadow: var(--shadow-md);
+}
+.scenery-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-xl); }
+.scenery-bg {
+    height: 240px;
+    display: flex;
+    align-items: flex-end;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+}
+.scenery-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 35%, rgba(15, 23, 42, 0.78) 100%);
+}
+.scenery-content { position: relative; z-index: 1; color: white; }
+
+/* ============================================================
+   寄语卡
+   ============================================================ */
+.quote-card {
+    background: white;
+    border-radius: var(--r-card);
+    padding: 36px 32px;
+    position: relative;
+    transition: all 0.45s var(--ease-out);
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+}
+.quote-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--gold-color), var(--gold-bright), var(--highlight-color));
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.5s var(--ease-out);
+}
+.quote-card:hover::before { transform: scaleY(1); }
+.quote-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(202, 138, 4, 0.3);
+}
+.quote-mark {
+    position: absolute;
+    top: 16px;
+    right: 24px;
+    font-family: Georgia, serif;
+    font-size: 4rem;
+    line-height: 1;
+    color: rgba(202, 138, 4, 0.18);
+    font-weight: 700;
+}
+
+/* ============================================================
+   愿景时间线
+   ============================================================ */
+.vision-item {
+    display: flex;
+    gap: 24px;
+    padding: 24px;
+    border-radius: var(--r-card);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(202, 138, 4, 0.18);
+    transition: all 0.35s var(--ease-out);
+    position: relative;
+    overflow: hidden;
+}
+.vision-item::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--gold-bright), transparent);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.45s var(--ease-out);
+}
+.vision-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(202, 138, 4, 0.45);
+    transform: translateX(6px);
+}
+.vision-item:hover::before { transform: scaleY(1); }
+.vision-year {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--gold-bright);
+    flex-shrink: 0;
+    min-width: 80px;
+}
+
+/* ============================================================
+   火箭升空绚丽特效（长征二号F · 史诗强化版）
+   ============================================================ */
+.rocket-stage {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 5;
+}
+.rocket-body {
+    position: absolute;
+    bottom: -1100px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    z-index: 10;
+    width: 480px;
+    height: 1200px;
+    filter: drop-shadow(0 0 50px rgba(255, 180, 40, 0.5)) drop-shadow(0 0 120px rgba(255, 100, 0, 0.3));
+    will-change: transform, opacity;
+}
+.rocket-active .rocket-body {
+    animation: rocketFly 8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes rocketFly {
+    0% { bottom: -1100px; opacity: 0; transform: translateX(-50%) rotate(-12deg) scale(0.3); }
+    5% { opacity: 1; transform: translateX(-50%) rotate(-6deg) scale(1); }
+    20% { transform: translateX(-50%) rotate(-2deg) scale(1.08); }
+    40% { transform: translateX(-50%) rotate(0deg) scale(1.12); }
+    60% { transform: translateX(-50%) rotate(2deg) scale(1.10); }
+    80% { transform: translateX(-50%) rotate(8deg) scale(1.02); }
+    100% { bottom: 130%; opacity: 0; transform: translateX(-50%) rotate(20deg) scale(0.45); }
+}
+
+.rocket-glow {
+    position: absolute;
+    bottom: -1100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1000px;
+    height: 1000px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 200, 0, 0.5) 0%, rgba(255, 100, 0, 0.3) 35%, rgba(220, 38, 38, 0.12) 60%, transparent 75%);
+    opacity: 0;
+    z-index: 7;
+    filter: blur(70px);
+}
+.rocket-active .rocket-glow {
+    animation: glowFly 8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes glowFly {
+    0% { opacity: 0; bottom: -1100px; transform: translateX(-50%) scale(0.4); }
+    5% { opacity: 0.95; transform: translateX(-50%) scale(1); }
+    40% { opacity: 0.75; transform: translateX(-50%) scale(1.4); }
+    100% { opacity: 0; bottom: 130%; transform: translateX(-50%) scale(0.7); }
+}
+
+/* 火焰：作为 .rocket-stage 的子元素，定位在喷口处向下延伸 */
+.rocket-flame {
+    position: absolute;
+    top: 88%;
+    left: 50%;
+    width: 460px;
+    opacity: 0;
+    z-index: 9;
+    transform: translateX(-50%) scaleY(0.1);
+    transform-origin: top center;
+    pointer-events: none;
+    filter: drop-shadow(0 0 30px rgba(255, 160, 30, 0.7));
+    will-change: transform, opacity;
+}
+.rocket-active .rocket-flame {
+    animation: flameFly 8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes flameFly {
+    0%   { opacity: 0;    transform: translateX(-50%) scaleY(0.10); }
+    5%   { opacity: 1;    transform: translateX(-50%) scaleY(0.40); }
+    20%  { opacity: 0.98; transform: translateX(-50%) scaleY(0.82); }
+    40%  { opacity: 0.92; transform: translateX(-50%) scaleY(1.08); }
+    60%  { opacity: 0.78; transform: translateX(-50%) scaleY(1.25); }
+    80%  { opacity: 0.55; transform: translateX(-50%) scaleY(1.12); }
+    100% { opacity: 0;    transform: translateX(-50%) scaleY(1.35); }
+}
+/* 火焰内部抖动 */
+.rocket-plume-flicker {
+    animation: plumeFlicker 0.11s infinite alternate;
+    transform-origin: 140px 20px;
+}
+@keyframes plumeFlicker {
+    0%   { transform: scaleX(1)    translateY(0); }
+    100% { transform: scaleX(0.92) translateY(5px); }
+}
+.rocket-plume-flicker-2 {
+    animation: plumeFlicker2 0.07s infinite alternate;
+    transform-origin: 140px 20px;
+}
+@keyframes plumeFlicker2 {
+    0%   { transform: scaleX(0.96) skewX(0deg); }
+    100% { transform: scaleX(1.04) skewX(2deg); }
+}
+
+.spark {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 12;
+    filter: drop-shadow(0 0 8px currentColor);
+}
+.rocket-active .spark {
+    animation: sparkBurst 5s ease-out forwards;
+}
+@keyframes sparkBurst {
+    0% { opacity: 0; transform: translate(0, 0) scale(0); }
+    12% { opacity: 1; transform: translate(var(--tx, 0), var(--ty, 0)) scale(1); }
+    100% { opacity: 0; transform: translate(calc(var(--tx, 0) * 5), calc(var(--ty, 0) * 5)) scale(0); }
+}
+
+.flame-debris {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: linear-gradient(135deg, #ffeb3b, #ff9800);
+    border-radius: 50% 0 50% 50%;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 11;
+    filter: drop-shadow(0 0 6px #ff9800);
+}
+.rocket-active .flame-debris {
+    animation: debrisFly 4s ease-out forwards;
+}
+@keyframes debrisFly {
+    0% { opacity: 0; transform: translate(0, 0) scale(0) rotate(0deg); }
+    10% { opacity: 1; transform: translate(var(--dx, 0), var(--dy, 0)) scale(1) rotate(45deg); }
+    100% { opacity: 0; transform: translate(calc(var(--dx, 0) * 3), calc(var(--dy, 0) * 3 + 150px)) scale(0.3) rotate(270deg); }
+}
+
+.smoke-particle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 6;
+    filter: blur(15px);
+}
+.rocket-active .smoke-particle {
+    animation: smokeFloat 4s ease-out forwards;
+}
+@keyframes smokeFloat {
+    0% { opacity: 0; transform: translateY(0) scale(0.3); }
+    12% { opacity: 0.6; }
+    50% { background: rgba(200, 200, 220, 0.25); }
+    100% { opacity: 0; transform: translateY(300px) translateX(var(--sx, 0)) scale(3); }
+}
+
+.energy-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #00ffff;
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 13;
+    filter: drop-shadow(0 0 10px #00ffff);
+}
+.rocket-active .energy-particle {
+    animation: energyBurst 3s ease-out forwards;
+}
+@keyframes energyBurst {
+    0% { opacity: 0; transform: translate(0, 0) scale(0); }
+    8% { opacity: 1; transform: translate(var(--ex, 0), var(--ey, 0)) scale(1); }
+    100% { opacity: 0; transform: translate(calc(var(--ex, 0) * 8), calc(var(--ey, 0) * 8)) scale(0); }
+}
+
+.star-tracer {
+    position: absolute;
+    width: 3px;
+    height: 150px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 215, 0, 0.9), rgba(255, 255, 255, 0.8));
+    opacity: 0;
+    pointer-events: none;
+    z-index: 4;
+    transform-origin: top center;
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.8));
+}
+.rocket-active .star-tracer {
+    animation: starTrail 6s linear forwards;
+}
+@keyframes starTrail {
+    0% { opacity: 0; height: 0; }
+    8% { opacity: 0.9; height: 150px; }
+    90% { opacity: 0.7; height: 400px; }
+    100% { opacity: 0; height: 500px; }
+}
+
+.light-ray {
+    position: absolute;
+    width: 2px;
+    height: 100px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.6));
+    opacity: 0;
+    pointer-events: none;
+    z-index: 3;
+    transform-origin: top center;
+}
+.rocket-active .light-ray {
+    animation: rayBurst 5s ease-out forwards;
+}
+@keyframes rayBurst {
+    0% { opacity: 0; height: 0; transform: rotate(var(--angle, 0deg)); }
+    10% { opacity: 0.8; height: 150px; }
+    100% { opacity: 0; height: 300px; transform: rotate(var(--angle, 0deg) + 30deg); }
+}
+
+/* ---------- 浅深渐变过渡 ---------- */
+.gradient-transition {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 30%, #e2e8f0 60%, #0f172a 100%);
+}
+
+/* ---------- Hero 增强光晕 ---------- */
+.hero-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    animation: glowPulse 6s ease-in-out infinite;
+}
+@keyframes glowPulse {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.1); }
+}
+
+/* ---------- 视差 ---------- */
+.parallax-bg {
+    will-change: transform;
+    transition: transform 0.1s linear;
+}
+
+/* ---------- 发光描边 ---------- */
+.glow-border {
+    position: relative;
+}
+.glow-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(202, 138, 4, 0.55), transparent, rgba(185, 28, 28, 0.35));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.45s ease;
+}
+.glow-border:hover::before { opacity: 1; }
+
+/* ============================================================
+   史诗级新增 · 章节通用增强
+   ============================================================ */
+
+/* 章节标题区统一气质：上额金线 + 双侧装饰 */
+section .max-w-7xl > .text-center h2.font-serif {
+    position: relative;
+}
+
+/* 通用段落优化 */
+section p { text-wrap: pretty; }
+
+/* 白色章节顶部金线分隔 */
+.bg-white, [class*="bg-gradient-to-br"] {
+    position: relative;
+}
+
+/* 卡片内 h3 间距优化 */
+.spirit-card h3, .feature-card h3, .club-card h3 {
+    letter-spacing: 0.04em;
+}
+
+/* 链接默认气质 */
+a { transition: color 0.25s ease; }
+
+/* 图片默认防溢出 */
+img { max-width: 100%; }
+
+/* 列表项图标统一动效 */
+ul li .fa-check-circle { transition: transform 0.3s var(--ease-out); }
+ul li:hover .fa-check-circle { transform: scale(1.2); }
+
+/* 表单输入气质（招生/联系） */
+input, textarea, select {
+    font-family: inherit;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: rgba(202, 138, 4, 0.6) !important;
+    box-shadow: 0 0 0 3px rgba(202, 138, 4, 0.15) !important;
+}
+
+/* 滚动到顶部按钮等圆形元素金边 */
+[class*="rounded-full"]:hover {
+    box-shadow: 0 0 0 2px rgba(202, 138, 4, 0.25);
+}
+
+/* 暗色章节内白色卡片文字保证对比 */
+.gradient-section-dark .glass-card { background: rgba(255, 255, 255, 0.97); }
+
+/* prefers-reduced-motion 适配 */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
     </style>
 </head>
 <body>
@@ -1377,8 +1972,8 @@
                     <button id="nav-more-btn" class="nav-link text-sm font-medium px-4 py-2 rounded-lg hover:bg-white/5 flex items-center gap-1 cursor-pointer transition-all">
                         更多 <i id="nav-more-icon" class="fas fa-chevron-down text-xs transition-transform duration-300"></i>
                     </button>
-                    <div id="nav-more-panel" class="hidden absolute top-full right-0 mt-2 bg-white/98 backdrop-blur-xl rounded-2xl shadow-2xl p-6 grid grid-cols-4 gap-x-5 gap-y-2 min-w-[680px] z-50 border border-gray-100" style="opacity:0; transform: translateY(-10px); transition: all 0.3s ease; pointer-events:none;">
-                        <div class="absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white/98 rotate-45 border-t border-l border-gray-100"></div>
+                    <div id="nav-more-panel" class="hidden absolute top-full right-0 mt-2 rounded-2xl p-6 grid grid-cols-4 gap-x-5 gap-y-2 min-w-[680px] z-50" style="opacity:0; transform: translateY(-10px); transition: opacity 0.28s ease, transform 0.28s ease; pointer-events:none;">
+                        <div class="absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-4 rotate-45" style="background:#ffffff;border-top:1px solid rgba(202,138,4,0.22);border-left:1px solid rgba(202,138,4,0.22);"></div>
                         <div class="col-span-4 text-xs font-bold text-gray-400 tracking-widest mb-1 pb-3 border-b border-gray-100">办学体系</div>
                         <a href="#philosophy" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">校训精神</a>
                         <a href="#history" class="text-gray-700 hover:text-amber-600 hover:bg-amber-50 px-4 py-2 rounded-xl text-sm font-medium transition-all">历史沿革</a>
@@ -1417,10 +2012,24 @@
     </nav>
 
     <section id="home" class="hero-section min-h-screen flex items-center justify-center relative pt-20">
+        <!-- 蓝图坐标网格层 -->
+        <div class="absolute inset-0 pointer-events-none" style="background-image:linear-gradient(rgba(202,138,4,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(202,138,4,0.06) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse at center,black 30%,transparent 75%);"></div>
+        <!-- 顶部蓝图注释 -->
+        <div class="absolute top-24 left-6 md:left-12 pointer-events-none font-mono-tech text-xs" style="color:rgba(212,164,55,0.5);">
+            <div>◆ LAT 30.8427° N</div>
+            <div>◆ LON 114.3616° E</div>
+            <div>◆ ALT 23.5 m</div>
+        </div>
+        <div class="absolute top-24 right-6 md:right-12 pointer-events-none font-mono-tech text-xs text-right" style="color:rgba(212,164,55,0.5);">
+            <div>ARCHIVE No.001 ◆</div>
+            <div>SINCE 2021.09 ◆</div>
+            <div>CLASS A-67 ◆</div>
+        </div>
+
         <div class="orbit-ring" style="width: 600px; height: 600px; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
         <div class="orbit-ring" style="width: 800px; height: 800px; top: 50%; left: 50%; transform: translate(-50%, -50%); animation-duration: 30s;"></div>
         <div class="orbit-ring" style="width: 1000px; height: 1000px; top: 50%; left: 50%; transform: translate(-50%, -50%); animation-duration: 45s;"></div>
-        
+
         <div class="absolute inset-0 overflow-hidden">
             <div class="star" style="top: 10%; left: 10%; width: 2px; height: 2px;"></div>
             <div class="star" style="top: 20%; left: 80%; width: 3px; height: 3px; animation-delay: 0.5s;"></div>
@@ -1436,10 +2045,10 @@
         <div class="relative z-10 text-center px-6">
             <div class="badge mb-6 inline-block">省级示范高中</div>
             <h1 class="hero-title text-white text-5xl md:text-7xl font-bold mb-6 school-title leading-tight">
-                <span style="font-family: 'STXingwei', '华文新魏', 'Noto Serif SC', serif; display: block; letter-spacing: 0.08em;">武汉市新洲区第一中学</span>
-                <span style="color: #3b82f6; display: block; font-size: 0.55em; letter-spacing: 0.25em; margin-top: 0.3em; font-weight: 600;">航天城校区</span>
+                <span style="font-family: 'STXingwei', '华文新魏', 'Noto Serif SC', serif; display: block; letter-spacing: 0.08em; background:linear-gradient(180deg,#fff 30%,#fde68a 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">武汉市新洲区第一中学</span>
+                <span style="color: #93c5fd; display: block; font-size: 0.55em; letter-spacing: 0.25em; margin-top: 0.3em; font-weight: 600; text-shadow:0 0 24px rgba(147,197,253,0.5);">航天城校区</span>
             </h1>
-            <p class="text-white/80 text-xl md:text-2xl max-w-3xl mx-auto mb-10 leading-relaxed">
+            <p class="text-white/85 text-xl md:text-2xl max-w-3xl mx-auto mb-10 leading-relaxed">
                 博大 方正 尚美 创新<br>培养具有航天精神的新时代英才
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
@@ -3038,10 +3647,10 @@
                             <span class="font-serif text-4xl font-bold text-white">王</span>
                         </div>
                         <h3 class="font-serif text-2xl font-bold text-gray-900 mb-2 group-hover:text-white transition-colors duration-300">王祖元</h3>
-                        <p class="text-sm text-gray-500 mb-4 group-hover:text-white/80 transition-colors duration-300">教师</p>
+                        <p class="text-sm text-gray-500 mb-4 group-hover:text-white/80 transition-colors duration-300">英语教师</p>
                         <p class="text-gray-600 text-base font-medium leading-relaxed group-hover:text-white/90 transition-colors duration-300">四步朗读王祖元</p>
                         <div class="mt-6 flex justify-center gap-2">
-                            <span class="text-xs bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full font-semibold group-hover:bg-white/20 group-hover:text-white transition-all duration-300">语文名师</span>
+                            <span class="text-xs bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full font-semibold group-hover:bg-white/20 group-hover:text-white transition-all duration-300">英语名师</span>
                         </div>
                     </div>
                 </div>
@@ -3497,17 +4106,17 @@
                         <i class="fas fa-book-reader text-white text-3xl"></i>
                     </div>
                     <h3 class="font-serif text-lg font-bold text-gray-900 mb-1">王祖元</h3>
-                    <p class="text-sm text-gray-500 mb-3">语文教师</p>
+                    <p class="text-sm text-gray-500 mb-3">英语教师</p>
                     <span class="chip chip-blue">教育专家</span>
-                    <p class="text-gray-600 text-sm leading-relaxed mt-3">提出"四步朗读法"，被广泛应用于教育领域，在语文教学领域颇有建树。</p>
+                    <p class="text-gray-600 text-sm leading-relaxed mt-3">提出"四步朗读法"，被广泛应用于教育领域，在英语教学领域颇有建树。</p>
                 </div>
                 <div class="gradient-frame-card p-6 reveal text-center card-glow-hover">
                     <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center pulse-ring">
                         <i class="fas fa-chalkboard-teacher text-white text-3xl"></i>
                     </div>
                     <h3 class="font-serif text-lg font-bold text-gray-900 mb-1">卢有勇</h3>
-                    <p class="text-sm text-gray-500 mb-3">神舟2班班主任</p>
-                    <span class="chip chip-purple">特级教师</span>
+                    <p class="text-sm text-gray-500 mb-3">神舟2班班主任 · 数学</p>
+                    <span class="chip chip-purple">数学名师</span>
                     <p class="text-gray-600 text-sm leading-relaxed mt-3">老黄牛式教育工作者，从教多年经验丰富，深受学生爱戴，被学子亲切称为"老卢"。</p>
                 </div>
                 <div class="gradient-frame-card p-6 reveal text-center card-glow-hover">
@@ -4226,96 +4835,266 @@
     <div class="gradient-transition py-16"></div>
 
     <!-- ============ 未来愿景板块（含火箭升空特效） ============ -->
-    <section id="vision" class="reveal py-24 relative overflow-hidden" style="background: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #0c4a6e 100%);">
+    <section id="vision" class="reveal py-24 relative overflow-hidden" style="background: linear-gradient(180deg, #0f172a 0%, #1e293b 40%, #0c4a6e 80%, #1e3a5f 100%);">
+        <!-- 星空背景层 -->
+        <div class="absolute inset-0 pointer-events-none" style="background-image:radial-gradient(1px 1px at 20px 30px,#fff,transparent),radial-gradient(1px 1px at 60px 70px,#fff,transparent),radial-gradient(2px 2px at 90px 40px,#fbbf24,transparent),radial-gradient(1px 1px at 130px 80px,#fff,transparent),radial-gradient(2px 2px at 160px 30px,#fff,transparent),radial-gradient(1px 1px at 200px 90px,#7dd3fc,transparent),radial-gradient(1px 1px at 240px 50px,#fff,transparent),radial-gradient(2px 2px at 280px 20px,#fff,transparent),radial-gradient(1px 1px at 320px 60px,#fff,transparent);background-size:350px 350px;opacity:0.6;animation:starTwinkle 8s linear infinite;"></div>
+        <!-- 装饰星球 -->
+        <div class="absolute" style="top:8%;right:6%;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fef3c7,#ca8a04 50%,#78350f 100%);box-shadow:0 0 50px rgba(202,138,4,0.4),inset -8px -8px 20px rgba(0,0,0,0.4);opacity:0.85;"></div>
+        <div class="absolute" style="top:20%;left:4%;width:40px;height:40px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#dbeafe,#3b82f6 60%,#1e3a8a 100%);box-shadow:0 0 30px rgba(59,130,246,0.4);opacity:0.7;"></div>
+        <!-- 地平线光晕 -->
+        <div class="absolute bottom-0 left-0 right-0 h-40 pointer-events-none" style="background:radial-gradient(ellipse at 50% 100%,rgba(202,138,4,0.25) 0%,rgba(185,28,28,0.12) 30%,transparent 70%);"></div>
+        <style>@keyframes starTwinkle{from{transform:translateY(0);}to{transform:translateY(-350px);}}</style>
         <div class="rocket-stage" id="rocket-stage">
             <div class="rocket-flame">
-                <svg viewBox="0 0 280 700" width="200" height="600">
+                <svg viewBox="0 0 280 900" width="320" height="900" style="overflow: visible;">
                     <defs>
                         <linearGradient id="outerFlame" x1="50%" y1="0%" x2="50%" y2="100%">
                             <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
-                            <stop offset="8%" stop-color="#ffffff" stop-opacity="0.9"/>
-                            <stop offset="25%" stop-color="#fef3c7" stop-opacity="0.95"/>
-                            <stop offset="45%" stop-color="#fbbf24" stop-opacity="0.9"/>
-                            <stop offset="65%" stop-color="#f97316" stop-opacity="0.7"/>
-                            <stop offset="85%" stop-color="#dc2626" stop-opacity="0.4"/>
-                            <stop offset="100%" stop-color="#dc2626" stop-opacity="0"/>
+                            <stop offset="6%" stop-color="#ffffff" stop-opacity="0.95"/>
+                            <stop offset="22%" stop-color="#fef3c7" stop-opacity="0.98"/>
+                            <stop offset="42%" stop-color="#fbbf24" stop-opacity="0.92"/>
+                            <stop offset="62%" stop-color="#f97316" stop-opacity="0.75"/>
+                            <stop offset="82%" stop-color="#dc2626" stop-opacity="0.45"/>
+                            <stop offset="100%" stop-color="#7f1d1d" stop-opacity="0"/>
                         </linearGradient>
                         <linearGradient id="innerFlame" x1="50%" y1="0%" x2="50%" y2="100%">
                             <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
-                            <stop offset="30%" stop-color="#e0f2fe" stop-opacity="0.95"/>
-                            <stop offset="55%" stop-color="#7dd3fc" stop-opacity="0.8"/>
-                            <stop offset="80%" stop-color="#0ea5e9" stop-opacity="0.4"/>
-                            <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"/>
+                            <stop offset="25%" stop-color="#f0f9ff" stop-opacity="0.98"/>
+                            <stop offset="50%" stop-color="#7dd3fc" stop-opacity="0.85"/>
+                            <stop offset="78%" stop-color="#0ea5e9" stop-opacity="0.45"/>
+                            <stop offset="100%" stop-color="#0c4a6e" stop-opacity="0"/>
+                        </linearGradient>
+                        <linearGradient id="coreFlame" x1="50%" y1="0%" x2="50%" y2="100%">
+                            <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+                            <stop offset="40%" stop-color="#ffffff" stop-opacity="0.9"/>
+                            <stop offset="80%" stop-color="#fef9c3" stop-opacity="0.6"/>
+                            <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
                         </linearGradient>
                         <radialGradient id="flameGlow">
-                            <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.4"/>
+                            <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.5"/>
+                            <stop offset="50%" stop-color="#f97316" stop-opacity="0.2"/>
                             <stop offset="100%" stop-color="#dc2626" stop-opacity="0"/>
                         </radialGradient>
                     </defs>
-                    <ellipse cx="140" cy="350" rx="100" ry="280" fill="url(#flameGlow)"/>
-                    <path d="M80 40 Q140 400 200 40 Q170 140 140 260 Q110 140 80 40 Z" fill="url(#outerFlame)"/>
-                    <path d="M105 40 Q140 280 175 40 Q160 100 140 180 Q120 100 105 40 Z" fill="url(#innerFlame)"/>
-                    <ellipse cx="140" cy="40" rx="22" ry="10" fill="#334155"/>
+                    <!-- 外层光晕 -->
+                    <ellipse cx="140" cy="450" rx="130" ry="380" fill="url(#flameGlow)"/>
+                    <!-- 外焰（最大、橙红） -->
+                    <path class="rocket-plume-flicker" d="M60 30 Q140 520 220 30 Q185 180 140 360 Q95 180 60 30 Z" fill="url(#outerFlame)"/>
+                    <!-- 中焰（蓝白） -->
+                    <path class="rocket-plume-flicker-2" d="M95 30 Q140 380 185 30 Q165 120 140 240 Q115 120 95 30 Z" fill="url(#innerFlame)"/>
+                    <!-- 核心白焰 -->
+                    <path d="M115 30 Q140 240 165 30 Q150 90 140 160 Q130 90 115 30 Z" fill="url(#coreFlame)"/>
+                    <!-- 喷口底座 -->
+                    <ellipse cx="140" cy="30" rx="90" ry="14" fill="#1e293b"/>
+                    <ellipse cx="140" cy="28" rx="80" ry="8" fill="#0f172a"/>
                 </svg>
             </div>
             <div class="rocket-body">
-                <svg viewBox="0 0 180 400" width="180" height="400" style="filter: drop-shadow(0 0 30px rgba(255,160,60,0.7)); overflow: visible;">
+                <svg viewBox="0 0 400 1000" width="360" height="900" style="overflow: visible;">
                     <defs>
+                        <!-- 主体金属渐变：左暗-中亮-右暗，模拟圆柱体高光 -->
                         <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stop-color="#64748b"/>
-                            <stop offset="25%" stop-color="#94a3b8"/>
+                            <stop offset="0%" stop-color="#475569"/>
+                            <stop offset="12%" stop-color="#94a3b8"/>
+                            <stop offset="35%" stop-color="#f1f5f9"/>
                             <stop offset="50%" stop-color="#ffffff"/>
-                            <stop offset="75%" stop-color="#94a3b8"/>
+                            <stop offset="65%" stop-color="#e2e8f0"/>
+                            <stop offset="88%" stop-color="#94a3b8"/>
                             <stop offset="100%" stop-color="#475569"/>
                         </linearGradient>
-                        <linearGradient id="windowGrad">
-                            <stop offset="0%" stop-color="#7dd3fc"/>
-                            <stop offset="35%" stop-color="#0284c7"/>
-                            <stop offset="70%" stop-color="#075985"/>
-                            <stop offset="100%" stop-color="#0c4a6e"/>
+                        <!-- 助推器渐变 -->
+                        <linearGradient id="boosterGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#334155"/>
+                            <stop offset="30%" stop-color="#cbd5e1"/>
+                            <stop offset="55%" stop-color="#f8fafc"/>
+                            <stop offset="80%" stop-color="#94a3b8"/>
+                            <stop offset="100%" stop-color="#334155"/>
                         </linearGradient>
+                        <!-- 整流罩/鼻锥红 -->
                         <linearGradient id="tipGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stop-color="#f87171"/>
-                            <stop offset="50%" stop-color="#ef4444"/>
-                            <stop offset="100%" stop-color="#991b1b"/>
+                            <stop offset="0%" stop-color="#fef2f2"/>
+                            <stop offset="18%" stop-color="#fca5a5"/>
+                            <stop offset="45%" stop-color="#dc2626"/>
+                            <stop offset="80%" stop-color="#991b1b"/>
+                            <stop offset="100%" stop-color="#7f1d1d"/>
                         </linearGradient>
-                        <linearGradient id="finGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stop-color="#b91c1c"/>
-                            <stop offset="50%" stop-color="#dc2626"/>
-                            <stop offset="100%" stop-color="#991b1b"/>
+                        <!-- 助推器鼻锥 -->
+                        <linearGradient id="boosterTipGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#fee2e2"/>
+                            <stop offset="30%" stop-color="#ef4444"/>
+                            <stop offset="100%" stop-color="#7f1d1d"/>
                         </linearGradient>
-                        <radialGradient id="shineGrad">
-                            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
-                            <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+                        <!-- 舷窗 -->
+                        <radialGradient id="windowGrad" cx="35%" cy="30%">
+                            <stop offset="0%" stop-color="#e0f2fe"/>
+                            <stop offset="30%" stop-color="#38bdf8"/>
+                            <stop offset="65%" stop-color="#0369a1"/>
+                            <stop offset="100%" stop-color="#082f49"/>
                         </radialGradient>
+                        <!-- 引擎喷口 -->
+                        <linearGradient id="nozzleGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#64748b"/>
+                            <stop offset="40%" stop-color="#1e293b"/>
+                            <stop offset="100%" stop-color="#0f172a"/>
+                        </linearGradient>
+                        <linearGradient id="nozzleInner" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#0f172a"/>
+                            <stop offset="60%" stop-color="#1e293b"/>
+                            <stop offset="100%" stop-color="#334155"/>
+                        </linearGradient>
+                        <!-- 高光 -->
+                        <linearGradient id="hiLight" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+                            <stop offset="50%" stop-color="#ffffff" stop-opacity="0.55"/>
+                            <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+                        </linearGradient>
+                        <!-- 阴影 -->
+                        <linearGradient id="shade" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#000000" stop-opacity="0"/>
+                            <stop offset="80%" stop-color="#000000" stop-opacity="0"/>
+                            <stop offset="100%" stop-color="#000000" stop-opacity="0.25"/>
+                        </linearGradient>
                     </defs>
-                    <path d="M80 350 L40 400 L75 370 Z" fill="url(#finGrad)"/>
-                    <path d="M100 350 L140 400 L105 370 Z" fill="url(#finGrad)"/>
-                    <path d="M85 340 L35 390 L65 365 Z" fill="#7f1d1d"/>
-                    <path d="M95 340 L145 390 L115 365 Z" fill="#7f1d1d"/>
-                    <rect x="58" y="325" width="64" height="18" rx="4" fill="#334155"/>
-                    <rect x="64" y="328" width="52" height="12" rx="2" fill="#1e293b"/>
-                    <circle cx="76" cy="334" r="3" fill="#ef4444"/>
-                    <circle cx="94" cy="334" r="3" fill="#ef4444"/>
-                    <circle cx="85" cy="334" r="3" fill="#fbbf24"/>
-                    <rect x="50" y="75" width="80" height="250" rx="18" fill="url(#bodyGrad)" stroke="#475569" stroke-width="2"/>
-                    <path d="M82 75 L90 45 L98 75 Z" fill="url(#tipGrad)"/>
-                    <rect x="55" y="95" width="70" height="10" fill="#dc2626"/>
-                    <rect x="55" y="120" width="70" height="10" fill="#dc2626"/>
-                    <rect x="55" y="145" width="70" height="10" fill="#dc2626"/>
-                    <rect x="55" y="170" width="70" height="10" fill="#dc2626"/>
-                    <circle cx="90" cy="220" r="20" fill="#1e293b" stroke="#fff" stroke-width="3"/>
-                    <circle cx="90" cy="220" r="15" fill="url(#windowGrad)"/>
-                    <circle cx="84" cy="213" r="4" fill="#fff" opacity="0.6"/>
-                    <circle cx="96" cy="225" r="3" fill="#fff" opacity="0.4"/>
-                    <rect x="60" y="255" width="60" height="10" rx="3" fill="#334155"/>
-                    <rect x="60" y="275" width="60" height="10" rx="3" fill="#334155"/>
-                    <rect x="66" y="257" width="48" height="6" rx="1" fill="#64748b"/>
-                    <rect x="66" y="277" width="48" height="6" rx="1" fill="#64748b"/>
-                    <ellipse cx="90" cy="72" rx="8" ry="5" fill="url(#shineGrad)"/>
-                    <rect x="78" y="68" width="14" height="8" fill="#dc2626" rx="2"/>
-                    <rect x="52" y="80" width="6" height="240" fill="#475569" opacity="0.3"/>
-                    <rect x="122" y="80" width="6" height="240" fill="#475569" opacity="0.3"/>
+
+                    <!-- ========== 左外侧助推器 ========== -->
+                    <g>
+                        <!-- 鼻锥 -->
+                        <path d="M40 250 L60 200 L80 250 Z" fill="url(#boosterTipGrad)"/>
+                        <path d="M60 200 L80 250 L70 250 Z" fill="#7f1d1d" opacity="0.5"/>
+                        <!-- 主体 -->
+                        <rect x="40" y="250" width="40" height="380" fill="url(#boosterGrad)"/>
+                        <rect x="40" y="250" width="40" height="380" fill="url(#shade)"/>
+                        <!-- 高光带 -->
+                        <rect x="52" y="252" width="6" height="376" fill="#ffffff" opacity="0.45"/>
+                        <!-- 红色环带 -->
+                        <rect x="40" y="270" width="40" height="5" fill="#dc2626"/>
+                        <rect x="40" y="600" width="40" height="5" fill="#dc2626"/>
+                        <!-- 黑色编号带 -->
+                        <rect x="40" y="320" width="40" height="14" fill="#0f172a" opacity="0.85"/>
+                        <!-- 引擎喷口 -->
+                        <path d="M38 630 L42 690 L78 690 L82 630 Z" fill="url(#nozzleGrad)"/>
+                        <path d="M44 640 L46 685 L74 685 L76 640 Z" fill="url(#nozzleInner)"/>
+                        <ellipse cx="60" cy="688" rx="16" ry="3" fill="#000"/>
+                    </g>
+
+                    <!-- ========== 右外侧助推器 ========== -->
+                    <g>
+                        <path d="M320 250 L340 200 L360 250 Z" fill="url(#boosterTipGrad)"/>
+                        <path d="M340 200 L360 250 L350 250 Z" fill="#7f1d1d" opacity="0.5"/>
+                        <rect x="320" y="250" width="40" height="380" fill="url(#boosterGrad)"/>
+                        <rect x="320" y="250" width="40" height="380" fill="url(#shade)"/>
+                        <rect x="342" y="252" width="6" height="376" fill="#ffffff" opacity="0.45"/>
+                        <rect x="320" y="270" width="40" height="5" fill="#dc2626"/>
+                        <rect x="320" y="600" width="40" height="5" fill="#dc2626"/>
+                        <rect x="320" y="320" width="40" height="14" fill="#0f172a" opacity="0.85"/>
+                        <path d="M318 630 L322 690 L358 690 L362 630 Z" fill="url(#nozzleGrad)"/>
+                        <path d="M324 640 L326 685 L354 685 L356 640 Z" fill="url(#nozzleInner)"/>
+                        <ellipse cx="340" cy="688" rx="16" ry="3" fill="#000"/>
+                    </g>
+
+                    <!-- ========== 左内侧助推器 ========== -->
+                    <g>
+                        <path d="M100 280 L120 235 L140 280 Z" fill="url(#boosterTipGrad)"/>
+                        <rect x="100" y="280" width="40" height="350" fill="url(#boosterGrad)"/>
+                        <rect x="100" y="280" width="40" height="350" fill="url(#shade)"/>
+                        <rect x="112" y="282" width="6" height="346" fill="#ffffff" opacity="0.4"/>
+                        <rect x="100" y="298" width="40" height="4" fill="#dc2626"/>
+                        <rect x="100" y="595" width="40" height="5" fill="#dc2626"/>
+                        <path d="M98 630 L102 685 L138 685 L142 630 Z" fill="url(#nozzleGrad)"/>
+                        <path d="M104 640 L106 680 L134 680 L136 640 Z" fill="url(#nozzleInner)"/>
+                    </g>
+
+                    <!-- ========== 右内侧助推器 ========== -->
+                    <g>
+                        <path d="M260 280 L280 235 L300 280 Z" fill="url(#boosterTipGrad)"/>
+                        <rect x="260" y="280" width="40" height="350" fill="url(#boosterGrad)"/>
+                        <rect x="260" y="280" width="40" height="350" fill="url(#shade)"/>
+                        <rect x="282" y="282" width="6" height="346" fill="#ffffff" opacity="0.4"/>
+                        <rect x="260" y="298" width="40" height="4" fill="#dc2626"/>
+                        <rect x="260" y="595" width="40" height="5" fill="#dc2626"/>
+                        <path d="M258 630 L262 685 L298 685 L302 630 Z" fill="url(#nozzleGrad)"/>
+                        <path d="M264 640 L266 680 L294 680 L296 640 Z" fill="url(#nozzleInner)"/>
+                    </g>
+
+                    <!-- ========== 火箭主体（芯级） ========== -->
+                    <g>
+                        <!-- 整流罩（鼻锥） -->
+                        <path d="M170 80 Q200 20 230 80 L230 220 L170 220 Z" fill="url(#tipGrad)"/>
+                        <!-- 整流罩高光 -->
+                        <path d="M185 90 Q200 40 210 90 L210 220 L200 220 L200 90 Q198 60 185 90 Z" fill="#ffffff" opacity="0.3"/>
+                        <!-- 整流罩分割线 -->
+                        <line x1="200" y1="80" x2="200" y2="220" stroke="#7f1d1d" stroke-width="1" opacity="0.4"/>
+                        <!-- 整流罩与主体连接环 -->
+                        <rect x="168" y="216" width="64" height="10" fill="#1e293b"/>
+                        <rect x="168" y="218" width="64" height="2" fill="#dc2626"/>
+
+                        <!-- 主体上段（白色） -->
+                        <rect x="168" y="226" width="64" height="200" fill="url(#bodyGrad)"/>
+                        <rect x="168" y="226" width="64" height="200" fill="url(#shade)"/>
+                        <!-- 主体高光 -->
+                        <rect x="182" y="228" width="10" height="196" fill="url(#hiLight)"/>
+
+                        <!-- 红色环带 -->
+                        <rect x="168" y="240" width="64" height="4" fill="#dc2626"/>
+                        <rect x="168" y="412" width="64" height="4" fill="#dc2626"/>
+
+                        <!-- 黑色标识带 -->
+                        <rect x="168" y="280" width="64" height="22" fill="#0f172a" opacity="0.88"/>
+                        <text x="200" y="296" text-anchor="middle" fill="#ffffff" font-family="serif" font-size="14" font-weight="bold" letter-spacing="2">长征</text>
+
+                        <!-- 舷窗 -->
+                        <circle cx="200" cy="350" r="13" fill="#0f172a"/>
+                        <circle cx="200" cy="350" r="11" fill="url(#windowGrad)"/>
+                        <circle cx="196" cy="346" r="3" fill="#ffffff" opacity="0.7"/>
+                        <circle cx="203" cy="353" r="2" fill="#ffffff" opacity="0.4"/>
+
+                        <!-- 中国航天标识区 -->
+                        <rect x="168" y="372" width="64" height="3" fill="#dc2626"/>
+                        <text x="200" y="390" text-anchor="middle" fill="#1e293b" font-family="serif" font-size="9" font-weight="bold">中国航天</text>
+
+                        <!-- 主体中段（级间段） -->
+                        <rect x="166" y="430" width="68" height="14" fill="#334155"/>
+                        <rect x="166" y="432" width="68" height="2" fill="#dc2626"/>
+                        <line x1="174" y1="430" x2="174" y2="444" stroke="#0f172a" stroke-width="1"/>
+                        <line x1="200" y1="430" x2="200" y2="444" stroke="#0f172a" stroke-width="1"/>
+                        <line x1="226" y1="430" x2="226" y2="444" stroke="#0f172a" stroke-width="1"/>
+
+                        <!-- 主体下段 -->
+                        <rect x="168" y="446" width="64" height="180" fill="url(#bodyGrad)"/>
+                        <rect x="168" y="446" width="64" height="180" fill="url(#shade)"/>
+                        <rect x="182" y="448" width="10" height="176" fill="url(#hiLight)"/>
+
+                        <!-- 下段红色环 -->
+                        <rect x="168" y="460" width="64" height="4" fill="#dc2626"/>
+                        <rect x="168" y="610" width="64" height="5" fill="#dc2626"/>
+
+                        <!-- 下段标识 -->
+                        <text x="200" y="510" text-anchor="middle" fill="#1e293b" font-family="monospace" font-size="11" font-weight="bold">CZ-2F</text>
+                        <rect x="178" y="520" width="44" height="14" fill="#0f172a" opacity="0.85"/>
+                        <text x="200" y="531" text-anchor="middle" fill="#fbbf24" font-family="monospace" font-size="9" font-weight="bold">神舟</text>
+
+                        <!-- 尾翼（大三角翼） -->
+                        <path d="M168 600 L120 690 L150 690 L168 640 Z" fill="#dc2626"/>
+                        <path d="M232 600 L280 690 L250 690 L232 640 Z" fill="#dc2626"/>
+                        <path d="M168 600 L120 690 L150 690 L168 640 Z" fill="#000" opacity="0.2"/>
+                        <path d="M232 600 L280 690 L250 690 L232 640 Z" fill="#000" opacity="0.2"/>
+
+                        <!-- 尾部引擎舱 -->
+                        <rect x="160" y="626" width="80" height="20" fill="#1e293b"/>
+                        <rect x="160" y="628" width="80" height="3" fill="#dc2626"/>
+
+                        <!-- 主引擎喷口（4个） -->
+                        <path d="M166 646 L170 720 L198 720 L202 646 Z" fill="url(#nozzleGrad)"/>
+                        <path d="M172 652 L174 714 L196 714 L198 652 Z" fill="url(#nozzleInner)"/>
+                        <ellipse cx="186" cy="718" rx="14" ry="2.5" fill="#000"/>
+
+                        <path d="M202 646 L198 720 L226 720 L230 646 Z" fill="url(#nozzleGrad)" transform="translate(28 0)"/>
+                        <path d="M172 652 L174 714 L196 714 L198 652 Z" fill="url(#nozzleInner)" transform="translate(28 0)"/>
+                        <ellipse cx="214" cy="718" rx="14" ry="2.5" fill="#000"/>
+                    </g>
+
+                    <!-- 主体高光描边 -->
+                    <rect x="168" y="226" width="64" height="400" fill="none" stroke="#475569" stroke-width="0.8" opacity="0.4"/>
                 </svg>
             </div>
         </div>
@@ -5440,13 +6219,15 @@
         if(canvas) {
             const ctx = canvas.getContext('2d');
             let stars = [];
+            let rafId = null;
+            let canvasActive = false;
             function resize() {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
             }
             resize();
             window.addEventListener('resize', resize);
-            for(let i=0; i<200; i++) {
+            for(let i=0; i<120; i++) {
                 stars.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
@@ -5457,6 +6238,7 @@
                 });
             }
             function animate() {
+                if (!canvasActive) return;
                 ctx.fillStyle = 'rgba(0,0,0,0.1)';
                 ctx.fillRect(0,0,canvas.width,canvas.height);
                 stars.forEach(star => {
@@ -5471,14 +6253,35 @@
                     ctx.fillStyle = `rgba(255,255,255,${star.opacity})`;
                     ctx.fill();
                 });
-                requestAnimationFrame(animate);
+                rafId = requestAnimationFrame(animate);
             }
-            animate();
+            // 仅在彩蛋3可见时运行动画，避免后台空转耗能
+            const canvasObserver = new MutationObserver(() => {
+                const isVisible = canvas.closest('.page-view').classList.contains('active');
+                if (isVisible && !canvasActive) {
+                    canvasActive = true;
+                    resize();
+                    animate();
+                } else if (!isVisible && canvasActive) {
+                    canvasActive = false;
+                    if (rafId) cancelAnimationFrame(rafId);
+                }
+            });
+            canvasObserver.observe(canvas.closest('.page-view'), { attributes: true, attributeFilter: ['class'] });
         }
     </script>
 </div>
 
 <script>
+    // ==================== DOM 修复：将彩蛋页面移到 body 直接子元素 ====================
+    // 彩蛋页面原本嵌套在 page-privacy 内部，会导致 page-privacy 隐藏时彩蛋也被隐藏
+    ['page-67', 'page-easter-1', 'page-easter-2', 'page-easter-3'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.parentElement !== document.body) {
+            document.body.appendChild(el);
+        }
+    });
+
     // ==================== 数据定义 ====================
     const classData = {
         '卫星班': {
@@ -5502,11 +6305,11 @@
                 { name: '余旺兵', desc: '班主任', detail: '班主任' }
             ],
             '神舟2班': [
-                { name: '王祖元', desc: '四步朗读', detail: '曾经作出四步朗读法，叱咤文坛多年' },
+                { name: '王祖元', desc: '四步朗读', detail: '英语教师，曾经作出四步朗读法，叱咤教坛多年' },
                 { name: '姚俊希', desc: '67', detail: '676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767676767' },
                 { name: '施伊迅', desc: '跑路了', detail: '6月跑路在实验坐第一排，哈哈哈！' },
                 { name: '陈良烜', desc: '绝版人物', detail: '没考上' },
-                { name: '卢有勇', desc: '老卢', detail: '班主任，特级教师' },
+                { name: '卢有勇', desc: '老卢', detail: '神舟2班班主任，数学特级教师' },
                 { name: '朱雄飞', desc: '大飞', detail: '物理老师' },
                 { name: '蔡凤珍', desc: '校区校长', detail: '新洲一中体卫艺处主任' }
             ],
@@ -5522,28 +6325,70 @@
     };
 
     // ==================== 页面控制逻辑 ====================
+    // 彩蛋触发状态（须在 showPage 之前声明，showPage 内部会重置）
+    let easterEggTriggered = { privacy: false, terms: false, main: false };
+
     function showPage(pageId) {
         document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
+        const target = document.getElementById(pageId);
+        if (!target) { console.warn('showPage: 页面不存在', pageId); return; }
+        target.classList.add('active');
+        // 确保 vh 单位在所有环境下生效：强制设置像素最小高度
+        target.style.minHeight = window.innerHeight + 'px';
         window.scrollTo(0, 0);
         history.pushState({page: pageId}, '', `#${pageId}`);
+        // 切回主页/隐私/条款时重置对应彩蛋触发标记
+        if (pageId === 'page-main') {
+            easterEggTriggered = { privacy: false, terms: false, main: false };
+        } else if (pageId === 'page-privacy') {
+            easterEggTriggered.privacy = false;
+        } else if (pageId === 'page-terms') {
+            easterEggTriggered.terms = false;
+        }
     }
 
     // ==================== 平滑滚动到指定板块 ====================
     function scrollToSection(sectionId) {
+        // 别名映射：导航更多面板中部分链接指向的板块名与实际 id 不一致，统一映射到现有板块
+        const alias = {
+            about: 'school', home: 'home',
+            // 办学体系类 → school
+            philosophy: 'school', history: 'school', research: 'school',
+            achievements: 'school', moral: 'school',
+            // 课程项目类 → programs
+            curriculum: 'programs',
+            // 师资类 → teachers
+            faculty: 'teachers', quotes: 'principal',
+            // 校园生活类 → scenery
+            life: 'scenery', activities: 'scenery', culture: 'scenery',
+            clubs: 'scenery', works: 'scenery', gallery: 'scenery', exchange: 'scenery',
+            // 招生类 → admissions
+            statistics: 'admissions', partners: 'admissions',
+            // 新闻动态 → science
+            news: 'science', faq: 'admissions'
+        };
+        const realId = alias[sectionId] || sectionId;
         // 确保在主页
         const mainPage = document.getElementById('page-main');
-        if (!mainPage.classList.contains('active')) {
+        const wasOnSubPage = !mainPage.classList.contains('active');
+        if (wasOnSubPage) {
             showPage('page-main');
         }
-        const target = document.getElementById(sectionId);
-        if (target) {
-            const navHeight = 70;
-            const top = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
-            window.scrollTo({ top: top, behavior: 'smooth' });
+        const doScroll = () => {
+            const target = document.getElementById(realId);
+            if (target) {
+                const navHeight = 80;
+                const top = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
+                window.scrollTo({ top: top, behavior: 'smooth' });
+            } else {
+                window.scrollTo({ top: window.innerHeight * 1.5, behavior: 'smooth' });
+            }
+        };
+        // 从子页面切回主页时，等待 display 切换与布局完成后再滚动
+        if (wasOnSubPage) {
+            requestAnimationFrame(() => requestAnimationFrame(doScroll));
         } else {
-            // 找不到则滚动到页面中下部
-            window.scrollTo({ top: window.innerHeight * 1.5, behavior: 'smooth' });
+            doScroll();
         }
     }
 
@@ -5673,7 +6518,27 @@
     document.addEventListener('click', () => { if (navMoreOpen) closeNavMore(); });
     // 点击面板内链接后自动收起
     navMorePanel.querySelectorAll('a').forEach(a => {
-        a.addEventListener('click', () => closeNavMore());
+        a.addEventListener('click', (e) => {
+            const href = a.getAttribute('href') || '';
+            if (href.startsWith('#') && href.length > 1) {
+                e.preventDefault();
+                closeNavMore();
+                scrollToSection(href.slice(1));
+            } else {
+                closeNavMore();
+            }
+        });
+    });
+
+    // 主导航锚点链接：在任何子页面下都能切回主页并平滑滚动
+    document.querySelectorAll('nav a.nav-link[href^="#"]').forEach(a => {
+        a.addEventListener('click', (e) => {
+            const href = a.getAttribute('href') || '';
+            if (href.startsWith('#') && href.length > 1) {
+                e.preventDefault();
+                scrollToSection(href.slice(1));
+            }
+        });
     });
 
     // 联系我们 + B站按钮 → 跳转B站图片页
@@ -5699,6 +6564,23 @@
     // 点击弹窗外部关闭
     document.getElementById('modal-person').addEventListener('click', (e) => {
         if(e.target.id === 'modal-person') closeModal();
+    });
+
+    // 知名人物卡片点击 → 弹窗展示详情
+    const notablePersons = {
+        '王祖元': { name: '王祖元', desc: '英语名师', detail: '四步朗读法创始人，英语教学领域资深教师，叱咤教坛多年。' },
+        '何志平': { name: '何志平', desc: '高一年级主任', detail: '三力平衡法创始人，物理教学名师，深受学子爱戴。' },
+        '高子涵': { name: '高子涵', desc: '学霸', detail: '两颗搞完高子涵，学习实力出众的学霸代表。' },
+        '姚俊希': { name: '姚俊希', desc: '神人', detail: '一个六七姚俊希，校园里的传奇神人。' }
+    };
+    document.querySelectorAll('.notable-card').forEach(card => {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', () => {
+            const nameEl = card.querySelector('h3');
+            if (nameEl && notablePersons[nameEl.textContent.trim()]) {
+                showPersonModal(notablePersons[nameEl.textContent.trim()]);
+            }
+        });
     });
 
     // 处理浏览器前进后退
@@ -5792,10 +6674,10 @@
     if (rocketStage && visionSection) {
         function createSparks() {
             const colors = ['#ffeb3b', '#ff9800', '#f44336', '#fff', '#facc15'];
-            for (let i = 0; i < 30; i++) {
+            for (let i = 0; i < 12; i++) {
                 const spark = document.createElement('div');
                 spark.className = 'spark';
-                const angle = (Math.PI * 2 * i) / 30;
+                const angle = (Math.PI * 2 * i) / 12;
                 const dist = 50 + Math.random() * 80;
                 const tx = Math.cos(angle) * dist;
                 const ty = Math.sin(angle) * dist + 50;
@@ -5814,7 +6696,7 @@
         }
 
         function createSmoke() {
-            for (let i = 0; i < 25; i++) {
+            for (let i = 0; i < 10; i++) {
                 const smoke = document.createElement('div');
                 smoke.className = 'smoke-particle';
                 smoke.style.left = (35 + Math.random() * 30) + '%';
@@ -5829,7 +6711,7 @@
         }
 
         function createStarTracer() {
-            for (let i = 0; i < 15; i++) {
+            for (let i = 0; i < 6; i++) {
                 const tracer = document.createElement('div');
                 tracer.className = 'star-tracer';
                 tracer.style.left = (25 + Math.random() * 50) + '%';
@@ -5843,10 +6725,10 @@
 
         function createFlameParticles() {
             const colors = ['#ffeb3b', '#ff9800', '#f44336', '#fff', '#ffc107'];
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < 18; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'spark';
-                const angle = (Math.PI * 2 * i) / 50;
+                const angle = (Math.PI * 2 * i) / 18;
                 const dist = 60 + Math.random() * 120;
                 const tx = Math.cos(angle) * dist;
                 const ty = Math.sin(angle) * dist + 80;
@@ -5855,7 +6737,7 @@
                 particle.style.left = '50%';
                 particle.style.bottom = '0';
                 particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                particle.style.boxShadow = '0 0 15px ' + particle.style.background + ', 0 0 30px ' + particle.style.background;
+                particle.style.boxShadow = '0 0 15px ' + particle.style.background;
                 particle.style.animationDelay = (0.1 + Math.random() * 1) + 's';
                 particle.style.width = (4 + Math.random() * 10) + 'px';
                 particle.style.height = particle.style.width;
@@ -5901,15 +6783,11 @@
             ], { duration: 1500, easing: 'ease-out' });
             setTimeout(() => star.remove(), 1600);
         }
-        setInterval(createShootingStar, 3000);
+        setInterval(createShootingStar, 6000);
     }
 
     // ==================== 滚动彩蛋检测 ====================
-    let easterEggTriggered = {
-        privacy: false,
-        terms: false,
-        main: false
-    };
+    // easterEggTriggered 已在 showPage 前声明，此处直接使用
 
     window.addEventListener('scroll', () => {
         const currentPage = document.querySelector('.page-view.active');
@@ -5941,19 +6819,517 @@
             setTimeout(() => showPage('page-easter-2'), 500);
         }
     });
+</script>
 
-    // 页面切换时重置彩蛋状态
-    const originalShowPage = showPage;
-    showPage = function(pageId) {
-        originalShowPage(pageId);
-        if (pageId === 'page-main') {
-            easterEggTriggered = { privacy: false, terms: false, main: false };
-        } else if (pageId === 'page-privacy') {
-            easterEggTriggered.privacy = false;
-        } else if (pageId === 'page-terms') {
-            easterEggTriggered.terms = false;
+<!-- ============================================================
+     史诗 PROMAX · 视觉引擎（章节升级/3D倾斜/光标/视差/进度条）
+     ============================================================ -->
+<div class="scroll-progress-bar" id="scroll-progress-bar"></div>
+<div class="cursor-dot" id="cursor-dot"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<script>
+(function() {
+    'use strict';
+
+    // ==================== 1. 自定义金光标 ====================
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', (e) => {
+        mx = e.clientX; my = e.clientY;
+        dot.style.left = mx + 'px';
+        dot.style.top = my + 'px';
+    });
+
+    function animateRing() {
+        rx += (mx - rx) * 0.18;
+        ry += (my - ry) * 0.18;
+        ring.style.left = rx + 'px';
+        ring.style.top = ry + 'px';
+        requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    // 悬停可交互元素时光标放大变红
+    document.addEventListener('mouseover', (e) => {
+        if (e.target.closest('a, button, .clickable-card, .glass-card, .gradient-border-card, .counter-card, [data-info], input, .faq-item, .nav-link')) {
+            dot.classList.add('hover-active');
+            ring.classList.add('hover-active');
         }
+    });
+    document.addEventListener('mouseout', (e) => {
+        if (e.target.closest('a, button, .clickable-card, .glass-card, .gradient-border-card, .counter-card, [data-info], input, .faq-item, .nav-link')) {
+            dot.classList.remove('hover-active');
+            ring.classList.remove('hover-active');
+        }
+    });
+
+    // ==================== 2. 滚动进度条 ====================
+    const progressBar = document.getElementById('scroll-progress-bar');
+    function updateScrollProgress() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+        progressBar.style.width = progress + '%';
+    }
+    window.addEventListener('scroll', updateScrollProgress, { passive: true });
+
+    // ==================== 3. 自动升级章节标题为典藏档案风格 ====================
+    const sectionMeta = [
+        { id: 'school',      num: '01', tag: 'SCHOOL OVERVIEW' },
+        { id: 'facilities',  num: '02', tag: 'CAMPUS FACILITIES' },
+        { id: 'faculty',     num: '03', tag: 'FACULTY TEAM' },
+        { id: 'curriculum',  num: '04', tag: 'CURRICULUM SYSTEM' },
+        { id: 'research',    num: '05', tag: 'SCIENTIFIC RESEARCH' },
+        { id: 'moral',       num: '06', tag: 'MORAL EDUCATION' },
+        { id: 'activities',  num: '07', tag: 'STUDENT ACTIVITIES' },
+        { id: 'culture',     num: '08', tag: 'CAMPUS CULTURE' },
+        { id: 'programs',    num: '09', tag: 'SPECIAL PROGRAMS' },
+        { id: 'kuaizhou',    num: '10', tag: 'KUAIZHOU PLAN' },
+        { id: 'science',     num: '11', tag: 'SCIENCE & INNOVATION' },
+        { id: 'works',       num: '12', tag: 'STUDENT WORKS' },
+        { id: 'exchange',    num: '13', tag: 'EXCHANGE & COOPERATION' },
+        { id: 'teachers',    num: '14', tag: 'TEACHER SHOWCASE' },
+        { id: 'life',        num: '15', tag: 'CAMPUS LIFE' },
+        { id: 'news',        num: '16', tag: 'NEWS & NOTICES' },
+        { id: 'admissions',  num: '17', tag: 'ADMISSIONS' },
+        { id: 'partners',    num: '18', tag: 'PARTNERS' },
+        { id: 'clubs',       num: '19', tag: 'STUDENT CLUBS' },
+        { id: 'quotes',      num: '20', tag: 'WISDOM QUOTES' },
+        { id: 'vision',      num: '21', tag: 'VISION & FUTURE' }
+    ];
+
+    sectionMeta.forEach(meta => {
+        const section = document.getElementById(meta.id);
+        if (!section) return;
+        // 找到标题区的英文标签 span（class 含 uppercase tracking-wider）
+        const titleBlock = section.querySelector('.text-center.mb-16, .text-center.mb-12, .reveal .text-center');
+        if (!titleBlock) return;
+
+        const engSpan = titleBlock.querySelector('span.uppercase, span[class*="uppercase"]');
+        const h2 = titleBlock.querySelector('h2');
+
+        // 替换英文标签为 archive-tag
+        if (engSpan) {
+            const newTag = document.createElement('span');
+            newTag.className = 'section-archive-tag';
+            newTag.textContent = `${meta.tag} · No.${meta.num}`;
+            engSpan.replaceWith(newTag);
+        }
+
+        // 给 h2 添加编号徽章
+        if (h2) {
+            h2.style.position = 'relative';
+            h2.style.display = 'inline-block';
+            const badge = document.createElement('span');
+            badge.className = 'section-num-badge';
+            badge.textContent = meta.num;
+            h2.appendChild(badge);
+            h2.classList.add('promax-title');
+        }
+    });
+
+    // ==================== 4. 3D 鼠标跟随倾斜 ====================
+    function initTilt() {
+        document.querySelectorAll('.glass-card, .gradient-border-card, .counter-card').forEach(card => {
+            if (card.dataset.tiltInit) return;
+            card.dataset.tiltInit = '1';
+            card.classList.add('tilt-card');
+
+            // 注入 shine 层
+            const shine = document.createElement('div');
+            shine.className = 'tilt-shine';
+            card.appendChild(shine);
+
+            // 注入 scan-line
+            const scanLine = document.createElement('div');
+            scanLine.className = 'card-scan-line';
+            card.appendChild(scanLine);
+
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const cx = rect.width / 2;
+                const cy = rect.height / 2;
+                const rotateY = ((x - cx) / cx) * 6;
+                const rotateX = ((cy - y) / cy) * 6;
+                card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px)`;
+                card.style.setProperty('--mx', (x / rect.width * 100) + '%');
+                card.style.setProperty('--my', (y / rect.height * 100) + '%');
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = '';
+            });
+        });
+    }
+
+    // ==================== 5. 滚动视差（仅 section 背景层，不干扰 hero 动画） ====================
+    const parallaxElements = [];
+    function initParallax() {
+        document.querySelectorAll('.particle-bg').forEach(el => {
+            if (el.dataset.parallaxInit) return;
+            el.dataset.parallaxInit = '1';
+            parallaxElements.push(el);
+        });
+    }
+
+    function updateParallax() {
+        const scrollY = window.pageYOffset;
+        parallaxElements.forEach((el, i) => {
+            const speed = 0.03 + (i % 3) * 0.02;
+            el.style.backgroundPositionY = (scrollY * speed) + 'px';
+        });
+    }
+
+    // ==================== 6. 初始化 ====================
+    function initAll() {
+        initTilt();
+        initParallax();
+        updateScrollProgress();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAll);
+    } else {
+        initAll();
+    }
+
+    // 节流滚动
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                updateParallax();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }, { passive: true });
+
+    // ==================== 7. 进度环（数据统计卡片） ====================
+    document.querySelectorAll('.counter-card').forEach(card => {
+        if (card.dataset.ringInit) return;
+        card.dataset.ringInit = '1';
+        // 找到数字
+        const numEl = card.querySelector('.text-3xl, .text-4xl, .font-bold');
+        if (!numEl) return;
+        const rawText = numEl.textContent.trim();
+        const num = parseInt(rawText.replace(/[^0-9]/g, '')) || 0;
+        const displayNum = rawText.replace(/[0-9]/g, '').replace(/\+/g, '') || '';
+
+        const ringSize = 80;
+        const radius = 34;
+        const circumference = 2 * Math.PI * radius;
+        const pct = Math.min(num / 100, 1);
+
+        const wrap = document.createElement('div');
+        wrap.className = 'progress-ring-wrap';
+        wrap.style.marginBottom = '12px';
+        wrap.innerHTML = `
+            <svg class="progress-ring-svg" width="${ringSize}" height="${ringSize}">
+                <circle class="progress-ring-bg" cx="${ringSize/2}" cy="${ringSize/2}" r="${radius}"
+                    stroke-width="4" fill="none"></circle>
+                <circle class="progress-ring-fg" cx="${ringSize/2}" cy="${ringSize/2}" r="${radius}"
+                    stroke-width="4" fill="none"
+                    stroke-dasharray="${circumference}"
+                    stroke-dashoffset="${circumference}"></circle>
+            </svg>
+            <span style="position:absolute; font-size:1.1rem; font-weight:800; color:var(--gold-bright); font-family:'JetBrains Mono',monospace;">
+                ${rawText}
+            </span>
+        `;
+        // 隐藏原数字
+        numEl.style.display = 'none';
+        // 插入进度环
+        numEl.parentElement.insertBefore(wrap, numEl);
+
+        // 动画填充
+        const fg = wrap.querySelector('.progress-ring-fg');
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    fg.style.strokeDashoffset = (circumference * (1 - pct)) + '';
+                    io.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+        io.observe(card);
+    });
+
+})();
+</script>
+
+<!-- ============================================================
+     史诗 Pro · 通用详情模态框 + 全站点击交互数据仓库
+     ============================================================ -->
+<div id="info-modal-overlay" class="info-modal-overlay" onclick="if(event.target===this)closeInfoModal()">
+    <div class="info-modal-box">
+        <button class="info-modal-close" onclick="closeInfoModal()" aria-label="关闭">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div id="info-modal-content" style="padding:40px 44px 36px;"></div>
+    </div>
+</div>
+
+<script>
+// ==================== 通用详情数据仓库 ====================
+const infoDatabase = {
+    // 学校概况 - 办学特色卡片
+    'school-feature-1': { title: '航天特色课程', icon: 'fa-rocket', tag: '课程体系', body: '<p>航天特色课程体系覆盖物理、化学、生物、地理等多学科交叉，依托武汉航天城产业资源，开设《航天器原理》《轨道力学入门》《空间站设计》等选修课，由航天科工集团工程师与本校教师联合授课。</p><p>每学期组织学生赴航天发射场、卫星测控中心开展研学实践，让航天精神真正融入课堂。</p>' },
+    'school-feature-2': { title: '小班化教学', icon: 'fa-users', tag: '教学模式', body: '<p>每班控制在30人以内，师生比1:8，确保每位学生都能获得个性化关注。教师为每位学生建立成长档案，定期与家长沟通学情与心理发展。</p><p>实施"双导师制"：学业导师 + 成长导师，全方位护航学生发展。</p>' },
+    'school-feature-3': { title: '科研实践', icon: 'fa-flask', tag: '创新能力', body: '<p>学校设有科创实验室、3D打印工坊、机器人训练中心，配备工业级设备。学生可申报校级课题，经费支持5000-20000元/项。</p><p>近三年学生科研作品获国家级奖项12项、省级38项，3项作品申请国家专利。</p>' },
+    'school-feature-4': { title: '心理护航', icon: 'fa-heart', tag: '身心健康', body: '<p>专职心理教师3名，建设500平米心理发展中心，含沙盘室、宣泄室、团体辅导室。每周1节心理课，每月1次团体辅导。</p><p>建立三级心理预警机制，重点学生"一生一档"跟踪关怀。</p>' },
+
+    // 设施
+    'facility-1': { title: '科创实验楼', icon: 'fa-flask', tag: '教学设施', body: '<p>建筑面积6800平方米，4层现代化实验楼。设有物理实验室6间、化学实验室5间、生物实验室4间、科创工坊3间、数字天象厅1座。</p><p>所有实验室配备数字化采集系统，可与高校实验室远程联动。</p>' },
+    'facility-2': { title: '航天体验馆', icon: 'fa-rocket', tag: '特色场馆', body: '<p>校内独有的航天主题体验馆，占地1200平方米。包含长征系列火箭1:10模型展区、神舟飞船返回舱实物展示区、空间站模拟舱、VR太空漫步体验区。</p><p>每周三、周五下午对学生及预约访客开放。</p>' },
+    'facility-3': { title: '图书馆', icon: 'fa-book', tag: '学习空间', body: '<p>馆藏纸质图书8.6万册，电子图书23万册，订阅期刊180种。设安静阅览区、研讨室、电子阅览区、航天文献专藏四个功能区。</p><p>开放时间：周一至周日 7:00-22:00。</p>' },
+    'facility-4': { title: '运动场馆', icon: 'fa-volleyball', tag: '体育设施', body: '<p>400米标准塑胶跑道、人造草坪足球场、6块室外篮球场、2块排球场、室内综合体育馆（含羽毛球馆、乒乓球馆、健身房）。</p><p>每日保障学生1.5小时体育锻炼时间。</p>' },
+
+    // 师资队伍
+    'teacher-info': { title: '师资队伍', icon: 'fa-chalkboard-user', tag: '教师团队', body: '<p>现有教职员工80余人，其中特级教师5人、高级教师67人、硕士研究生学历占比62%。形成"名师引领 + 青年骨干 + 航天专家"的复合型师资结构。</p><p>近三年教师获国家级教学竞赛奖8项、省级22项，主持省市级课题15项。</p>' },
+
+    // 课程体系
+    'curriculum-1': { title: '基础课程', icon: 'fa-book-open', tag: '国家课程', body: '<p>严格执行国家课程标准，开齐开足必修课程。语文、数学、英语实行分层教学，物理、化学、生物实行走班制。</p><p>语数英周课时5节，理综周课时4节，确保学科基础扎实。</p>' },
+    'curriculum-2': { title: '航天特色课程', icon: 'fa-rocket', tag: '校本课程', body: '<p>《航天概论》《航天器结构》《轨道力学》《空间环境》《航天史话》五大模块，共180课时。</p><p>由航天科工集团工程师与本校教师联合开发，每学年更新内容。</p>' },
+    'curriculum-3': { title: '选修课程', icon: 'fa-palette', tag: '个性发展', body: '<p>开设6大类52门选修课：人文社科类、科学探究类、艺术审美类、体育健康类、技术工程类、社会实践类。</p><p>学生每学期至少选修2门，纳入综合素质评价。</p>' },
+    'curriculum-4': { title: '研学课程', icon: 'fa-route', tag: '实践教育', body: '<p>每年组织4次研学：航天发射场研学（5天）、高校实验室研学（3天）、企业实践研学（2天）、红色教育基地研学（3天）。</p><p>研学成果计入学生综合素质档案。</p>' },
+
+    // 科研
+    'research-1': { title: '学生科研课题', icon: 'fa-microscope', tag: '创新平台', body: '<p>2024学年在研学生课题23项，覆盖物理、化学、生物、信息技术、工程学5个领域。校级课题经费5000元/项，重点项目20000元/项。</p><p>近三年获国家级奖项12项、省级38项，3项作品申请国家专利。</p>' },
+    'research-2': { title: '教师教研项目', icon: 'fa-chalkboard', tag: '教学研究', body: '<p>2024学年在研省市级课题8项、校级课题15项，涵盖航天课程开发、跨学科教学、评价改革等方向。</p><p>近三年教师在核心期刊发表论文42篇，出版校本教材6部。</p>' },
+
+    // 德育
+    'moral-1': { title: '航天精神教育', icon: 'fa-rocket', tag: '特色德育', body: '<p>每月1次"航天英雄讲堂"，邀请航天员、工程师进校分享。每学期1次"航天精神主题月"，开展演讲、征文、戏剧展演等系列活动。</p><p>将"特别能吃苦、特别能战斗、特别能攻关、特别能奉献"融入日常德育。</p>' },
+    'moral-2': { title: '感恩教育', icon: 'fa-hands-helping', tag: '品格培养', body: '<p>每年11月"感恩主题月"，开展"写给父母的一封信""老师我想对您说""校园志愿者"等活动。</p><p>建立学生志愿服务档案，三年累计服务时长不少于120小时。</p>' },
+    'moral-3': { title: '生涯规划', icon: 'fa-compass', tag: '成长指导', body: '<p>高一职业体验、高二专业探索、高三志愿填报，三年一贯制生涯规划课程。</p><p>配备生涯规划教师3名，与12所高校建立专业咨询合作。</p>' },
+
+    // 学生活动
+    'activity-1': { title: '航天科技节', icon: 'fa-meteor', tag: '年度盛典', body: '<p>每年10月举办为期2周的航天科技节，包含水火箭发射比赛、航天知识竞赛、3D打印航天器设计大赛、星空观测夜等12项活动。</p><p>全员参与，是学校最具特色的年度盛典。</p>' },
+    'activity-2': { title: '校园文化艺术节', icon: 'fa-masks-theater', tag: '艺术活动', body: '<p>每年5月举办，历时3周。包含合唱比赛、戏剧展演、书画展览、舞蹈大赛、辩论赛等8个板块。</p><p>展示学生艺术才华，营造浓厚校园文化氛围。</p>' },
+    'activity-3': { title: '体育运动会', icon: 'fa-trophy', tag: '体育竞技', body: '<p>每年春秋两季运动会，春季为趣味运动会（含航模比赛、水火箭射远等特色项目），秋季为田径运动会。</p><p>全员参与，设团体奖、个人奖、精神文明奖。</p>' },
+
+    // 文化建设
+    'culture-1': { title: '校训精神', icon: 'fa-feather', tag: '文化核心', body: '<p><strong>博大、方正、尚美、创新</strong></p><p>博大——学识广博、胸怀开阔；方正——品行端正、为人方正；尚美——追求美好、崇尚艺术；创新——勇于探索、敢于创新。</p><p>校训融入课程、活动、环境全方位育人。</p>' },
+    'culture-2': { title: '三风建设', icon: 'fa-tree', tag: '校园精神', body: '<p><strong>校风：</strong>励志、笃学、求是、创新<br><strong>教风：</strong>博学、严谨、爱生、奉献<br><strong>学风：</strong>勤学、善思、自主、合作</p><p>三风建设列入学校发展规划，年度评估。</p>' },
+
+    // 课程项目
+    'program-1': { title: '卫星班', icon: 'fa-satellite', tag: '尖子培养', body: '<p>面向学业拔尖学生，每届3个班。强化理科基础，开设大学先修课程，对接"双一流"高校强基计划。</p><p>近年985高校录取率达68%，211高校录取率92%。</p>' },
+    'program-2': { title: '航天班', icon: 'fa-rocket', tag: '特色项目', body: '<p>每届3个班，融入航天特色课程。与航天科工集团合作，培养航天预备人才。</p><p>毕业生可获航天科工集团实习推荐资格。</p>' },
+    'program-3': { title: '神舟班', icon: 'fa-space-shuttle', tag: '精英班', body: '<p>面向有志航天专业的拔尖学生，每届2个班。开设《轨道力学》《航天器设计》等先修课程。</p><p>近年毕业生升入航天专业院校比例达45%。</p>' },
+    'program-4': { title: '快舟班', icon: 'fa-bolt', tag: '创新班', body: '<p>面向综合素质突出学生，每届1个班。实行项目式学习，培养创新实践能力。</p><p>学生科研作品获奖率全校领先。</p>' },
+
+    // 快舟计划
+    'kuaizhou-1': { title: '快舟学子计划', icon: 'fa-bolt', tag: '拔尖项目', body: '<p>选拔综合素质突出的学生进入快舟班，配备顶尖师资团队，实施个性化培养方案。</p><p>每位快舟学子配1名学业导师 + 1名航天行业导师，三年跟踪培养。</p>' },
+    'kuaizhou-2': { title: '科研孵化', icon: 'fa-lightbulb', tag: '创新平台', body: '<p>快舟班学生可申报校级科研课题，经费上限20000元/项。优秀作品推荐参加全国青少年科技创新大赛。</p><p>近三年孵化学生专利3项，国家级奖项8项。</p>' },
+
+    // 科创
+    'science-1': { title: '机器人社团', icon: 'fa-robot', tag: '科技社团', body: '<p>VEX机器人、FLL机器人、人形机器人三个方向。每周3次训练，每年参加国家级比赛3场以上。</p><p>2024年获VEX亚洲锦标赛银奖。</p>' },
+    'science-2': { title: '航模社团', icon: 'fa-plane', tag: '特色社团', body: '<p>覆盖火箭模型、固定翼、多旋翼三大类。拥有校内飞行场地和模拟训练室。</p><p>每年举办校级水火箭射远比赛，全员参与。</p>' },
+    'science-3': { title: '编程社团', icon: 'fa-code', tag: '数字社团', body: '<p>开设Python、C++、人工智能三个方向。配备高性能工作站24台。</p><p>2024年获全国青少年信息学奥赛省级一等奖3人。</p>' },
+
+    // 学生作品
+    'work-1': { title: '学生科创作品', icon: 'fa-lightbulb', tag: '创新成果', body: '<p>近三年学生科创作品获国家级奖项12项、省级38项。其中3项申请国家专利，2项被企业采纳转化。</p><p>优秀作品在校内"创客长廊"常年展示。</p>' },
+    'work-2': { title: '学生艺术作品', icon: 'fa-palette', tag: '艺术创作', body: '<p>涵盖书法、绘画、摄影、设计、戏剧五大类。每年举办校级艺术展2次。</p><p>优秀作品编入《航天学子艺术作品集》。</p>' },
+
+    // 交流合作
+    'exchange-1': { title: '高校合作', icon: 'fa-university', tag: '高校联动', body: '<p>与华中科技大学、武汉大学、北京航空航天大学、哈尔滨工业大学等12所"双一流"高校建立生源基地合作。</p><p>每年组织学生赴高校实验室研学3次以上。</p>' },
+    'exchange-2': { title: '国际交流', icon: 'fa-globe', tag: '国际视野', body: '<p>与美国、俄罗斯、日本等国航天特色高中建立友好学校关系。每年组织学生赴海外研学1次。</p><p>开设多语种选修课，培养学生国际视野。</p>' },
+    'exchange-3': { title: '社会合作', icon: 'fa-handshake', tag: '社会资源', body: '<p>与航天科工集团、中国航天科技集团、武汉航天产业基地等8家企业建立实践基地合作。</p><p>每年安排学生赴企业实习2次，工程师进校授课12场以上。</p>' },
+
+    // 教师风采
+    'teacher-style-1': { title: '名师工作室', icon: 'fa-star', tag: '名师引领', body: '<p>设有5个名师工作室，涵盖语文、数学、英语、物理、化学五大学科。每个工作室带教3-5名青年教师。</p><p>近三年工作室成员获省级以上教学竞赛奖18项。</p>' },
+    'teacher-style-2': { title: '青年教师发展', icon: 'fa-seedling', tag: '青蓝工程', body: '<p>实施"青蓝工程"，每位青年教师配1位资深教师带教。三年内必须完成"五个一"：1节公开课、1篇论文、1项课题、1次培训、1本读书笔记。</p><p>近三年青年教师成长迅速，6人获市级以上奖项。</p>' },
+
+    // 校园生活
+    'life-1': { title: '宿舍生活', icon: 'fa-bed', tag: '住宿服务', body: '<p>4人间公寓式宿舍，独立卫浴、空调、热水24小时供应。每层配1名生活老师。</p><p>晚间自习室开放至22:30，舍管老师全程陪伴。</p>' },
+    'life-2': { title: '餐饮服务', icon: 'fa-utensils', tag: '餐饮管理', body: '<p>三层餐厅，可同时容纳1200人就餐。每日供应菜品60种以上，含特色窗口、清真窗口。</p><p>食材统一采购，留样48小时，营养师制定每周食谱。</p>' },
+    'life-3': { title: '健康服务', icon: 'fa-stethoscope', tag: '医疗保障', body: '<p>校医务室配备执业医师2名、护士3名，24小时值班。与三甲医院建立绿色通道。</p><p>每年组织学生体检1次，建立健康档案。</p>' },
+
+    // 新闻动态
+    'news-1': { title: '校园新闻', icon: 'fa-newspaper', tag: '校园动态', body: '<p>每周更新校园新闻5-8条，记录学校重要事件、师生风采、教学成果。</p><p>欢迎投稿：13125021156@163.com。</p>' },
+    'news-2': { title: '通知公告', icon: 'fa-bullhorn', tag: '信息发布', body: '<p>发布招生、考试、活动等官方通知。家长和学生可通过学校公众号、官网同步接收。</p>' },
+
+    // 招生
+    'admission-1': { title: '招生计划', icon: 'fa-user-plus', tag: '2025招生', body: '<p>2025年计划招生10个班，共300人。其中卫星班3个、航天班3个、神舟班2个、快舟班1个、平行班1个。</p><p>面向武汉全市招生，含分配生、特长生、统招生三类。</p>' },
+    'admission-2': { title: '招生政策', icon: 'fa-file-contract', tag: '录取规则', body: '<p>严格执行武汉市中考招生政策。分配生按初中学校指标到校，特长生需通过专业测试，统招生按中考成绩从高到低录取。</p><p>咨询热线：027-XXXXXXXX。</p>' },
+    'admission-3': { title: '收费标准', icon: 'fa-yen-sign', tag: '学费明细', body: '<p>严格执行公办高中收费标准：学费900元/学期，住宿费400元/学期。</p><p>书本费、校服费、餐费按实际发生收取。</p>' },
+
+    // 统计数据
+    'stat-300': { title: '在校学生', icon: 'fa-users', tag: '规模数据', body: '<p>现有在校学生300余人，10个教学班。其中高一年级4个班、高二年级3个班、高三年级3个班。</p><p>每班30人左右，确保小班化教学质量。</p>' },
+    'stat-80': { title: '教职员工', icon: 'fa-chalkboard-user', tag: '师资数据', body: '<p>教职员工80余人，其中专任教师65人。特级教师5人、高级教师67人、硕士研究生学历占比62%。</p><p>师生比1:8，远超国家标准。</p>' },
+    'stat-10': { title: '教学班级', icon: 'fa-school', tag: '班级数据', body: '<p>10个教学班级，包含卫星班、航天班、神舟班、快舟班四种班型。</p><p>每年级3-4个班，实施分类培养。</p>' },
+    'stat-4': { title: '届学子', icon: 'fa-graduation-cap', tag: '办学历史', body: '<p>建校4年来，已培养4届毕业生。累计向"双一流"高校输送人才280余人。</p><p>2024届毕业生一本率78%，985录取率32%。</p>' },
+    'stat-67': { title: '荣誉奖项', icon: 'fa-trophy', tag: '办学成果', body: '<p>建校以来累计获得各类荣誉奖项67项。其中国家级12项、省级25项、市级30项。</p><p>涵盖教学、科研、德育、艺术、体育等多个领域。</p>' },
+    'stat-96': { title: '满意度', icon: 'fa-heart', tag: '社会评价', body: '<p>家长满意度96.7%，学生满意度95.2%，社会满意度94.8%（2024年第三方调研数据）。</p><p>连续三年被评为武汉市人民满意学校。</p>' },
+
+    // 合作伙伴
+    'partner-1': { title: '高校合作', icon: 'fa-university', tag: '高校资源', body: '<p>与华中科技大学、武汉大学、北京航空航天大学、哈尔滨工业大学、南京航空航天大学等12所"双一流"高校建立合作。</p><p>共建实验室3个，联合开发课程8门。</p>' },
+    'partner-2': { title: '科研院所', icon: 'fa-flask', tag: '科研合作', body: '<p>与中国航天科工集团、中国航天科技集团、中科院武汉物理与数学研究所等8家科研单位建立合作。</p><p>每年安排学生赴科研院所研学2次以上。</p>' },
+    'partner-3': { title: '产业基地', icon: 'fa-industry', tag: '产业联动', body: '<p>依托武汉航天产业基地，与基地内12家企业建立实践基地合作。</p><p>每年组织学生赴企业实习2次，工程师进校授课12场以上。</p>' },
+    'partner-4': { title: '教育联盟', icon: 'fa-handshake', tag: '校际合作', body: '<p>加入"全国航天特色学校联盟""湖北省示范高中联盟"等4个教育联盟。</p><p>每年参与联盟活动8场以上，共享优质教育资源。</p>' },
+
+    // 社团
+    'club-1': { title: '航天社团', icon: 'fa-rocket', tag: '特色社团', body: '<p>含航模、火箭、机器人、编程4个分组，是学校规模最大、最具特色的社团。</p><p>每周3次活动，每年参加国家级比赛3场以上。</p>' },
+    'club-2': { title: '艺术社团', icon: 'fa-palette', tag: '艺术团体', body: '<p>含合唱团、舞蹈队、戏剧社、书画社、摄影社5个分组。</p><p>每年举办校级展演2次，参加市级以上比赛3场。</p>' },
+    'club-3': { title: '体育社团', icon: 'fa-volleyball', tag: '运动队伍', body: '<p>含篮球队、足球队、排球队、田径队、羽毛球队5支校队。</p><p>每年参加市级比赛8场以上，获奖率85%。</p>' },
+    'club-4': { title: '学术社团', icon: 'fa-book', tag: '学术兴趣', body: '<p>含辩论社、文学社、英语角、数学建模社、天文社5个分组。</p><p>每周1-2次活动，培养学生学术兴趣。</p>' },
+
+    // 警句
+    'quote-1': { title: '校长寄语', icon: 'fa-quote-left', tag: '教育理念', body: '<p style="font-size:1.15rem; line-height:1.9; font-style:italic; color:#0f172a;">"每一位学生都是一颗独特的星辰，愿你们以梦为翼，以勤为帆，在航天中学这片星空下，绽放属于自己的璀璨光芒。"</p><p style="text-align:right; margin-top:24px; font-weight:600;">—— 蔡凤珍 校长</p>' },
+
+    // 愿景
+    'vision-1': { title: '办学愿景', icon: 'fa-star', tag: '学校使命', body: '<p>建设国内一流、国际知名的航天特色高级中学，培养具有航天精神、科学素养、人文情怀、创新能力的时代新人。</p><p>力争5年内进入全国航天特色学校前十，10年内成为国际知名的航天特色高中。</p>' },
+    'vision-2': { title: '发展目标', icon: 'fa-bullseye', tag: '战略规划', body: '<p><strong>三年目标：</strong>办学质量进入武汉市前十<br><strong>五年目标：</strong>成为湖北省航天特色示范校<br><strong>十年目标：</strong>建设成为全国航天特色名校</p>' }
+};
+
+// ==================== 显示详情模态框 ====================
+function showInfoModal(key) {
+    const data = infoDatabase[key];
+    if (!data) { console.warn('showInfoModal: 未知 key', key); return; }
+    const overlay = document.getElementById('info-modal-overlay');
+    const content = document.getElementById('info-modal-content');
+    content.innerHTML = `
+        <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px; padding-bottom:20px; border-bottom:1px solid var(--hairline);">
+            <div style="width:56px; height:56px; border-radius:14px; background:linear-gradient(135deg, var(--gold-light), var(--gold-color)); display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-gold);">
+                <i class="fa-solid ${data.icon} text-white text-2xl"></i>
+            </div>
+            <div style="flex:1;">
+                <span class="archive-tag" style="margin-bottom:8px;">${data.tag}</span>
+                <h3 class="font-serif" style="font-size:1.6rem; font-weight:700; color:var(--primary-color); margin:6px 0 0;">${data.title}</h3>
+            </div>
+        </div>
+        <div class="prose-archive" style="color:var(--text-color); font-size:0.96rem; line-height:1.85;">
+            ${data.body}
+        </div>
+        <div style="margin-top:28px; padding-top:16px; border-top:1px dashed var(--hairline-gold); display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; color:var(--light-text);">
+            <span class="font-mono-tech">ARCHIVE · ${key.toUpperCase()}</span>
+            <span>武汉市新洲区第一中学 · 航天城校区</span>
+        </div>
+    `;
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeInfoModal() {
+    document.getElementById('info-modal-overlay').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// ESC 关闭
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeInfoModal();
+});
+
+// ==================== 批量绑定可点击卡片 ====================
+document.addEventListener('DOMContentLoaded', () => {
+    // 给所有 glass-card、gradient-border-card、counter-card 添加 cursor:pointer
+    document.querySelectorAll('.glass-card, .gradient-border-card, .counter-card').forEach(el => {
+        if (!el.style.cursor) el.style.cursor = 'pointer';
+    });
+
+    // 各 section 的卡片自动绑定到对应 data key（按 section id + 索引）
+    const sectionBindings = {
+        'school':      ['school-feature-1', 'school-feature-2', 'school-feature-3', 'school-feature-4'],
+        'facilities':  ['facility-1', 'facility-2', 'facility-3', 'facility-4'],
+        'faculty':     ['teacher-info', 'teacher-info', 'teacher-info', 'teacher-info'],
+        'teachers':    ['teacher-style-1', 'teacher-style-2'],
+        'curriculum':  ['curriculum-1', 'curriculum-2', 'curriculum-3', 'curriculum-4'],
+        'research':    ['research-1', 'research-2'],
+        'moral':       ['moral-1', 'moral-2', 'moral-3'],
+        'activities':  ['activity-1', 'activity-2', 'activity-3'],
+        'culture':     ['culture-1', 'culture-2'],
+        'programs':    ['program-1', 'program-2', 'program-3', 'program-4'],
+        'kuaizhou':    ['kuaizhou-1', 'kuaizhou-2'],
+        'science':     ['science-1', 'science-2', 'science-3'],
+        'works':       ['work-1', 'work-2'],
+        'exchange':    ['exchange-1', 'exchange-2', 'exchange-3'],
+        'life':        ['life-1', 'life-2', 'life-3'],
+        'news':        ['news-1', 'news-2'],
+        'admissions':  ['admission-1', 'admission-2', 'admission-3'],
+        'partners':    ['partner-1', 'partner-2', 'partner-3', 'partner-4'],
+        'clubs':       ['club-1', 'club-2', 'club-3', 'club-4']
     };
+
+    Object.entries(sectionBindings).forEach(([sectionId, keys]) => {
+        const section = document.getElementById(sectionId);
+        if (!section) return;
+        // 优先选择该 section 内的标准卡片元素，排除标题区
+        const cards = section.querySelectorAll('.glass-card, .gradient-border-card');
+        let bindIndex = 0;
+        cards.forEach(card => {
+            // 跳过嵌套在其他卡片内的元素，避免重复绑定
+            if (card.parentElement.closest('.glass-card, .gradient-border-card')) return;
+            const key = keys[bindIndex];
+            if (key) {
+                card.style.cursor = 'pointer';
+                card.classList.add('clickable-card');
+                card.addEventListener('click', (e) => {
+                    // 避免拦截内部按钮的点击
+                    if (e.target.closest('button, a, input')) return;
+                    showInfoModal(key);
+                });
+                bindIndex++;
+            }
+        });
+    });
+
+    // 数据统计卡片点击
+    document.querySelectorAll('.counter-card').forEach((card, i) => {
+        const keys = ['stat-300', 'stat-80', 'stat-10', 'stat-4', 'stat-67', 'stat-96'];
+        if (keys[i]) {
+            card.addEventListener('click', () => showInfoModal(keys[i]));
+        }
+    });
+
+    // 通用点击涟漪效果
+    document.querySelectorAll('.btn-primary, .btn-outline, .btn-glow, .clickable-card').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple';
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+            ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+            this.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 700);
+        });
+    });
+
+    // 警句板块点击
+    const quotesSection = document.getElementById('quotes');
+    if (quotesSection) {
+        quotesSection.querySelectorAll('.glass-card, blockquote, .reveal').forEach(el => {
+            el.style.cursor = 'pointer';
+            el.addEventListener('click', () => showInfoModal('quote-1'));
+        });
+    }
+
+    // 愿景板块卡片
+    const visionSection = document.getElementById('vision');
+    if (visionSection) {
+        visionSection.querySelectorAll('.glass-card, .reveal').forEach((el, i) => {
+            el.style.cursor = 'pointer';
+            const keys = ['vision-1', 'vision-2'];
+            if (keys[i]) el.addEventListener('click', () => showInfoModal(keys[i]));
+        });
+    }
+});
+
+// ==================== 数据驱动：通过 data-info 属性绑定（最通用方式） ====================
+// 任何元素加 data-info="key" 即可点击弹窗
+document.addEventListener('click', (e) => {
+    const target = e.target.closest('[data-info]');
+    if (target) {
+        e.preventDefault();
+        showInfoModal(target.getAttribute('data-info'));
+    }
+});
 </script>
 </body>
 </html>
