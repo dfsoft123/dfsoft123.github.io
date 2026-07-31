@@ -160,6 +160,8 @@ body::before{
   filter:drop-shadow(0 0 60px rgba(255,213,74,.7));
 }
 .intro-start-img:active{transform:scale(.96)}
+.intro-start-hint{margin-top:16px;font-size:13px;color:rgba(255,255,255,.45);letter-spacing:1px;cursor:pointer;transition:color .3s;text-shadow:0 0 10px rgba(0,0,0,.6);font-family:var(--font-body)}
+.intro-start-hint:hover{color:rgba(255,255,255,.75)}
 .intro-menu::before{
   content:'';position:absolute;inset:0;z-index:-1;
   background:
@@ -781,6 +783,7 @@ body::before{
     <div class="meteor-deco"></div>
     <img class="intro-title-img" src="标题.png" alt="游戏标题">
     <img class="intro-start-img" id="intro-start-btn" src="开始游戏.png" alt="开始游戏">
+    <div class="intro-start-hint">如果图片没有加载出来就点击这个</div>
   </div>
 </div>
 
@@ -2413,6 +2416,7 @@ function playIntro() {
   const progressFill = document.getElementById('intro-video-progress-fill');
   const menu = document.getElementById('intro-menu');
   const startBtn = document.getElementById('intro-start-btn');
+  const startHint = document.querySelector('.intro-start-hint');
 
   video.loop = false;
   let videoEnded = false;
@@ -2455,7 +2459,7 @@ function playIntro() {
     clearTimeout(timeoutId);
   }
 
-  startBtn.onclick = function() {
+  const startGame = function() {
     intro.classList.add('hide');
     video.pause();
     clearTimeout(timeoutId);
@@ -2466,6 +2470,8 @@ function playIntro() {
       renderAll();
     }, 1000);
   };
+  startBtn.onclick = startGame;
+  startHint.onclick = startGame;
 }
 
 // ==================== 商店 ====================
