@@ -584,8 +584,14 @@ function dig(silent=false){
     if(block.name==='量子块' && !pk.isQuantum){
         if(!silent && !window._quantumAlertShown){
             window._quantumAlertShown=true;
-            alert('⚠️ 量子块只能用量子镐挖掘！');
+            alert('⚠️ 量子块只能用量子镐挖掘！自动挖矿已暂停。');
             setTimeout(()=>{window._quantumAlertShown=false;},5000);
+        }
+        if(gameData.autoMine){
+            gameData.autoMine=false;
+            elements.autoMineBtn.textContent='⚙ 自动挖矿: 关闭';
+            elements.autoMineBtn.classList.toggle('active',false);
+            updateAutoMine();
         }
         return;
     }
