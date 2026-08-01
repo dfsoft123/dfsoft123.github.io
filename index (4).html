@@ -507,7 +507,18 @@ function updateBlockDisplay(){
     }else{elements.dropInfo.style.display='none';}
 }
 function getCurrentSqrtZoneBlocks(){return gameData.blocks.map((b,i)=>b.sqrtZone===gameData.sqrtPower?i:null).filter(i=>i!==null);}
-function changeBlock(d){const list=getCurrentSqrtZoneBlocks();const cur=list.indexOf(gameData.currentBlockIndex);let nxt=cur+d;if(nxt<0)nxt=list.length-1;else if(nxt>=list.length)nxt=0;gameData.currentBlockIndex=list[nxt];gameData.currentHp=gameData.blocks[gameData.currentBlockIndex].hp;updateBlockDisplay();}
+function changeBlock(d){const list=getCurrentSqrtZoneBlocks();const cur=list.indexOf(gameData.currentBlockIndex);let nxt=cur+d;if(nxt<0)nxt=list.length-1;else if(nxt>=list.length)nxt=0;gameData.currentBlockIndex=list[nxt];gameData.currentHp=gameData.blocks[gameData.currentBlockIndex].hp;updateBlockDisplay();checkQuantumBlock();}
+function checkQuantumBlock(){
+    const block=gameData.blocks[gameData.currentBlockIndex];
+    const pk=gameData.pickaxes[gameData.currentPickaxeIndex];
+    if(block.name==='量子块' && !pk.isQuantum && gameData.autoMine){
+        gameData.autoMine=false;
+        elements.autoMineBtn.textContent='⚙ 自动挖矿: 关闭';
+        elements.autoMineBtn.classList.toggle('active',false);
+        updateAutoMine();
+        alert('⚠️ 量子块只能用量子镐挖掘！自动挖矿已暂停。');
+    }
+}
 function showDamageText(damage){if(elements.damageTextContainer.children.length>8)elements.damageTextContainer.removeChild(elements.damageTextContainer.firstChild);const dt=document.createElement('div');dt.className='damage-text';dt.textContent=formatNumber(damage);dt.style.left='50%';dt.style.top='50%';dt.style.transform=`translate(${Math.random()*200-100}px,${Math.random()*200-100}px)`;elements.damageTextContainer.appendChild(dt);setTimeout(()=>dt.remove(),1000);}
 function updateStats(){
     try{updateMechanicalPickaxe();const pk=gameData.pickaxes[gameData.currentPickaxeIndex];
@@ -658,7 +669,7 @@ function autoMineTick(){
     }
     const now=Date.now();if(lastAutoMineTime===0)lastAutoMineTime=now;const elapsed=now-lastAutoMineTime;let ticks=Math.floor(elapsed/100);if(ticks<1)ticks=1;if(ticks>10)ticks=10;for(let i=0;i<ticks;i++){dig(i<ticks-1);}lastAutoMineTime=now;updateStats();updateExchangeButton();}
 function updateAutoMine(){if(gameData.autoMine){if(!autoMineInterval){lastAutoMineTime=Date.now();autoMineInterval=setInterval(autoMineTick,100);}}else{if(autoMineInterval){clearInterval(autoMineInterval);autoMineInterval=null;}}}
-function toggleAutoMine(){gameData.autoMine=!gameData.autoMine;elements.autoMineBtn.textContent=`⚙ 自动挖矿: ${gameData.autoMine?'开启':'关闭'}`;elements.autoMineBtn.classList.toggle('active',gameData.autoMine);updateAutoMine();}
+function toggleAutoMine(){gameData.autoMine=!gameData.autoMine;if(gameData.autoMine){const block=gameData.blocks[gameData.currentBlockIndex];const pk=gameData.pickaxes[gameData.currentPickaxeIndex];if(block.name==='量子块' && !pk.isQuantum){gameData.autoMine=false;alert('⚠️ 量子块只能用量子镐挖掘！');}}elements.autoMineBtn.textContent=`⚙ 自动挖矿: ${gameData.autoMine?'开启':'关闭'}`;elements.autoMineBtn.classList.toggle('active',gameData.autoMine);updateAutoMine();}
 function toggleAutoExchange(){gameData.autoExchange=!gameData.autoExchange;elements.autoExchangeBtn.textContent=`⟳ 自动兑换: ${gameData.autoExchange?'开启':'关闭'}`;elements.autoExchangeBtn.classList.toggle('active',gameData.autoExchange);}
 function updateAutoExchangeThreshold(){const t=parseInt(elements.autoExchangeThreshold.value);gameData.autoExchangeThreshold=t>=100?t:gameData.autoExchangeThreshold;elements.autoExchangeThreshold.value=gameData.autoExchangeThreshold;}
 function checkAutoExchange(){if(gameData.autoExchange&&gameData.coins>=gameData.autoExchangeThreshold)exchangeTrophies(false);}
