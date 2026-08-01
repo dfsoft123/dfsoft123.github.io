@@ -507,7 +507,18 @@ function updateBlockDisplay(){
     }else{elements.dropInfo.style.display='none';}
 }
 function getCurrentSqrtZoneBlocks(){return gameData.blocks.map((b,i)=>b.sqrtZone===gameData.sqrtPower?i:null).filter(i=>i!==null);}
-function changeBlock(d){const list=getCurrentSqrtZoneBlocks();const cur=list.indexOf(gameData.currentBlockIndex);let nxt=cur+d;if(nxt<0)nxt=list.length-1;else if(nxt>=list.length)nxt=0;gameData.currentBlockIndex=list[nxt];gameData.currentHp=gameData.blocks[gameData.currentBlockIndex].hp;updateBlockDisplay();}
+function changeBlock(d){const list=getCurrentSqrtZoneBlocks();const cur=list.indexOf(gameData.currentBlockIndex);let nxt=cur+d;if(nxt<0)nxt=list.length-1;else if(nxt>=list.length)nxt=0;gameData.currentBlockIndex=list[nxt];gameData.currentHp=gameData.blocks[gameData.currentBlockIndex].hp;updateBlockDisplay();checkQuantumBlock();}
+function checkQuantumBlock(){
+    const block=gameData.blocks[gameData.currentBlockIndex];
+    const pk=gameData.pickaxes[gameData.currentPickaxeIndex];
+    if(block.name==='量子块' && !pk.isQuantum && gameData.autoMine){
+        gameData.autoMine=false;
+        elements.autoMineBtn.textContent='⚙ 自动挖矿: 关闭';
+        elements.autoMineBtn.classList.toggle('active',false);
+        updateAutoMine();
+        alert('⚠️ 量子块只能用量子镐挖掘！自动挖矿已暂停。');
+    }
+}
 function showDamageText(damage){if(elements.damageTextContainer.children.length>8)elements.damageTextContainer.removeChild(elements.damageTextContainer.firstChild);const dt=document.createElement('div');dt.className='damage-text';dt.textContent=formatNumber(damage);dt.style.left='50%';dt.style.top='50%';dt.style.transform=`translate(${Math.random()*200-100}px,${Math.random()*200-100}px)`;elements.damageTextContainer.appendChild(dt);setTimeout(()=>dt.remove(),1000);}
 function updateStats(){
     try{updateMechanicalPickaxe();const pk=gameData.pickaxes[gameData.currentPickaxeIndex];
@@ -581,11 +592,19 @@ function dig(silent=false){
     const pk=gameData.pickaxes[gameData.currentPickaxeIndex];
     
     // ★ 量子块只能用量子镐挖掘
-    if(block.name==='量子块'){
-        if(!pk.isQuantum){
-            if(!silent) alert('⚠️ 量子块只能用量子镐挖掘！');
-            return;
+    if(block.name==='量子块' && !pk.isQuantum){
+        if(!silent && !window._quantumAlertShown){
+            window._quantumAlertShown=true;
+            alert('⚠️ 量子块只能用量子镐挖掘！自动挖矿已暂停。');
+            setTimeout(()=>{window._quantumAlertShown=false;},5000);
         }
+        if(gameData.autoMine){
+            gameData.autoMine=false;
+            elements.autoMineBtn.textContent='⚙ 自动挖矿: 关闭';
+            elements.autoMineBtn.classList.toggle('active',false);
+            updateAutoMine();
+        }
+        return;
     }
     
     const dmg=calculateTotalDamage();
@@ -636,9 +655,22 @@ function dig(silent=false){
 }
 
 let autoMineInterval=null,lastAutoMineTime=0;
-function autoMineTick(){if(!gameData.autoMine)return;const now=Date.now();if(lastAutoMineTime===0)lastAutoMineTime=now;const elapsed=now-lastAutoMineTime;let ticks=Math.floor(elapsed/100);if(ticks<1)ticks=1;if(ticks>10)ticks=10;for(let i=0;i<ticks;i++){dig(i<ticks-1);}lastAutoMineTime=now;updateStats();updateExchangeButton();}
+function autoMineTick(){
+    document.title='⚡autoMineTick('+Date.now()+')'; // 调试：修改标题
+    if(!gameData.autoMine)return;
+    const block=gameData.blocks[gameData.currentBlockIndex];
+    const pk=gameData.pickaxes[gameData.currentPickaxeIndex];
+    if(block.name==='量子块' && !pk.isQuantum){
+        alert('⚠️ 量子块只能用量子镐挖掘！自动挖矿已暂停。');
+        gameData.autoMine=false;
+        elements.autoMineBtn.textContent='⚙ 自动挖矿: 关闭';
+        elements.autoMineBtn.classList.toggle('active',false);
+        updateAutoMine();
+        return;
+    }
+    const now=Date.now();if(lastAutoMineTime===0)lastAutoMineTime=now;const elapsed=now-lastAutoMineTime;let ticks=Math.floor(elapsed/100);if(ticks<1)ticks=1;if(ticks>10)ticks=10;for(let i=0;i<ticks;i++){dig(i<ticks-1);}lastAutoMineTime=now;updateStats();updateExchangeButton();}
 function updateAutoMine(){if(gameData.autoMine){if(!autoMineInterval){lastAutoMineTime=Date.now();autoMineInterval=setInterval(autoMineTick,100);}}else{if(autoMineInterval){clearInterval(autoMineInterval);autoMineInterval=null;}}}
-function toggleAutoMine(){gameData.autoMine=!gameData.autoMine;elements.autoMineBtn.textContent=`⚙ 自动挖矿: ${gameData.autoMine?'开启':'关闭'}`;elements.autoMineBtn.classList.toggle('active',gameData.autoMine);updateAutoMine();}
+function toggleAutoMine(){gameData.autoMine=!gameData.autoMine;if(gameData.autoMine){const block=gameData.blocks[gameData.currentBlockIndex];const pk=gameData.pickaxes[gameData.currentPickaxeIndex];if(block.name==='量子块' && !pk.isQuantum){gameData.autoMine=false;alert('⚠️ 量子块只能用量子镐挖掘！');}}elements.autoMineBtn.textContent=`⚙ 自动挖矿: ${gameData.autoMine?'开启':'关闭'}`;elements.autoMineBtn.classList.toggle('active',gameData.autoMine);updateAutoMine();}
 function toggleAutoExchange(){gameData.autoExchange=!gameData.autoExchange;elements.autoExchangeBtn.textContent=`⟳ 自动兑换: ${gameData.autoExchange?'开启':'关闭'}`;elements.autoExchangeBtn.classList.toggle('active',gameData.autoExchange);}
 function updateAutoExchangeThreshold(){const t=parseInt(elements.autoExchangeThreshold.value);gameData.autoExchangeThreshold=t>=100?t:gameData.autoExchangeThreshold;elements.autoExchangeThreshold.value=gameData.autoExchangeThreshold;}
 function checkAutoExchange(){if(gameData.autoExchange&&gameData.coins>=gameData.autoExchangeThreshold)exchangeTrophies(false);}
@@ -739,7 +771,7 @@ function buyPickaxe(e){
         if(can){for(const[mat,req]of Object.entries(pk.recipe)){const map={'黑曜石镐':10,'紫水晶镐VI':16,'铜镐VI':22,'蓝曜石碎片':'blueObsidianFragment','红曜石碎片':'redObsidianFragment','蓝曜石镐':23,'红曜石镐':24,'红蓝结晶':'redBlueCrystal','基岩碎片':'bedrockFragment','红蓝镐':25,'黑曜石':'obsidian','玻璃':'glass','下界之星':'netherStar','坤坤':'kunKun','基岩镐':26,'坤坤镐':27,'土核心':'earthCore','土核心镐':28,'木核心':'woodCore','木核心镐':29,'火立方镐':30,'水立方镐':31,'火立方':'fireCube','水立方':'waterCube','使用增益':'usageBonus','金立方':'goldCube','金币':'coins','金立方镐':32,'五行结晶':'fiveElementCrystal','京核':'jingCore','五行镐':33,'元素晶片':'elementChip'};const key=map[mat];if(typeof key==='number')gameData.pickaxes[key].count-=req;else gameData[key]-=req;}pk.count++;if(pk.name==='信标')gameData.beacon=pk.count;initShop();updateStats();}
     }else{if(gameData[pk.currency||'trophies']>=pk.price){gameData[pk.currency||'trophies']-=pk.price;pk.count++;initShop();updateStats();}}
 }
-function usePickaxe(e){const idx=parseInt(e.target.dataset.index);if(gameData.pickaxes[idx].count>0){gameData.currentPickaxeIndex=idx;initShop();updateStats();}}
+function usePickaxe(e){const idx=parseInt(e.target.dataset.index);if(gameData.pickaxes[idx].count>0){gameData.currentPickaxeIndex=idx;window._quantumAlertShown=false;initShop();updateStats();}}
 function closeChestModal(){document.getElementById('chest-modal').style.display='none';}
 
 function updateChestUI(){
