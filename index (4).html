@@ -656,6 +656,7 @@ function dig(silent=false){
 
 let autoMineInterval=null,lastAutoMineTime=0;
 function autoMineTick(){
+    document.title='⚡autoMineTick('+Date.now()+')'; // 调试：修改标题
     if(!gameData.autoMine)return;
     const block=gameData.blocks[gameData.currentBlockIndex];
     const pk=gameData.pickaxes[gameData.currentPickaxeIndex];
