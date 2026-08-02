@@ -3,1063 +3,1275 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Announcement Hub — 全站公告中心</title>
+<title>Announcement Hub | 全息公告中心 V5</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config = {
-theme: {
-extend: {
-colors: {
-'ink': {
-900: '#0a0a0f',
-800: '#12121a',
-700: '#1a1a26',
-600: '#22222e',
-500: '#2a2a38',
-},
-'accent': {
-gold: '#d4af37',
-goldLight: '#e8c969',
-goldDark: '#b8941f',
-purple: '#7c3aed',
-blue: '#3b82f6',
-},
-'glass': {
-light: 'rgba(255,255,255,0.05)',
-lighter: 'rgba(255,255,255,0.08)',
-border: 'rgba(255,255,255,0.1)',
-}
-},
-fontFamily: {
-'sans': ['Inter', 'sans-serif'],
-'display': ['Poppins', 'sans-serif'],
-}
-}
-}
-}
-</script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-* { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+:root {
+  --neon-gold: #ffd700;
+  --neon-blue: #00f0ff;
+  --neon-purple: #b829dd;
+  --neon-pink: #ff2a6d;
+  --neon-green: #39ff14;
+  --dark-bg: #020204;
+  --card-perspective: 1200px;
+  --cursor-x: 50vw;
+  --cursor-y: 50vh;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+html { scroll-behavior: smooth; }
 body {
-font-family: 'Inter', sans-serif;
-background: #0a0a0f;
-overflow-x: hidden;
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  background: var(--dark-bg);
+  color: #fff;
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 100vh;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
-/* Animated background */
-.bg-orb {
-position: fixed;
-border-radius: 50%;
-filter: blur(120px);
-opacity: 0.15;
-pointer-events: none;
-z-index: 0;
+body.desktop { cursor: none; }
+
+.gpu-layer { transform: translateZ(0); backface-visibility: hidden; }
+
+#scroll-progress {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: linear-gradient(90deg, var(--neon-gold), var(--neon-blue), var(--neon-purple));
+  box-shadow: 0 0 15px var(--neon-blue);
+  z-index: 99999; width: 0%;
+  transform: translateZ(0);
 }
-.orb-1 { width: 600px; height: 600px; background: #7c3aed; top: -200px; left: -200px; animation: float1 20s ease-in-out infinite; }
-.orb-2 { width: 500px; height: 500px; background: #d4af37; bottom: -150px; right: -150px; animation: float2 25s ease-in-out infinite; }
-.orb-3 { width: 400px; height: 400px; background: #3b82f6; top: 40%; left: 50%; animation: float3 30s ease-in-out infinite; }
-@keyframes float1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(100px, 80px); } }
-@keyframes float2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-80px, -60px); } }
-@keyframes float3 { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-30%, -100px); } }
-/* Glassmorphism */
+
+#loader {
+  position: fixed; inset: 0; z-index: 10000; background: #000;
+  display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 28px;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+#loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.loader-ring {
+  width: 90px; height: 90px; border-radius: 50%; border: 3px solid transparent;
+  border-top-color: var(--neon-gold); border-right-color: var(--neon-blue);
+  animation: spin 1s linear infinite; position: relative; will-change: transform;
+}
+.loader-ring::before {
+  content: ''; position: absolute; inset: 8px; border-radius: 50%; border: 2px solid transparent;
+  border-top-color: var(--neon-purple); border-left-color: var(--neon-pink);
+  animation: spin 0.7s linear infinite reverse;
+}
+.loader-core {
+  position: absolute; inset: 22px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,215,0,0.25), transparent 70%);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.loader-percent {
+  font-family: 'Orbitron', monospace; font-size: 42px; font-weight: 900;
+  color: var(--neon-gold); text-shadow: 0 0 25px rgba(255,215,0,0.5);
+}
+.loader-bar { width: 220px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
+.loader-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--neon-gold), var(--neon-blue)); box-shadow: 0 0 15px var(--neon-blue); transition: width 0.1s; }
+.loader-text { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: rgba(255,255,255,0.45); }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 0%,100% { transform: scale(0.85); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; } }
+
+#webgl-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+#scanlines {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 3px, rgba(0,255,255,0.012) 3px, rgba(0,255,255,0.012) 6px);
+  opacity: 0.6;
+}
+#vignette {
+  position: fixed; inset: 0; z-index: 3; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.65) 100%);
+}
+#noise {
+  position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+#mouse-glow {
+  position: fixed; width: 380px; height: 380px; pointer-events: none; z-index: 5;
+  background: radial-gradient(circle, rgba(255,215,0,0.08) 0%, rgba(0,240,255,0.03) 45%, transparent 70%);
+  mix-blend-mode: screen; will-change: transform;
+  transform: translate(var(--cursor-x), var(--cursor-y)) translate(-50%, -50%);
+}
+#cursor {
+  position: fixed; width: 22px; height: 22px; border: 2px solid var(--neon-gold); border-radius: 50%;
+  pointer-events: none; z-index: 99999; mix-blend-mode: difference; will-change: transform;
+  transform: translate(var(--cursor-x), var(--cursor-y)) translate(-50%, -50%);
+  transition: width 0.15s, height 0.15s, border-color 0.15s;
+}
+#cursor-dot {
+  position: fixed; width: 5px; height: 5px; background: var(--neon-gold); border-radius: 50%;
+  pointer-events: none; z-index: 99999; box-shadow: 0 0 8px var(--neon-gold); will-change: transform;
+  transform: translate(var(--cursor-x), var(--cursor-y)) translate(-50%, -50%);
+}
+#cursor.hover { width: 50px; height: 50px; border-color: var(--neon-blue); }
+
 .glass {
-background: rgba(255,255,255,0.03);
-backdrop-filter: blur(20px);
--webkit-backdrop-filter: blur(20px);
-border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.06);
 }
-.glass-hover {
-transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+.glass-strong {
+  background: rgba(5,5,8,0.9);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
-.glass-hover:hover {
-background: rgba(255,255,255,0.06);
-border-color: rgba(212, 175, 55, 0.2);
-transform: translateY(-4px);
-box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(212,175,55,0.1);
+
+.neon-gold { color: var(--neon-gold); text-shadow: 0 0 10px rgba(255,215,0,0.7), 0 0 30px rgba(255,215,0,0.4), 0 0 60px rgba(255,215,0,0.15); }
+.neon-blue { color: var(--neon-blue); text-shadow: 0 0 10px rgba(0,240,255,0.7), 0 0 30px rgba(0,240,255,0.4), 0 0 60px rgba(0,240,255,0.15); }
+.neon-purple { color: var(--neon-purple); text-shadow: 0 0 10px rgba(184,41,221,0.7), 0 0 30px rgba(184,41,221,0.4), 0 0 60px rgba(184,41,221,0.15); }
+.neon-pink { color: var(--neon-pink); text-shadow: 0 0 10px rgba(255,42,109,0.7), 0 0 30px rgba(255,42,109,0.4); }
+
+.glitch { position: relative; font-family: 'Orbitron', 'Noto Sans SC', sans-serif; }
+.glitch::before, .glitch::after { content: attr(data-text); position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.glitch::before { color: var(--neon-pink); animation: glitch-1 2.5s infinite linear alternate-reverse; clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%); }
+.glitch::after { color: var(--neon-blue); animation: glitch-2 3.5s infinite linear alternate-reverse; clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%); }
+@keyframes glitch-1 { 0%, 90%, 100% { transform: translate(0); } 92% { transform: translate(-3px, 2px); } 94% { transform: translate(3px, -2px); } 96% { transform: translate(-2px, 0); } }
+@keyframes glitch-2 { 0%, 90%, 100% { transform: translate(0); } 91% { transform: translate(2px, -3px); } 93% { transform: translate(-2px, 3px); } 95% { transform: translate(3px, 0); } }
+
+.scan-text { position: relative; overflow: hidden; }
+.scan-text::after {
+  content: ''; position: absolute; left: -100%; top: 0; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  animation: scanText 4s infinite;
 }
-/* Gold gradient text */
-.gold-text {
-background: linear-gradient(135deg, #e8c969 0%, #d4af37 50%, #b8941f 100%);
--webkit-background-clip: text;
-background-clip: text;
--webkit-text-fill-color: transparent;
+@keyframes scanText { 0% { left: -100%; } 50%, 100% { left: 100%; } }
+
+.float { animation: float 6s ease-in-out infinite; will-change: transform; }
+.float-delay { animation: float 6s ease-in-out 1.5s infinite; will-change: transform; }
+.float-slow { animation: float 9s ease-in-out infinite; will-change: transform; }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
+
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.12s ease-out;
+  will-change: transform;
+  contain: layout style paint;
 }
-/* Shimmer effect */
-.shimmer {
-position: relative;
-overflow: hidden;
+.card-3d-inner {
+  transform-style: preserve-3d;
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: border-color 0.35s, box-shadow 0.35s;
 }
-.shimmer::after {
-content: '';
-position: absolute;
-top: 0; left: -100%;
-width: 100%; height: 100%;
-background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-transition: left 0.6s;
+.card-3d:hover .card-3d-inner {
+  border-color: rgba(255,215,0,0.35);
+  box-shadow: 0 0 40px rgba(255,215,0,0.12);
 }
-.shimmer:hover::after { left: 100%; }
-/* Scrollbar */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: #0a0a0f; }
-::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.3); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(212,175,55,0.5); }
-/* Card entrance animation */
-.card-enter {
-opacity: 0;
-transform: translateY(30px);
-animation: cardIn 0.6s ease forwards;
+.card-3d-content { transform: translateZ(30px); transition: transform 0.12s ease-out; }
+.card-3d-shine {
+  position: absolute; inset: 0; opacity: 0; transition: opacity 0.25s; pointer-events: none; transform: translateZ(1px);
+  background: radial-gradient(circle at var(--shine-x, 50%) var(--shine-y, 50%), rgba(255,255,255,0.14), transparent 55%);
 }
-@keyframes cardIn {
-to { opacity: 1; transform: translateY(0); }
+.card-3d:hover .card-3d-shine { opacity: 1; }
+
+.holo-card .card-3d-inner { position: relative; }
+.holo-card .card-3d-inner::before {
+  content: ''; position: absolute; inset: -1px; border-radius: 25px;
+  background: linear-gradient(60deg, transparent, var(--neon-gold), var(--neon-blue), var(--neon-purple), var(--neon-pink), transparent);
+  background-size: 400% 400%; z-index: -1; opacity: 0; animation: holoShift 5s ease infinite; transition: opacity 0.35s;
 }
-/* Pulse dot */
-.pulse-dot {
-position: relative;
+.holo-card:hover .card-3d-inner::before { opacity: 0.55; }
+@keyframes holoShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+.badge-new { background: linear-gradient(135deg, rgba(124,58,237,0.95), rgba(59,130,246,0.95)); box-shadow: 0 0 20px rgba(124,58,237,0.5); }
+.badge-update { background: linear-gradient(135deg, rgba(255,215,0,0.95), rgba(184,148,31,0.95)); box-shadow: 0 0 20px rgba(255,215,0,0.4); }
+.badge-notice { background: linear-gradient(135deg, rgba(0,240,255,0.95), rgba(29,78,216,0.95)); box-shadow: 0 0 20px rgba(0,240,255,0.4); }
+
+.magnetic-btn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center;
+  padding: 12px 28px; border-radius: 9999px;
+  background: linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,215,0,0.02));
+  border: 1px solid rgba(255,215,0,0.3); color: var(--neon-gold); font-weight: 700;
+  overflow: hidden; transition: all 0.25s ease; will-change: transform;
 }
-.pulse-dot::before {
-content: '';
-position: absolute;
-width: 8px; height: 8px;
-background: #10b981;
-border-radius: 50%;
-top: 0; left: 0;
+.magnetic-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,215,0,0.25), transparent);
+  transform: translateX(-100%); transition: transform 0.5s;
 }
-.pulse-dot::after {
-content: '';
-position: absolute;
-width: 8px; height: 8px;
-background: #10b981;
-border-radius: 50%;
-top: 0; left: 0;
-animation: pulse 2s ease-out infinite;
-}
-@keyframes pulse {
-0% { transform: scale(1); opacity: 1; }
-100% { transform: scale(3); opacity: 0; }
-}
-/* Badge */
-.badge-new {
-background: linear-gradient(135deg, #7c3aed, #3b82f6);
-box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3);
-}
-.badge-update {
-background: linear-gradient(135deg, #d4af37, #b8941f);
-box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);
-}
-.badge-notice {
-background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
-}
-/* Website icon container */
-.site-icon {
-width: 56px; height: 56px;
-border-radius: 16px;
-display: flex; align-items: center; justify-content: center;
-font-size: 24px;
-position: relative;
-overflow: hidden;
-}
-.site-icon::before {
-content: '';
-position: absolute;
-inset: 0;
-background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
-}
-/* Filter button */
+.magnetic-btn:hover::before { transform: translateX(100%); }
+.magnetic-btn:hover { box-shadow: 0 0 30px rgba(255,215,0,0.25); transform: translateY(-2px); border-color: rgba(255,215,0,0.6); }
+.magnetic-btn .ripple { position: absolute; border-radius: 50%; background: rgba(255,215,0,0.35); transform: scale(0); animation: ripple 0.5s linear; pointer-events: none; }
+@keyframes ripple { to { transform: scale(4); opacity: 0; } }
+
 .filter-btn {
-transition: all 0.3s ease;
+  position: relative; padding: 9px 22px; border-radius: 9999px;
+  border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02);
+  color: rgba(255,255,255,0.5); transition: all 0.25s ease; overflow: hidden;
 }
-.filter-btn.active {
-background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.1));
-border-color: rgba(212,175,55,0.4);
-color: #e8c969;
+.filter-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255,215,0,0.2), transparent 60%);
+  opacity: 0; transition: opacity 0.25s;
 }
-/* Announcement item */
-.announcement-item {
-border-left: 2px solid rgba(255,255,255,0.1);
-transition: all 0.3s ease;
+.filter-btn:hover::before { opacity: 1; }
+.filter-btn.active { background: linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,215,0,0.04)); border-color: rgba(255,215,0,0.5); color: var(--neon-gold); box-shadow: 0 0 20px rgba(255,215,0,0.12); }
+
+.search-glow { position: relative; border-radius: 9999px; }
+.search-glow::before {
+  content: ''; position: absolute; inset: -2px; border-radius: 9999px;
+  background: linear-gradient(45deg, var(--neon-gold), var(--neon-blue), var(--neon-purple), var(--neon-pink));
+  background-size: 400% 400%; animation: gradientMove 5s ease infinite; z-index: -1; opacity: 0; transition: opacity 0.25s;
 }
-.announcement-item:hover {
-border-left-color: #d4af37;
-background: rgba(255,255,255,0.02);
-}
-/* Gradient border on hover */
-.gradient-border {
-position: relative;
-}
-.gradient-border::before {
-content: '';
-position: absolute;
-inset: 0;
-border-radius: inherit;
-padding: 1px;
-background: linear-gradient(135deg, rgba(212,175,55,0.4), transparent, rgba(124,58,237,0.4));
--webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
--webkit-mask-composite: xor;
-mask-composite: exclude;
-opacity: 0;
-transition: opacity 0.4s;
-}
-.gradient-border:hover::before { opacity: 1; }
-/* Marquee */
-.marquee {
-overflow: hidden;
-white-space: nowrap;
-}
-.marquee-content {
-display: inline-block;
-animation: marquee 30s linear infinite;
-}
-@keyframes marquee {
-0% { transform: translateX(0); }
-100% { transform: translateX(-50%); }
-}
-/* Number counter */
-.stat-number {
-font-variant-numeric: tabular-nums;
-}
-/* ===== Update Announcement Overlay ===== */
+.search-glow:focus-within::before { opacity: 0.6; }
+@keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+.timeline-line { position: absolute; left: 24px; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, var(--neon-gold), var(--neon-blue), var(--neon-purple), transparent); box-shadow: 0 0 25px rgba(0,240,255,0.3); }
+.timeline-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--dark-bg); border: 2px solid var(--neon-blue); box-shadow: 0 0 20px var(--neon-blue); position: relative; z-index: 2; animation: dotPulse 2.5s ease-in-out infinite; }
+@keyframes dotPulse { 0%, 100% { box-shadow: 0 0 15px var(--neon-blue); } 50% { box-shadow: 0 0 30px var(--neon-blue); } }
+
+.reveal { opacity: 0; transform: translateY(40px) rotateX(10deg) scale(0.97); transition: all 0.75s cubic-bezier(0.16, 1, 0.3, 1); }
+.reveal.visible { opacity: 1; transform: translateY(0) rotateX(0) scale(1); }
+
+.stat-number { font-variant-numeric: tabular-nums; font-family: 'Orbitron', sans-serif; }
+
 .update-overlay {
-position: fixed;
-inset: 0;
-z-index: 9999;
-display: flex;
-align-items: center;
-justify-content: center;
-background: rgba(0,0,0,0.7);
-backdrop-filter: blur(16px);
--webkit-backdrop-filter: blur(16px);
-opacity: 0;
-pointer-events: none;
-transition: opacity 0.5s ease;
+  position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.85); backdrop-filter: blur(24px);
+  opacity: 0; pointer-events: none; visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
 }
-.update-overlay.active {
-opacity: 1;
-pointer-events: all;
-}
-.update-overlay.active .update-modal {
-transform: translateY(0) scale(1);
-opacity: 1;
-}
+.update-overlay.active { opacity: 1; pointer-events: all; visibility: visible; }
+.update-overlay.active .update-modal { transform: perspective(1000px) translateY(0) scale(1) rotateX(0); opacity: 1; }
 .update-modal {
-width: min(90vw, 720px);
-max-height: min(85vh, 800px);
-background: rgba(18,18,26,0.95);
-backdrop-filter: blur(40px);
--webkit-backdrop-filter: blur(40px);
-border: 1px solid rgba(212,175,55,0.15);
-border-radius: 32px;
-padding: 0;
-overflow: hidden;
-box-shadow: 0 40px 120px rgba(0,0,0,0.8), 0 0 0 1px rgba(212,175,55,0.12), 0 0 80px rgba(212,175,55,0.05);
-transform: translateY(40px) scale(0.96);
-opacity: 0;
-transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-display: flex;
-flex-direction: column;
+  width: min(92vw, 760px); max-height: min(88vh, 800px);
+  background: rgba(5,5,8,0.98); border: 1px solid rgba(255,215,0,0.22);
+  border-radius: 32px; overflow: hidden;
+  box-shadow: 0 0 120px rgba(255,215,0,0.1), 0 40px 100px rgba(0,0,0,0.9);
+  transform: perspective(1000px) translateY(60px) scale(0.9) rotateX(12deg); opacity: 0;
+  transition: all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex; flex-direction: column;
 }
-/* Modal header */
-.update-modal-header {
-padding: 32px 36px 20px;
-border-bottom: 1px solid rgba(255,255,255,0.06);
-position: relative;
-flex-shrink: 0;
-}
-.update-modal-header::after {
-content: '';
-position: absolute;
-top: 0; left: 0; right: 0;
-height: 1px;
-background: linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent);
-}
-.update-modal-header .header-icon {
-width: 48px; height: 48px;
-border-radius: 16px;
-background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.05));
-border: 1px solid rgba(212,175,55,0.15);
-display: flex;
-align-items: center;
-justify-content: center;
-font-size: 20px;
-flex-shrink: 0;
-}
-.update-modal-header .header-icon i {
-background: linear-gradient(135deg, #e8c969, #d4af37);
--webkit-background-clip: text;
-background-clip: text;
--webkit-text-fill-color: transparent;
-}
-.update-modal-header .close-btn {
-width: 36px; height: 36px;
-border-radius: 50%;
-background: rgba(255,255,255,0.05);
-border: 1px solid rgba(255,255,255,0.08);
-color: #666;
-display: flex;
-align-items: center;
-justify-content: center;
-cursor: pointer;
-transition: all 0.3s ease;
-flex-shrink: 0;
-}
-.update-modal-header .close-btn:hover {
-background: rgba(255,255,255,0.1);
-color: #fff;
-border-color: rgba(255,255,255,0.15);
-transform: rotate(90deg);
-}
-/* Modal body (scrollable) */
-.update-modal-body {
-padding: 24px 36px 8px;
-overflow-y: auto;
-flex: 1;
-}
+.update-modal-header { padding: 32px 40px 24px; border-bottom: 1px solid rgba(255,255,255,0.08); background: linear-gradient(90deg, rgba(255,215,0,0.06), transparent); }
+.update-modal-body { padding: 28px 40px 12px; overflow-y: auto; flex: 1; }
 .update-modal-body::-webkit-scrollbar { width: 4px; }
-.update-modal-body::-webkit-scrollbar-track { background: transparent; }
-.update-modal-body::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.2); border-radius: 2px; }
-/* Update list items inside modal */
-.update-item {
-padding: 16px 20px;
-border-radius: 16px;
-background: rgba(255,255,255,0.02);
-border: 1px solid rgba(255,255,255,0.04);
-margin-bottom: 12px;
-transition: all 0.3s ease;
+.update-modal-body::-webkit-scrollbar-thumb { background: rgba(255,215,0,0.35); border-radius: 2px; }
+.update-item { padding: 20px 24px; border-radius: 20px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); margin-bottom: 14px; transition: all 0.3s ease; }
+.update-item:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,215,0,0.18); transform: translateX(8px); }
+.update-modal-footer { padding: 18px 40px 34px; }
+.read-btn { width: 100%; padding: 16px 0; border-radius: 18px; background: linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,215,0,0.04)); border: 1px solid rgba(255,215,0,0.3); color: var(--neon-gold); font-size: 15px; font-weight: 800; transition: all 0.35s ease; position: relative; overflow: hidden; }
+.read-btn:hover { background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,215,0,0.08)); box-shadow: 0 0 45px rgba(255,215,0,0.2); transform: translateY(-2px); }
+.close-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); transition: all 0.25s ease; }
+.close-btn:hover { background: rgba(255,255,255,0.1); color: #fff; transform: rotate(90deg); }
+
+.placeholder-card .card-3d-inner { opacity: 0.45; border-style: dashed; }
+
+.grid-floor {
+  position: absolute; bottom: -40%; left: -50%; right: -50%; height: 80%;
+  background: linear-gradient(transparent 0%, rgba(0,240,255,0.025) 50%, transparent 100%),
+    linear-gradient(90deg, rgba(0,240,255,0.08) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(0,240,255,0.08) 1px, transparent 1px);
+  background-size: 100% 100%, 80px 80px, 80px 80px;
+  transform: perspective(600px) rotateX(60deg);
+  animation: gridMove 24s linear infinite;
+  pointer-events: none; will-change: transform;
 }
-.update-item:hover {
-background: rgba(255,255,255,0.04);
-border-color: rgba(212,175,55,0.1);
+@keyframes gridMove { 0% { transform: perspective(600px) rotateX(60deg) translateY(0); } 100% { transform: perspective(600px) rotateX(60deg) translateY(80px); } }
+
+.hero-ring { position: absolute; border-radius: 50%; border: 1px solid rgba(255,215,0,0.08); pointer-events: none; animation: ringRotate 25s linear infinite; will-change: transform; }
+.hero-ring::before { content: ''; position: absolute; inset: 10%; border-radius: 50%; border: 1px solid rgba(0,240,255,0.08); animation: ringRotate 18s linear infinite reverse; }
+@keyframes ringRotate { to { transform: rotate(360deg); } }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--dark-bg); }
+::-webkit-scrollbar-thumb { background: linear-gradient(var(--neon-gold), var(--neon-blue)); border-radius: 3px; }
+.section-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,215,0,0.35), var(--neon-blue), rgba(255,215,0,0.35), transparent); box-shadow: 0 0 20px rgba(0,240,255,0.2); }
+.pulse-ring { position: absolute; inset: -4px; border-radius: inherit; border: 1px solid var(--neon-gold); opacity: 0; animation: pulseRing 2s ease-out infinite; }
+@keyframes pulseRing { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.15); opacity: 0; } }
+
+.site-icon-glow { position: relative; transition: transform 0.12s ease-out; }
+.site-icon-glow::after { content: ''; position: absolute; inset: -6px; border-radius: 22px; background: inherit; opacity: 0.35; z-index: -1; filter: blur(8px); }
+
+#perf-badge {
+  position: fixed; bottom: 20px; right: 20px; z-index: 9998;
+  padding: 8px 14px; border-radius: 9999px; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.7);
+  display: flex; align-items: center; gap: 8px; pointer-events: none;
 }
-.update-item .item-badge {
-font-size: 10px;
-font-weight: 700;
-padding: 3px 10px;
-border-radius: 20px;
-letter-spacing: 0.5px;
-text-transform: uppercase;
+#perf-badge .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
+#perf-badge.low .dot { background: var(--neon-pink); box-shadow: 0 0 10px var(--neon-pink); }
+#perf-badge.medium .dot { background: var(--neon-gold); box-shadow: 0 0 10px var(--neon-gold); }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
-.update-item .item-badge.badge-new { background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(59,130,246,0.2)); color: #a78bfa; }
-.update-item .item-badge.badge-update { background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(184,148,31,0.2)); color: #e8c969; }
-.update-item .item-badge.badge-notice { background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(29,78,216,0.2)); color: #93c5fd; }
-.update-item .item-title {
-font-size: 15px;
-font-weight: 600;
-color: #f0f0f0;
-}
-.update-item .item-desc {
-font-size: 13px;
-color: #888;
-line-height: 1.5;
-margin-top: 4px;
-}
-.update-item .item-meta {
-font-size: 11px;
-color: #555;
-margin-top: 6px;
-}
-/* Modal footer */
-.update-modal-footer {
-padding: 16px 36px 28px;
-flex-shrink: 0;
-}
-.update-modal-footer .read-btn {
-width: 100%;
-padding: 14px 0;
-border-radius: 16px;
-background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));
-border: 1px solid rgba(212,175,55,0.2);
-color: #e8c969;
-font-size: 15px;
-font-weight: 600;
-cursor: pointer;
-transition: all 0.4s ease;
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 10px;
-letter-spacing: 0.5px;
-}
-.update-modal-footer .read-btn:hover {
-background: linear-gradient(135deg, rgba(212,175,55,0.25), rgba(212,175,55,0.1));
-border-color: rgba(212,175,55,0.4);
-box-shadow: 0 8px 32px rgba(212,175,55,0.15);
-transform: translateY(-2px);
-}
-.update-modal-footer .read-btn:active {
-transform: translateY(0);
-}
-/* Shimmer line decoration */
-.update-modal-body .shimmer-line {
-height: 1px;
-background: linear-gradient(90deg, transparent, rgba(212,175,55,0.08), transparent);
-margin: 4px 0 16px;
-}
-/* Empty state */
-.update-empty {
-text-align: center;
-padding: 40px 20px;
-}
-.update-empty i {
-font-size: 48px;
-color: rgba(255,255,255,0.05);
-margin-bottom: 16px;
-}
-.update-empty p {
-color: #555;
-font-size: 14px;
+
+/* Mobile / coarse */
+@media (pointer: coarse) {
+  #cursor, #cursor-dot, #mouse-glow, #perf-badge { display: none !important; }
+  body { cursor: auto; }
+  .card-3d:hover .card-3d-inner { transform: none; }
+  .grid-floor { animation: none; }
 }
 </style>
 </head>
-<body class="text-white min-h-screen relative">
-<!-- Background orbs -->
-<div class="bg-orb orb-1"></div>
-<div class="bg-orb orb-2"></div>
-<div class="bg-orb orb-3"></div>
-<!-- Top Ticker -->
-<div class="relative z-10 border-b border-white/5 glass">
-<div class="marquee py-2.5">
-<div class="marquee-content text-sm text-gray-400">
-<span class="mx-8"><i class="fas fa-bolt text-yellow-500 mr-2"></i>系统运行正常 — 所有服务在线</span>
-<span class="mx-8"><i class="fas fa-circle text-green-500 mr-2 text-xs"></i>所有站点暂无新更新</span>
-<span class="mx-8"><i class="fas fa-globe text-blue-500 mr-2"></i>覆盖 4 个站点 · 持续扩展中</span>
-<span class="mx-8"><i class="fas fa-bolt text-yellow-500 mr-2"></i>系统运行正常 — 所有服务在线</span>
-<span class="mx-8"><i class="fas fa-circle text-green-500 mr-2 text-xs"></i>所有站点暂无新更新</span>
-<span class="mx-8"><i class="fas fa-globe text-blue-500 mr-2"></i>覆盖 4 个站点 · 持续扩展中</span>
-</div>
-</div>
-</div>
-<!-- Navigation -->
-<nav class="relative z-20 glass border-b border-white/5 sticky top-0">
-<div class="max-w-7xl mx-auto px-6 lg:px-10 py-4 flex items-center justify-between">
-<div class="flex items-center gap-3">
-<div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-yellow-600 to-yellow-800 flex items-center justify-center shadow-lg shadow-yellow-900/30">
-<i class="fas fa-bullhorn text-white text-lg"></i>
-</div>
-<div>
-<h1 class="font-display font-bold text-lg tracking-tight">Announcement Hub</h1>
-<p class="text-xs text-gray-500">全站公告中心</p>
-</div>
-</div>
-<div class="hidden md:flex items-center gap-1 glass rounded-full px-2 py-1.5">
-  <button class="filter-btn active px-4 py-1.5 rounded-full text-sm border border-transparent" data-filter="all">全部</button>
-  <button class="filter-btn px-4 py-1.5 rounded-full text-sm border border-transparent text-gray-400" data-filter="new">新功能</button>
-  <button class="filter-btn px-4 py-1.5 rounded-full text-sm border border-transparent text-gray-400" data-filter="update">更新</button>
-  <button class="filter-btn px-4 py-1.5 rounded-full text-sm border border-transparent text-gray-400" data-filter="notice">通知</button>
-</div>
-<div class="flex items-center gap-3">
-  <div class="hidden lg:flex items-center gap-2 glass rounded-full px-4 py-2">
-    <i class="fas fa-search text-gray-500 text-sm"></i>
-    <input type="text" placeholder="搜索公告..." class="bg-transparent text-sm outline-none w-40 placeholder-gray-600" id="searchInput">
+<body class="relative">
+
+<div id="scroll-progress"></div>
+
+<div id="loader">
+  <div style="position: relative;">
+    <div class="loader-ring"></div>
+    <div class="loader-core"></div>
   </div>
-  <button class="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-white/10 transition">
-    <i class="fas fa-bell text-gray-400 text-sm"></i>
-  </button>
+  <div class="loader-percent" id="loaderPercent">0%</div>
+  <div class="loader-bar"><div class="loader-bar-fill" id="loaderBarFill"></div></div>
+  <div class="loader-text" id="loaderText">INITIALIZING SYSTEM...</div>
 </div>
-</div>
+
+<canvas id="webgl-bg"></canvas>
+<div id="scanlines"></div>
+<div id="noise"></div>
+<div id="vignette"></div>
+<div id="mouse-glow"></div>
+<div id="cursor"></div>
+<div id="cursor-dot"></div>
+<div id="perf-badge"><span class="dot"></span><span id="perf-text">NEURAL LINK · ULTRA</span></div>
+
+<nav class="fixed top-0 left-0 right-0 z-50 glass-strong transition-all duration-300" id="navbar">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-500/20 to-blue-500/20 border border-yellow-500/30 flex items-center justify-center relative">
+        <div class="pulse-ring rounded-xl"></div>
+        <i class="fas fa-bullhorn text-yellow-400 text-lg"></i>
+      </div>
+      <div>
+        <h1 class="font-['Orbitron'] font-bold text-lg tracking-wider text-white">ANNOUNCEMENT<span class="neon-gold">_HUB</span></h1>
+        <p class="text-[10px] text-gray-500 tracking-[0.3em]">全息公告中心</p>
+      </div>
+    </div>
+    <div class="hidden md:flex items-center gap-8 text-sm">
+      <a href="#sites" class="text-gray-400 hover:text-white transition magnetic-link">站点</a>
+      <a href="#timeline" class="text-gray-400 hover:text-white transition magnetic-link">时间线</a>
+      <a href="#status" class="text-gray-400 hover:text-white transition magnetic-link">状态</a>
+      <button class="magnetic-btn text-sm py-2.5 px-6" id="checkUpdatesBtn"><i class="fas fa-bell mr-2"></i>检查更新</button>
+    </div>
+  </div>
 </nav>
-<!-- Hero Section -->
-<section class="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-12">
-<div class="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-8">
-<div class="flex-1">
-<div class="flex items-center gap-3 mb-6">
-<div class="pulse-dot w-2 h-2"></div>
-<span class="text-sm text-green-400 font-medium tracking-wide">LIVE · 实时更新中</span>
-</div>
-<h2 class="font-display font-extrabold text-5xl lg:text-7xl leading-tight tracking-tight mb-4">
-所有站点<br>
-<span class="gold-text">公告一览无余</span>
-</h2>
-<p class="text-gray-400 text-lg max-w-xl leading-relaxed">
-统一管理你所有网站的更新动态、功能发布与重要通知。<br>
-一个中心，掌控全局。
-</p>
-</div>
-<!-- Stats -->
-<div class="grid grid-cols-3 gap-4 lg:gap-6">
-  <div class="glass rounded-2xl p-5 lg:p-6 text-center min-w-[110px]">
-    <div class="stat-number font-display font-bold text-3xl lg:text-4xl gold-text" data-target="4">0</div>
-    <div class="text-xs text-gray-500 mt-1 tracking-wider uppercase">站点</div>
+
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+  <div class="grid-floor"></div>
+  <div class="hero-ring w-[500px] h-[500px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-30"></div>
+  <div class="hero-ring w-[700px] h-[700px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-20" style="animation-duration: 35s; animation-direction: reverse;"></div>
+  <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 text-center">
+    <div class="mb-8 inline-flex items-center gap-3 px-5 py-2 rounded-full glass border border-white/10 reveal">
+      <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_12px_#4ade80]"></span>
+      <span class="text-sm text-gray-300 tracking-wide font-mono">所有系统运行正常 · 4 个站点在线</span>
+    </div>
+    <h1 class="text-5xl md:text-7xl lg:text-8xl font-black mb-8 leading-tight reveal" style="transition-delay: 0.1s">
+      <span class="glitch neon-gold" data-text="全息">全息</span>
+      <span class="block text-white mt-2 scan-text">公告中心</span>
+    </h1>
+    <p class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed reveal font-mono" style="transition-delay: 0.2s">
+      汇聚全部站点动态，以 <span class="neon-blue">3D 沉浸式体验</span> 呈现每一次更新。<br>
+      <span class="text-sm text-gray-500">实时 · 全息 · 未来</span>
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-6 reveal" style="transition-delay: 0.3s">
+      <a href="#sites" class="magnetic-btn text-base"><i class="fas fa-rocket mr-2"></i>探索站点</a>
+      <button class="group px-8 py-4 rounded-full border border-white/20 text-gray-300 hover:text-white hover:border-white/40 transition flex items-center gap-3 magnetic-btn" style="background: transparent; box-shadow: none;" id="showUpdatesHero">
+        <i class="fas fa-play text-xs group-hover:text-yellow-400 transition"></i>查看更新
+      </button>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mt-24 reveal" style="transition-delay: 0.4s">
+      <div class="glass rounded-2xl p-5 float">
+        <div class="stat-number text-3xl font-bold neon-gold mb-1" data-target="4">0</div>
+        <div class="text-xs text-gray-500 tracking-widest">在线站点</div>
+      </div>
+      <div class="glass rounded-2xl p-5 float-delay">
+        <div class="stat-number text-3xl font-bold neon-blue mb-1" data-target="0">0</div>
+        <div class="text-xs text-gray-500 tracking-widest">新公告</div>
+      </div>
+      <div class="glass rounded-2xl p-5 float">
+        <div class="stat-number text-3xl font-bold neon-purple mb-1" data-target="6">0</div>
+        <div class="text-xs text-gray-500 tracking-widest">即将上线</div>
+      </div>
+      <div class="glass rounded-2xl p-5 float-delay">
+        <div class="stat-number text-3xl font-bold text-white mb-1" data-target="100">0</div>
+        <div class="text-xs text-gray-500 tracking-widest">运行指数</div>
+      </div>
+    </div>
   </div>
-  <div class="glass rounded-2xl p-5 lg:p-6 text-center min-w-[110px]">
-    <div class="stat-number font-display font-bold text-3xl lg:text-4xl text-white" data-target="0">0</div>
-    <div class="text-xs text-gray-500 mt-1 tracking-wider uppercase">公告</div>
-  </div>
-  <div class="glass rounded-2xl p-5 lg:p-6 text-center min-w-[110px]">
-    <div class="stat-number font-display font-bold text-3xl lg:text-4xl text-green-400" data-target="99">0</div>
-    <div class="text-xs text-gray-500 mt-1 tracking-wider uppercase">在线率%</div>
-  </div>
-</div>
-</div>
+  <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 animate-bounce"><i class="fas fa-chevron-down text-gray-500 text-xl"></i></div>
 </section>
-<!-- Main Content -->
-<main class="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 pb-24">
-<!-- Section Title -->
-<div class="flex items-center gap-4 mb-8">
-<div class="w-1 h-8 bg-gradient-to-b from-yellow-500 to-yellow-700 rounded-full"></div>
-<h3 class="font-display font-bold text-2xl">站点公告面板</h3>
-<div class="flex-1 h-px bg-gradient-to-r from-white/10 to-transparent"></div>
-<span class="text-sm text-gray-500">共 4 个站点</span>
-</div>
-<!-- Website Cards Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="cardsGrid">
-<!-- Card 1 - 抽取你的镐子 -->
-<div class="card-enter glass glass-hover gradient-border rounded-3xl p-6 shimmer" style="animation-delay: 0.05s" data-site="1">
-  <div class="flex items-start justify-between mb-5">
-    <div class="flex items-center gap-3">
-      <div class="site-icon bg-gradient-to-br from-purple-600 to-purple-800">
-        <i class="fas fa-paintbrush text-white relative z-10"></i>
-      </div>
-      <div>
-        <h4 class="font-display font-bold text-lg">抽取你的镐子</h4>
-        <p class="text-xs text-gray-500">dfsoft123.github.io/Drawyourpickaxe</p>
-      </div>
+
+<div class="section-divider max-w-4xl mx-auto"></div>
+
+<section id="sites" class="relative z-10 py-32">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10">
+    <div class="text-center mb-16 reveal">
+      <h2 class="text-4xl md:text-6xl lg:text-7xl font-black mb-4"><span class="neon-blue">站点</span><span class="text-white">矩阵</span></h2>
+      <p class="text-gray-400 max-w-xl mx-auto font-mono">悬浮、倾斜、探索每一个数字空间入口</p>
     </div>
-    <span class="badge-notice text-xs font-semibold px-3 py-1 rounded-full text-white">通知</span>
-  </div>
-  <div class="space-y-3 mb-4">
-    <div class="announcement-item pl-4 py-2">
-      <div class="flex items-center gap-2 mb-1">
-        <span class="text-xs text-gray-500">暂无更新</span>
-        <span class="text-xs px-2 py-0.5 rounded bg-blue-500/10 text-blue-400">通知</span>
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-16 reveal">
+      <div class="flex flex-wrap items-center justify-center gap-3" id="filterContainer">
+        <button class="filter-btn active text-sm" data-filter="all">全部</button>
+        <button class="filter-btn text-sm" data-filter="new">新功能</button>
+        <button class="filter-btn text-sm" data-filter="update">更新</button>
+        <button class="filter-btn text-sm" data-filter="notice">通知</button>
       </div>
-      <p class="text-sm text-gray-300">暂无新更新</p>
-    </div>
-  </div>
-  <a href="https://dfsoft123.github.io/Drawyourpickaxe" target="_blank" class="block w-full glass rounded-xl py-2.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition flex items-center justify-center gap-2">
-    访问网站 <i class="fas fa-external-link-alt text-xs"></i>
-  </a>
-</div>
-<!-- Card 2 - 简易版我的世界 -->
-<div class="card-enter glass glass-hover gradient-border rounded-3xl p-6 shimmer" style="animation-delay: 0.1s" data-site="2">
-  <div class="flex items-start justify-between mb-5">
-    <div class="flex items-center gap-3">
-      <div class="site-icon bg-gradient-to-br from-emerald-600 to-emerald-800">
-        <i class="fas fa-cube text-white relative z-10"></i>
-      </div>
-      <div>
-        <h4 class="font-display font-bold text-lg">简易版我的世界</h4>
-        <p class="text-xs text-gray-500">dfsoft123.github.io/mc.html</p>
-      </div>
-    </div>
-    <span class="badge-notice text-xs font-semibold px-3 py-1 rounded-full text-white">通知</span>
-  </div>
-  <div class="space-y-3 mb-4">
-    <div class="announcement-item pl-4 py-2">
-      <div class="flex items-center gap-2 mb-1">
-        <span class="text-xs text-gray-500">暂无更新</span>
-        <span class="text-xs px-2 py-0.5 rounded bg-blue-500/10 text-blue-400">通知</span>
-      </div>
-      <p class="text-sm text-gray-300">暂无新更新</p>
-    </div>
-  </div>
-  <a href="https://dfsoft123.github.io/mc.html" target="_blank" class="block w-full glass rounded-xl py-2.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition flex items-center justify-center gap-2">
-    访问网站 <i class="fas fa-external-link-alt text-xs"></i>
-  </a>
-</div>
-<!-- Card 3 - 升级你的镐子 -->
-<div class="card-enter glass glass-hover gradient-border rounded-3xl p-6 shimmer" style="animation-delay: 0.15s" data-site="3">
-  <div class="flex items-start justify-between mb-5">
-    <div class="flex items-center gap-3">
-      <div class="site-icon bg-gradient-to-br from-amber-600 to-amber-800">
-        <i class="fas fa-arrow-up text-white relative z-10"></i>
-      </div>
-      <div>
-        <h4 class="font-display font-bold text-lg">升级你的镐子</h4>
-        <p class="text-xs text-gray-500">dfsoft123.github.io/index.html</p>
-      </div>
-    </div>
-    <span class="badge-notice text-xs font-semibold px-3 py-1 rounded-full text-white">通知</span>
-  </div>
-  <div class="space-y-3 mb-4">
-    <div class="announcement-item pl-4 py-2">
-      <div class="flex items-center gap-2 mb-1">
-        <span class="text-xs text-gray-500">暂无更新</span>
-        <span class="text-xs px-2 py-0.5 rounded bg-blue-500/10 text-blue-400">通知</span>
-      </div>
-      <p class="text-sm text-gray-300">暂无新更新</p>
-    </div>
-  </div>
-  <a href="https://dfsoft123.github.io/index.html" target="_blank" class="block w-full glass rounded-xl py-2.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition flex items-center justify-center gap-2">
-    访问网站 <i class="fas fa-external-link-alt text-xs"></i>
-  </a>
-</div>
-<!-- Card 4 - 新洲一中航天城校区官网 -->
-<div class="card-enter glass glass-hover gradient-border rounded-3xl p-6 shimmer" style="animation-delay: 0.2s" data-site="4">
-  <div class="flex items-start justify-between mb-5">
-    <div class="flex items-center gap-3">
-      <div class="site-icon bg-gradient-to-br from-blue-600 to-blue-800">
-        <i class="fas fa-graduation-cap text-white relative z-10"></i>
-      </div>
-      <div>
-        <h4 class="font-display font-bold text-lg">新洲一中航天城校区官网</h4>
-        <p class="text-xs text-gray-500">dfsoft123.github.io/新洲一中航天城校区</p>
-      </div>
-    </div>
-    <span class="badge-notice text-xs font-semibold px-3 py-1 rounded-full text-white">通知</span>
-  </div>
-  <div class="space-y-3 mb-4">
-    <div class="announcement-item pl-4 py-2">
-      <div class="flex items-center gap-2 mb-1">
-        <span class="text-xs text-gray-500">暂无更新</span>
-        <span class="text-xs px-2 py-0.5 rounded bg-blue-500/10 text-blue-400">通知</span>
-      </div>
-      <p class="text-sm text-gray-300">暂无新更新</p>
-    </div>
-  </div>
-  <a href="https://dfsoft123.github.io/新洲一中航天城校区" target="_blank" class="block w-full glass rounded-xl py-2.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition flex items-center justify-center gap-2">
-    访问网站 <i class="fas fa-external-link-alt text-xs"></i>
-  </a>
-</div>
-<!-- Card 5 - 暂未添加 -->
-<div class="card-enter glass glass-hover gradient-border rounded-3xl p-6 shimmer" style="animation-delay: 0.25s" data-site="5">
-  <div class="flex items-start justify-between mb-5">
-    <div class="flex items-center gap-3">
-      <div class="site-icon bg-gradient-to-br from-gray-600 to-gray-800 opacity-40">
-        <i class="fas fa-clock text-white relative z-10"></i>
-      </div>
-      <div>
-        <h4 class="font-display font-bold text-lg text-gray-500">即将上线</h4>
-        <p class="text-xs text-gray-600">敬请期待</p>
-      </div>
-    </div>
-  </div>
-  <div class="space-y-3 mb-4">
-    <div class="announcement-item pl-4 py-2 border-l-gray-700">
-      <p class="text-sm text-gray-600 italic">暂无新更新</p>
-    </div>
-  </div>
-  <button class="w-full glass rounded-xl py-2.5 text-sm text-gray-600 cursor-default flex items-center justify-center gap-2" disabled>
-    <i class="fas fa-hourglass-half text-xs"></i> 待添加
-  </button>
-</div>
-<!-- Card 6 - 暂未添加 -->
-<div class="card-enter glass glass-hover gradient-border rounded-3xl p-6 shimmer" style="animation-delay: 0.3s" data-site="6">
-  <div class="flex items-start justify-between mb-5">
-    <div class="flex items-center gap-3">
-      <div class="site-icon bg-gradient-to-br from-gray-600 to-gray-800 opacity-40">
-        <i class="fas fa-clock text-white relative z-10"></i>
-      </div>
-      <div>
-        <h4 class="font-display font-bold text-lg text-gray-500">即将上线</h4>
-        <p class="text-xs text-gray-600">敬请期待</p>
-      </div>
-    </div>
-  </div>
-  <div class="space-y-3 mb-4">
-    <div class="announcement-item pl-4 py-2 border-l-gray-700">
-      <p class="text-sm text-gray-600 italic">暂无新更新</p>
-    </div>
-  </div>
-  <button class="w-full glass rounded-xl py-2.5 text-sm text-gray-600 cursor-default flex items-center justify-center gap-2" disabled>
-    <i class="fas fa-hourglass-half text-xs"></i> 待添加
-  </button>
-</div>
-<!-- Card 7 - 暂未添加 -->
-<div class="card-enter glass glass-hover gradient-border rounded-3xl p-6 shimmer" style="animation-delay: 0.35s" data-site="7">
-  <div class="flex items-start justify-between mb-5">
-    <div class="flex items-center gap-3">
-      <div class="site-icon bg-gradient-to-br from-gray-600 to-gray-800 opacity-40">
-        <i class="fas fa-clock text-white relative z-10"></i>
-      </div>
-      <div>
-        <h4 class="font-display font-bold text-lg text-gray-500">即将上线</h4>
-        <p class="text-xs text-gray-600">敬请期待</p>
-      </div>
-    </div>
-  </div>
-  <div class="space-y-3 mb-4">
-    <div class="announcement-item pl-4 py-2 border-l-gray-700">
-      <p class="text-sm text-gray-600 italic">暂无新更新</p>
-    </div>
-  </div>
-  <button class="w-full glass rounded-xl py-2.5 text-sm text-gray-600 cursor-default flex items-center justify-center gap-2" disabled>
-    <i class="fas fa-hourglass-half text-xs"></i> 待添加
-  </button>
-</div>
-<!-- Card 8 - 暂未添加 -->
-<div class="card-enter glass glass-hover gradient-border rounded-3xl p-6 shimmer" style="animation-delay: 0.4s" data-site="8">
-  <div class="flex items-start justify-between mb-5">
-    <div class="flex items-center gap-3">
-      <div class="site-icon bg-gradient-to-br from-gray-600 to-gray-800 opacity-40">
-        <i class="fas fa-clock text-white relative z-10"></i>
-      </div>
-      <div>
-        <h4 class="font-display font-bold text-lg text-gray-500">即将上线</h4>
-        <p class="text-xs text-gray-600">敬请期待</p>
-      </div>
-    </div>
-  </div>
-  <div class="space-y-3 mb-4">
-    <div class="announcement-item pl-4 py-2 border-l-gray-700">
-      <p class="text-sm text-gray-600 italic">暂无新更新</p>
-    </div>
-  </div>
-  <button class="w-full glass rounded-xl py-2.5 text-sm text-gray-600 cursor-default flex items-center justify-center gap-2" disabled>
-    <i class="fas fa-hourglass-half text-xs"></i> 待添加
-  </button>
-</div>
-<!-- Card 9 - 暂未添加 -->
-<div class="card-enter glass glass-hover gradient-border rounded-3xl p-6 shimmer" style="animation-delay: 0.45s" data-site="9">
-  <div class="flex items-start justify-between mb-5">
-    <div class="flex items-center gap-3">
-      <div class="site-icon bg-gradient-to-br from-gray-600 to-gray-800 opacity-40">
-        <i class="fas fa-clock text-white relative z-10"></i>
-      </div>
-      <div>
-        <h4 class="font-display font-bold text-lg text-gray-500">即将上线</h4>
-        <p class="text-xs text-gray-600">敬请期待</p>
-      </div>
-    </div>
-  </div>
-  <div class="space-y-3 mb-4">
-    <div class="announcement-item pl-4 py-2 border-l-gray-700">
-      <p class="text-sm text-gray-600 italic">暂无新更新</p>
-    </div>
-  </div>
-  <button class="w-full glass rounded-xl py-2.5 text-sm text-gray-600 cursor-default flex items-center justify-center gap-2" disabled>
-    <i class="fas fa-hourglass-half text-xs"></i> 待添加
-  </button>
-</div>
-<!-- Card 10 - 暂未添加 -->
-<div class="card-enter glass glass-hover gradient-border rounded-3xl p-6 shimmer" style="animation-delay: 0.5s" data-site="10">
-  <div class="flex items-start justify-between mb-5">
-    <div class="flex items-center gap-3">
-      <div class="site-icon bg-gradient-to-br from-gray-600 to-gray-800 opacity-40">
-        <i class="fas fa-clock text-white relative z-10"></i>
-      </div>
-      <div>
-        <h4 class="font-display font-bold text-lg text-gray-500">即将上线</h4>
-        <p class="text-xs text-gray-600">敬请期待</p>
-      </div>
-    </div>
-  </div>
-  <div class="space-y-3 mb-4">
-    <div class="announcement-item pl-4 py-2 border-l-gray-700">
-      <p class="text-sm text-gray-600 italic">暂无新更新</p>
-    </div>
-  </div>
-  <button class="w-full glass rounded-xl py-2.5 text-sm text-gray-600 cursor-default flex items-center justify-center gap-2" disabled>
-    <i class="fas fa-hourglass-half text-xs"></i> 待添加
-  </button>
-</div>
-</div>
-<!-- Timeline Section -->
-<div class="mt-20">
-<div class="flex items-center gap-4 mb-8">
-<div class="w-1 h-8 bg-gradient-to-b from-purple-500 to-purple-700 rounded-full"></div>
-<h3 class="font-display font-bold text-2xl">全局时间线</h3>
-<div class="flex-1 h-px bg-gradient-to-r from-white/10 to-transparent"></div>
-<span class="text-sm text-gray-500">最近活动</span>
-</div>
-<div class="glass rounded-3xl p-8">
-  <div class="space-y-6">
-    <!-- Timeline Item 1 -->
-    <div class="flex items-start gap-4 group">
-      <div class="w-3 h-3 rounded-full bg-purple-500 mt-1.5 ring-4 ring-purple-500/20 group-hover:ring-purple-500/40 transition"></div>
-      <div class="flex-1">
-        <div class="flex items-center gap-3 mb-1">
-          <span class="text-sm font-semibold">抽取你的镐子</span>
-          <span class="text-xs text-gray-500">·</span>
-          <span class="text-xs text-gray-500">暂无更新</span>
-          <span class="badge-notice text-xs font-medium px-2 py-0.5 rounded-full text-white">通知</span>
+      <div class="search-glow w-full md:w-80">
+        <div class="glass rounded-full flex items-center px-5 py-3.5">
+          <i class="fas fa-search text-gray-500 mr-3"></i>
+          <input type="text" id="searchInput" placeholder="搜索站点..." class="bg-transparent border-none outline-none text-sm text-white w-full placeholder-gray-600 font-mono">
         </div>
-        <p class="text-sm text-gray-400">暂无新更新</p>
       </div>
     </div>
-    <div class="h-px bg-white/5 ml-1.5"></div>
-    <!-- Timeline Item 2 -->
-    <div class="flex items-start gap-4 group">
-      <div class="w-3 h-3 rounded-full bg-yellow-500 mt-1.5 ring-4 ring-yellow-500/20 group-hover:ring-yellow-500/40 transition"></div>
-      <div class="flex-1">
-        <div class="flex items-center gap-3 mb-1">
-          <span class="text-sm font-semibold">简易版我的世界</span>
-          <span class="text-xs text-gray-500">·</span>
-          <span class="text-xs text-gray-500">暂无更新</span>
-          <span class="badge-notice text-xs font-medium px-2 py-0.5 rounded-full text-white">通知</span>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8" id="cardsGrid">
+
+      <div class="card-3d holo-card reveal" data-site="1" data-category="notice">
+        <div class="card-3d-inner p-6 min-h-[360px] flex flex-col">
+          <div class="card-3d-shine"></div>
+          <div class="card-3d-content flex-1 flex flex-col">
+            <div class="flex items-start justify-between mb-6">
+              <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-600 to-purple-900 flex items-center justify-center text-2xl site-icon-glow shadow-[0_0_30px_rgba(124,58,237,0.4)]">
+                  <i class="fas fa-paintbrush text-white"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold text-xl text-white">抽取你的镐子</h3>
+                  <p class="text-xs text-gray-500 font-mono mt-1">Drawyourpickaxe</p>
+                </div>
+              </div>
+              <span class="badge-notice text-[10px] font-bold px-3 py-1 rounded-full">通知</span>
+            </div>
+            <div class="flex-1 space-y-3">
+              <div class="pl-4 border-l-2 border-white/10 py-2 hover:border-yellow-400 transition">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="text-[10px] text-gray-500 font-mono">暂无更新</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400">通知</span>
+                </div>
+                <p class="text-sm text-gray-300">暂无新更新</p>
+              </div>
+            </div>
+            <a href="https://dfsoft123.github.io/Drawyourpickaxe" target="_blank" class="mt-6 w-full py-3.5 rounded-xl bg-white/5 border border-white/10 text-center text-sm text-gray-300 hover:text-white hover:border-yellow-400/50 hover:bg-yellow-400/5 transition flex items-center justify-center gap-2 group">
+              <span>访问网站</span>
+              <i class="fas fa-external-link-alt text-xs group-hover:translate-x-1 group-hover:-translate-y-1 transition"></i>
+            </a>
+          </div>
         </div>
-        <p class="text-sm text-gray-400">暂无新更新</p>
       </div>
-    </div>
-    <div class="h-px bg-white/5 ml-1.5"></div>
-    <!-- Timeline Item 3 -->
-    <div class="flex items-start gap-4 group">
-      <div class="w-3 h-3 rounded-full bg-blue-500 mt-1.5 ring-4 ring-blue-500/20 group-hover:ring-blue-500/40 transition"></div>
-      <div class="flex-1">
-        <div class="flex items-center gap-3 mb-1">
-          <span class="text-sm font-semibold">升级你的镐子</span>
-          <span class="text-xs text-gray-500">·</span>
-          <span class="text-xs text-gray-500">暂无更新</span>
-          <span class="badge-notice text-xs font-medium px-2 py-0.5 rounded-full text-white">通知</span>
+
+      <div class="card-3d holo-card reveal" data-site="2" data-category="notice">
+        <div class="card-3d-inner p-6 min-h-[360px] flex flex-col">
+          <div class="card-3d-shine"></div>
+          <div class="card-3d-content flex-1 flex flex-col">
+            <div class="flex items-start justify-between mb-6">
+              <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-900 flex items-center justify-center text-2xl site-icon-glow shadow-[0_0_30px_rgba(16,185,129,0.4)]">
+                  <i class="fas fa-cube text-white"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold text-xl text-white">简易版我的世界</h3>
+                  <p class="text-xs text-gray-500 font-mono mt-1">mc.html</p>
+                </div>
+              </div>
+              <span class="badge-notice text-[10px] font-bold px-3 py-1 rounded-full">通知</span>
+            </div>
+            <div class="flex-1 space-y-3">
+              <div class="pl-4 border-l-2 border-white/10 py-2 hover:border-yellow-400 transition">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="text-[10px] text-gray-500 font-mono">暂无更新</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400">通知</span>
+                </div>
+                <p class="text-sm text-gray-300">暂无新更新</p>
+              </div>
+            </div>
+            <a href="https://dfsoft123.github.io/mc.html" target="_blank" class="mt-6 w-full py-3.5 rounded-xl bg-white/5 border border-white/10 text-center text-sm text-gray-300 hover:text-white hover:border-yellow-400/50 hover:bg-yellow-400/5 transition flex items-center justify-center gap-2 group">
+              <span>访问网站</span>
+              <i class="fas fa-external-link-alt text-xs group-hover:translate-x-1 group-hover:-translate-y-1 transition"></i>
+            </a>
+          </div>
         </div>
-        <p class="text-sm text-gray-400">暂无新更新</p>
       </div>
-    </div>
-    <div class="h-px bg-white/5 ml-1.5"></div>
-    <!-- Timeline Item 4 -->
-    <div class="flex items-start gap-4 group">
-      <div class="w-3 h-3 rounded-full bg-purple-500 mt-1.5 ring-4 ring-purple-500/20 group-hover:ring-purple-500/40 transition"></div>
-      <div class="flex-1">
-        <div class="flex items-center gap-3 mb-1">
-          <span class="text-sm font-semibold">新洲一中航天城校区官网</span>
-          <span class="text-xs text-gray-500">·</span>
-          <span class="text-xs text-gray-500">暂无更新</span>
-          <span class="badge-notice text-xs font-medium px-2 py-0.5 rounded-full text-white">通知</span>
+
+      <div class="card-3d holo-card reveal" data-site="3" data-category="notice">
+        <div class="card-3d-inner p-6 min-h-[360px] flex flex-col">
+          <div class="card-3d-shine"></div>
+          <div class="card-3d-content flex-1 flex flex-col">
+            <div class="flex items-start justify-between mb-6">
+              <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-600 to-amber-900 flex items-center justify-center text-2xl site-icon-glow shadow-[0_0_30px_rgba(245,158,11,0.4)]">
+                  <i class="fas fa-arrow-up text-white"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold text-xl text-white">升级你的镐子</h3>
+                  <p class="text-xs text-gray-500 font-mono mt-1">index.html</p>
+                </div>
+              </div>
+              <span class="badge-notice text-[10px] font-bold px-3 py-1 rounded-full">通知</span>
+            </div>
+            <div class="flex-1 space-y-3">
+              <div class="pl-4 border-l-2 border-white/10 py-2 hover:border-yellow-400 transition">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="text-[10px] text-gray-500 font-mono">暂无更新</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400">通知</span>
+                </div>
+                <p class="text-sm text-gray-300">暂无新更新</p>
+              </div>
+            </div>
+            <a href="https://dfsoft123.github.io/index.html" target="_blank" class="mt-6 w-full py-3.5 rounded-xl bg-white/5 border border-white/10 text-center text-sm text-gray-300 hover:text-white hover:border-yellow-400/50 hover:bg-yellow-400/5 transition flex items-center justify-center gap-2 group">
+              <span>访问网站</span>
+              <i class="fas fa-external-link-alt text-xs group-hover:translate-x-1 group-hover:-translate-y-1 transition"></i>
+            </a>
+          </div>
         </div>
-        <p class="text-sm text-gray-400">暂无新更新</p>
       </div>
-    </div>
-    <div class="h-px bg-white/5 ml-1.5"></div>
-    <!-- Timeline Item 5 -->
-    <div class="flex items-start gap-4 group">
-      <div class="w-3 h-3 rounded-full bg-gray-500 mt-1.5 ring-4 ring-gray-500/20 group-hover:ring-gray-500/40 transition"></div>
-      <div class="flex-1">
-        <div class="flex items-center gap-3 mb-1">
-          <span class="text-sm font-semibold text-gray-500">即将上线</span>
-          <span class="text-xs text-gray-600">·</span>
-          <span class="text-xs text-gray-600">暂无更新</span>
+
+      <div class="card-3d holo-card reveal" data-site="4" data-category="notice">
+        <div class="card-3d-inner p-6 min-h-[360px] flex flex-col">
+          <div class="card-3d-shine"></div>
+          <div class="card-3d-content flex-1 flex flex-col">
+            <div class="flex items-start justify-between mb-6">
+              <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-900 flex items-center justify-center text-2xl site-icon-glow shadow-[0_0_30px_rgba(59,130,246,0.4)]">
+                  <i class="fas fa-graduation-cap text-white"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold text-xl text-white">新洲一中航天城校区官网</h3>
+                  <p class="text-xs text-gray-500 font-mono mt-1">航天城校区</p>
+                </div>
+              </div>
+              <span class="badge-notice text-[10px] font-bold px-3 py-1 rounded-full">通知</span>
+            </div>
+            <div class="flex-1 space-y-3">
+              <div class="pl-4 border-l-2 border-white/10 py-2 hover:border-yellow-400 transition">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="text-[10px] text-gray-500 font-mono">暂无更新</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400">通知</span>
+                </div>
+                <p class="text-sm text-gray-300">暂无新更新</p>
+              </div>
+            </div>
+            <a href="https://dfsoft123.github.io/新洲一中航天城校区" target="_blank" class="mt-6 w-full py-3.5 rounded-xl bg-white/5 border border-white/10 text-center text-sm text-gray-300 hover:text-white hover:border-yellow-400/50 hover:bg-yellow-400/5 transition flex items-center justify-center gap-2 group">
+              <span>访问网站</span>
+              <i class="fas fa-external-link-alt text-xs group-hover:translate-x-1 group-hover:-translate-y-1 transition"></i>
+            </a>
+          </div>
         </div>
-        <p class="text-sm text-gray-600 italic">更多站点即将上线</p>
+      </div>
+
+      <div class="card-3d placeholder-card reveal" data-site="5" data-category="notice">
+        <div class="card-3d-inner p-6 min-h-[360px] flex flex-col items-center justify-center text-center">
+          <div class="card-3d-content">
+            <div class="w-20 h-20 rounded-full bg-white/5 border border-dashed border-white/20 flex items-center justify-center mx-auto mb-4 float-slow">
+              <i class="fas fa-hourglass-half text-3xl text-gray-600"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-500 mb-2">即将上线</h3>
+            <p class="text-sm text-gray-600 font-mono">网站 5 · 暂未添加</p>
+          </div>
+        </div>
+      </div>
+      <div class="card-3d placeholder-card reveal" data-site="6" data-category="notice">
+        <div class="card-3d-inner p-6 min-h-[360px] flex flex-col items-center justify-center text-center">
+          <div class="card-3d-content">
+            <div class="w-20 h-20 rounded-full bg-white/5 border border-dashed border-white/20 flex items-center justify-center mx-auto mb-4 float-slow">
+              <i class="fas fa-hourglass-half text-3xl text-gray-600"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-500 mb-2">即将上线</h3>
+            <p class="text-sm text-gray-600 font-mono">网站 6 · 暂未添加</p>
+          </div>
+        </div>
+      </div>
+      <div class="card-3d placeholder-card reveal" data-site="7" data-category="notice">
+        <div class="card-3d-inner p-6 min-h-[360px] flex flex-col items-center justify-center text-center">
+          <div class="card-3d-content">
+            <div class="w-20 h-20 rounded-full bg-white/5 border border-dashed border-white/20 flex items-center justify-center mx-auto mb-4 float-slow">
+              <i class="fas fa-hourglass-half text-3xl text-gray-600"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-500 mb-2">即将上线</h3>
+            <p class="text-sm text-gray-600 font-mono">网站 7 · 暂未添加</p>
+          </div>
+        </div>
+      </div>
+      <div class="card-3d placeholder-card reveal" data-site="8" data-category="notice">
+        <div class="card-3d-inner p-6 min-h-[360px] flex flex-col items-center justify-center text-center">
+          <div class="card-3d-content">
+            <div class="w-20 h-20 rounded-full bg-white/5 border border-dashed border-white/20 flex items-center justify-center mx-auto mb-4 float-slow">
+              <i class="fas fa-hourglass-half text-3xl text-gray-600"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-500 mb-2">即将上线</h3>
+            <p class="text-sm text-gray-600 font-mono">网站 8 · 暂未添加</p>
+          </div>
+        </div>
+      </div>
+      <div class="card-3d placeholder-card reveal" data-site="9" data-category="notice">
+        <div class="card-3d-inner p-6 min-h-[360px] flex flex-col items-center justify-center text-center">
+          <div class="card-3d-content">
+            <div class="w-20 h-20 rounded-full bg-white/5 border border-dashed border-white/20 flex items-center justify-center mx-auto mb-4 float-slow">
+              <i class="fas fa-hourglass-half text-3xl text-gray-600"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-500 mb-2">即将上线</h3>
+            <p class="text-sm text-gray-600 font-mono">网站 9 · 暂未添加</p>
+          </div>
+        </div>
+      </div>
+      <div class="card-3d placeholder-card reveal" data-site="10" data-category="notice">
+        <div class="card-3d-inner p-6 min-h-[360px] flex flex-col items-center justify-center text-center">
+          <div class="card-3d-content">
+            <div class="w-20 h-20 rounded-full bg-white/5 border border-dashed border-white/20 flex items-center justify-center mx-auto mb-4 float-slow">
+              <i class="fas fa-hourglass-half text-3xl text-gray-600"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-500 mb-2">即将上线</h3>
+            <p class="text-sm text-gray-600 font-mono">网站 10 · 暂未添加</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-  <button class="mt-8 w-full glass rounded-xl py-3 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition flex items-center justify-center gap-2">
-    加载更多 <i class="fas fa-chevron-down text-xs"></i>
-  </button>
-</div>
-</div>
-</main>
-<!-- Footer -->
-<footer class="relative z-10 border-t border-white/5 glass">
-<div class="max-w-7xl mx-auto px-6 lg:px-10 py-12">
-<div class="flex flex-col md:flex-row items-center justify-between gap-6">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-600 to-yellow-800 flex items-center justify-center">
-<i class="fas fa-bullhorn text-white text-sm"></i>
-</div>
-<div>
-<p class="font-display font-bold text-sm">Announcement Hub</p>
-<p class="text-xs text-gray-600">© 2025 All rights reserved</p>
-</div>
-</div>
-  <div class="flex items-center gap-6 text-sm text-gray-500">
-    <a href="#" class="hover:text-white transition">关于</a>
-    <a href="#" class="hover:text-white transition">订阅</a>
-    <a href="#" class="hover:text-white transition">RSS</a>
-    <a href="#" class="hover:text-white transition">API</a>
-  </div>
-  <div class="flex items-center gap-3">
-    <div class="flex items-center gap-2 text-xs text-gray-500">
-      <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-      所有系统运行正常
+</section>
+
+<div class="section-divider max-w-4xl mx-auto"></div>
+
+<section id="timeline" class="relative z-10 py-32">
+  <div class="max-w-4xl mx-auto px-6 lg:px-10">
+    <div class="text-center mb-16 reveal">
+      <h2 class="text-4xl md:text-6xl lg:text-7xl font-black mb-4"><span class="neon-purple">更新</span><span class="text-white">时间线</span></h2>
+      <p class="text-gray-400 font-mono">追踪每一次变化的轨迹</p>
+    </div>
+    <div class="relative reveal">
+      <div class="timeline-line"></div>
+      <div class="space-y-8">
+        <div class="flex items-start gap-6 group">
+          <div class="timeline-dot mt-1"></div>
+          <div class="glass rounded-2xl p-6 flex-1 border border-white/5 group-hover:border-blue-500/50 transition group-hover:translate-x-2">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="font-bold text-white">抽取你的镐子</span>
+              <span class="text-xs text-gray-500">·</span>
+              <span class="text-xs text-gray-500 font-mono">暂无更新</span>
+              <span class="badge-notice text-[10px] px-2 py-0.5 rounded-full">通知</span>
+            </div>
+            <p class="text-sm text-gray-400">暂无新更新</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-6 group">
+          <div class="timeline-dot mt-1" style="border-color: var(--neon-gold); box-shadow: 0 0 20px var(--neon-gold);"></div>
+          <div class="glass rounded-2xl p-6 flex-1 border border-white/5 group-hover:border-yellow-500/50 transition group-hover:translate-x-2">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="font-bold text-white">简易版我的世界</span>
+              <span class="text-xs text-gray-500">·</span>
+              <span class="text-xs text-gray-500 font-mono">暂无更新</span>
+              <span class="badge-notice text-[10px] px-2 py-0.5 rounded-full">通知</span>
+            </div>
+            <p class="text-sm text-gray-400">暂无新更新</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-6 group">
+          <div class="timeline-dot mt-1" style="border-color: var(--neon-purple); box-shadow: 0 0 20px var(--neon-purple);"></div>
+          <div class="glass rounded-2xl p-6 flex-1 border border-white/5 group-hover:border-purple-500/50 transition group-hover:translate-x-2">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="font-bold text-white">升级你的镐子</span>
+              <span class="text-xs text-gray-500">·</span>
+              <span class="text-xs text-gray-500 font-mono">暂无更新</span>
+              <span class="badge-notice text-[10px] px-2 py-0.5 rounded-full">通知</span>
+            </div>
+            <p class="text-sm text-gray-400">暂无新更新</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-6 group">
+          <div class="timeline-dot mt-1" style="border-color: var(--neon-pink); box-shadow: 0 0 20px var(--neon-pink);"></div>
+          <div class="glass rounded-2xl p-6 flex-1 border border-white/5 group-hover:border-pink-500/50 transition group-hover:translate-x-2">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="font-bold text-white">新洲一中航天城校区官网</span>
+              <span class="text-xs text-gray-500">·</span>
+              <span class="text-xs text-gray-500 font-mono">暂无更新</span>
+              <span class="badge-notice text-[10px] px-2 py-0.5 rounded-full">通知</span>
+            </div>
+            <p class="text-sm text-gray-400">暂无新更新</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-6 group">
+          <div class="timeline-dot mt-1" style="border-color: #555; box-shadow: none;"></div>
+          <div class="glass rounded-2xl p-6 flex-1 opacity-50 border border-white/5">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="font-bold text-gray-500">更多站点</span>
+              <span class="text-xs text-gray-600">·</span>
+              <span class="text-xs text-gray-600 font-mono">敬请期待</span>
+            </div>
+            <p class="text-sm text-gray-600 italic">网站 5-10 即将接入全息网络</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-</div>
+</section>
+
+<div class="section-divider max-w-4xl mx-auto"></div>
+
+<section id="status" class="relative z-10 py-32">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10">
+    <div class="text-center mb-16 reveal">
+      <h2 class="text-4xl md:text-6xl lg:text-7xl font-black mb-4"><span class="neon-gold">网络</span><span class="text-white">状态</span></h2>
+      <p class="text-gray-400 font-mono">实时监控全息节点运行状态</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="glass rounded-3xl p-8 text-center reveal hover:border-green-400/50 transition border border-transparent group">
+        <div class="w-16 h-16 rounded-2xl bg-green-500/10 border border-green-500/20 flex items-center justify-center mx-auto mb-4 relative">
+          <div class="absolute inset-0 rounded-2xl bg-green-400/20 animate-ping"></div>
+          <i class="fas fa-server text-green-400 text-2xl relative z-10 group-hover:scale-110 transition"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-white mb-2">全部在线</h3>
+        <p class="text-sm text-gray-400 font-mono">4 个核心站点正常运行</p>
+      </div>
+      <div class="glass rounded-3xl p-8 text-center reveal hover:border-blue-400/50 transition border border-transparent group" style="transition-delay: 0.1s">
+        <div class="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-4">
+          <i class="fas fa-sync-alt text-blue-400 text-2xl group-hover:rotate-180 transition duration-700"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-white mb-2">实时同步</h3>
+        <p class="text-sm text-gray-400 font-mono">更新状态即时推送</p>
+      </div>
+      <div class="glass rounded-3xl p-8 text-center reveal hover:border-purple-400/50 transition border border-transparent group" style="transition-delay: 0.2s">
+        <div class="w-16 h-16 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mx-auto mb-4">
+          <i class="fas fa-shield-alt text-purple-400 text-2xl group-hover:scale-110 transition"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-white mb-2">安全连接</h3>
+        <p class="text-sm text-gray-400 font-mono">全站 HTTPS 加密访问</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="relative z-10 border-t border-white/5 glass-strong mt-20">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10 py-16">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-500/20 to-blue-500/20 border border-yellow-500/30 flex items-center justify-center">
+          <i class="fas fa-bullhorn text-yellow-400 text-lg"></i>
+        </div>
+        <div>
+          <p class="font-['Orbitron'] font-bold text-sm tracking-wider">ANNOUNCEMENT<span class="neon-gold">_HUB</span></p>
+          <p class="text-xs text-gray-600 font-mono">© 2026 全息公告中心 · All rights reserved</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-6 text-sm text-gray-500">
+        <a href="#" class="hover:text-white transition magnetic-link">关于</a>
+        <a href="#" class="hover:text-white transition magnetic-link">订阅</a>
+        <a href="#" class="hover:text-white transition magnetic-link">RSS</a>
+        <a href="#" class="hover:text-white transition magnetic-link">API</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 text-xs text-gray-500 font-mono">
+          <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_10px_#22c55e]"></div>
+          所有系统运行正常
+        </div>
+      </div>
+    </div>
+  </div>
 </footer>
-<script>
-// ===== Update Announcement System =====
-// Define updates here — add new items to the TOP of the array
-const siteUpdates = [
-  {
-    id: 'demo-001',
-    site: 'Announcement Hub',
-    title: '🎉 公告中心正式上线',
-    description: '全站公告中心现已上线，统一管理所有网站的更新动态、功能发布与重要通知。一个中心，掌控全局。',
-    date: '2026.08.01',
-    type: 'new' // 'new' | 'update' | 'notice'
-  }
-];
 
-const STORAGE_KEY = 'announcement_hub_seen_updates';
-
-function getSeenUpdates() {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
-  } catch { return []; }
-}
-
-function getUnseenUpdates() {
-  const seen = getSeenUpdates();
-  return siteUpdates.filter(u => !seen.includes(u.id));
-}
-
-function markAllAsSeen() {
-  const allIds = siteUpdates.map(u => u.id);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(allIds));
-}
-
-function renderUpdates() {
-  const container = document.getElementById('updateModalBody');
-  const unseen = getUnseenUpdates();
-  if (unseen.length === 0) {
-    container.innerHTML = '<div class="update-empty"><i class="fas fa-check-circle"></i><p>暂无新的更新内容</p></div>';
-    return;
-  }
-  container.innerHTML = unseen.map(u => {
-    const badgeClass = u.type === 'new' ? 'badge-new' : u.type === 'update' ? 'badge-update' : 'badge-notice';
-    const badgeLabel = u.type === 'new' ? '新功能' : u.type === 'update' ? '更新' : '通知';
-    return `
-      <div class="update-item">
-        <div class="flex items-center gap-3 mb-2">
-          <span class="item-badge ${badgeClass}">${badgeLabel}</span>
-          <span class="text-xs text-gray-500">${u.date}</span>
-          <span class="text-xs text-gray-600">·</span>
-          <span class="text-xs text-gray-500">${u.site}</span>
-        </div>
-        <div class="item-title">${u.title}</div>
-        <div class="item-desc">${u.description}</div>
-      </div>
-    `;
-  }).join('');
-}
-
-function showUpdateOverlay() {
-  const overlay = document.getElementById('updateOverlay');
-  // Prevent body scroll
-  document.body.style.overflow = 'hidden';
-  overlay.classList.add('active');
-}
-
-function hideUpdateOverlay() {
-  const overlay = document.getElementById('updateOverlay');
-  overlay.classList.remove('active');
-  document.body.style.overflow = '';
-  markAllAsSeen();
-}
-
-// Check for unseen updates on load
-window.addEventListener('load', () => {
-  // Counter animation
-  document.querySelectorAll('.stat-number').forEach(el => {
-    const target = parseInt(el.dataset.target);
-    animateCounter(el, target);
-  });
-  // Show overlay if there are unseen updates
-  const unseen = getUnseenUpdates();
-  if (unseen.length > 0) {
-    renderUpdates();
-    setTimeout(showUpdateOverlay, 800);
-  }
-});
-
-// Overlay control
-document.getElementById('markReadBtn').addEventListener('click', hideUpdateOverlay);
-document.getElementById('closeOverlayBtn').addEventListener('click', hideUpdateOverlay);
-// Click overlay backdrop to close
-document.getElementById('updateOverlay').addEventListener('click', (e) => {
-  if (e.target === e.currentTarget) hideUpdateOverlay();
-});
-// ESC key to close
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    const overlay = document.getElementById('updateOverlay');
-    if (overlay.classList.contains('active')) hideUpdateOverlay();
-  }
-});
-
-// ===== Number counter animation =====
-function animateCounter(el, target, duration = 1500) {
-  const start = 0;
-  const startTime = performance.now();
-  function update(currentTime) {
-    const elapsed = currentTime - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    el.textContent = Math.floor(start + (target - start) * eased);
-    if (progress < 1) requestAnimationFrame(update);
-    else el.textContent = target;
-  }
-  requestAnimationFrame(update);
-}
-
-// ===== Unified filter =====
-const filterBtns = document.querySelectorAll('.filter-btn');
-const cards = document.querySelectorAll('[data-site]');
-const searchInput = document.getElementById('searchInput');
-let activeFilter = 'all';
-
-function applyFilters() {
-  const query = searchInput ? searchInput.value.toLowerCase() : '';
-  cards.forEach(card => {
-    let categoryMatch = true;
-    if (activeFilter !== 'all') {
-      const badge = card.querySelector('span[class*="badge-"]');
-      if (!badge) { categoryMatch = false; }
-      else if (activeFilter === 'new' && !badge.classList.contains('badge-new')) categoryMatch = false;
-      else if (activeFilter === 'update' && !badge.classList.contains('badge-update')) categoryMatch = false;
-      else if (activeFilter === 'notice' && !badge.classList.contains('badge-notice')) categoryMatch = false;
-    }
-    const textMatch = !query || card.textContent.toLowerCase().includes(query);
-    const shouldShow = categoryMatch && textMatch;
-    if (shouldShow) {
-      card.style.display = '';
-      card.style.animation = 'cardIn 0.4s ease forwards';
-    } else {
-      card.style.display = 'none';
-    }
-  });
-}
-
-filterBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    filterBtns.forEach(b => {
-      b.classList.remove('active');
-      b.classList.add('text-gray-400');
-    });
-    btn.classList.add('active');
-    btn.classList.remove('text-gray-400');
-    activeFilter = btn.dataset.filter;
-    applyFilters();
-  });
-});
-
-if (searchInput) {
-  searchInput.addEventListener('input', applyFilters);
-}
-
-cards.forEach(card => {
-  card.addEventListener('click', (e) => {
-    if (e.target.tagName === 'BUTTON' || e.target.closest('button') || e.target.closest('a')) return;
-    card.style.transform = 'scale(0.98)';
-    setTimeout(() => { card.style.transform = ''; }, 150);
-  });
-});
-</script>
-<!-- ===== Update Announcement Overlay ===== -->
 <div class="update-overlay" id="updateOverlay">
   <div class="update-modal">
-    <!-- Header -->
     <div class="update-modal-header">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
-          <div class="header-icon">
-            <i class="fas fa-bullhorn"></i>
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-500/20 to-yellow-500/5 border border-yellow-500/30 flex items-center justify-center">
+            <i class="fas fa-bullhorn text-yellow-400 text-xl"></i>
           </div>
           <div>
-            <h3 class="font-display font-bold text-xl text-white">新更新通知</h3>
-            <p class="text-sm text-gray-500">以下站点有新的更新内容</p>
+            <h3 class="font-['Orbitron'] font-bold text-2xl text-white">UPDATE_ALERT</h3>
+            <p class="text-sm text-gray-500 font-mono">新更新通知 · 请阅读后关闭</p>
           </div>
         </div>
-        <button class="close-btn" id="closeOverlayBtn" aria-label="关闭">
-          <i class="fas fa-times text-sm"></i>
-        </button>
+        <button class="close-btn" id="closeOverlayBtn" aria-label="关闭"><i class="fas fa-times"></i></button>
       </div>
     </div>
-    <!-- Body -->
-    <div class="update-modal-body" id="updateModalBody">
-      <!-- Items rendered by JS -->
-    </div>
-    <div class="shimmer-line" style="margin: 0 36px;"></div>
-    <!-- Footer -->
+    <div class="update-modal-body" id="updateModalBody"></div>
     <div class="update-modal-footer">
-      <button class="read-btn" id="markReadBtn">
-        <i class="fas fa-check-circle"></i>
-        我已阅读，不再显示
-      </button>
+      <button class="read-btn" id="markReadBtn"><i class="fas fa-check-circle mr-2"></i>我已阅读，不再显示</button>
     </div>
   </div>
 </div>
+
+<script>
+// ===== PERFORMANCE DETECTION & ADAPTIVE QUALITY =====
+const isTouch = window.matchMedia('(pointer: coarse)').matches;
+const isMobile = isTouch || window.innerWidth < 768;
+const hwCores = navigator.hardwareConcurrency || 4;
+const deviceMemory = navigator.deviceMemory || 4;
+let qualityTier = (isMobile || hwCores <= 4 || deviceMemory <= 4) ? ((hwCores <= 2 || deviceMemory <= 2) ? 'low' : 'medium') : 'high';
+if(!isTouch) document.body.classList.add('desktop');
+
+const perfBadge = document.getElementById('perf-badge');
+const perfText = document.getElementById('perf-text');
+function updatePerfBadge(tier, fps) {
+  const labels = { high: 'ULTRA', medium: 'BALANCED', low: 'POWER SAVE' };
+  perfBadge.className = '';
+  if(tier === 'low') perfBadge.classList.add('low'); else if(tier === 'medium') perfBadge.classList.add('medium');
+  perfText.textContent = `NEURAL LINK · ${labels[tier]} · ${Math.round(fps)} FPS`;
+}
+
+// ===== THREE.JS GPU-POWERED SCENE =====
+(function(){
+  if(isMobile) {
+    document.getElementById('webgl-bg').style.display = 'none';
+    updatePerfBadge('low', 60);
+    return;
+  }
+
+  const canvas = document.getElementById('webgl-bg');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false, powerPreference: 'high-performance' });
+
+  const configs = {
+    high: { dpr: Math.min(window.devicePixelRatio, 1.5), particles: 1600, shapes: 12, lines: false },
+    medium: { dpr: Math.min(window.devicePixelRatio, 1.0), particles: 800, shapes: 6, lines: false },
+    low: { dpr: Math.min(window.devicePixelRatio, 0.75), particles: 300, shapes: 3, lines: false }
+  };
+  let cfg = configs[qualityTier];
+  renderer.setPixelRatio(cfg.dpr);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  const particleUniforms = {
+    uTime: { value: 0 },
+    uMouse: { value: new THREE.Vector3(0,0,0) },
+    uPixelRatio: { value: cfg.dpr }
+  };
+
+  const particleVertexShader = `
+    uniform float uTime;
+    uniform float uPixelRatio;
+    attribute float aSize;
+    attribute vec3 aVelocity;
+    attribute float aPhase;
+    attribute vec3 aColor;
+    varying float vAlpha;
+    varying vec3 vColor;
+    void main() {
+      vec3 pos = position + aVelocity * uTime;
+      pos.y += sin(uTime * 0.5 + aPhase) * 0.4;
+      float wrap = 14.0;
+      pos = mod(pos + wrap, wrap * 2.0) - wrap;
+      vec4 mv = modelViewMatrix * vec4(pos, 1.0);
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = aSize * uPixelRatio * (80.0 / -mv.z);
+      vAlpha = 0.5 + 0.5 * sin(uTime + aPhase);
+      vColor = aColor;
+    }
+  `;
+  const particleFragmentShader = `
+    varying float vAlpha;
+    varying vec3 vColor;
+    void main() {
+      float d = distance(gl_PointCoord, vec2(0.5));
+      if(d > 0.5) discard;
+      float glow = 1.0 - smoothstep(0.0, 0.5, d);
+      gl_FragColor = vec4(vColor, vAlpha * glow * 0.9);
+    }
+  `;
+
+  function createParticleLayer(count, colorBase) {
+    const geo = new THREE.BufferGeometry();
+    const pos = new Float32Array(count * 3);
+    const vel = new Float32Array(count * 3);
+    const sizes = new Float32Array(count);
+    const phases = new Float32Array(count);
+    const colors = new Float32Array(count * 3);
+    const c = new THREE.Color(colorBase);
+    for(let i=0;i<count;i++){
+      pos[i*3] = (Math.random()-0.5)*24; pos[i*3+1] = (Math.random()-0.5)*24; pos[i*3+2] = (Math.random()-0.5)*18;
+      vel[i*3] = (Math.random()-0.5)*0.008; vel[i*3+1] = (Math.random()-0.5)*0.008; vel[i*3+2] = (Math.random()-0.5)*0.008;
+      sizes[i] = 0.05 + Math.random()*0.1;
+      phases[i] = Math.random()*Math.PI*2;
+      colors[i*3] = c.r; colors[i*3+1] = c.g; colors[i*3+2] = c.b;
+    }
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute('aVelocity', new THREE.BufferAttribute(vel, 3));
+    geo.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
+    geo.setAttribute('aPhase', new THREE.BufferAttribute(phases, 1));
+    geo.setAttribute('aColor', new THREE.BufferAttribute(colors, 3));
+    const mat = new THREE.ShaderMaterial({
+      uniforms: particleUniforms,
+      vertexShader: particleVertexShader,
+      fragmentShader: particleFragmentShader,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+    return new THREE.Points(geo, mat);
+  }
+
+  scene.add(createParticleLayer(cfg.particles, 0xffd700));
+  if(qualityTier !== 'low') scene.add(createParticleLayer(Math.floor(cfg.particles*0.4), 0x00f0ff));
+
+  const shapeCount = cfg.shapes;
+  const shapeGeo = new THREE.IcosahedronGeometry(0.35, 0);
+  const shapeMat = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.12 });
+  const shapes = new THREE.InstancedMesh(shapeGeo, shapeMat, shapeCount);
+  const dummy = new THREE.Object3D();
+  const shapeColors = [0xffd700, 0x00f0ff, 0xb829dd, 0xff2a6d, 0x39ff14];
+  const shapeData = [];
+  for(let i=0;i<shapeCount;i++){
+    shapes.setColorAt(i, new THREE.Color(shapeColors[i % shapeColors.length]));
+    shapeData.push({
+      x:(Math.random()-0.5)*28, y:(Math.random()-0.5)*22, z:(Math.random()-0.5)*16-4,
+      rx:(Math.random()-0.5)*0.008, ry:(Math.random()-0.5)*0.008, rz:(Math.random()-0.5)*0.008,
+      offset: Math.random()*Math.PI*2
+    });
+  }
+  shapes.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  scene.add(shapes);
+
+  const shockCount = 4;
+  const shockGeo = new THREE.RingGeometry(0.1, 0.18, 40);
+  const shockwaves = [];
+  for(let i=0;i<shockCount;i++){
+    const mesh = new THREE.Mesh(shockGeo, new THREE.MeshBasicMaterial({ color: 0xffd700, transparent: true, opacity: 0, side: THREE.DoubleSide }));
+    mesh.visible = false; scene.add(mesh);
+    shockwaves.push({ mesh, age: 1 });
+  }
+
+  camera.position.z = 10;
+  let mouseX=0, mouseY=0, targetX=0, targetY=0;
+  const worldMouse = new THREE.Vector3();
+  const raycaster = new THREE.Raycaster();
+  const mousePlane = new THREE.Plane(new THREE.Vector3(0,0,1), 0);
+  let lastMouseMove=0;
+
+  document.addEventListener('mousemove', (e)=>{
+    mouseX = (e.clientX/window.innerWidth)*2-1;
+    mouseY = (e.clientY/window.innerHeight)*2-1;
+    const now = performance.now();
+    if(now - lastMouseMove < 32) return;
+    lastMouseMove = now;
+    raycaster.setFromCamera({x:mouseX, y:-mouseY}, camera);
+    const t = new THREE.Vector3();
+    if(raycaster.ray.intersectPlane(mousePlane, t)) worldMouse.copy(t);
+  }, { passive: true });
+
+  document.addEventListener('click', (e)=>{
+    if(e.target.closest('a, button, input')) return;
+    for(const s of shockwaves){
+      if(s.age >= 1){
+        s.mesh.position.copy(worldMouse); s.mesh.position.z = 0;
+        s.mesh.lookAt(camera.position); s.mesh.scale.set(1,1,1);
+        s.mesh.material.opacity = 0.6; s.mesh.visible = true; s.age = 0; break;
+      }
+    }
+  });
+
+  let frame=0, time=0, lastTime=performance.now();
+  let fps=60, frameCount=0, lastFpsTime=performance.now();
+  let paused = false;
+
+  const visibilityObserver = new IntersectionObserver((entries)=>{
+    paused = !entries[0].isIntersecting;
+  }, { threshold: 0 });
+  visibilityObserver.observe(canvas);
+  document.addEventListener('visibilitychange', ()=>{ paused = document.hidden; });
+
+  function rebuildScene(){
+    cfg = configs[qualityTier];
+    renderer.setPixelRatio(cfg.dpr);
+    particleUniforms.uPixelRatio.value = cfg.dpr;
+    updatePerfBadge(qualityTier, fps);
+  }
+
+  function animate(){
+    requestAnimationFrame(animate);
+    if(paused) return;
+    const now = performance.now();
+    const dt = Math.min((now - lastTime)/1000, 0.05);
+    lastTime = now;
+    time += dt;
+    frame++;
+    frameCount++;
+    if(now - lastFpsTime >= 1000){
+      fps = frameCount; frameCount = 0; lastFpsTime = now;
+      if(fps < 35 && qualityTier !== 'low') { qualityTier = qualityTier === 'high' ? 'medium' : 'low'; rebuildScene(); }
+      else if(fps > 58 && qualityTier !== 'high') { qualityTier = 'high'; rebuildScene(); }
+      updatePerfBadge(qualityTier, fps);
+    }
+
+    targetX += (mouseX - targetX)*0.04;
+    targetY += (mouseY - targetY)*0.04;
+    camera.position.x = targetX * 1.5;
+    camera.position.y = -targetY * 1.0;
+    camera.lookAt(scene.position);
+    particleUniforms.uTime.value = time;
+    particleUniforms.uMouse.value.copy(worldMouse);
+
+    if(frame % (qualityTier === 'low' ? 2 : 1) === 0){
+      for(let i=0;i<shapeCount;i++){
+        const d = shapeData[i];
+        dummy.position.set(d.x, d.y + Math.sin(time + d.offset)*0.5, d.z);
+        dummy.rotation.set(d.rx*frame*60, d.ry*frame*60, d.rz*frame*60);
+        dummy.scale.setScalar(1); dummy.updateMatrix(); shapes.setMatrixAt(i, dummy.matrix);
+      }
+      shapes.instanceMatrix.needsUpdate = true;
+    }
+
+    for(const s of shockwaves){
+      if(s.age < 1){
+        s.age += 0.025;
+        const sc = 1 + s.age * 14;
+        s.mesh.scale.set(sc, sc, 1);
+        s.mesh.material.opacity = 0.6 * (1 - s.age);
+        s.mesh.rotation.z += 0.02;
+        if(s.age >= 1) s.mesh.visible = false;
+      }
+    }
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  let resizeTimeout;
+  window.addEventListener('resize', ()=>{
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(()=>{
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }, 120);
+  });
+})();
+
+// ===== LOADER =====
+const loaderTexts = ['INITIALIZING SYSTEM...','LOADING 3D CORE...','ESTABLISHING NEURAL LINK...','SYNCING DATA STREAMS...','RENDERING INTERFACE...','SYSTEM READY'];
+let progress = 0;
+const loaderInterval = setInterval(()=>{
+  progress += Math.random()*14 + 6;
+  if(progress > 100) progress = 100;
+  document.getElementById('loaderPercent').textContent = Math.floor(progress) + '%';
+  document.getElementById('loaderBarFill').style.width = progress + '%';
+  document.getElementById('loaderText').textContent = loaderTexts[Math.min(Math.floor(progress/18), loaderTexts.length-1)];
+  if(progress === 100) { clearInterval(loaderInterval); setTimeout(()=>document.getElementById('loader').classList.add('hidden'), 400); }
+}, 180);
+
+// ===== CURSOR (CSS vars, desktop only) =====
+if(!isTouch){
+  const cursor = document.getElementById('cursor');
+  let cursorX = window.innerWidth/2, cursorY = window.innerHeight/2;
+  let lastCursorUpdate = 0;
+  document.addEventListener('mousemove', (e)=>{
+    cursorX = e.clientX; cursorY = e.clientY;
+    const now = performance.now();
+    if(now - lastCursorUpdate < 16) return;
+    lastCursorUpdate = now;
+    document.body.style.setProperty('--cursor-x', cursorX + 'px');
+    document.body.style.setProperty('--cursor-y', cursorY + 'px');
+  }, { passive: true });
+  document.querySelectorAll('a, button, .card-3d, .filter-btn, input').forEach(el=>{
+    el.addEventListener('mouseenter', ()=>cursor.classList.add('hover'));
+    el.addEventListener('mouseleave', ()=>cursor.classList.remove('hover'));
+  });
+} else {
+  document.getElementById('cursor').style.display = 'none';
+  document.getElementById('cursor-dot').style.display = 'none';
+  document.getElementById('mouse-glow').style.display = 'none';
+}
+
+// ===== 3D CARD TILT (delegated, throttled) =====
+(function(){
+  if(isTouch) return;
+  const grid = document.getElementById('cardsGrid');
+  let activeCard = null, rafId = null;
+  grid.addEventListener('mousemove', (e)=>{
+    const card = e.target.closest('.card-3d');
+    if(!card) return;
+    activeCard = card;
+    if(rafId) return;
+    rafId = requestAnimationFrame(()=>{
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left, y = e.clientY - rect.top;
+      const cx = rect.width/2, cy = rect.height/2;
+      const rx = ((y - cy)/cy) * -10, ry = ((x - cx)/cx) * 10;
+      card.style.transform = `perspective(var(--card-perspective)) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) scale3d(1.02,1.02,1.02)`;
+      card.style.setProperty('--shine-x', x + 'px');
+      card.style.setProperty('--shine-y', y + 'px');
+      const content = card.querySelector('.card-3d-content');
+      const icon = card.querySelector('.site-icon-glow');
+      if(content) content.style.transform = `translateZ(40px) translateX(${ry*0.3}px) translateY(${-rx*0.3}px)`;
+      if(icon) icon.style.transform = `translateZ(50px) translateX(${ry*0.5}px) translateY(${-rx*0.5}px)`;
+      rafId = null;
+    });
+  });
+  grid.addEventListener('mouseleave', (e)=>{
+    const card = e.target.closest('.card-3d');
+    if(!card || e.target !== card) return;
+    card.style.transform = 'perspective(var(--card-perspective)) rotateX(0) rotateY(0) scale3d(1,1,1)';
+    const content = card.querySelector('.card-3d-content');
+    const icon = card.querySelector('.site-icon-glow');
+    if(content) content.style.transform = 'translateZ(30px)';
+    if(icon) icon.style.transform = 'translateZ(0)';
+    activeCard = null;
+  }, true);
+})();
+
+// ===== MAGNETIC BUTTONS =====
+(function(){
+  if(isTouch) return;
+  document.body.addEventListener('mousemove', (e)=>{
+    const btn = e.target.closest('.magnetic-btn, .magnetic-link');
+    if(!btn) return;
+    const rect = btn.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width/2, y = e.clientY - rect.top - rect.height/2;
+    btn.style.transform = `translate(${x*0.25}px, ${y*0.25}px)`;
+  });
+  document.body.addEventListener('mouseleave', (e)=>{
+    const btn = e.target.closest('.magnetic-btn, .magnetic-link');
+    if(btn) btn.style.transform = 'translate(0,0)';
+  }, true);
+  document.body.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.magnetic-btn');
+    if(!btn) return;
+    const rect = btn.getBoundingClientRect();
+    const r = document.createElement('span');
+    r.className = 'ripple';
+    r.style.left = (e.clientX - rect.left) + 'px';
+    r.style.top = (e.clientY - rect.top) + 'px';
+    const size = Math.max(rect.width, rect.height);
+    r.style.width = r.style.height = size + 'px';
+    r.style.marginLeft = -size/2 + 'px'; r.style.marginTop = -size/2 + 'px';
+    btn.appendChild(r);
+    setTimeout(()=>r.remove(), 500);
+  });
+})();
+
+// ===== FILTER SPOTLIGHT =====
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('mousemove', (e)=>{
+    const rect = btn.getBoundingClientRect();
+    btn.style.setProperty('--x', (e.clientX - rect.left) + 'px');
+    btn.style.setProperty('--y', (e.clientY - rect.top) + 'px');
+  });
+});
+
+// ===== TEXT SCRAMBLE =====
+class TextScramble {
+  constructor(el){ this.el = el; this.chars = '!<>-_\\/[]{}—=+*^?#________'; this.update = this.update.bind(this); }
+  setText(newText){
+    const oldText = this.el.innerText;
+    const length = Math.max(oldText.length, newText.length);
+    const promise = new Promise(r => this.resolve = r);
+    this.queue = [];
+    for(let i=0;i<length;i++) this.queue.push({ from: oldText[i]||'', to: newText[i]||'', start: Math.floor(Math.random()*15), end: Math.floor(Math.random()*15)+15 });
+    cancelAnimationFrame(this.frameRequest); this.frame = 0; this.update();
+    return promise;
+  }
+  update(){
+    let output='', complete=0;
+    for(let i=0;i<this.queue.length;i++){
+      let {from,to,start,end,char} = this.queue[i];
+      if(this.frame >= end){ complete++; output += to; }
+      else if(this.frame >= start){ if(!char || Math.random()<0.28){ char = this.randomChar(); this.queue[i].char = char; } output += '<span class="neon-pink">'+char+'</span>'; }
+      else output += from;
+    }
+    this.el.innerHTML = output;
+    if(complete === this.queue.length) this.resolve();
+    else { this.frameRequest = requestAnimationFrame(this.update); this.frame++; }
+  }
+  randomChar(){ return this.chars[Math.floor(Math.random()*this.chars.length)]; }
+}
+
+window.addEventListener('load', ()=>{
+  const subtitle = document.querySelector('.scan-text + p');
+  if(subtitle){
+    const fx = new TextScramble(subtitle);
+    let counter = 0;
+    const phrases = ['汇聚全部站点动态，以 <span class="neon-blue">3D 沉浸式体验</span> 呈现每一次更新。','HOLOGRAPHIC ANNOUNCEMENT CENTER V5.0','实时 · 全息 · 未来'];
+    const next = ()=>{ fx.setText(phrases[counter]).then(()=>setTimeout(next, 3500)); counter = (counter+1) % phrases.length; };
+    setTimeout(next, 1200);
+  }
+});
+
+// ===== SCROLL REVEAL =====
+const revealObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{ if(entry.isIntersecting) entry.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
+
+// ===== COUNTER =====
+function animateCounter(el, target, duration=2000){
+  const startTime = performance.now();
+  function update(t){
+    const p = Math.min((t - startTime)/duration, 1);
+    el.textContent = Math.floor((1 - Math.pow(1-p, 4)) * target);
+    if(p < 1) requestAnimationFrame(update); else el.textContent = target;
+  }
+  requestAnimationFrame(update);
+}
+const counterObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){ animateCounter(entry.target, parseInt(entry.target.dataset.target)); counterObserver.unobserve(entry.target); }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.stat-number').forEach(el=>counterObserver.observe(el));
+
+// ===== COMBINED SCROLL HANDLER =====
+let ticking = false;
+window.addEventListener('scroll', ()=>{
+  if(!ticking){
+    requestAnimationFrame(()=>{
+      const scrollY = window.scrollY;
+      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('scroll-progress').style.width = (docH > 0 ? (scrollY/docH*100) : 0) + '%';
+      const nav = document.getElementById('navbar');
+      if(scrollY > 50) nav.classList.add('border-white/10', 'shadow-[0_8px_40px_rgba(0,0,0,0.5)]');
+      else nav.classList.remove('border-white/10', 'shadow-[0_8px_40px_rgba(0,0,0,0.5)]');
+      ticking = false;
+    });
+    ticking = true;
+  }
+}, { passive: true });
+
+// ===== FILTER & SEARCH =====
+const filterBtns = document.querySelectorAll('.filter-btn');
+const cards = document.querySelectorAll('.card-3d');
+const searchInput = document.getElementById('searchInput');
+let activeFilter = 'all';
+function applyFilters(){
+  const query = searchInput ? searchInput.value.toLowerCase() : '';
+  cards.forEach(card=>{
+    const cat = card.dataset.category || 'notice';
+    const text = card.textContent.toLowerCase();
+    if((activeFilter === 'all' || cat === activeFilter) && (!query || text.includes(query))) card.style.display = '';
+    else card.style.display = 'none';
+  });
+}
+filterBtns.forEach(btn=>{
+  btn.addEventListener('click', ()=>{ filterBtns.forEach(b=>b.classList.remove('active')); btn.classList.add('active'); activeFilter = btn.dataset.filter; applyFilters(); });
+});
+if(searchInput) searchInput.addEventListener('input', applyFilters);
+
+// ===== UPDATE SYSTEM =====
+const siteUpdates = [
+  { id:'hub-v5-001', site:'Announcement Hub', title:'🚀 全息公告中心 V5.0 发布', description:'极致性能再升级：GPU Shader 粒子、动态 FPS 自适应画质、CSS 变量光标、IntersectionObserver 暂停、整体渲染开销降低约 70%。视觉更炫，运行更稳。', date:'2026.08.02', type:'new' }
+];
+const STORAGE_KEY = 'announcement_hub_seen_updates_v5';
+function getSeenUpdates(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); } catch{ return []; } }
+function getUnseenUpdates(){ return siteUpdates.filter(u=>!getSeenUpdates().includes(u.id)); }
+function markAllAsSeen(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(siteUpdates.map(u=>u.id))); }
+function renderUpdates(){
+  const container = document.getElementById('updateModalBody');
+  const unseen = getUnseenUpdates();
+  if(unseen.length === 0){ container.innerHTML = '<div class="text-center py-12"><i class="fas fa-check-circle text-5xl text-gray-700 mb-4"></i><p class="text-gray-500 font-mono">暂无新的更新内容</p></div>'; return; }
+  container.innerHTML = unseen.map(u=>{
+    const badgeClass = u.type === 'new' ? 'badge-new' : u.type === 'update' ? 'badge-update' : 'badge-notice';
+    const badgeLabel = u.type === 'new' ? '新功能' : u.type === 'update' ? '更新' : '通知';
+    return '<div class="update-item"><div class="flex items-center gap-3 mb-3"><span class="item-badge '+badgeClass+'">'+badgeLabel+'</span><span class="text-xs text-gray-500 font-mono">'+u.date+'</span><span class="text-xs text-gray-600">·</span><span class="text-xs text-gray-500">'+u.site+'</span></div><div class="text-base font-bold text-white mb-2">'+u.title+'</div><div class="text-sm text-gray-400 leading-relaxed">'+u.description+'</div></div>';
+  }).join('');
+}
+const updateOverlay = document.getElementById('updateOverlay');
+function showUpdateOverlay(){ renderUpdates(); document.body.style.overflow = 'hidden'; updateOverlay.classList.add('active'); }
+function hideUpdateOverlay(){ updateOverlay.classList.remove('active'); document.body.style.overflow = ''; markAllAsSeen(); }
+window.addEventListener('load', ()=>{ setTimeout(()=>{ if(getUnseenUpdates().length > 0) showUpdateOverlay(); }, 3000); });
+document.getElementById('markReadBtn').addEventListener('click', hideUpdateOverlay);
+document.getElementById('closeOverlayBtn').addEventListener('click', hideUpdateOverlay);
+document.getElementById('checkUpdatesBtn').addEventListener('click', showUpdateOverlay);
+document.getElementById('showUpdatesHero').addEventListener('click', showUpdateOverlay);
+updateOverlay.addEventListener('click', (e)=>{ if(e.target === e.currentTarget) hideUpdateOverlay(); });
+document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && updateOverlay.classList.contains('active')) hideUpdateOverlay(); });
+</script>
 </body>
 </html>
