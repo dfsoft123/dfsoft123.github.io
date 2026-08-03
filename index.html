@@ -1993,28 +1993,28 @@ function openChest(type){
   const rand=Math.random()*100;
   let rewardIcon='🎁',rewardText='';
   if(type==='normal'){
-    if(rand<50){gameData.specialBonus=(gameData.specialBonus||1)+0.1;rewardText='0.1 奖励增益';rewardIcon='📈';}
-    else if(rand<80){gameData.specialBonus=(gameData.specialBonus||1)+0.5;rewardText='0.5 奖励增益';rewardIcon='📈';}
-    else if(rand<95){gameData.usageBonus=(gameData.usageBonus||1)+1000;rewardText='1000 次使用增益';rewardIcon='⚡';}
-    else if(rand<97.5){gameData.beacon=(gameData.beacon||0)+1;rewardText='1 信标';rewardIcon='🔮';}
-    else{gameData.treeLevel=(gameData.treeLevel||1)+1;rewardText='树等级 +1';rewardIcon='🌳';}
+    if(rand<50){gameData.specialBonus+=0.1;rewardText='0.1 奖励增益';rewardIcon='📈';}
+    else if(rand<80){gameData.specialBonus+=0.5;rewardText='0.5 奖励增益';rewardIcon='📈';}
+    else if(rand<95){gameData.usageBonus+=1000;rewardText='1000 次使用增益';rewardIcon='⚡';}
+    else if(rand<97.5){gameData.beacon+=1;rewardText='1 信标';rewardIcon='🔮';}
+    else{gameData.treeLevel+=1;rewardText='树等级 +1';rewardIcon='🌳';}
   }else if(type==='golden'){
-    if(rand<50){gameData.specialBonus=(gameData.specialBonus||1)+0.5;rewardText='0.5 奖励增益';rewardIcon='📈';}
-    else if(rand<75){gameData.specialBonus=(gameData.specialBonus||1)+1;rewardText='1 奖励增益';rewardIcon='📈';}
-    else if(rand<90){gameData.usageBonus=(gameData.usageBonus||1)+3000;rewardText='3000 次使用增益';rewardIcon='⚡';}
-    else if(rand<95){gameData.beacon=(gameData.beacon||0)+3;rewardText='3 信标';rewardIcon='🔮';}
-    else{gameData.treeLevel=(gameData.treeLevel||1)+3;rewardText='树等级 +3';rewardIcon='🌳';}
+    if(rand<50){gameData.specialBonus+=0.5;rewardText='0.5 奖励增益';rewardIcon='📈';}
+    else if(rand<75){gameData.specialBonus+=1;rewardText='1 奖励增益';rewardIcon='📈';}
+    else if(rand<90){gameData.usageBonus+=3000;rewardText='3000 次使用增益';rewardIcon='⚡';}
+    else if(rand<95){gameData.beacon+=3;rewardText='3 信标';rewardIcon='🔮';}
+    else{gameData.treeLevel+=3;rewardText='树等级 +3';rewardIcon='🌳';}
   }else if(type==='diamond'){
-    if(rand<50){gameData.specialBonus=(gameData.specialBonus||1)+5;rewardText='5 奖励增益';rewardIcon='📈';}
-    else if(rand<75){gameData.usageBonus=(gameData.usageBonus||1)+10000;rewardText='10000 次使用增益';rewardIcon='⚡';}
-    else if(rand<85){gameData.beacon=(gameData.beacon||0)+25;rewardText='25 信标';rewardIcon='🔮';}
-    else if(rand<95){gameData.treeLevel=(gameData.treeLevel||1)+25;rewardText='树等级 +25';rewardIcon='🌳';}
-    else{gameData.dropMultiplier=(gameData.dropMultiplier||1)+1;rewardText='掉落倍率 +1';rewardIcon='✨';}
+    if(rand<50){gameData.specialBonus+=5;rewardText='5 奖励增益';rewardIcon='📈';}
+    else if(rand<75){gameData.usageBonus+=10000;rewardText='10000 次使用增益';rewardIcon='⚡';}
+    else if(rand<85){gameData.beacon+=25;rewardText='25 信标';rewardIcon='🔮';}
+    else if(rand<95){gameData.treeLevel+=25;rewardText='树等级 +25';rewardIcon='🌳';}
+    else{gameData.dropMultiplier+=1;rewardText='掉落倍率 +1';rewardIcon='✨';}
   }else if(type==='supreme'){
-    if(rand<40){gameData.specialBonus=(gameData.specialBonus||1)+67;rewardText='67 奖励增益';rewardIcon='📈';}
-    else if(rand<70){gameData.usageBonus=(gameData.usageBonus||1)+67000;rewardText='67000 次使用增益';rewardIcon='⚡';}
-    else if(rand<85){gameData.beacon=(gameData.beacon||0)+200;gameData.treeLevel=(gameData.treeLevel||1)+200;rewardText='200 信标 + 树等级 +200';rewardIcon='🔮';}
-    else{gameData.dropMultiplier=(gameData.dropMultiplier||1)+3;rewardText='掉落倍率 +3';rewardIcon='✨';}
+    if(rand<40){gameData.specialBonus+=67;rewardText='67 奖励增益';rewardIcon='📈';}
+    else if(rand<70){gameData.usageBonus+=67000;rewardText='67000 次使用增益';rewardIcon='⚡';}
+    else if(rand<85){gameData.beacon+=200;gameData.treeLevel+=200;rewardText='200 信标 + 树等级 +200';rewardIcon='🔮';}
+    else{gameData.dropMultiplier+=3;rewardText='掉落倍率 +3';rewardIcon='✨';}
   }
   levelUp();
   saveGame();
@@ -2221,7 +2221,7 @@ document.getElementById('upgrade-energy-btn').addEventListener('click',()=>{if(g
 document.getElementById('debug-toggle-btn').addEventListener('click',function(){
   if(gameData.debugEnabled){
     gameData.debugEnabled=false;
-    document.querySelectorAll('.editable-debug').forEach(el=>el.disabled=true);
+    document.querySelectorAll('.editable-debug, .shop-count-input').forEach(el=>el.disabled=true);
     this.textContent='🔧 开启调试模式';
     this.style.borderColor='';
     return;
@@ -2229,7 +2229,7 @@ document.getElementById('debug-toggle-btn').addEventListener('click',function(){
   const pwd=prompt('请输入调试模式密码：');
   if(pwd==='dfsoft'){
     gameData.debugEnabled=true;
-    document.querySelectorAll('.editable-debug').forEach(el=>el.disabled=false);
+    document.querySelectorAll('.editable-debug, .shop-count-input').forEach(el=>el.disabled=false);
     this.textContent='🔓 调试模式已开启';
     this.style.borderColor='#00ff9d';
     this.style.boxShadow='0 0 20px rgba(0,255,157,0.3)';
