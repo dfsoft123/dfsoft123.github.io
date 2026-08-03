@@ -604,6 +604,16 @@ body{
   position:relative;
   z-index:1;
 }
+.block-level-info{
+  margin-top:8px;
+  font-size:15px;
+  color:var(--neon-green);
+  text-shadow:0 0 20px rgba(0,255,157,0.5),0 0 40px rgba(0,255,157,0.2);
+  font-weight:700;
+  letter-spacing:1px;
+  position:relative;
+  z-index:1;
+}
 .damage-text-container{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:10;}
 .damage-text{
   position:absolute;
@@ -786,6 +796,32 @@ input.editable-debug:not(:disabled){border-bottom:1px dashed var(--neon-blue);cu
 .tree-btn:hover{background:rgba(0,255,157,0.06);box-shadow:0 0 30px rgba(0,255,157,0.3);}
 .tree-btn.auto{border-color:rgba(0,243,255,0.25);color:var(--neon-cyan);}
 .tree-btn.auto:hover{background:rgba(0,243,255,0.06);box-shadow:0 0 30px rgba(0,243,255,0.3);}
+/* Shop tab buttons */
+.shop-tabs{display:inline-flex;gap:4px;margin-left:12px;position:relative;z-index:2;vertical-align:middle;}
+.shop-tab{
+  background:rgba(0,0,0,0.4);
+  border:1px solid rgba(0,243,255,0.1);
+  color:var(--text-dim);
+  padding:3px 14px;
+  border-radius:8px;
+  font-family:var(--font-body);
+  font-weight:700;
+  font-size:13px;
+  cursor:pointer;
+  transition:all 0.3s ease;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  line-height:1.4;
+}
+.shop-tab:hover{border-color:var(--neon-cyan);color:var(--text-main);}
+.shop-tab.active{
+  background:rgba(0,243,255,0.1);
+  border-color:var(--neon-cyan);
+  color:var(--neon-cyan);
+  box-shadow:0 0 15px rgba(0,243,255,0.2);
+}
+.shop-tab[data-tab="branch"].active{border-color:var(--neon-purple);color:var(--neon-purple);box-shadow:0 0 15px rgba(188,19,254,0.2);}
+
 .shop{width:100%;overflow-y:auto;}
 .shop-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;padding-bottom:10px;position:relative;z-index:1;}
 .shop-item{
@@ -946,6 +982,9 @@ input.editable-debug:not(:disabled){border-bottom:1px dashed var(--neon-blue);cu
 .chest-name{font-size:18px;font-weight:700;color:var(--text-main);letter-spacing:0.5px;}
 .chest-name small{font-weight:400;font-size:13px;color:var(--text-dim);margin-left:6px;}
 .chest-count{font-size:15px;color:var(--neon-gold);font-weight:600;margin-top:2px;display:flex;align-items:center;gap:4px;}
+.chest-count-input{width:80px;background:transparent;border:1px solid rgba(255,215,0,0.3);border-radius:4px;color:var(--neon-gold);font-size:15px;font-weight:700;text-align:center;padding:2px 6px;outline:none;transition:border-color 0.3s;}
+.chest-count-input:focus{border-color:var(--neon-gold);}
+.chest-count-input:disabled{opacity:1;-webkit-text-fill-color:var(--neon-gold);}
 .chest-count::before{content:'×';font-size:18px;color:var(--text-dim);}
 .chest-item .action-btn{
   padding:8px 20px;
@@ -1096,6 +1135,7 @@ input.editable-debug:not(:disabled){border-bottom:1px dashed var(--neon-blue);cu
               <div class="block-hp-text"><span id="current-hp">100</span> / <span id="max-hp">100</span></div>
               <div class="hp-bar-container"><div class="hp-bar" id="hp-bar"></div></div>
               <div class="drop-info" id="drop-info">掉落: 1 金币, 1 经验</div>
+              <div class="block-level-info" id="block-level-info" style="display:none"></div>
             </div>
           </div>
           <div class="damage-text-container" id="damage-text-container"></div>
@@ -1146,7 +1186,10 @@ input.editable-debug:not(:disabled){border-bottom:1px dashed var(--neon-blue);cu
         <div class="chest-timer-display">下次获得宝箱: <span id="chest-timer">5:00</span></div>
         <button class="action-btn exchange-btn" id="open-chest-modal-btn" style="width:100%;">📦 查看宝箱仓库</button>
       </div>
-      <div class="panel shop"><h3 class="panel-title">商店</h3><div class="shop-items" id="shop-items"></div></div>
+      <div class="panel shop">
+        <h3 class="panel-title">商店<span class="shop-tabs"><button class="shop-tab active" data-tab="main">主线</button><button class="shop-tab" data-tab="branch">支线</button></span></h3>
+        <div class="shop-items" id="shop-items"></div>
+      </div>
       <div class="panel redeem-panel">
         <h3 class="panel-title">兑换中心</h3>
         <div class="redeem-controls"><input type="text" id="redeem-input" placeholder="输入兑换码..."><button class="action-btn exchange-btn" id="redeem-btn">兑换</button></div>
@@ -1215,6 +1258,12 @@ input.editable-debug:not(:disabled){border-bottom:1px dashed var(--neon-blue);cu
           <button class="action-btn exchange-btn" id="craft-beacon-btn">一键合成信标</button>
         </div>
       </div>
+      <div class="panel stats-section" style="margin-top:12px;">
+        <h3 class="panel-title">调试模式</h3>
+        <div style="padding:12px;">
+          <button class="action-btn" id="debug-toggle-btn" style="width:100%;">🔧 开启调试模式</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1223,10 +1272,10 @@ input.editable-debug:not(:disabled){border-bottom:1px dashed var(--neon-blue);cu
     <button class="close-btn" onclick="closeChestModal()">&times;</button>
     <h3 class="modal-title">宝箱仓库</h3>
     <div class="chest-list">
-      <div class="chest-item normal"><div class="chest-item-info"><div class="chest-icon-wrap">📦</div><div><div class="chest-name">普通宝箱 <small>常见</small></div><div class="chest-count"><span id="chest-normal-count">0</span></div></div></div><button class="action-btn" onclick="openChest('normal')" id="chest-btn-normal">开启</button></div>
-      <div class="chest-item golden"><div class="chest-item-info"><div class="chest-icon-wrap">✨</div><div><div class="chest-name">黄金宝箱 <small>稀有</small></div><div class="chest-count"><span id="chest-golden-count">0</span></div></div></div><button class="action-btn" onclick="openChest('golden')" id="chest-btn-golden">开启</button></div>
-      <div class="chest-item diamond"><div class="chest-item-info"><div class="chest-icon-wrap">💎</div><div><div class="chest-name">钻石宝箱 <small>史诗</small></div><div class="chest-count"><span id="chest-diamond-count">0</span></div></div></div><button class="action-btn" onclick="openChest('diamond')" id="chest-btn-diamond">开启</button></div>
-      <div class="chest-item supreme"><div class="chest-item-info"><div class="chest-icon-wrap">👑</div><div><div class="chest-name">至尊宝箱 <small>传说</small></div><div class="chest-count"><span id="chest-supreme-count">0</span></div></div></div><button class="action-btn" onclick="openChest('supreme')" id="chest-btn-supreme">开启</button></div>
+      <div class="chest-item normal"><div class="chest-item-info"><div class="chest-icon-wrap">📦</div><div><div class="chest-name">普通宝箱 <small>常见</small></div><div class="chest-count"><input type="text" class="chest-count-input editable-debug" id="chest-normal-count" value="0" disabled></div></div></div><button class="action-btn" onclick="openChest('normal')" id="chest-btn-normal">开启</button></div>
+      <div class="chest-item golden"><div class="chest-item-info"><div class="chest-icon-wrap">✨</div><div><div class="chest-name">黄金宝箱 <small>稀有</small></div><div class="chest-count"><input type="text" class="chest-count-input editable-debug" id="chest-golden-count" value="0" disabled></div></div></div><button class="action-btn" onclick="openChest('golden')" id="chest-btn-golden">开启</button></div>
+      <div class="chest-item diamond"><div class="chest-item-info"><div class="chest-icon-wrap">💎</div><div><div class="chest-name">钻石宝箱 <small>史诗</small></div><div class="chest-count"><input type="text" class="chest-count-input editable-debug" id="chest-diamond-count" value="0" disabled></div></div></div><button class="action-btn" onclick="openChest('diamond')" id="chest-btn-diamond">开启</button></div>
+      <div class="chest-item supreme"><div class="chest-item-info"><div class="chest-icon-wrap">👑</div><div><div class="chest-name">至尊宝箱 <small>传说</small></div><div class="chest-count"><input type="text" class="chest-count-input editable-debug" id="chest-supreme-count" value="0" disabled></div></div></div><button class="action-btn" onclick="openChest('supreme')" id="chest-btn-supreme">开启</button></div>
     </div>
     <button class="open-all-btn" id="open-all-chests-btn" onclick="openAllChests()">⚡ 一键开启全部</button>
     <div id="chest-reward-text">✨ 选择一个宝箱开启 ✨</div>
@@ -1320,6 +1369,9 @@ const defaultData={
     {name:'钻石块I',hp:1e7,coins:300,sqrtZone:1},{name:'钻石块II',hp:8e7,coins:500,sqrtZone:1},{name:'钻石块III',hp:5e8,coins:1000,sqrtZone:1},
     {name:'下界合金块I',hp:5e9,coins:1500,sqrtZone:1},{name:'下界合金块II',hp:1e11,coins:2000,sqrtZone:1},{name:'下界合金块III',hp:1e12,coins:3000,sqrtZone:1},
     {name:'紫水晶块',hp:1e13,coins:5000,drop:'amethyst',sqrtZone:1},{name:'铜块',hp:2e14,coins:10000,drop:'copperIngot',sqrtZone:1},
+    {name:'伤害方块',hp:1e15,coins:0,sqrtZone:1,isCompressedBlock:true,compressedType:'damage'},
+    {name:'使用方块',hp:1e16,coins:0,sqrtZone:1,isCompressedBlock:true,compressedType:'usage'},
+    {name:'金币方块',hp:1e18,coins:0,sqrtZone:1,isCompressedBlock:true,compressedType:'coin'},
     {name:'京核',hp:1e32,coins:6.4e8,drop:'jingCore',dropChance:32,sqrtZone:1},
     {name:'蓝曜石碎片',hp:3.2e9,coins:50000,drop:'blueObsidianFragment',sqrtZone:2},{name:'红曜石碎片',hp:9.6e9,coins:100000,drop:'redObsidianFragment',sqrtZone:2},
     {name:'红蓝结晶',hp:2.4e10,coins:180000,drop:'redBlueCrystal',sqrtZone:2},{name:'基岩碎片',hp:8e10,coins:320000,drop:'bedrockFragment',sqrtZone:2},
@@ -1348,6 +1400,7 @@ const defaultData={
     {name:'下界石英镐',damage:20000,usage:0.8,coins:1,price:75000,count:0,currency:'trophies'},
     {name:'萤石镐',damage:80000,usage:1,coins:1,price:375000,count:0,currency:'trophies'},
     {name:'黑曜石镐',damage:350000,usage:1.2,coins:1,price:1875000,count:0,currency:'trophies'},
+    {name:'压缩木镐',damage:10000,usage:1.5,coins:1,count:0,isCompressed:true,isCraftable:true,recipe:{'木镐':9999}},
     {name:'紫水晶镐I',damage:1,usage:2,coins:1,price:10,count:0,currency:'amethyst'},
     {name:'紫水晶镐II',damage:5,usage:3,coins:1,price:25,count:0,currency:'amethyst'},
     {name:'紫水晶镐III',damage:25,usage:4,coins:1,price:100,count:0,currency:'amethyst'},
@@ -1384,6 +1437,8 @@ const defaultData={
   fiveElementCrystal:0,jingCore:0,elementChip:0,matterX:0,matterY:0,matterZ:0,beacon:0,
   mechanicalParts:0,mechanicalPickaxeLevel:0,mechanicalPickaxeUpgradeCost:10,
   quantumBonus:1,
+  compressedDamageBonus:0,compressedUsageBonus:0,compressedCoinBonus:0,
+  compressedDamageBlockLevel:1,compressedUsageBlockLevel:1,compressedCoinBlockLevel:1,
   level:1,experience:0,usageBonus:1,specialBonus:1,digCount:0,blocksMined:0,dropMultiplier:1,
   treeLevel:1,treeExperience:0,autoMine:false,autoExchange:false,autoExchangeThreshold:1000,
   startTime:Date.now(),originalStartTime:Date.now(),lastOnlineTime:Date.now(),currentHp:100,totalOnlineSeconds:0,
@@ -1420,6 +1475,10 @@ function fixNanData(){
   if(typeof gameData.mechanicalPickaxeLevel!=='number'||isNaN(gameData.mechanicalPickaxeLevel)||gameData.mechanicalPickaxeLevel<0)gameData.mechanicalPickaxeLevel=0;
   if(typeof gameData.mechanicalPickaxeUpgradeCost!=='number'||isNaN(gameData.mechanicalPickaxeUpgradeCost)||gameData.mechanicalPickaxeUpgradeCost<1)gameData.mechanicalPickaxeUpgradeCost=10;
   if(typeof gameData.quantumBonus!=='number'||isNaN(gameData.quantumBonus)||gameData.quantumBonus<1)gameData.quantumBonus=1;
+  ['compressedDamageBonus','compressedUsageBonus','compressedCoinBonus','compressedDamageBlockLevel','compressedUsageBlockLevel','compressedCoinBlockLevel'].forEach(f=>{if(typeof gameData[f]!=='number'||isNaN(gameData[f])||gameData[f]<0)gameData[f]=defaultData[f]!==undefined?defaultData[f]:0;});
+  if(!gameData.compressedDamageBlockLevel||gameData.compressedDamageBlockLevel<1)gameData.compressedDamageBlockLevel=1;
+  if(!gameData.compressedUsageBlockLevel||gameData.compressedUsageBlockLevel<1)gameData.compressedUsageBlockLevel=1;
+  if(!gameData.compressedCoinBlockLevel||gameData.compressedCoinBlockLevel<1)gameData.compressedCoinBlockLevel=1;
   const fields=['coins','trophies','amethyst','copperIngot','blueObsidianFragment','redObsidianFragment','redBlueCrystal','bedrockFragment','obsidian','netherStar','glass','kunKun','earthCore','woodCore','fireCube','waterCube','goldCube','fiveElementCrystal','jingCore','elementChip','matterX','matterY','matterZ','beacon','experience','usageBonus','specialBonus','digCount','blocksMined','treeLevel','treeExperience','energy','energyProductionSpeed','energyUpgradeCost','autoExchangeThreshold'];
   fields.forEach(f=>{if(isNaN(gameData[f])||gameData[f]===undefined||gameData[f]===null)gameData[f]=defaultData[f]!==undefined?defaultData[f]:0;});
   gameData.autoMine=!!gameData.autoMine;gameData.autoExchange=!!gameData.autoExchange;gameData.debugEnabled=!!gameData.debugEnabled;gameData.researchInstituteActive=!!gameData.researchInstituteActive;
@@ -1433,7 +1492,6 @@ function loadSlotData(slot){try{const raw=localStorage.getItem(getSlotKey(slot))
 function resetSlot(slot){if(!confirm(`确定要重置存档${slot}吗？所有进度将丢失！`))return;const fresh=deepClone(defaultData);fresh.startTime=Date.now();fresh.originalStartTime=Date.now();fresh.lastOnlineTime=Date.now();fresh.lastChestTime=Date.now();fresh.currentHp=fresh.blocks[fresh.currentBlockIndex].hp;localStorage.setItem(getSlotKey(slot),JSON.stringify(fresh));if(slot===currentSlot){loadSlot(slot);updateAllUI();}updateSlotButtons();alert(`存档${slot}已重置！`);}
 function loadSlot(slot){const data=loadSlotData(slot);if(data){gameData=data;}else{gameData=deepClone(defaultData);gameData.startTime=Date.now();gameData.originalStartTime=Date.now();gameData.lastOnlineTime=Date.now();gameData.lastChestTime=Date.now();gameData.currentHp=gameData.blocks[gameData.currentBlockIndex].hp;localStorage.setItem(getSlotKey(slot),JSON.stringify(gameData));}currentSlot=slot;fixNanData();processOfflineMining();updateAllUI();updateSlotButtons();}
 function switchSlot(slot){if(slot===currentSlot)return;saveGame();loadSlot(slot);}
-function updateSlotButtons(){document.querySelectorAll('.slot-btn').forEach(btn=>{const s=parseInt(btn.dataset.slot);btn.classList.toggle('active',s===currentSlot);});}
 
 const elements={};
 ['block-name','current-hp','max-hp','hp-bar','exp-bar','prev-block','next-block','block-display','auto-mine-btn','auto-exchange-btn','auto-exchange-threshold','exchange-btn','damage-text-container','drop-info','pickaxe-name','pickaxe-damage','pickaxe-damage-value','pickaxe-usage-value','pickaxe-coins-value','usage-bonus','usage-per-dig','drop-multiplier-stat','level-bonus','trophy-bonus','beacon-bonus','time-bonus','special-bonus','energy-bonus','total-damage','level','experience','coins','trophies','amethyst','copper-ingot','blue-obsidian-fragment','red-obsidian-fragment','red-blue-crystal','bedrock-fragment','obsidian','nether-star','glass','kun-kun','earth-core','wood-core','fire-cube','water-cube','gold-cube','five-element-crystal','jing-core','element-chip','matter-x','matter-y','matter-z','tree-level','tree-progress-bar','tree-experience','tree-experience-required','water-tree-btn','auto-water-tree-btn','craft-beacon-btn','sqrt-power','playtime','dig-count','blocks-mined','shop-items','redeem-input','redeem-btn','research-inactive','research-active','activate-research-btn','upgrade-energy-btn','energy-total','energy-speed','energy-bonus-stat','energy-usage-stat','energy-tree-stat','chest-timer','open-chest-modal-btn','energy-upgrade-cost','energy-cost-display','open-all-chests-btn','tree-bonus','offline-duration','usage-multiplier-display','mechanical-parts','mechanical-pickaxe-level','quantum-bonus'
@@ -1448,13 +1506,29 @@ function calculateTimeBonus(){if(!gameData.totalOnlineSeconds)gameData.totalOnli
 function calculateTreeBonus(){return Math.pow(gameData.treeLevel,0.4);}
 function calculateEnergyBonus(){return gameData.researchInstituteActive?Math.pow(gameData.energy,0.22):1;}
 function calculateEnergyUsageBonus(){return gameData.researchInstituteActive?Math.pow(gameData.energy,0.44):1;}
-function calculateUsagePerDig(){return gameData.pickaxes[gameData.currentPickaxeIndex].usage*gameData.usageMultiplier*calculateEnergyUsageBonus();}
+function getCompressedPickaxeEffectiveStats(){
+  const pk=gameData.pickaxes.find(p=>p.isCompressed);
+  if(!pk)return null;
+  return {
+    damage:pk.damage+gameData.compressedDamageBonus,
+    usage:pk.usage+gameData.compressedUsageBonus,
+    coins:pk.coins+gameData.compressedCoinBonus
+  };
+}
+function calculateUsagePerDig(){
+  const pk=gameData.pickaxes[gameData.currentPickaxeIndex];
+  let baseUsage=pk.usage;
+  if(pk.isCompressed){const e=getCompressedPickaxeEffectiveStats();if(e)baseUsage=e.usage;}
+  return baseUsage*gameData.usageMultiplier*calculateEnergyUsageBonus();
+}
 function calculateTotalDamage(){
   if(!gameData.sqrtPower||gameData.sqrtPower<1)gameData.sqrtPower=1;
   const pk=gameData.pickaxes[gameData.currentPickaxeIndex];
+  let baseDamage=pk.damage;
+  if(pk.isCompressed){const e=getCompressedPickaxeEffectiveStats();if(e)baseDamage=e.damage;}
   const lv=Math.pow(gameData.level,0.5);
   const tr=Math.pow(1+gameData.trophies,2/3);
-  const prod=pk.damage*gameData.usageBonus*lv*tr;
+  const prod=baseDamage*gameData.usageBonus*lv*tr;
   return Math.pow(prod,1/gameData.sqrtPower)*calculateBeaconBonus()*calculateTimeBonus()*calculateTreeBonus()*gameData.specialBonus*calculateEnergyBonus()*gameData.quantumBonus;
 }
 
@@ -1464,6 +1538,17 @@ function updateBlockDisplay(){
   elements.currentHp.textContent=formatNumber(gameData.currentHp);
   elements.maxHp.textContent=formatNumber(block.hp);
   elements.hpBar.style.width=(gameData.currentHp/block.hp)*100+'%';
+  // 显示特殊方块等级
+  const levelInfo=document.getElementById('block-level-info');
+  if(block.isCompressedBlock){
+    const cType=block.compressedType;
+    const levelKey=cType==='damage'?'compressedDamageBlockLevel':cType==='usage'?'compressedUsageBlockLevel':'compressedCoinBlockLevel';
+    const level=gameData[levelKey]||1;
+    const bonusKey=cType==='damage'?'compressedDamageBonus':cType==='usage'?'compressedUsageBonus':'compressedCoinBonus';
+    const bonus=gameData[bonusKey]||0;
+    levelInfo.style.display='block';
+    levelInfo.textContent='Lv.'+level+' | 倍率: +'+formatNumber(bonus);
+  }else{levelInfo.style.display='none';}
   if(block.drop){const dn={amethyst:'紫水晶',copperIngot:'铜锭',blueObsidianFragment:'蓝曜石碎片',redObsidianFragment:'红曜石碎片',redBlueCrystal:'红蓝结晶',bedrockFragment:'基岩碎片',obsidian:'黑曜石',netherStar:'下界之星',glass:'玻璃',kunKun:'坤坤',earthCore:'土核心',woodCore:'木核心',fireCube:'火立方',waterCube:'水立方',goldCube:'金立方',fiveElementCrystal:'五行结晶',jingCore:'京核',elementChip:'元素晶片',matterX:'物质X',matterY:'物质Y',matterZ:'物质Z',mechanicalParts:'机械零件',quantumBonus:'量子增益'}[block.drop]||block.drop;
     elements.dropInfo.textContent=`${block.dropChance||100}%概率掉落${dn} x ${block.dropAmount||1}`;elements.dropInfo.style.display='block';
   }else{elements.dropInfo.style.display='none';}
@@ -1480,16 +1565,25 @@ function checkQuantumBlock(){
     updateAutoMine();
     alert('⚠️ 量子块只能用量子镐挖掘！自动挖矿已暂停。');
   }
+  if(block.isCompressedBlock && !pk.isCompressed && gameData.autoMine){
+    gameData.autoMine=false;
+    elements.autoMineBtn.textContent='⚙ 自动挖矿: 关闭';
+    elements.autoMineBtn.classList.toggle('active',false);
+    updateAutoMine();
+    alert('⚠️ 特殊方块只能使用压缩木镐挖掘！自动挖矿已暂停。');
+  }
 }
 function showDamageText(damage){if(elements.damageTextContainer.children.length>8)elements.damageTextContainer.removeChild(elements.damageTextContainer.firstChild);const dt=document.createElement('div');dt.className='damage-text';dt.textContent=formatNumber(damage);dt.style.left='50%';dt.style.top='50%';dt.style.transform=`translate(${Math.random()*200-100}px,${Math.random()*200-100}px)`;elements.damageTextContainer.appendChild(dt);setTimeout(()=>dt.remove(),1000);}
 function updateStats(){
   try{updateMechanicalPickaxe();const pk=gameData.pickaxes[gameData.currentPickaxeIndex];
+    let effDamage=pk.damage,effUsage=pk.usage,effCoins=pk.coins;
+    if(pk.isCompressed){const e=getCompressedPickaxeEffectiveStats();if(e){effDamage=e.damage;effUsage=e.usage;effCoins=e.coins;}}
     if(elements.expBar)elements.expBar.style.width=(gameData.experience/Math.pow(gameData.level,2))*100+'%';
     if(elements.pickaxeName)elements.pickaxeName.textContent=pk.name;
-    if(elements.pickaxeDamageValue)elements.pickaxeDamageValue.textContent=formatNumber(pk.damage)+'x';
-    if(elements.pickaxeUsageValue)elements.pickaxeUsageValue.textContent=formatNumber(pk.usage)+'x';
-    if(elements.pickaxeCoinsValue)elements.pickaxeCoinsValue.textContent=formatNumber(pk.coins)+'x';
-    setStat(elements.pickaxeDamage,formatNumber(pk.damage)+'x');
+    if(elements.pickaxeDamageValue)elements.pickaxeDamageValue.textContent=formatNumber(effDamage)+'x';
+    if(elements.pickaxeUsageValue)elements.pickaxeUsageValue.textContent=formatNumber(effUsage)+'x';
+    if(elements.pickaxeCoinsValue)elements.pickaxeCoinsValue.textContent=formatNumber(effCoins)+'x';
+    setStat(elements.pickaxeDamage,formatNumber(effDamage)+'x');
     setStat(elements.usageBonus,formatNumber(gameData.usageBonus)+'x');
     const usagePerDig=calculateUsagePerDig();if(elements.usagePerDig)elements.usagePerDig.textContent=formatNumber(usagePerDig)+'x';
     if(elements.usageMultiplierDisplay){const val=gameData.usageMultiplier;const txt=formatNumber(val)+'x';if(elements.usageMultiplierDisplay.tagName==='INPUT')elements.usageMultiplierDisplay.value=txt;else elements.usageMultiplierDisplay.textContent=txt;elements.usageMultiplierDisplay.style.color='var(--neon-blue)';lastStats['usage-multiplier-display']=txt;}
@@ -1550,10 +1644,17 @@ function dig(silent=false){
     if(gameData.autoMine){gameData.autoMine=false;elements.autoMineBtn.textContent='⚙ 自动挖矿: 关闭';elements.autoMineBtn.classList.toggle('active',false);updateAutoMine();}
     return;
   }
+  // 特殊方块只能使用压缩木镐挖掘
+  if(block.isCompressedBlock && !pk.isCompressed){
+    if(!silent)alert('⚠️ 特殊方块只能使用压缩木镐挖掘！');
+    return;
+  }
   const dmg=calculateTotalDamage();
   gameData.currentHp-=dmg;gameData.digCount++;
   const usageMult=calculateEnergyUsageBonus();
-  const usageGain=pk.usage*gameData.usageMultiplier*usageMult;
+  let baseUsage=pk.usage;
+  if(pk.isCompressed){const e=getCompressedPickaxeEffectiveStats();if(e)baseUsage=e.usage;}
+  const usageGain=baseUsage*gameData.usageMultiplier*usageMult;
   gameData.usageBonus+=usageGain;
   if(!silent){showDamageText(dmg);triggerScreenShake();triggerParticleBurst();}
   if(gameData.currentHp<=0){
@@ -1570,23 +1671,54 @@ function dig(silent=false){
         }
       }
     }
-    const baseCoins=block.coins*pk.coins;
-    const earnedCoins=baseCoins*gameData.dropMultiplier;
-    gameData.coins+=earnedCoins;
-    const earnedExp=baseCoins*Math.pow(1+Math.log(baseCoins),2);
-    gameData.experience+=earnedExp;gameData.blocksMined++;
-    if(block.drop){
-      const amount=(block.dropAmount||1)*gameData.dropMultiplier;
-      if(block.dropChance){
-        if(Math.random()*100<=block.dropChance){
+    // 特殊方块：不掉落金币，升级并增加倍率
+    if(block.isCompressedBlock){
+      const cType=block.compressedType;
+      const levelKey=cType==='damage'?'compressedDamageBlockLevel':cType==='usage'?'compressedUsageBlockLevel':'compressedCoinBlockLevel';
+      const bonusKey=cType==='damage'?'compressedDamageBonus':cType==='usage'?'compressedUsageBonus':'compressedCoinBonus';
+      // 获取当前等级，然后升级
+      let level=gameData[levelKey]||1;
+      // 计算增加的倍率（基于升级后的新等级）
+      const newLevel=level+1;
+      let addedBonus;
+      if(cType==='damage'){
+        addedBonus=1000*Math.pow(2,newLevel-1);
+      }else if(cType==='usage'){
+        addedBonus=0.001*Math.pow(1.5,newLevel-1);
+      }else{
+        addedBonus=0.0001*Math.pow(1.5,newLevel-1);
+      }
+      gameData[bonusKey]=(gameData[bonusKey]||0)+addedBonus;
+      gameData[levelKey]=newLevel;
+      // 更新方块HP = 初始HP * 4^(level-1)
+      const initialHP=block.name==='伤害方块'?1e15:block.name==='使用方块'?1e16:1e18;
+      block.hp=initialHP*Math.pow(4,newLevel-1);
+      gameData.currentHp=block.hp;
+      // 不掉落金币，少量经验
+      gameData.experience+=newLevel*100;
+      gameData.blocksMined++;
+      if(!silent)alert('✨ '+block.name+' 升级到 Lv.'+newLevel+'！\n压缩木镐'+(cType==='damage'?'伤害':cType==='usage'?'使用':'金币')+'倍率 +'+formatNumber(addedBonus));
+    }else{
+      let baseCoinMult=pk.coins;
+      if(pk.isCompressed){const e=getCompressedPickaxeEffectiveStats();if(e)baseCoinMult=e.coins;}
+      const baseCoins=block.coins*baseCoinMult;
+      const earnedCoins=baseCoins*gameData.dropMultiplier;
+      gameData.coins+=earnedCoins;
+      const earnedExp=baseCoins*Math.pow(1+Math.log(baseCoins),2);
+      gameData.experience+=earnedExp;gameData.blocksMined++;
+      if(block.drop){
+        const amount=(block.dropAmount||1)*gameData.dropMultiplier;
+        if(block.dropChance){
+          if(Math.random()*100<=block.dropChance){
+            if(block.drop==='mechanicalParts')gameData.mechanicalParts=(gameData.mechanicalParts||0)+amount;
+            else if(block.drop==='quantumBonus')gameData.quantumBonus=(gameData.quantumBonus||1)+amount;
+            else gameData[block.drop]+=amount;
+          }
+        }else{
           if(block.drop==='mechanicalParts')gameData.mechanicalParts=(gameData.mechanicalParts||0)+amount;
           else if(block.drop==='quantumBonus')gameData.quantumBonus=(gameData.quantumBonus||1)+amount;
           else gameData[block.drop]+=amount;
         }
-      }else{
-        if(block.drop==='mechanicalParts')gameData.mechanicalParts=(gameData.mechanicalParts||0)+amount;
-        else if(block.drop==='quantumBonus')gameData.quantumBonus=(gameData.quantumBonus||1)+amount;
-        else gameData[block.drop]+=amount;
       }
     }
     gameData.currentHp=block.hp;
@@ -1605,7 +1737,7 @@ function autoMineTick(){
   if(block.name==='量子块' && !pk.isQuantum){alert('⚠️ 量子块只能用量子镐挖掘！自动挖矿已暂停。');gameData.autoMine=false;elements.autoMineBtn.textContent='⚙ 自动挖矿: 关闭';elements.autoMineBtn.classList.toggle('active',false);updateAutoMine();return;}
   const now=Date.now();if(lastAutoMineTime===0)lastAutoMineTime=now;const elapsed=now-lastAutoMineTime;let ticks=Math.floor(elapsed/100);if(ticks<1)ticks=1;if(ticks>10)ticks=10;for(let i=0;i<ticks;i++){dig(i<ticks-1);}lastAutoMineTime=now;updateStats();updateExchangeButton();}
 function updateAutoMine(){if(gameData.autoMine){if(!autoMineInterval){lastAutoMineTime=Date.now();autoMineInterval=setInterval(autoMineTick,100);}}else{if(autoMineInterval){clearInterval(autoMineInterval);autoMineInterval=null;}}}
-function toggleAutoMine(){gameData.autoMine=!gameData.autoMine;if(gameData.autoMine){const block=gameData.blocks[gameData.currentBlockIndex];const pk=gameData.pickaxes[gameData.currentPickaxeIndex];if(block.name==='量子块' && !pk.isQuantum){gameData.autoMine=false;alert('⚠️ 量子块只能用量子镐挖掘！');}}elements.autoMineBtn.textContent='⚙ 自动挖矿: '+(gameData.autoMine?'开启':'关闭');elements.autoMineBtn.classList.toggle('active',gameData.autoMine);updateAutoMine();}
+function toggleAutoMine(){gameData.autoMine=!gameData.autoMine;if(gameData.autoMine){const block=gameData.blocks[gameData.currentBlockIndex];const pk=gameData.pickaxes[gameData.currentPickaxeIndex];if(block.name==='量子块' && !pk.isQuantum){gameData.autoMine=false;alert('⚠️ 量子块只能用量子镐挖掘！');}else if(block.isCompressedBlock && !pk.isCompressed){gameData.autoMine=false;alert('⚠️ 特殊方块只能使用压缩木镐挖掘！');}}elements.autoMineBtn.textContent='⚙ 自动挖矿: '+(gameData.autoMine?'开启':'关闭');elements.autoMineBtn.classList.toggle('active',gameData.autoMine);updateAutoMine();}
 function toggleAutoExchange(){gameData.autoExchange=!gameData.autoExchange;elements.autoExchangeBtn.textContent='⟳ 自动兑换: '+(gameData.autoExchange?'开启':'关闭');elements.autoExchangeBtn.classList.toggle('active',gameData.autoExchange);}
 function updateAutoExchangeThreshold(){const t=parseInt(elements.autoExchangeThreshold.value);gameData.autoExchangeThreshold=t>=100?t:gameData.autoExchangeThreshold;elements.autoExchangeThreshold.value=gameData.autoExchangeThreshold;}
 function checkAutoExchange(){if(gameData.autoExchange&&gameData.coins>=gameData.autoExchangeThreshold)exchangeTrophies(false);}
@@ -1619,59 +1751,75 @@ function startLongPress(){if(!gameData.autoMine){lastLongPressTime=Date.now();lo
 function stopLongPress(){if(longPressInterval){clearInterval(longPressInterval);longPressInterval=null;}}
 function levelUp(){while(gameData.experience>=Math.pow(gameData.level,2)){gameData.experience-=Math.pow(gameData.level,2);gameData.level++;}}
 
+let currentShopTab='main';
+function isBranchPickaxe(pk){
+  return pk.name.startsWith('紫水晶镐')||pk.name.startsWith('铜镐')||pk.name==='压缩木镐'||pk.name==='京镐'||pk.name==='元素镐'||pk.isMechanical;
+}
+function switchShopTab(tab){
+  currentShopTab=tab;
+  document.querySelectorAll('.shop-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  initShop();
+}
+
 function initShop(){
   updateMechanicalPickaxe();
   elements.shopItems.innerHTML='';
   const all=gameData.pickaxes;
   for(let idx=0;idx<all.length;idx++){
     const pk=all[idx];
-    if(pk.isMechanical||pk.isChaos||pk.isQuantum)continue;
+    if(pk.isChaos||pk.isQuantum)continue;
+    // Tab filtering
+    const isBranch=isBranchPickaxe(pk);
+    if(currentShopTab==='main'&&isBranch)continue;
+    if(currentShopTab==='branch'&&!isBranch)continue;
     const item=document.createElement('div');item.className='shop-item';
     let buy='',recipe='';
     if(pk.isCraftable){
       let desc='合成材料：';for(const[mat,req]of Object.entries(pk.recipe)){const name={usageBonus:'使用增益',coins:'金币',trophies:'奖杯',amethyst:'紫水晶',copperIngot:'铜锭'}[mat]||mat;desc+=' '+formatNumber(req)+name;}
       recipe='<div class="recipe-desc">'+desc+'</div>';
       buy='<button class="buy-btn craft-btn" data-index="'+idx+'">合成</button>';
+    }else if(pk.isMechanical){
+      const lv=gameData.mechanicalPickaxeLevel||0;
+      let btnText='合成 (消耗10机械零件)',canAfford=false;
+      if(lv===0){canAfford=(gameData.mechanicalParts||0)>=10;btnText='合成 (消耗10机械零件)';}
+      else{const cost=getMechanicalUpgradeCost();canAfford=(gameData.mechanicalParts||0)>=cost;btnText='升级 (消耗'+formatNumber(cost)+'机械零件)';}
+      buy='<button class="buy-btn mechanical-btn" id="mechanical-buy-btn" '+(canAfford?'':'disabled')+'>'+btnText+'</button>';
+      const useBtn=lv>0?'<button class="use-btn" data-index="'+idx+'">使用</button>':'';
+      recipe='<div class="recipe-desc">当前等级: '+(lv||0)+' | 伤害: '+formatNumber(getMechanicalDamage())+'x | 使用: '+formatNumber(getMechanicalUsage())+'x | 金币: '+formatNumber(getMechanicalCoins())+'x</div>';
+      item.innerHTML='<div class="shop-item-info"><h4>'+pk.name+'</h4><div class="shop-item-count">数量: <input type="text" class="shop-count-input" data-index="'+idx+'" value="'+pk.count+'" disabled></div></div><div class="shop-buttons">'+recipe+buy+useBtn+'</div>';
+      elements.shopItems.appendChild(item);
+      const btn=document.getElementById('mechanical-buy-btn');if(btn)btn.addEventListener('click',handleMechanicalBuy);
+      continue;
     }else{const cName={trophies:'奖杯',amethyst:'紫水晶',copperIngot:'铜锭'}[pk.currency||'trophies'];buy='<button class="buy-btn" data-index="'+idx+'">购买 ('+pk.price+cName+')</button>';}
     const use=pk.type!=='item'?'<button class="use-btn" data-index="'+idx+'">使用</button>':'';
     item.innerHTML='<div class="shop-item-info"><h4>'+pk.name+'</h4><div class="shop-item-count">数量: <input type="text" class="shop-count-input" data-index="'+idx+'" value="'+pk.count+'" disabled></div></div><div class="shop-buttons">'+recipe+buy+use+'</div>';
     elements.shopItems.appendChild(item);
   }
-  const mechIdx=gameData.pickaxes.findIndex(p=>p.isMechanical);
-  if(mechIdx!==-1){
-    const pk=gameData.pickaxes[mechIdx];const item=document.createElement('div');item.className='shop-item';
-    const lv=gameData.mechanicalPickaxeLevel||0;
-    let btnText='合成 (消耗10机械零件)',canAfford=false;
-    if(lv===0){canAfford=(gameData.mechanicalParts||0)>=10;btnText='合成 (消耗10机械零件)';}
-    else{const cost=getMechanicalUpgradeCost();canAfford=(gameData.mechanicalParts||0)>=cost;btnText='升级 (消耗'+formatNumber(cost)+'机械零件)';}
-    const buyBtn='<button class="buy-btn mechanical-btn" id="mechanical-buy-btn" '+(canAfford?'':'disabled')+'>'+btnText+'</button>';
-    const useBtn=lv>0?'<button class="use-btn" data-index="'+mechIdx+'">使用</button>':'';
-    const recipeDesc='<div class="recipe-desc">当前等级: '+lv+' | 伤害: '+formatNumber(getMechanicalDamage())+'x | 使用: '+formatNumber(getMechanicalUsage())+'x | 金币: '+formatNumber(getMechanicalCoins())+'x</div>';
-    item.innerHTML='<div class="shop-item-info"><h4>'+pk.name+'</h4><div class="shop-item-count">数量: <input type="text" class="shop-count-input" data-index="'+mechIdx+'" value="'+pk.count+'" disabled></div></div><div class="shop-buttons">'+recipeDesc+buyBtn+useBtn+'</div>';
-    elements.shopItems.appendChild(item);
-    const btn=document.getElementById('mechanical-buy-btn');if(btn)btn.addEventListener('click',handleMechanicalBuy);
-  }
-  const chaosIdx=gameData.pickaxes.findIndex(p=>p.isChaos);
-  if(chaosIdx!==-1){
-    const pk=gameData.pickaxes[chaosIdx];const item=document.createElement('div');item.className='shop-item';
-    const canAfford=(gameData.pickaxes.find(p=>p.name==='五行镐')?.count||0)>=100;
-    const buyBtn='<button class="buy-btn chaos-btn" id="chaos-buy-btn" '+(canAfford?'':'disabled')+'>合成 (消耗100五行镐)</button>';
-    const useBtn=pk.count>0?'<button class="use-btn" data-index="'+chaosIdx+'">使用</button>':'';
-    const recipeDesc='<div class="recipe-desc">伤害: 1.6e13x | 使用: 80x | 金币: 16x</div>';
-    item.innerHTML='<div class="shop-item-info"><h4>'+pk.name+'</h4><div class="shop-item-count">数量: <input type="text" class="shop-count-input" data-index="'+chaosIdx+'" value="'+pk.count+'" disabled></div></div><div class="shop-buttons">'+recipeDesc+buyBtn+useBtn+'</div>';
-    elements.shopItems.appendChild(item);
-    const btn=document.getElementById('chaos-buy-btn');if(btn)btn.addEventListener('click',handleChaosBuy);
-  }
-  const quantumIdx=gameData.pickaxes.findIndex(p=>p.isQuantum);
-  if(quantumIdx!==-1){
-    const pk=gameData.pickaxes[quantumIdx];const item=document.createElement('div');item.className='shop-item';
-    const useBtn=pk.count>0?'<button class="use-btn" data-index="'+quantumIdx+'">使用</button>':'<button class="use-btn" data-index="'+quantumIdx+'" disabled>使用 (数量0)</button>';
-    const recipeDesc='<div class="recipe-desc">伤害: 6.4e13x | 使用: 100x | 金币: 20x</div>';
-    item.innerHTML='<div class="shop-item-info"><h4>'+pk.name+'</h4><div class="shop-item-count">数量: <input type="text" class="shop-count-input" data-index="'+quantumIdx+'" value="'+pk.count+'" disabled></div></div><div class="shop-buttons">'+recipeDesc+useBtn+'</div>';
-    elements.shopItems.appendChild(item);
+  // Chaos pickaxe (always in main tab)
+  if(currentShopTab==='main'){
+    const chaosIdx=gameData.pickaxes.findIndex(p=>p.isChaos);
+    if(chaosIdx!==-1){
+      const pk=gameData.pickaxes[chaosIdx];const item=document.createElement('div');item.className='shop-item';
+      const canAfford=(gameData.pickaxes.find(p=>p.name==='五行镐')?.count||0)>=100;
+      const buyBtn='<button class="buy-btn chaos-btn" id="chaos-buy-btn" '+(canAfford?'':'disabled')+'>合成 (消耗100五行镐)</button>';
+      const useBtn=pk.count>0?'<button class="use-btn" data-index="'+chaosIdx+'">使用</button>':'';
+      const recipeDesc='<div class="recipe-desc">伤害: 1.6e13x | 使用: 80x | 金币: 16x</div>';
+      item.innerHTML='<div class="shop-item-info"><h4>'+pk.name+'</h4><div class="shop-item-count">数量: <input type="text" class="shop-count-input" data-index="'+chaosIdx+'" value="'+pk.count+'" disabled></div></div><div class="shop-buttons">'+recipeDesc+buyBtn+useBtn+'</div>';
+      elements.shopItems.appendChild(item);
+      const btn=document.getElementById('chaos-buy-btn');if(btn)btn.addEventListener('click',handleChaosBuy);
+    }
+    // Quantum pickaxe (always in main tab)
+    const quantumIdx=gameData.pickaxes.findIndex(p=>p.isQuantum);
+    if(quantumIdx!==-1){
+      const pk=gameData.pickaxes[quantumIdx];const item=document.createElement('div');item.className='shop-item';
+      const useBtn=pk.count>0?'<button class="use-btn" data-index="'+quantumIdx+'">使用</button>':'<button class="use-btn" data-index="'+quantumIdx+'" disabled>使用 (数量0)</button>';
+      const recipeDesc='<div class="recipe-desc">伤害: 6.4e13x | 使用: 100x | 金币: 20x</div>';
+      item.innerHTML='<div class="shop-item-info"><h4>'+pk.name+'</h4><div class="shop-item-count">数量: <input type="text" class="shop-count-input" data-index="'+quantumIdx+'" value="'+pk.count+'" disabled></div></div><div class="shop-buttons">'+recipeDesc+useBtn+'</div>';
+      elements.shopItems.appendChild(item);
+    }
   }
   // Bind shop item events
-  elements.shopItems.querySelectorAll('.buy-btn').forEach(btn=>{if(!btn.classList.contains('mechanical-btn')&&!btn.classList.contains('chaos-btn')){btn.addEventListener('click',function(e){handleBuy(parseInt(this.dataset.index));});}});
+  elements.shopItems.querySelectorAll('.buy-btn').forEach(btn=>{if(!btn.classList.contains('mechanical-btn')&&!btn.classList.contains('chaos-btn')&&!btn.classList.contains('craft-btn')){btn.addEventListener('click',function(e){handleBuy(parseInt(this.dataset.index));});}});
   elements.shopItems.querySelectorAll('.craft-btn').forEach(btn=>{btn.addEventListener('click',function(e){handleCraft(parseInt(this.dataset.index));});});
   elements.shopItems.querySelectorAll('.use-btn').forEach(btn=>{btn.addEventListener('click',function(e){handleUse(parseInt(this.dataset.index));});});
   updateStats();
@@ -1755,15 +1903,19 @@ function processOfflineMining(){
   if(offlineSeconds>0&&gameData.autoMine){
     const block=gameData.blocks[gameData.currentBlockIndex];
     const pk=gameData.pickaxes[gameData.currentPickaxeIndex];
-    if(!(block.name==='量子块' && !pk.isQuantum)){
+    if(!(block.name==='量子块' && !pk.isQuantum) && !(block.isCompressedBlock && !pk.isCompressed) && !block.isCompressedBlock){
       const dmg=calculateTotalDamage();
       const ticks=Math.min(offlineSeconds*10,500);
       for(let i=0;i<ticks;i++){
         gameData.currentHp-=dmg;gameData.digCount++;
-        gameData.usageBonus+=pk.usage*gameData.usageMultiplier*calculateEnergyUsageBonus();
+        let baseUsage=pk.usage;
+        if(pk.isCompressed){const e=getCompressedPickaxeEffectiveStats();if(e)baseUsage=e.usage;}
+        gameData.usageBonus+=baseUsage*gameData.usageMultiplier*calculateEnergyUsageBonus();
         if(gameData.currentHp<=0){
-          gameData.coins+=block.coins*pk.coins*gameData.dropMultiplier;
-          gameData.experience+=block.coins*pk.coins*Math.pow(1+Math.log(block.coins*pk.coins),2);
+          let baseCoinMult=pk.coins;
+          if(pk.isCompressed){const e=getCompressedPickaxeEffectiveStats();if(e)baseCoinMult=e.coins;}
+          gameData.coins+=block.coins*baseCoinMult*gameData.dropMultiplier;
+          gameData.experience+=block.coins*baseCoinMult*Math.pow(1+Math.log(block.coins*baseCoinMult),2);
           gameData.blocksMined++;
           if(block.drop){
             const amount=(block.dropAmount||1)*gameData.dropMultiplier;
@@ -1812,7 +1964,7 @@ function updateChestTimerDisplay(){
   if(elements.chestTimer)elements.chestTimer.textContent=mins+':'+(secs<10?'0':'')+secs;
   ['normal','golden','diamond','supreme'].forEach(t=>{
     const el=document.getElementById('chest-'+t+'-count');
-    if(el)el.textContent=gameData.chests[t];
+    if(el)el.value=formatNumber(gameData.chests[t]);
   });
 }
 
@@ -1893,6 +2045,25 @@ function redeemCode(){
   if(!gameData)return;
   const code=elements.redeemInput.value.trim().toUpperCase();
   if(!code){alert('请输入兑换码！');return;}
+  // DFSOFT 是调试模式开关，不限制使用次数
+  if(code==='DFSOFT'){
+    if(gameData.debugEnabled){
+      // 关闭调试模式
+      gameData.debugEnabled=false;
+      document.querySelectorAll('.editable-debug, .shop-count-input, .chest-count-input').forEach(el=>el.disabled=true);
+      const btn=document.getElementById('debug-toggle-btn');
+      if(btn){btn.textContent='🔧 开启调试模式';btn.style.borderColor='';btn.style.boxShadow='';}
+      alert('🔧 调试模式已关闭。');
+    }else{
+      // 开启调试模式
+      gameData.debugEnabled=true;
+      enableDebugMode();
+      alert('✅ 调试模式已开启！所有数值可编辑，修改后自动保存。');
+    }
+    elements.redeemInput.value='';
+    saveGame();
+    return;
+  }
   if(gameData.usedRedeemCodes.includes(code)){alert('该兑换码已使用！');return;}
   const codes={
     'HELLO':()=>{gameData.coins+=1000;alert('✅ 兑换成功！获得 1000 金币');},
@@ -1919,14 +2090,24 @@ function redeemCode(){
   }else{alert('❌ 无效兑换码！');}
   elements.redeemInput.value='';
 }
-
 function updateAllUI(){
   updateBlockDisplay();
   updateStats();
   updateExchangeButton();
   initShop();
   updateChestTimerDisplay();
-  updateSlotButtons();
+  if(gameData&&gameData.debugEnabled){
+    enableDebugMode();
+  }
+}
+
+function enableDebugMode(){
+  document.querySelectorAll('.editable-debug, .shop-count-input, .chest-count-input').forEach(el=>el.disabled=false);
+  const btn=document.getElementById('debug-toggle-btn');
+  if(btn){btn.textContent='🔓 调试模式已开启';btn.style.borderColor='#00ff9d';btn.style.boxShadow='0 0 20px rgba(0,255,157,0.3)';}
+}
+
+function updateSlotButtons(){
   elements.autoMineBtn.textContent='⚙ 自动挖矿: '+(gameData.autoMine?'开启':'关闭');
   elements.autoMineBtn.classList.toggle('active',gameData.autoMine);
   elements.autoExchangeBtn.textContent='⟳ 自动兑换: '+(gameData.autoExchange?'开启':'关闭');
@@ -2022,12 +2203,37 @@ document.getElementById('craft-beacon-btn').addEventListener('click',()=>{if(gam
 // Redeem code
 document.getElementById('redeem-btn').addEventListener('click',()=>{if(gameData)redeemCode();});
 document.getElementById('redeem-input').addEventListener('keypress',function(e){if(e.key==='Enter'&&gameData)redeemCode();});
+// Shop tab buttons
+document.querySelectorAll('.shop-tab').forEach(btn=>{
+  btn.addEventListener('click',function(){switchShopTab(this.dataset.tab);});
+});
 // Open chest modal
 document.getElementById('open-chest-modal-btn').addEventListener('click',()=>{if(gameData)openChestModal();});
 // Activate research
 document.getElementById('activate-research-btn').addEventListener('click',()=>{if(gameData)activateResearchInstitute();});
 // Upgrade energy
 document.getElementById('upgrade-energy-btn').addEventListener('click',()=>{if(gameData)upgradeEnergyProduction();});
+
+// Debug mode toggle
+document.getElementById('debug-toggle-btn').addEventListener('click',function(){
+  if(gameData.debugEnabled){
+    gameData.debugEnabled=false;
+    document.querySelectorAll('.editable-debug').forEach(el=>el.disabled=true);
+    this.textContent='🔧 开启调试模式';
+    this.style.borderColor='';
+    return;
+  }
+  const pwd=prompt('请输入调试模式密码：');
+  if(pwd==='dfsoft'){
+    gameData.debugEnabled=true;
+    document.querySelectorAll('.editable-debug').forEach(el=>el.disabled=false);
+    this.textContent='🔓 调试模式已开启';
+    this.style.borderColor='#00ff9d';
+    this.style.boxShadow='0 0 20px rgba(0,255,157,0.3)';
+  }else if(pwd!==null){
+    alert('密码错误！');
+  }
+});
 
 // Slot buttons
 document.querySelectorAll('.slot-btn').forEach(btn=>{
@@ -2049,6 +2255,69 @@ document.querySelectorAll('.slot-reset-btn').forEach(btn=>{
   blockDisplay.addEventListener('touchend',()=>{if(longPressTimer){clearTimeout(longPressTimer);longPressTimer=null;}stopLongPress();});
   blockDisplay.addEventListener('touchcancel',()=>{if(longPressTimer){clearTimeout(longPressTimer);longPressTimer=null;}stopLongPress();});
 })();
+
+// ============================================================
+// Debug mode auto-save: when any editable-debug/chest-count-input/shop-count-input changes
+// ============================================================
+document.addEventListener('change',function(e){
+  if(!gameData||!gameData.debugEnabled)return;
+  const el=e.target;
+  // Shop count inputs (镐子数量)
+  if(el.classList.contains('shop-count-input')){
+    const idx=parseInt(el.dataset.index);
+    if(!isNaN(idx)&&gameData.pickaxes[idx]){
+      const val=parseFloat(el.value);
+      if(!isNaN(val)&&val>=0){
+        gameData.pickaxes[idx].count=val;
+        saveGame();updateStats();initShop();
+      }
+    }
+    return;
+  }
+  // Chest count inputs (宝箱数量)
+  if(el.classList.contains('chest-count-input')){
+    const id=el.id;
+    const chestTypes={};
+    chestTypes['chest-normal-count']='normal';
+    chestTypes['chest-golden-count']='golden';
+    chestTypes['chest-diamond-count']='diamond';
+    chestTypes['chest-supreme-count']='supreme';
+    const type=chestTypes[id];
+    if(type){
+      const val=parseFloat(el.value);
+      if(!isNaN(val)&&val>=0){
+        gameData.chests[type]=val;
+        saveGame();
+      }
+    }
+    return;
+  }
+  // Editable debug fields (各项属性)
+  if(el.classList.contains('editable-debug')){
+    const idMap={
+      'level':'level','experience':'experience','coins':'coins','trophies':'trophies',
+      'amethyst':'amethyst','copper-ingot':'copperIngot','blue-obsidian-fragment':'blueObsidianFragment',
+      'red-obsidian-fragment':'redObsidianFragment','red-blue-crystal':'redBlueCrystal',
+      'bedrock-fragment':'bedrockFragment','obsidian':'obsidian','nether-star':'netherStar',
+      'glass':'glass','kun-kun':'kunKun','earth-core':'earthCore','wood-core':'woodCore',
+      'fire-cube':'fireCube','water-cube':'waterCube','gold-cube':'goldCube',
+      'five-element-crystal':'fiveElementCrystal','jing-core':'jingCore','element-chip':'elementChip',
+      'matter-x':'matterX','matter-y':'matterY','matter-z':'matterZ',
+      'pickaxe-damage':'','usage-bonus':'usageBonus','drop-multiplier-stat':'dropMultiplier',
+      'level-bonus':'','trophy-bonus':'','beacon-bonus':'','tree-bonus':'','time-bonus':'','special-bonus':'specialBonus','energy-bonus':'','quantum-bonus':'quantumBonus',
+      'usage-multiplier-display':'usageMultiplier','energy-total':'energy','energy-speed':'','energy-upgrade-cost':'energyUpgradeCost',
+      'mechanical-parts':'mechanicalParts','mechanical-pickaxe-level':'mechanicalPickaxeLevel'
+    };
+    const prop=idMap[el.id];
+    if(prop){
+      const val=parseFloat(el.value);
+      if(!isNaN(val)&&val>=0){
+        gameData[prop]=val;
+        saveGame();updateStats();updateBlockDisplay();
+      }
+    }
+  }
+});
 
 // ============================================================
 // 性能优化说明：
