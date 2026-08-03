@@ -857,6 +857,7 @@ input.editable-debug:not(:disabled){border-bottom:1px dashed var(--neon-blue);cu
 .shop-item-count{font-size:14px;color:var(--neon-gold);font-weight:600;display:flex;align-items:center;gap:6px;}
 .shop-item-count input{width:60px;background:rgba(0,0,0,0.6);border:1px solid rgba(0,243,255,0.15);border-radius:8px;color:var(--neon-blue);padding:2px 6px;font-family:var(--font-body);font-size:14px;text-align:center;}
 .shop-item-count input:disabled{border-color:transparent;color:var(--neon-gold);background:transparent;}
+.discontinued-tag{display:inline-block;padding:6px 16px;background:rgba(255,0,85,0.15);border:1px solid var(--neon-red);border-radius:6px;color:var(--neon-red);font-size:13px;font-weight:700;letter-spacing:2px;text-shadow:0 0 10px rgba(255,0,85,0.3);}
 .recipe-desc{font-size:13px;color:var(--text-dim);line-height:1.5;border-top:1px solid rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.05);padding:8px 0;margin:4px 0;}
 .shop-buttons{display:flex;gap:10px;margin-top:auto;position:relative;z-index:1;}
 .buy-btn,.use-btn{
@@ -1401,7 +1402,7 @@ const defaultData={
     {name:'下界石英镐',damage:20000,usage:0.8,coins:1,price:75000,count:0,currency:'trophies'},
     {name:'萤石镐',damage:80000,usage:1,coins:1,price:375000,count:0,currency:'trophies'},
     {name:'黑曜石镐',damage:350000,usage:1.2,coins:1,price:1875000,count:0,currency:'trophies'},
-    {name:'压缩木镐',damage:10000,usage:1.5,coins:1,count:0,isCompressed:true,isCraftable:true,recipe:{'木镐':9999}},
+    {name:'压缩木镐',damage:10000,usage:1.5,coins:1,count:0,isCompressed:true,isCraftable:false,recipe:null},
     {name:'紫水晶镐I',damage:1,usage:2,coins:1,price:10,count:0,currency:'amethyst'},
     {name:'紫水晶镐II',damage:5,usage:3,coins:1,price:25,count:0,currency:'amethyst'},
     {name:'紫水晶镐III',damage:25,usage:4,coins:1,price:100,count:0,currency:'amethyst'},
@@ -1791,6 +1792,8 @@ function initShop(){
       elements.shopItems.appendChild(item);
       const btn=document.getElementById('mechanical-buy-btn');if(btn)btn.addEventListener('click',handleMechanicalBuy);
       continue;
+    }else if(pk.isCompressed && !pk.recipe){
+      buy='<span class="discontinued-tag">已绝版</span>';
     }else{const cName={trophies:'奖杯',amethyst:'紫水晶',copperIngot:'铜锭'}[pk.currency||'trophies'];buy='<button class="buy-btn" data-index="'+idx+'">购买 ('+pk.price+cName+')</button>';}
     const use=pk.type!=='item'?'<button class="use-btn" data-index="'+idx+'">使用</button>':'';
     item.innerHTML='<div class="shop-item-info"><h4>'+pk.name+'</h4><div class="shop-item-count">数量: <input type="text" class="shop-count-input" data-index="'+idx+'" value="'+pk.count+'"'+(gameData&&gameData.debugEnabled?'':' disabled')+'></div></div><div class="shop-buttons">'+recipe+buy+use+'</div>';
