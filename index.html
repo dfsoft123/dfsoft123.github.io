@@ -3535,14 +3535,14 @@
                 row.classList.toggle('zero', !debug && !isNaN(v) && v <= 1);
             });
         }
-        function calculateBeaconBonus() { return Math.pow(1 + gameData.beacon, 0.64); }
+        function calculateBeaconBonus() { return D(1).add(gameData.beacon).pow(0.64).toNumber(); }
         function calculateTimeBonus() { if (!gameData.totalOnlineSeconds) gameData.totalOnlineSeconds = 0; return gameData.totalOnlineSeconds < 160 ? 1 : Math.log(gameData.totalOnlineSeconds / 160) / Math.log(8); }
         function calculateTreeBonus() { return Math.pow(gameData.treeLevel, 0.4); }
         function calculateEnergyBonus() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.22) : 1; }
         function calculateEnergyUsageBonus() { return gameData.researchInstituteActive ? Math.pow(gameData.energy, 0.44) : 1; }
         function getCompressedPickaxeEffectiveStats() { const pk = gameData.pickaxes.find(p => p.isCompressed); if (!pk) return null; return { damage: pk.damage + gameData.compressedDamageBonus, usage: pk.usage + gameData.compressedUsageBonus, coins: pk.coins + gameData.compressedCoinBonus }; }
         function calculateUsagePerDig() { const pk = gameData.pickaxes[gameData.currentPickaxeIndex]; let baseUsage = pk.usage; if (pk.isCompressed) { const e = getCompressedPickaxeEffectiveStats(); if (e) baseUsage = e.usage; } return D(baseUsage).mul(gameData.usageMultiplier).mul(calculateEnergyUsageBonus()); }
-        function calculateTotalDamage() { if (!gameData.sqrtPower || gameData.sqrtPower < 1) gameData.sqrtPower = 1; const pk = gameData.pickaxes[gameData.currentPickaxeIndex]; let baseDamage = pk.damage; if (pk.isCompressed) { const e = getCompressedPickaxeEffectiveStats(); if (e) baseDamage = e.damage; } const lv = Math.pow(gameData.level, 0.5); const tr = Math.pow(1 + gameData.trophies, 2 / 3); const prod = D(baseDamage).mul(gameData.usageBonus).mul(lv).mul(tr); return prod.pow(1 / gameData.sqrtPower).mul(calculateBeaconBonus()).mul(calculateTimeBonus()).mul(calculateTreeBonus()).mul(gameData.specialBonus).mul(calculateEnergyBonus()).mul(gameData.quantumBonus); }
+        function calculateTotalDamage() { if (!gameData.sqrtPower || gameData.sqrtPower < 1) gameData.sqrtPower = 1; const pk = gameData.pickaxes[gameData.currentPickaxeIndex]; let baseDamage = pk.damage; if (pk.isCompressed) { const e = getCompressedPickaxeEffectiveStats(); if (e) baseDamage = e.damage; } const lv = Math.pow(gameData.level, 0.5); const tr = D(1).add(gameData.trophies).pow(2 / 3); const prod = D(baseDamage).mul(gameData.usageBonus).mul(lv).mul(tr); return prod.pow(1 / gameData.sqrtPower).mul(calculateBeaconBonus()).mul(calculateTimeBonus()).mul(calculateTreeBonus()).mul(gameData.specialBonus).mul(calculateEnergyBonus()).mul(gameData.quantumBonus); }
 
         function updateBlockDisplay() {
             const block = gameData.blocks[gameData.currentBlockIndex];
@@ -3605,7 +3605,7 @@
                 if (elements.usageMultiplierDisplay) { const val = gameData.usageMultiplier; const txt = formatMult(val); if (elements.usageMultiplierDisplay.tagName === 'INPUT') elements.usageMultiplierDisplay.value = txt; else elements.usageMultiplierDisplay.textContent = txt; elements.usageMultiplierDisplay.style.color = 'var(--accent-blue)'; lastStats['usage-multiplier-display'] = txt; }
                 setStat(elements.dropMultiplierStat, formatNumber(gameData.dropMultiplier));
                 setStat(elements.levelBonus, formatMult(Math.pow(gameData.level, 0.5)));
-                setStat(elements.trophyBonus, formatMult(Math.pow(1 + gameData.trophies, 2 / 3)));
+                setStat(elements.trophyBonus, formatMult(D(1).add(gameData.trophies).pow(2 / 3)));
                 if (elements.beaconBonus) { const bv = calculateBeaconBonus(); const txt = formatMult(bv); if (elements.beaconBonus.tagName === 'INPUT') elements.beaconBonus.value = txt; else elements.beaconBonus.textContent = txt; elements.beaconBonus.style.color = '#7dd3fc'; lastStats['beacon-bonus'] = txt; }
                 if (elements.treeBonus) { const tv = calculateTreeBonus(); const txt = formatMult(tv); if (elements.treeBonus.tagName === 'INPUT') elements.treeBonus.value = txt; else elements.treeBonus.textContent = txt; elements.treeBonus.style.color = '#6ee7b7'; lastStats['tree-bonus'] = txt; }
                 if (elements.timeBonus) { setStat(elements.timeBonus, formatMult(calculateTimeBonus())); elements.timeBonus.style.color = '#6ee7b7'; }
@@ -3687,7 +3687,8 @@
             }
             if (block.isCompressedBlock && !pk.isCompressed) { if (!silent) alert('特殊方块只能使用压缩木镐挖掘！'); return; }
             const dmg = calculateTotalDamage();
-            gameData.currentHp -= dmg;
+            const dmgN = (typeof Decimal !== 'undefined' && dmg instanceof Decimal) ? dmg.toNumber() : dmg;
+            gameData.currentHp -= (isFinite(dmgN) ? dmgN : Number.MAX_VALUE);
             gameData.digCount++;
             const usageMult = calculateEnergyUsageBonus();
             let baseUsage = pk.usage;
