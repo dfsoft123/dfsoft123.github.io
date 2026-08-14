@@ -587,6 +587,7 @@
         .block-content { text-align: center; padding: 8px; width: 100%; }
         .block-hp-text { font-family: var(--font-mono); font-size: 13px; color: var(--ink); font-weight: 600; margin-bottom: 10px; }
         .drop-info { font-size: 11px; color: var(--text-3); margin-top: 8px; }
+        .block-mined-info { font-size: 10px; color: var(--text-4); font-family: var(--font-mono); margin-top: 2px; }
         .block-level-info { font-size: 11px; color: var(--terra-deep); margin-top: 3px; }
         .damage-text-container, .particle-burst-container { position: absolute; inset: 0; pointer-events: none; }
         .damage-text {
@@ -1276,6 +1277,7 @@
                                     <div class="hp-bar-container"><div class="hp-bar" id="hp-bar"></div></div>
                                     <div class="drop-info" id="drop-info">掉落: 1 金币, 1 经验</div>
                                     <div class="block-level-info" id="block-level-info" style="display:none"></div>
+                                    <div class="block-mined-info" id="block-mined-info">挖掉 0 次</div>
                                 </div>
                             </div>
                             <div class="damage-text-container" id="damage-text-container"></div>
@@ -1624,7 +1626,8 @@
                 { name: '水沝㴇淼㵘', hp: 5e14, coins: 1e9, drop: 'waterCube', dropAmount: 256, sqrtZone: 3 }, { name: '纯金', hp: 2e15, coins: 1e10, sqrtZone: 3 },
                 { name: '元素晶片', hp: 1e17, coins: 1e6, drop: 'elementChip', sqrtZone: 3 },
                 { name: '薛定谔的方块', hp: 1, coins: 0, sqrtZone: 3 },
-                { name: '量子块', hp: 1, coins: 0, drop: 'quantumBonus', dropAmount: 1, dropChance: 100, sqrtZone: 4 }
+                { name: '量子块', hp: 1, coins: 0, drop: 'quantumBonus', dropAmount: 1, dropChance: 100, sqrtZone: 4 },
+                { name: '量子充能', hp: 1e23, coins: 0, drop: 'quantumBonus', dropAmount: 1, dropChance: 100, sqrtZone: 4 }
             ],
             pickaxes: [
                 { name: '木镐', damage: 1, usage: 0.01, coins: 1, price: 1, count: 1, currency: 'trophies' },
@@ -1673,7 +1676,7 @@
             blueObsidianFragment: 0, redObsidianFragment: 0, redBlueCrystal: 0, bedrockFragment: 0, obsidian: 0,
             netherStar: 0, glass: 0, kunKun: 0, earthCore: 0, woodCore: 0, fireCube: 0, waterCube: 0, goldCube: 0,
             fiveElementCrystal: 0, jingCore: 0, elementChip: 0, matterX: 0, matterY: 0, matterZ: 0, beacon: 0,
-            mechanicalParts: 0, mechanicalPickaxeLevel: 0, mechanicalPickaxeUpgradeCost: 10, quantumBonus: 1,
+            mechanicalParts: 0, mechanicalPickaxeLevel: 0, mechanicalPickaxeUpgradeCost: 10, quantumBonus: 1, quantumBlockBonus: 1,
             compressedDamageBonus: 0, compressedUsageBonus: 0, compressedCoinBonus: 0,
             compressedDamageBlockLevel: 1, compressedUsageBlockLevel: 1, compressedCoinBlockLevel: 1,
             level: 1, experience: 0, usageBonus: 1, specialBonus: 1, digCount: 0, blocksMined: 0, dropMultiplier: 1,
@@ -1712,6 +1715,7 @@
             if (typeof gameData.mechanicalPickaxeLevel !== 'number' || isNaN(gameData.mechanicalPickaxeLevel) || gameData.mechanicalPickaxeLevel < 0) gameData.mechanicalPickaxeLevel = 0;
             if (typeof gameData.mechanicalPickaxeUpgradeCost !== 'number' || isNaN(gameData.mechanicalPickaxeUpgradeCost) || gameData.mechanicalPickaxeUpgradeCost < 1) gameData.mechanicalPickaxeUpgradeCost = 10;
             if (typeof gameData.quantumBonus !== 'number' || isNaN(gameData.quantumBonus) || gameData.quantumBonus < 1) gameData.quantumBonus = 1;
+            if (typeof gameData.quantumBlockBonus !== 'number' || isNaN(gameData.quantumBlockBonus) || gameData.quantumBlockBonus < 1) gameData.quantumBlockBonus = 1;
             ['compressedDamageBonus', 'compressedUsageBonus', 'compressedCoinBonus', 'compressedDamageBlockLevel', 'compressedUsageBlockLevel', 'compressedCoinBlockLevel'].forEach(f => { if (typeof gameData[f] !== 'number' || isNaN(gameData[f]) || gameData[f] < 0) gameData[f] = defaultData[f] !== undefined ? defaultData[f] : 0; });
             if (!gameData.compressedDamageBlockLevel || gameData.compressedDamageBlockLevel < 1) gameData.compressedDamageBlockLevel = 1;
             if (!gameData.compressedUsageBlockLevel || gameData.compressedUsageBlockLevel < 1) gameData.compressedUsageBlockLevel = 1;
@@ -1806,7 +1810,13 @@
             }
             if (block.drop) {
                 const dn = { amethyst: '紫水晶', copperIngot: '铜锭', blueObsidianFragment: '蓝曜石碎片', redObsidianFragment: '红曜石碎片', redBlueCrystal: '红蓝结晶', bedrockFragment: '基岩碎片', obsidian: '黑曜石', netherStar: '下界之星', glass: '玻璃', kunKun: '坤坤', earthCore: '土核心', woodCore: '木核心', fireCube: '火立方', waterCube: '水立方', goldCube: '金立方', fiveElementCrystal: '五行结晶', jingCore: '京核', elementChip: '元素晶片', matterX: '物质X', matterY: '物质Y', matterZ: '物质Z', mechanicalParts: '机械零件', quantumBonus: '量子增益' }[block.drop] || block.drop;
-                elements.dropInfo.textContent = (block.dropChance || 100) + '%概率掉落' + dn + ' x ' + (block.dropAmount || 1);
+                if (block.name === '量子充能') {
+                    elements.dropInfo.textContent = '挖掉后量子块掉落量子增益 +1';
+                } else if (block.name === '量子块') {
+                    elements.dropInfo.textContent = '100%概率掉落量子增益 x ' + formatNumber(gameData.quantumBlockBonus || 1);
+                } else {
+                    elements.dropInfo.textContent = (block.dropChance || 100) + '%概率掉落' + dn + ' x ' + (block.dropAmount || 1);
+                }
                 elements.dropInfo.style.display = 'block';
             } else {
                 elements.dropInfo.style.display = 'none';
@@ -1960,6 +1970,7 @@
                     gameData.experience += newLevel * 100;
                     levelUp();
                     gameData.blocksMined++;
+                    if (typeof __blockMined === 'function') __blockMined(block.name);
                     if (!silent) alert(block.name + ' 升级到 Lv.' + newLevel + '！\n压缩木镐' + (cType === 'damage' ? '伤害' : cType === 'usage' ? '使用' : '金币') + '倍率 +' + formatNumber(addedBonus));
                 } else {
                     let baseCoinMult = pk.coins;
@@ -1971,17 +1982,18 @@
                     gameData.experience += earnedExp;
                     levelUp();
                     gameData.blocksMined++;
+                    if (typeof __blockMined === 'function') __blockMined(block.name);
                     if (block.drop) {
                         const amount = (block.dropAmount || 1) * gameData.dropMultiplier;
                         if (block.dropChance) {
                             if (Math.random() * 100 <= block.dropChance) {
                                 if (block.drop === 'mechanicalParts') gameData.mechanicalParts = (gameData.mechanicalParts || 0) + amount;
-                                else if (block.drop === 'quantumBonus') gameData.quantumBonus = (gameData.quantumBonus || 1) + amount;
+                                else if (block.drop === 'quantumBonus') { if (block.name === '量子块') { gameData.quantumBonus = (gameData.quantumBonus || 1) + (gameData.quantumBlockBonus || 1) * amount; } else if (block.name === '量子充能') { gameData.quantumBlockBonus = (gameData.quantumBlockBonus || 1) + 1; } }
                                 else gameData[block.drop] += amount;
                             }
                         } else {
                             if (block.drop === 'mechanicalParts') gameData.mechanicalParts = (gameData.mechanicalParts || 0) + amount;
-                            else if (block.drop === 'quantumBonus') gameData.quantumBonus = (gameData.quantumBonus || 1) + amount;
+                            else if (block.drop === 'quantumBonus') { if (block.name === '量子块') { gameData.quantumBonus = (gameData.quantumBonus || 1) + (gameData.quantumBlockBonus || 1) * amount; } else if (block.name === '量子充能') { gameData.quantumBlockBonus = (gameData.quantumBlockBonus || 1) + 1; } }
                             else gameData[block.drop] += amount;
                         }
                     }
@@ -2004,7 +2016,7 @@
             const elapsed = now - lastAutoMineTime;
             let ticks = Math.floor(elapsed / 100);
             if (ticks < 1) ticks = 1;
-            if (ticks > 10) ticks = 10;
+            if (ticks > 600) ticks = 600;
             for (let i = 0; i < ticks; i++) { dig(i < ticks - 1); }
             lastAutoMineTime = now;
             updateStats();
@@ -2074,7 +2086,9 @@
                     buy = '<span class="discontinued-tag">已绝版</span>';
                 } else {
                     const cName = { trophies: '奖杯', amethyst: '紫水晶', copperIngot: '铜锭' }[pk.currency || 'trophies'];
-                    buy = '<button class="buy-btn" data-index="' + idx + '">购买 (' + pk.price + cName + ')</button>';
+                    const cur = pk.currency || 'trophies';
+                    const canBuy = (gameData[cur] || 0) >= pk.price;
+                    buy = '<button class="buy-btn" data-index="' + idx + '"' + (canBuy ? '' : ' disabled') + '>购买 (' + pk.price + cName + ')</button>';
                 }
                 const use = pk.type !== 'item' ? '<button class="use-btn" data-index="' + idx + '"' + (pk.count > 0 ? '' : ' disabled') + '>使用</button>' : '';
                 item.innerHTML = '<div class="shop-item-info"><h4>' + pk.name + '</h4><div class="shop-item-count">数量: <input type="text" class="shop-count-input" data-index="' + idx + '" value="' + pk.count + '"' + (gameData && gameData.debugEnabled ? '' : ' disabled') + '></div></div><div class="shop-buttons">' + recipe + buy + use + '</div>';
@@ -2205,12 +2219,13 @@
                             gameData.coins += block.coins * baseCoinMult * gameData.dropMultiplier;
                             gameData.experience += block.coins * baseCoinMult * Math.pow(1 + Math.log(block.coins * baseCoinMult), 2);
                             gameData.blocksMined++;
+                            if (typeof __blockMined === 'function') __blockMined(block.name);
                             if (block.drop) {
                                 const amount = (block.dropAmount || 1) * gameData.dropMultiplier;
                                 if (block.dropChance && Math.random() * 100 > block.dropChance) {}
                                 else {
                                     if (block.drop === 'mechanicalParts') gameData.mechanicalParts = (gameData.mechanicalParts || 0) + amount;
-                                    else if (block.drop === 'quantumBonus') gameData.quantumBonus = (gameData.quantumBonus || 1) + amount;
+                                    else if (block.drop === 'quantumBonus') { if (block.name === '量子块') { gameData.quantumBonus = (gameData.quantumBonus || 1) + (gameData.quantumBlockBonus || 1) * amount; } else if (block.name === '量子充能') { gameData.quantumBlockBonus = (gameData.quantumBlockBonus || 1) + 1; } }
                                     else gameData[block.drop] += amount;
                                 }
                             }
@@ -2399,7 +2414,8 @@
             if (pdEl) pdEl.textContent = (typeof fmtDetailedTime === 'function') ? fmtDetailedTime(totalSecs) : (formatNumber(totalSecs) + '秒');
         }
         let energyInterval = null;
-        function startEnergyProduction() { if (energyInterval) clearInterval(energyInterval); energyInterval = setInterval(() => { if (!gameData || !gameData.researchInstituteActive) return; gameData.energy += gameData.energyProductionSpeed * 0.1; updateStats(); }, 100); }
+        let lastEnergyTime = 0;
+        function startEnergyProduction() { if (energyInterval) clearInterval(energyInterval); lastEnergyTime = Date.now(); energyInterval = setInterval(() => { if (!gameData || !gameData.researchInstituteActive) return; const now = Date.now(); const el = Math.min(3600, (now - lastEnergyTime) / 1000); lastEnergyTime = now; if (el > 0) { gameData.energy += gameData.energyProductionSpeed * el; updateStats(); } }, 100); }
         let chestInterval = null;
         function startChestTimer() { if (chestInterval) clearInterval(chestInterval); chestInterval = setInterval(() => { if (!gameData) return; updateChestTimerDisplay(); checkChestReward(); }, 1000); }
         function initGame() {
@@ -2643,7 +2659,13 @@
                     var rs = document.createElement('button');
                     rs.className = 'save-act danger';
                     rs.textContent = '重置';
-                    rs.addEventListener('click', function (e) { e.stopPropagation(); resetSlot(s); setTimeout(render, 300); });
+                    rs.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        resetSlot(s);
+                        var cc = getCounts();
+                        if (cc[s]) { delete cc[s]; setCounts(cc); }
+                        setTimeout(render, 300);
+                    });
                     acts.appendChild(re);
                     acts.appendChild(rs);
 
@@ -2711,9 +2733,81 @@
                 }
             }
 
+            /* 商店按钮状态同步（购买/合成/升级/使用）：货币或材料变化后每 3 秒校正一次 */
+            function recipeOk(pk) {
+                if (!pk || !pk.recipe) return true;
+                for (var mat in pk.recipe) {
+                    var req = pk.recipe[mat];
+                    if (mat === '使用增益') { if ((gameData.usageBonus || 0) < req) return false; }
+                    else if (mat === '金币') { if ((gameData.coins || 0) < req) return false; }
+                    else if (mat === '奖杯') { if ((gameData.trophies || 0) < req) return false; }
+                    else if (mat === '紫水晶') { if ((gameData.amethyst || 0) < req) return false; }
+                    else if (mat === '铜锭') { if ((gameData.copperIngot || 0) < req) return false; }
+                    else { var p = gameData.pickaxes.find(function (pp) { return pp.name === mat; }); if (!p || (p.count || 0) < req) return false; }
+                }
+                return true;
+            }
+            function syncShopDisabled() {
+                if (typeof gameData === 'undefined' || !gameData || !gameData.pickaxes) return;
+                var shop = document.getElementById('shop-items');
+                if (!shop) return;
+                shop.querySelectorAll('.buy-btn, .use-btn').forEach(function (btn) {
+                    var idx = parseInt(btn.dataset.index, 10);
+                    var pk = (idx >= 0 && gameData.pickaxes[idx]) ? gameData.pickaxes[idx] : null;
+                    if (btn.classList.contains('chaos-btn')) {
+                        var wu = gameData.pickaxes.find(function (p) { return p.name === '五行镐'; });
+                        btn.disabled = !((wu || {}).count >= 100);
+                        return;
+                    }
+                    if (btn.classList.contains('mechanical-btn')) {
+                        var cost = getMechanicalUpgradeCost();
+                        btn.disabled = (gameData.mechanicalParts || 0) < cost;
+                        return;
+                    }
+                    if (btn.classList.contains('craft-btn')) {
+                        btn.disabled = !recipeOk(pk);
+                        return;
+                    }
+                    if (btn.classList.contains('buy-btn')) {
+                        if (!pk) return;
+                        var cur = pk.currency || 'trophies';
+                        btn.disabled = (gameData[cur] || 0) < pk.price;
+                        return;
+                    }
+                    if (btn.classList.contains('use-btn')) {
+                        btn.disabled = !pk || (pk.count || 0) < 1;
+                        return;
+                    }
+                });
+            }
+
             render();
             setInterval(refreshTimes, 2000);
             setInterval(syncUsageGain, 500);
+            setInterval(syncShopDisabled, 3000);
+
+            /* 每个方块挖掉次数：独立注册表（按存档+方块名），实时显示 */
+            var COUNT_KEY = 'miningGameBlockCounts';
+            function getCounts() { try { return JSON.parse(localStorage.getItem(COUNT_KEY) || '{}'); } catch (e) { return {}; } }
+            function setCounts(c) { try { localStorage.setItem(COUNT_KEY, JSON.stringify(c)); } catch (e) {} }
+            window.__blockMined = function (name) {
+                if (typeof gameData === 'undefined' || !gameData) return;
+                var slot = current();
+                var c = getCounts();
+                if (!c[slot]) c[slot] = {};
+                c[slot][name] = (c[slot][name] || 0) + 1;
+                setCounts(c);
+            };
+            function syncBlockMined() {
+                var el = document.getElementById('block-mined-info');
+                if (!el || typeof gameData === 'undefined' || !gameData || !gameData.blocks) return;
+                var block = gameData.blocks[gameData.currentBlockIndex];
+                if (!block) return;
+                var c = getCounts();
+                var n = (c[current()] || {})[block.name] || 0;
+                el.textContent = '挖掉 ' + formatNumber(n) + ' 次';
+            }
+            setInterval(syncBlockMined, 500);
         })();
     </script>
 </body>
