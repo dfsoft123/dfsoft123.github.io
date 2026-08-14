@@ -4015,10 +4015,10 @@
             while (elapsed >= interval) {
                 elapsed -= interval;
                 const r = Math.random();
-                if (r < 0.7) gameData.chests.normal++;
-                else if (r < 0.95) gameData.chests.golden++;
-                else if (r < 0.999) gameData.chests.diamond++;
-                else gameData.chests.supreme++;
+                if (r < 0.7) gameData.chests.normal = D(gameData.chests.normal).add(1);
+                else if (r < 0.95) gameData.chests.golden = D(gameData.chests.golden).add(1);
+                else if (r < 0.999) gameData.chests.diamond = D(gameData.chests.diamond).add(1);
+                else gameData.chests.supreme = D(gameData.chests.supreme).add(1);
                 gameData.lastChestTime += interval;
             }
             updateChestTimerDisplay();
@@ -4043,49 +4043,53 @@
             const elapsed = Date.now() - gameData.lastChestTime;
             if (elapsed >= 300000) {
                 const r = Math.random();
-                if (r < 0.7) gameData.chests.normal++;
-                else if (r < 0.95) gameData.chests.golden++;
-                else if (r < 0.999) gameData.chests.diamond++;
-                else gameData.chests.supreme++;
+                if (r < 0.7) gameData.chests.normal = D(gameData.chests.normal).add(1);
+                else if (r < 0.95) gameData.chests.golden = D(gameData.chests.golden).add(1);
+                else if (r < 0.999) gameData.chests.diamond = D(gameData.chests.diamond).add(1);
+                else gameData.chests.supreme = D(gameData.chests.supreme).add(1);
                 gameData.lastChestTime = Date.now();
                 saveGame();
                 updateChestTimerDisplay();
                 alert('获得一个新宝箱！');
             }
         }
-        function openChest(type) {
-            if (!gameData || gameData.chests[type] < 1) return;
-            gameData.chests[type]--;
+        function applyChestReward(type) {
             const rand = Math.random() * 100;
             let rewardText = '';
             if (type === 'normal') {
                 if (rand < 40) { gameData.specialBonus = gameData.specialBonus.add(0.1); rewardText = '0.1 奖励增益'; }
-                else if (rand < 50) { gameData.usageMultiplier = (gameData.usageMultiplier || 1) + 0.1; rewardText = '使用倍率 +0.1'; }
+                else if (rand < 50) { gameData.usageMultiplier = D(gameData.usageMultiplier || 1).add(0.1); rewardText = '使用倍率 +0.1'; }
                 else if (rand < 80) { gameData.specialBonus = gameData.specialBonus.add(0.5); rewardText = '0.5 奖励增益'; }
                 else if (rand < 95) { gameData.usageBonus = gameData.usageBonus.add(1000); rewardText = '1000 次使用增益'; }
                 else if (rand < 97.5) { gameData.beacon = gameData.beacon.add(1); rewardText = '1 信标'; }
                 else { gameData.treeLevel += 1; rewardText = '树等级 +1'; }
             } else if (type === 'golden') {
                 if (rand < 40) { gameData.specialBonus = gameData.specialBonus.add(0.5); rewardText = '0.5 奖励增益'; }
-                else if (rand < 50) { gameData.usageMultiplier = (gameData.usageMultiplier || 1) + 0.2; rewardText = '使用倍率 +0.2'; }
+                else if (rand < 50) { gameData.usageMultiplier = D(gameData.usageMultiplier || 1).add(0.2); rewardText = '使用倍率 +0.2'; }
                 else if (rand < 75) { gameData.specialBonus = gameData.specialBonus.add(1); rewardText = '1 奖励增益'; }
                 else if (rand < 90) { gameData.usageBonus = gameData.usageBonus.add(3000); rewardText = '3000 次使用增益'; }
                 else if (rand < 95) { gameData.beacon = gameData.beacon.add(3); rewardText = '3 信标'; }
                 else { gameData.treeLevel += 3; rewardText = '树等级 +3'; }
             } else if (type === 'diamond') {
                 if (rand < 40) { gameData.specialBonus = gameData.specialBonus.add(5); rewardText = '5 奖励增益'; }
-                else if (rand < 50) { gameData.usageMultiplier = (gameData.usageMultiplier || 1) + 0.5; rewardText = '使用倍率 +0.5'; }
+                else if (rand < 50) { gameData.usageMultiplier = D(gameData.usageMultiplier || 1).add(0.5); rewardText = '使用倍率 +0.5'; }
                 else if (rand < 75) { gameData.usageBonus = gameData.usageBonus.add(10000); rewardText = '10000 次使用增益'; }
                 else if (rand < 85) { gameData.beacon = gameData.beacon.add(25); rewardText = '25 信标'; }
                 else if (rand < 95) { gameData.treeLevel += 25; rewardText = '树等级 +25'; }
                 else { gameData.dropMultiplier = gameData.dropMultiplier.add(1); rewardText = '掉落倍率 +1'; }
             } else if (type === 'supreme') {
                 if (rand < 30) { gameData.specialBonus = gameData.specialBonus.add(67); rewardText = '67 奖励增益'; }
-                else if (rand < 40) { gameData.usageMultiplier = (gameData.usageMultiplier || 1) + 6.7; rewardText = '使用倍率 +6.7'; }
+                else if (rand < 40) { gameData.usageMultiplier = D(gameData.usageMultiplier || 1).add(6.7); rewardText = '使用倍率 +6.7'; }
                 else if (rand < 70) { gameData.usageBonus = gameData.usageBonus.add(67000); rewardText = '67000 次使用增益'; }
                 else if (rand < 85) { gameData.beacon = gameData.beacon.add(200); gameData.treeLevel += 200; rewardText = '200 信标 + 树等级 +200'; }
                 else { gameData.dropMultiplier = gameData.dropMultiplier.add(3); rewardText = '掉落倍率 +3'; }
             }
+            return rewardText;
+        }
+        function openChest(type) {
+            if (!gameData || D(gameData.chests[type]).lt(1)) return;
+            gameData.chests[type] = D(gameData.chests[type]).sub(1);
+            const rewardText = applyChestReward(type);
             levelUp();
             saveGame();
             updateChestTimerDisplay();
@@ -4100,10 +4104,24 @@
         }
         function openAllChests() {
             if (!gameData) return;
-            const total = gameData.chests.normal + gameData.chests.golden + gameData.chests.diamond + gameData.chests.supreme;
-            if (total === 0) { alert('没有宝箱可开启！'); return; }
             const types = ['normal', 'golden', 'diamond', 'supreme'];
-            types.forEach(t => { while (gameData.chests[t] > 0) openChest(t); });
+            let total = 0;
+            types.forEach(t => { total += D(gameData.chests[t]).toNumber(); });
+            if (total === 0) { alert('没有宝箱可开启！'); return; }
+            /* 批量开启：不逐次保存/刷新/动画，开几千个也不卡 */
+            types.forEach(t => {
+                let n = D(gameData.chests[t]).toNumber();
+                if (!isFinite(n) || n < 0) n = 0;
+                if (n > 1000000) n = 1000000;
+                for (let i = 0; i < n; i++) applyChestReward(t);
+                gameData.chests[t] = new Decimal(0);
+            });
+            levelUp();
+            saveGame();
+            updateChestTimerDisplay();
+            updateStats();
+            const rt = document.getElementById('chest-reward-text');
+            if (rt) rt.innerHTML = '<span class="reward-amount">已开启全部 ' + total + ' 个宝箱</span>';
             alert('已开启全部 ' + total + ' 个宝箱！');
         }
         function openChestModal() { document.getElementById('chest-modal').style.display = 'flex'; updateChestTimerDisplay(); }
@@ -4140,9 +4158,9 @@
                 'ENERGY': () => { gameData.energy = gameData.energy.add(1000); alert('兑换成功！获得 1000 能量'); },
                 'TREE': () => { gameData.treeExperience = gameData.treeExperience.add(50); alert('兑换成功！获得 50 浇树经验'); },
                 'BEACON': () => { const bi = gameData.pickaxes.find(p => p.name === '信标'); if (bi) { bi.count += 3; gameData.beacon = new Decimal(bi.count); } alert('兑换成功！获得 3 信标'); },
-                'GOLDEN': () => { gameData.chests.golden += 3; alert('兑换成功！获得 3 黄金宝箱'); },
-                'DIAMOND': () => { gameData.chests.diamond += 2; alert('兑换成功！获得 2 钻石宝箱'); },
-                'SUPREME': () => { gameData.chests.supreme += 1; alert('兑换成功！获得 1 至尊宝箱'); },
+                'GOLDEN': () => { gameData.chests.golden = D(gameData.chests.golden).add(3); alert('兑换成功！获得 3 黄金宝箱'); },
+                'DIAMOND': () => { gameData.chests.diamond = D(gameData.chests.diamond).add(2); alert('兑换成功！获得 2 钻石宝箱'); },
+                'SUPREME': () => { gameData.chests.supreme = D(gameData.chests.supreme).add(1); alert('兑换成功！获得 1 至尊宝箱'); },
                 'MECHANICAL': () => { gameData.mechanicalParts = gameData.mechanicalParts.add(100); alert('兑换成功！获得 100 机械零件'); },
                 'DROP': () => { gameData.dropMultiplier = gameData.dropMultiplier.add(0.5); alert('兑换成功！掉落倍率+0.5'); },
                 'USAGE': () => { gameData.usageMultiplier = gameData.usageMultiplier.add(0.1); alert('兑换成功！使用倍率+0.1'); }
@@ -4550,14 +4568,14 @@
             setInterval(syncUsageGain, 500);
             setInterval(syncShopDisabled, 3000);
 
-            /* 伤害水平：10×log2(伤害)，仅开方次=1 时刷新，保留 3 位小数 */
-            function decimalLog2(v) {
+            /* 伤害水平：10×lg(伤害)，仅开方次=1 时刷新，保留 3 位小数 */
+            function decimalLog10(v) {
                 if (v instanceof Decimal) {
                     if (v.lte(0)) return 0;
-                    return (v.exponent + Math.log10(v.mantissa)) / Math.log10(2);
+                    return v.exponent + Math.log10(v.mantissa);
                 }
                 if (v <= 0) return 0;
-                return Math.log2(v);
+                return Math.log10(v);
             }
             function syncDamageLevel() {
                 if (typeof gameData === 'undefined' || !gameData) return;
@@ -4565,7 +4583,7 @@
                 var mx = document.getElementById('hud-max-damage-level');
                 if (!cur || !mx) return;
                 if (gameData.sqrtPower === 1) {
-                    var lv = decimalLog2(calculateTotalDamage()) * 10;
+                    var lv = decimalLog10(calculateTotalDamage()) * 10;
                     if (isFinite(lv)) {
                         gameData.damageLevel = lv;
                         if (lv > (gameData.maxDamageLevel || 0)) gameData.maxDamageLevel = lv;
