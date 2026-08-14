@@ -1994,7 +1994,7 @@
         function craftAllBeacons() { const bi = gameData.pickaxes.find(p => p.name === '信标'); if (!bi) return; const maxC = Math.min(Math.floor(gameData.obsidian / 3), Math.floor(gameData.glass / 5), Math.floor(gameData.netherStar / 1)); if (maxC > 0) { gameData.obsidian -= maxC * 3; gameData.glass -= maxC * 5; gameData.netherStar -= maxC * 1; bi.count += maxC; gameData.beacon = bi.count; updateStats(); initShop(); saveGame(); alert('成功合成了 ' + maxC + ' 个信标！'); } else alert('材料不足！需要3黑曜石,5玻璃,1下界之星'); }
         function activateResearchInstitute() { if (gameData.matterX >= 1e5 && gameData.matterY >= 1e5 && gameData.matterZ >= 1e5) { gameData.matterX -= 1e5; gameData.matterY -= 1e5; gameData.matterZ -= 1e5; gameData.researchInstituteActive = true; updateStats(); saveGame(); } else alert('需要各10万个 X,Y,Z 物质开启！'); }
         function upgradeEnergyProduction() { if (gameData.energy >= gameData.energyUpgradeCost) { gameData.energy -= gameData.energyUpgradeCost; gameData.energyProductionSpeed *= 2; gameData.energyUpgradeCost *= 10; updateStats(); saveGame(); } }
-        function calculateEnergyTreeExp() { return gameData.researchInstituteActive ? gameData.energyProductionSpeed * 0.1 : 0; }
+        function calculateEnergyTreeExp() { return gameData.researchInstituteActive ? gameData.energy * 0.1 : 0; }
 
         function dig(silent) {
             silent = silent || false;
