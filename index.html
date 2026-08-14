@@ -3425,6 +3425,13 @@
             const now = Date.now();
             if (!gameData) return;
             wrapGameData(gameData);
+            /* NaN 防御：损坏存档中的字符串/异常值可能导致 Decimal 变 NaN（奖励永远不涨） */
+            ['coins', 'trophies', 'amethyst', 'copperIngot', 'blueObsidianFragment', 'redObsidianFragment', 'redBlueCrystal', 'bedrockFragment', 'obsidian', 'netherStar', 'glass', 'kunKun', 'earthCore', 'woodCore', 'fireCube', 'waterCube', 'goldCube', 'fiveElementCrystal', 'jingCore', 'elementChip', 'gaiCore', 'matterX', 'matterY', 'matterZ', 'beacon', 'mechanicalParts', 'experience', 'energy', 'treeExperience', 'digCount', 'blocksMined', 'compressedDamageBonus', 'compressedUsageBonus', 'compressedCoinBonus'].forEach(function (f) {
+                if (gameData[f] && Number.isNaN(gameData[f].mantissa)) gameData[f] = new Decimal(0);
+            });
+            ['usageBonus', 'specialBonus', 'dropMultiplier', 'quantumBonus', 'quantumBlockBonus', 'usageMultiplier'].forEach(function (f) {
+                if (gameData[f] && (Number.isNaN(gameData[f].mantissa) || gameData[f].lt(1))) gameData[f] = new Decimal(1);
+            });
             if (!gameData.sqrtPower || gameData.sqrtPower < 1) gameData.sqrtPower = 1;
             if (!gameData.level || gameData.level < 1) gameData.level = 1;
             if (typeof gameData.totalOnlineSeconds !== 'number' || isNaN(gameData.totalOnlineSeconds)) gameData.totalOnlineSeconds = 0;
@@ -3435,13 +3442,14 @@
             if (!gameData.usedRedeemCodes) gameData.usedRedeemCodes = [];
             if (!gameData.dropMultiplier || isNaN(gameData.dropMultiplier)) gameData.dropMultiplier = 1;
             if (!gameData.currentHp || isNaN(gameData.currentHp) || gameData.currentHp <= 0) gameData.currentHp = gameData.blocks[gameData.currentBlockIndex].hp;
-            if (typeof gameData.usageMultiplier !== 'number' || isNaN(gameData.usageMultiplier) || gameData.usageMultiplier < 1) gameData.usageMultiplier = 1;
-            if (typeof gameData.mechanicalParts !== 'number' || isNaN(gameData.mechanicalParts) || gameData.mechanicalParts < 0) gameData.mechanicalParts = 0;
+            if (!(gameData.usageMultiplier instanceof Decimal) || Number.isNaN(gameData.usageMultiplier.mantissa) || gameData.usageMultiplier.lt(1)) gameData.usageMultiplier = D(1);
+            if (!(gameData.mechanicalParts instanceof Decimal) || Number.isNaN(gameData.mechanicalParts.mantissa) || gameData.mechanicalParts.lt(0)) gameData.mechanicalParts = D(0);
             if (typeof gameData.mechanicalPickaxeLevel !== 'number' || isNaN(gameData.mechanicalPickaxeLevel) || gameData.mechanicalPickaxeLevel < 0) gameData.mechanicalPickaxeLevel = 0;
             if (typeof gameData.mechanicalPickaxeUpgradeCost !== 'number' || isNaN(gameData.mechanicalPickaxeUpgradeCost) || gameData.mechanicalPickaxeUpgradeCost < 1) gameData.mechanicalPickaxeUpgradeCost = 10;
-            if (typeof gameData.quantumBonus !== 'number' || isNaN(gameData.quantumBonus) || gameData.quantumBonus < 1) gameData.quantumBonus = 1;
-            if (typeof gameData.quantumBlockBonus !== 'number' || isNaN(gameData.quantumBlockBonus) || gameData.quantumBlockBonus < 1) gameData.quantumBlockBonus = 1;
-            ['compressedDamageBonus', 'compressedUsageBonus', 'compressedCoinBonus', 'compressedDamageBlockLevel', 'compressedUsageBlockLevel', 'compressedCoinBlockLevel'].forEach(f => { if (typeof gameData[f] !== 'number' || isNaN(gameData[f]) || gameData[f] < 0) gameData[f] = defaultData[f] !== undefined ? defaultData[f] : 0; });
+            if (!(gameData.quantumBonus instanceof Decimal) || Number.isNaN(gameData.quantumBonus.mantissa) || gameData.quantumBonus.lt(1)) gameData.quantumBonus = D(1);
+            if (!(gameData.quantumBlockBonus instanceof Decimal) || Number.isNaN(gameData.quantumBlockBonus.mantissa) || gameData.quantumBlockBonus.lt(1)) gameData.quantumBlockBonus = D(1);
+            ['compressedDamageBonus', 'compressedUsageBonus', 'compressedCoinBonus'].forEach(f => { if (!(gameData[f] instanceof Decimal) || Number.isNaN(gameData[f].mantissa) || gameData[f].lt(0)) gameData[f] = D(0); });
+            ['compressedDamageBlockLevel', 'compressedUsageBlockLevel', 'compressedCoinBlockLevel'].forEach(f => { if (typeof gameData[f] !== 'number' || isNaN(gameData[f]) || gameData[f] < 0) gameData[f] = defaultData[f] !== undefined ? defaultData[f] : 0; });
             if (!gameData.compressedDamageBlockLevel || gameData.compressedDamageBlockLevel < 1) gameData.compressedDamageBlockLevel = 1;
             if (!gameData.compressedUsageBlockLevel || gameData.compressedUsageBlockLevel < 1) gameData.compressedUsageBlockLevel = 1;
             if (!gameData.compressedCoinBlockLevel || gameData.compressedCoinBlockLevel < 1) gameData.compressedCoinBlockLevel = 1;
@@ -4567,6 +4575,14 @@
                 mx.textContent = (gameData.maxDamageLevel || 0).toFixed(3);
             }
             setInterval(syncDamageLevel, 500);
+
+            /* 自动兑换轮询：不依赖方块被摧毁（每 1 秒检查一次） */
+            setInterval(function () {
+                if (typeof gameData === 'undefined' || !gameData) return;
+                if (gameData.autoExchange && typeof checkAutoExchange === 'function') {
+                    try { checkAutoExchange(); } catch (e) {}
+                }
+            }, 1000);
 
             /* ============================================================
                设置：语言 / 数字格式 / 特效（存储于 localStorage）
