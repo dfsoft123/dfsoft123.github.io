@@ -790,6 +790,19 @@
         /* ===== 宝箱小卡 ===== */
         .chest-timer-display { font-size: 12px; color: var(--text-3); margin-bottom: 12px; }
         .chest-timer-display span { font-family: var(--font-mono); color: var(--amber-deep); font-weight: 600; }
+        /* 设置面板 */
+        .setting-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+        .setting-row:last-child { margin-bottom: 0; }
+        .setting-label { font-size: 12px; color: var(--text-3); }
+        .setting-options { display: flex; gap: 4px; background: var(--parchment); border: 1px solid var(--border); border-radius: 99px; padding: 3px; }
+        .setting-opt { font-size: 11px; font-weight: 500; color: var(--text-4); background: transparent; border: none; padding: 4px 10px; border-radius: 99px; cursor: pointer; transition: all 0.15s var(--ease); }
+        .setting-opt:hover { color: var(--ink); }
+        .setting-opt.active { background: var(--card); color: var(--ink); box-shadow: var(--shadow-sm); }
+        /* 特效关闭：停用环境动画 */
+        body.fx-off .block-display::after,
+        body.fx-off .block,
+        body.fx-off .block-chip,
+        body.fx-off .panel { animation: none !important; }
 
         /* ===== 当前镐子 ===== */
         .current-pickaxe { display: flex; flex-direction: column; gap: 10px; }
@@ -1492,6 +1505,33 @@
                         <h3 class="panel-title">在线宝箱</h3>
                         <div class="chest-timer-display">下次获得: <span id="chest-timer">5:00</span></div>
                         <button class="btn btn-gold action-btn exchange-btn btn-block" id="open-chest-modal-btn">查看宝箱仓库</button>
+                    </section>
+
+                    <!-- 设置 -->
+                    <section class="panel settings-panel">
+                        <h3 class="panel-title">设置</h3>
+                        <div class="setting-row">
+                            <span class="setting-label">语言</span>
+                            <div class="setting-options" id="setting-lang">
+                                <button class="setting-opt" data-lang="zh">中文</button>
+                                <button class="setting-opt" data-lang="en">英文</button>
+                            </div>
+                        </div>
+                        <div class="setting-row">
+                            <span class="setting-label">数字格式</span>
+                            <div class="setting-options" id="setting-numfmt">
+                                <button class="setting-opt" data-fmt="cn">中文</button>
+                                <button class="setting-opt" data-fmt="sci">科学</button>
+                                <button class="setting-opt" data-fmt="si">SI单位</button>
+                            </div>
+                        </div>
+                        <div class="setting-row">
+                            <span class="setting-label">特效</span>
+                            <div class="setting-options" id="setting-fx">
+                                <button class="setting-opt" data-fx="on">开启</button>
+                                <button class="setting-opt" data-fx="off">关闭</button>
+                            </div>
+                        </div>
                     </section>
                 </div>
 
@@ -2716,11 +2756,11 @@
                     btn.className = 'slot-btn';
                     var nmEl = document.createElement('span');
                     nmEl.className = 'save-name';
-                    nmEl.textContent = nm['s' + s] || ('存档 ' + s);
+                    nmEl.textContent = nm['s' + s] || (_t('存档 ', 'Save ') + s);
                     var tmEl = document.createElement('span');
                     tmEl.className = 'save-time';
                     var f = fmtParts(slotTimeClamped(s));
-                    tmEl.innerHTML = '在线 ' + f.detail + '<br>=' + f.total + '秒';
+                    tmEl.innerHTML = _t('在线 ', 'Online ') + f.detail + '<br>=' + f.total + '秒';
                     btn.appendChild(nmEl);
                     btn.appendChild(tmEl);
                     btn.addEventListener('click', function () { switchSlot(s); render(); });
@@ -2755,7 +2795,7 @@
                 for (var i = 0; i < rows.length; i++) {
                     var s = parseInt(rows[i].getAttribute('data-slot'), 10);
                     var tm = rows[i].querySelector('.save-time');
-                    if (tm && !isNaN(s)) { var f = fmtParts(slotTimeClamped(s)); tm.innerHTML = '在线 ' + f.detail + '<br>=' + f.total + '秒'; }
+                    if (tm && !isNaN(s)) { var f = fmtParts(slotTimeClamped(s)); tm.innerHTML = _t('在线 ', 'Online ') + f.detail + '<br>=' + f.total + '秒'; }
                 }
                 var total = masterNow();
                 var te = document.getElementById('total-playtime');
@@ -2861,6 +2901,159 @@
             setInterval(syncUsageGain, 500);
             setInterval(syncShopDisabled, 3000);
 
+            /* ============================================================
+               设置：语言 / 数字格式 / 特效（存储于 localStorage）
+               ============================================================ */
+            var SETTINGS_KEY = 'miningGameSettings';
+            var settings = { lang: 'zh', numFmt: 'cn', fx: true };
+            try {
+                var s0 = JSON.parse(localStorage.getItem(SETTINGS_KEY) || 'null');
+                if (s0) {
+                    if (s0.lang === 'zh' || s0.lang === 'en') settings.lang = s0.lang;
+                    if (s0.numFmt === 'cn' || s0.numFmt === 'sci' || s0.numFmt === 'si') settings.numFmt = s0.numFmt;
+                    if (typeof s0.fx === 'boolean') settings.fx = s0.fx;
+                }
+            } catch (e) {}
+            function saveSettings() { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch (e) {} }
+            window.__settings = settings;
+            function _t(zh, en) { return (settings && settings.lang === 'en') ? en : zh; }
+
+            /* 数字格式 */
+            var _fmtNum0 = formatNumber;
+            var _fmtMult0 = formatMult;
+            function numCore(n) {
+                if (settings.numFmt === 'sci') {
+                    var a = Math.abs(n);
+                    if (a !== 0 && (a >= 1e6 || a < 1e-4)) {
+                        return n.toExponential(2).replace(/(\.\d*?)0+e/, '$1e').replace(/\.e/, 'e');
+                    }
+                }
+                if (settings.numFmt === 'si') {
+                    if (n === 0) return '0';
+                    var neg = n < 0, x = Math.abs(n);
+                    var pre = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y', 'R', 'Q'];
+                    var i = 0;
+                    while (x >= 1000 && i < pre.length - 1) { x /= 1000; i++; }
+                    if (i < pre.length - 1 || x < 1000) {
+                        var v = x >= 100 ? x.toFixed(0) : (x >= 10 ? x.toFixed(1) : x.toFixed(2));
+                        return (neg ? '-' : '') + v + pre[i];
+                    }
+                }
+                return null;
+            }
+            window.formatNumber = function (n) {
+                if (n === Infinity) return '∞';
+                if (isNaN(n)) return '0';
+                var r = numCore(n);
+                return r !== null ? r : _fmtNum0(n);
+            };
+            window.formatMult = function (n) {
+                if (n === Infinity) return '∞x';
+                if (isNaN(n) || n === 0) return '0.00x';
+                var r = numCore(n);
+                return r !== null ? r + 'x' : _fmtMult0(n);
+            };
+
+            /* 特效开关：关闭粒子爆裂 / 屏幕震动 / 伤害数字 + 停用环境动画 */
+            var _fxBurst = window.triggerParticleBurst;
+            var _fxShake = window.triggerScreenShake;
+            var _fxDmg = window.showDamageText;
+            window.triggerParticleBurst = function () { if (settings.fx && _fxBurst) _fxBurst(); };
+            window.triggerScreenShake = function () { if (settings.fx && _fxShake) _fxShake(); };
+            window.showDamageText = function () { if (settings.fx && _fxDmg) _fxDmg.apply(null, arguments); };
+
+            /* 语言翻译（静态界面文案） */
+            var LANG_DICT = {
+                '金币': 'Coins', '奖杯': 'Trophies', '等级': 'Level',
+                '＋ 新游戏': '＋ New Game', '存档': 'Saves', '调试': 'Debug',
+                '总在线时间': 'Total Time', '改名': 'Rename', '重置': 'Reset',
+                '升级你的镐子': 'Pickaxe Upgrader', '玩家': 'Player', '经验': 'EXP',
+                '当前镐子': 'Current Pickaxe', '在线宝箱': 'Chests', '设置': 'Settings',
+                '伤害': 'Damage', '统计': 'Stats', '研究': 'Research', '树木': 'Tree',
+                '商店': 'Shop', '主线': 'Main', '支线': 'Branch',
+                '查看宝箱仓库': 'Open Chest Storage', '下次获得': 'Next in',
+                '输入兑换码': 'Enter redeem code', '兑换': 'Redeem',
+                '按回车提交兑换码 · 调试模式下数值可直接编辑': 'Press Enter to redeem · Values editable in debug mode',
+                '宝箱仓库': 'Chest Storage', '开启': 'Open', '一键开启全部': 'Open All',
+                '选择一个宝箱开启': 'Select a chest to open',
+                '普通宝箱': 'Common Chest', '黄金宝箱': 'Golden Chest', '钻石宝箱': 'Diamond Chest', '至尊宝箱': 'Supreme Chest',
+                '常见': 'Common', '稀有': 'Rare', '史诗': 'Epic', '传说': 'Legendary',
+                '确认操作': 'Confirm', '取消': 'Cancel', '确认': 'OK', '调试模式': 'Debug Mode',
+                '请输入密码': 'Enter password', '存档改名': 'Rename Save', '输入存档名称': 'Enter save name',
+                '正在载入资源': 'Loading…', '挖矿工作室': 'dfsoft Studio',
+                '在线时间': 'Online Time', '离线时长': 'Offline', '挖掘次数': 'Digs', '挖掉方块': 'Blocks Mined',
+                '每次挖掘使用增益': 'Usage per Dig', '开方次': 'Sqrt Power', '阈值': 'Threshold',
+                '树等级': 'Tree Level', '浇树经验': 'Tree EXP',
+                '浇水 (消耗1水立方)': 'Water (1 Water Cube)', '一键浇树': 'Water All', '一键合成信标': 'Craft Beacons',
+                '需要各 10 万个物质X、Y、Z开启': 'Need 100k Matter X/Y/Z', '开启研究所': 'Open Institute',
+                '能量总数': 'Energy', '产能速度': 'Rate', '能量增益': 'Energy Bonus', '使用增益获取': 'Usage Gain',
+                '自动浇树经验': 'Auto Tree EXP', '升级成本': 'Upgrade Cost', '升级产能 (消耗: ': 'Upgrade (Cost: ', '能量': 'energy',
+                '紫水晶': 'Amethyst', '铜锭': 'Copper Ingot', '蓝曜碎片': 'Blue Shard', '红曜碎片': 'Red Shard',
+                '红蓝结晶': 'Red-Blue Crystal', '基岩碎片': 'Bedrock Shard', '黑曜石': 'Obsidian', '下界之星': 'Nether Star',
+                '玻璃': 'Glass', '坤坤': 'KunKun', '土核心': 'Earth Core', '木核心': 'Wood Core',
+                '火立方': 'Fire Cube', '水立方': 'Water Cube', '金立方': 'Gold Cube', '五行结晶': 'Five-Element Crystal',
+                '京核': 'Jing Core', '元素晶片': 'Element Chip', '物质X': 'Matter X', '物质Y': 'Matter Y', '物质Z': 'Matter Z',
+                '机械零件': 'Mechanical Parts', '垓核': 'Gai Core',
+                '语言': 'Language', '数字格式': 'Number Format', '特效': 'Effects',
+                '科学': 'Scientific', '国际SI单位制': 'SI Units', 'SI单位': 'SI Units', '中文': 'Chinese',
+                '英文': 'English', '开启': 'On', '关闭': 'Off'
+            };
+            var LANG_REV = {};
+            for (var lk in LANG_DICT) LANG_REV[LANG_DICT[lk]] = lk;
+            function applyLanguage() {
+                var dict = settings.lang === 'en' ? LANG_DICT : LANG_REV;
+                var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+                var nodes = [];
+                while (walker.nextNode()) nodes.push(walker.currentNode);
+                for (var i = 0; i < nodes.length; i++) {
+                    var nd = nodes[i];
+                    if (nd.parentElement && nd.parentElement.closest('script, style')) continue;
+                    var raw = nd.nodeValue;
+                    var trim = raw.replace(/^\s+|\s+$/g, '');
+                    if (trim && dict[trim] !== undefined) {
+                        var lead = (raw.match(/^\s*/) || [''])[0];
+                        var trail = (raw.match(/\s*$/) || [''])[0];
+                        nd.nodeValue = lead + dict[trim] + trail;
+                    }
+                }
+            }
+            function applyAll() {
+                applyLanguage();
+                document.body.classList.toggle('fx-off', !settings.fx);
+                render();
+                if (typeof updateStats === 'function') updateStats();
+                refreshTimes();
+                refreshStripCounts();
+            }
+            function bindSettings() {
+                function bindGroup(sel, attr) {
+                    var group = document.querySelector(sel);
+                    if (!group) return;
+                    group.querySelectorAll('.setting-opt').forEach(function (b) {
+                        b.addEventListener('click', function () {
+                            group.querySelectorAll('.setting-opt').forEach(function (x) { x.classList.toggle('active', x === b); });
+                            var v = b.getAttribute(attr);
+                            if (attr === 'data-lang') settings.lang = v;
+                            if (attr === 'data-fmt') settings.numFmt = v;
+                            if (attr === 'data-fx') settings.fx = (v === 'on');
+                            saveSettings();
+                            applyAll();
+                        });
+                    });
+                }
+                bindGroup('#setting-lang', 'data-lang');
+                bindGroup('#setting-numfmt', 'data-fmt');
+                bindGroup('#setting-fx', 'data-fx');
+            }
+            function initSettingsUI() {
+                document.querySelectorAll('#setting-lang .setting-opt').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-lang') === settings.lang); });
+                document.querySelectorAll('#setting-numfmt .setting-opt').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-fmt') === settings.numFmt); });
+                document.querySelectorAll('#setting-fx .setting-opt').forEach(function (b) { b.classList.toggle('active', (b.getAttribute('data-fx') === 'on') === settings.fx); });
+                applyAll();
+            }
+            bindSettings();
+            initSettingsUI();
+
             /* 每个方块挖掉次数：独立注册表（按存档+方块名），实时显示 */
             var COUNT_KEY = 'miningGameBlockCounts';
             function getCounts() { try { return JSON.parse(localStorage.getItem(COUNT_KEY) || '{}'); } catch (e) { return {}; } }
@@ -2896,7 +3089,7 @@
                         nm.textContent = b.name;
                         var cn = document.createElement('div');
                         cn.className = 'block-chip-count';
-                        cn.textContent = '挖掉 0 次';
+                        cn.textContent = _t('挖掉 0 次', 'Mined 0');
                         chip.appendChild(icon);
                         chip.appendChild(nm);
                         chip.appendChild(cn);
@@ -2935,7 +3128,7 @@
                     var cn = chips[i].querySelector('.block-chip-count');
                     if (cn && b) {
                         var n = slotCounts[b.name] || 0;
-                        cn.textContent = '挖掉 ' + formatNumber(n) + ' 次';
+                        cn.textContent = _t('挖掉 ', 'Mined ') + formatNumber(n) + (settings.lang === 'en' ? '' : ' 次');
                         cn.classList.toggle('has', n > 0);
                     }
                 }
