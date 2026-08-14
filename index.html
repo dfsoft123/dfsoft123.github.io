@@ -3335,7 +3335,7 @@
                 { name: '使用方块', hp: 1e16, coins: 0, sqrtZone: 1, isCompressedBlock: true, compressedType: 'usage' },
                 { name: '金币方块', hp: 1e18, coins: 0, sqrtZone: 1, isCompressedBlock: true, compressedType: 'coin' },
                 { name: '京核', hp: 1e32, coins: 6.4e8, drop: 'jingCore', dropChance: 32, sqrtZone: 1 },
-                { name: '垓核', hp: 1e64, coins: 0, drop: 'gaiCore', dropChance: 6.4, sqrtZone: 1 },
+                { name: '垓核', hp: 1e64, coins: 1e11, drop: 'gaiCore', dropChance: 6.4, sqrtZone: 1 },
                 { name: '蓝曜石碎片', hp: 3.2e9, coins: 50000, drop: 'blueObsidianFragment', sqrtZone: 2 }, { name: '红曜石碎片', hp: 9.6e9, coins: 100000, drop: 'redObsidianFragment', sqrtZone: 2 },
                 { name: '红蓝结晶', hp: 2.4e10, coins: 180000, drop: 'redBlueCrystal', sqrtZone: 2 }, { name: '基岩碎片', hp: 8e10, coins: 320000, drop: 'bedrockFragment', sqrtZone: 2 },
                 { name: '黑曜石', hp: 4.4e11, coins: 600000, drop: 'obsidian', sqrtZone: 2 }, { name: '下界之星', hp: 1e12, coins: 1e6, drop: 'netherStar', sqrtZone: 2 },
@@ -3790,8 +3790,8 @@
         function toggleAutoMine() { gameData.autoMine = !gameData.autoMine; if (gameData.autoMine) { const block = gameData.blocks[gameData.currentBlockIndex]; const pk = gameData.pickaxes[gameData.currentPickaxeIndex]; if (block.name === '量子块' && !pk.isQuantum) { gameData.autoMine = false; alert('量子块只能用量子镐挖掘！'); } else if (block.isCompressedBlock && !pk.isCompressed) { gameData.autoMine = false; alert('特殊方块只能使用压缩木镐挖掘！'); } } elements.autoMineBtn.textContent = '自动挖矿: ' + (gameData.autoMine ? '开启' : '关闭'); elements.autoMineBtn.classList.toggle('active', gameData.autoMine); updateAutoMine(); }
         function toggleAutoExchange() { gameData.autoExchange = !gameData.autoExchange; elements.autoExchangeBtn.textContent = '自动兑换: ' + (gameData.autoExchange ? '开启' : '关闭'); elements.autoExchangeBtn.classList.toggle('active', gameData.autoExchange); }
         function updateAutoExchangeThreshold() { const t = parseInt(elements.autoExchangeThreshold.value); gameData.autoExchangeThreshold = t >= 100 ? t : gameData.autoExchangeThreshold; elements.autoExchangeThreshold.value = gameData.autoExchangeThreshold; }
-        function checkAutoExchange() { if (gameData.autoExchange && gameData.coins >= gameData.autoExchangeThreshold) exchangeTrophies(false); }
-        function calculateExchangeInfo() { return { earnedTrophies: gameData.coins.div(100).pow(3 / 4).floor() }; }
+        function checkAutoExchange() { if (gameData.autoExchange && D(gameData.coins).gte(gameData.autoExchangeThreshold)) exchangeTrophies(false); }
+        function calculateExchangeInfo() { return { earnedTrophies: D(gameData.coins).div(100).pow(3 / 4).floor() }; }
         function updateExchangeButton() { const info = calculateExchangeInfo(); elements.exchangeBtn.textContent = info.earnedTrophies.gt(0) ? '兑换奖杯 (+' + formatNumber(info.earnedTrophies) + ')' : '兑换奖杯 (需100金)'; }
         function exchangeTrophies(updateUI) { if (updateUI === undefined) updateUI = true; const info = calculateExchangeInfo(); if (info.earnedTrophies.gt(0)) { gameData.trophies = gameData.trophies.add(info.earnedTrophies); gameData.coins = new Decimal(0); if (updateUI) { updateStats(); initShop(); updateExchangeButton(); } } }
 
