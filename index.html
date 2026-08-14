@@ -2490,7 +2490,7 @@
         }
         let energyInterval = null;
         let lastEnergyTime = 0;
-        function startEnergyProduction() { if (energyInterval) clearInterval(energyInterval); lastEnergyTime = Date.now(); energyInterval = setInterval(() => { if (!gameData || !gameData.researchInstituteActive) return; const now = Date.now(); const el = Math.min(3600, (now - lastEnergyTime) / 1000); lastEnergyTime = now; if (el > 0) { gameData.energy += gameData.energyProductionSpeed * el; updateStats(); } }, 100); }
+        function startEnergyProduction() { if (energyInterval) clearInterval(energyInterval); lastEnergyTime = Date.now(); energyInterval = setInterval(() => { if (!gameData || !gameData.researchInstituteActive) return; const now = Date.now(); const el = Math.min(3600, (now - lastEnergyTime) / 1000); lastEnergyTime = now; if (el > 0) { gameData.energy += gameData.energyProductionSpeed * el; gameData.treeExperience += calculateEnergyTreeExp() * el; let treeReq = 10 * gameData.treeLevel; while (gameData.treeExperience >= treeReq) { gameData.treeLevel++; gameData.treeExperience -= treeReq; treeReq = 10 * gameData.treeLevel; } updateStats(); } }, 100); }
         let chestInterval = null;
         function startChestTimer() { if (chestInterval) clearInterval(chestInterval); chestInterval = setInterval(() => { if (!gameData) return; updateChestTimerDisplay(); checkChestReward(); }, 1000); }
         function initGame() {
